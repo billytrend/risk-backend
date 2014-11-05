@@ -13,5 +13,7 @@ public class UIEngine {
 	static int getNumOfArmies(){
 			return 0;
 		}
-			
+	static int getNumOfPlayers(){
+			return 0;
+	}
 }

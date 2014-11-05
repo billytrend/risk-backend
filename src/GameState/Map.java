@@ -2,22 +2,49 @@ import java.util.ArrayList;
 
 
 public abstract class Map{
+	ArrayList<Territory> territories;
+	Map(ArrayList<Territory> territories){
+		this.territories = territories;
+	}
 	
-	ArrayList<Territory> territories; 
-	
-	abstract void placeArmies(int numOfArmies, Territory territory);
+	private void placeArmies(int numOfArmies, Territory territory){
+		territory.armies.amount += numOfArmies;
+	}
 
 	// use for moves, placing armies - detect cheating
-	abstract Player checkOwnership(Territory territory);
+	//private Player checkOwnership(Territory territory){
+	//	return territory.player;
+	//}
 
 	// number of territories is got from player
 	// it gives armies to the player
 	// do it several times at the beginning of the game
-	abstract int assignArmies(Player player);
+	int assignArmies(Player player){
+		return player.territories.size() / 3;
+		// plus continents!
+	}
 	
-	// go to gamestate for the list of players
-	abstract boolean playerOutOfArmies();
+	// checks whether all all players are out of armies
+	boolean playersOutOfArmies(){
+		int numPlayers = GameState.players.size();
+		for(int i = 0; i < numPlayers; i++){
+			if(!playerOutOfArmies(GameState.players.get(i)))
+				return false;
+		}
+		return true;
+	}
 	
-	abstract void moveArmy(int numOfArmies, Territory from, Territory to);
-
+	// check whether the given player is out of armies
+	boolean playerOutOfArmies(Player player){
+		if(player.armiesToPlace == 0)
+			return true;
+		else 
+			return false;
+	}
+	
+	// CHECKS?
+	void moveArmy(int numOfArmies, Territory from, Territory to){
+		from.armies.amount -= numOfArmies;
+		to.armies.amount += numOfArmies;
+	}
 }

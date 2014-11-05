@@ -1,13 +1,21 @@
 import java.util.ArrayList;
 
-
 public class Territory {
 	
-	// think about it
 	Player player;
-	
+
 	Armies armies;
-	
-	ArrayList<Territory> neighbours = new ArrayList<Territory>();
-	
+
+	ArrayList<Territory> neighbours;
+
+	Territory() {
+		// think about it
+		player = null;
+
+		armies = new Armies(0);
+
+		neighbours = new ArrayList<Territory>();
+	}
+
+
 }
