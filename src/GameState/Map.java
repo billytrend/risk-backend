@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 
 public abstract class Map{
 	abstract void placeArmies(int numOfArmies, Territory territory);
@@ -12,6 +14,8 @@ public abstract class Map{
 	
 	// go to gamestate for the list of players
 	abstract boolean playerOutOfArmies();
+	
+	ArrayList<Territory> territories = new ArrayList(); 
 	
 	abstract void moveArmy(int numOfArmies, Territory from, Territory to);
 
