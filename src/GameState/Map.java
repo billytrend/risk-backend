@@ -7,7 +7,7 @@ public abstract class Map{
 		this.territories = territories;
 	}
 	
-	private void placeArmies(int numOfArmies, Territory territory){
+	public void placeArmies(int numOfArmies, Territory territory){
 		territory.armies.amount += numOfArmies;
 	}
 

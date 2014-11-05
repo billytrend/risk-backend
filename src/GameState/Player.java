@@ -9,8 +9,14 @@ public class Player {
 	int armiesToPlace;
 	
 	// think about removing that? ??? 
-	ArrayList<Territory> territories = new ArrayList<Territory>();
+	ArrayList<Territory> territories;
 
-	ArrayList<Card> cards = new ArrayList<Card>();
+	ArrayList<Card> cards;
+	
+	Player(int armiesToPlace){
+		this.armiesToPlace = armiesToPlace;
+		territories = new ArrayList<Territory>();
+		cards = new ArrayList<Card>();
+	}
 	
 }
