@@ -32,8 +32,13 @@ public abstract class GameEngine {
 	
 	
 	// once this is true you allow to place more armies
-	abstract boolean allTerritoriesOccupied(Map map);
-	
+	private boolean allTerritoriesOccupied(){
+		for(int i = 0; i < GameState.map.territories.size(); i++){
+			if(GameState.map.territories.get(i).player == null)
+				return false;
+		}
+		return true;
+	}
 
 	
     // TAKING TURN
