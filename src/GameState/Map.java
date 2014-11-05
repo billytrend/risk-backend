@@ -1,5 +1,10 @@
+import java.util.ArrayList;
+
 
 public abstract class Map{
+	
+	ArrayList<Territory> territories; 
+	
 	abstract void placeArmies(int numOfArmies, Territory territory);
 
 	// use for moves, placing armies - detect cheating

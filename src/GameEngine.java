@@ -10,7 +10,6 @@ public abstract class GameEngine {
 	// once this is true you allow to place more armies
 	abstract boolean allTerritoriesOccupied(Map map);
 	
-
 	
     // TAKING TURN
 	
