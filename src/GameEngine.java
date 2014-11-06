@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Random;
 
 
 public abstract class GameEngine {
@@ -26,7 +27,26 @@ public abstract class GameEngine {
 		GameState.map.territories.get(4).neighbours.add(GameState.map.territories.get(2));
 		GameState.map.territories.get(4).neighbours.add(GameState.map.territories.get(3));
 	}
+	public void startGame(){
+		//"roll" for who goes first
+		Random ran = new Random();
+        GameState.currentPlayer = ran.nextInt(4);
+        Territory territory;
 
+        while(!allTerritoriesOccupied()){
+        	territory = GameState.map.territories.get(UIEngine.getTerritory());
+        	if(territory.player == null){
+        		GameState.map.placeArmies(1, territory);
+        		if(GameState.currentPlayer == GameState.numOfPlayers)
+        			GameState.currentPlayer = 0;
+        		else
+        			GameState.currentPlayer ++;
+        	}
+        	
+        }
+        
+        
+	}
 	// main game loop
 	abstract void playGame();
 	
@@ -50,6 +70,4 @@ public abstract class GameEngine {
 	// call move armies method
 	abstract boolean fortifyTerritories(Player player, Territory from, Territory to, int numOfArmies);
 
-
-		
 }
