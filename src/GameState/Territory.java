@@ -11,9 +11,7 @@ public class Territory {
 	Territory() {
 		// think about it
 		player = null;
-
 		armies = new Armies(0);
-
 		neighbours = new ArrayList<Territory>();
 	}
 

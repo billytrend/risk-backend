@@ -8,7 +8,6 @@ public class Player {
 	// armies to place on board
 	int armiesToPlace;
 	String id;
-	// think about removing that? ??? 
 	ArrayList<Territory> territories;
 
 	ArrayList<Card> cards;

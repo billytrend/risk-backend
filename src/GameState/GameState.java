@@ -9,6 +9,9 @@ public class GameState {
 	static int currentPlayer;
 	static boolean endOfGame = false;
 	
+	/**
+	 * Printing the current state of the game to the console.
+	 */
 	static void print(){
 		System.out.println("\nGAME STATE:");
 		System.out.println("------------------------------------");
@@ -20,7 +23,7 @@ public class GameState {
 		System.out.println();
 	}
 	
-	static void printTerritories(){
+	private static void printTerritories(){
 		Territory ter;
 		String id;
 		for(int i = 0; i < map.territories.size(); i++){
@@ -33,6 +36,11 @@ public class GameState {
 		}
 	}
 	
+	/**
+	 * Changes the current player. If all the players
+	 * have already took a turn the player who took the first turn
+	 * is set to current player.
+	 */
 	static public void nextPlayer(){
  		if(currentPlayer == numOfPlayers - 1)
 			currentPlayer = 0;
@@ -40,6 +48,13 @@ public class GameState {
 			currentPlayer ++;
 	}
 
+	/**
+	 * Method called when a player wins a territory.
+	 * It checks whether the given player holds all the
+	 * territories on the map - the end of the game state. 
+	 * 
+	 * @param player
+	 */
 	public static void checkWin(Player player){
 		// if the player that just won has all the territories on map 
 		if(player.territories.size() == map.territories.size()){
