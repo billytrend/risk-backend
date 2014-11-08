@@ -8,13 +8,15 @@ public class UIEngine {
 		return 0;
 	}
 
-	private static void printInitialChoices() {
+	static int getInitialChoice() {
 		System.out.println("Please make a selection based on the following: ");
 		System.out.println("    1.  Attack.");
 		System.out.println("    2.  Move.");
+		System.out.println("    3.  Finish turn. ");
+		return easyIn();
 	}
 
-	private static int[] attackChoice() {
+	static int[] attackChoice() {
 		int[] fromTo = new int[2];
 		System.out.println("Which territory do you wish to attack from?");
 		fromTo[0] = easyIn();
@@ -23,14 +25,14 @@ public class UIEngine {
 		return fromTo;
 	}
 
-	private static int[] moveChoice() {
+	static int[] moveChoice() {
 		int[] fromTo = new int[3];
 		System.out.println("Which territory do you wish to move from?");
 		fromTo[0] = easyIn();
 		System.out.println("Which territory do you wish to move to?");
 		fromTo[1] = easyIn();
 		System.out.println("How many armies do you wish to move?");
-		fromTo[1] = easyIn();
+		fromTo[2] = easyIn();
 		return fromTo;
 	}
 
@@ -41,7 +43,7 @@ public class UIEngine {
 
 		Scanner in = new Scanner(System.in);
 		a = in.nextInt();
-
+		
 		return a;
 	}
 
@@ -57,7 +59,13 @@ public class UIEngine {
 	}
 
 	static int getNumOfArmies() {
-		System.out.println("How many armies do you want?");
+		System.out.println("Specify the number of armies:");
+		return easyIn();
+	}
+
+	// as for now - later delete that
+	public static int getNumOfPlayers() {
+		System.out.println("How many players are going to play?");
 		return easyIn();
 	}
 

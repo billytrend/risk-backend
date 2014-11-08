@@ -7,16 +7,17 @@ public class Player {
 
 	// armies to place on board
 	int armiesToPlace;
-	
+	String id;
 	// think about removing that? ??? 
 	ArrayList<Territory> territories;
 
 	ArrayList<Card> cards;
 	
-	Player(int armiesToPlace){
+	Player(int armiesToPlace, String id){
 		this.armiesToPlace = armiesToPlace;
 		territories = new ArrayList<Territory>();
 		cards = new ArrayList<Card>();
+		this.id = id;
 	}
 	
 }
