@@ -1,23 +1,15 @@
 /**
  * 
  */
-package server;
+package Server;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 /**
  * @author 120011995
- * @category Class to hold the server for our multi-player risk implementation 
+ * @category Class to hold the Server for our multi-player risk implementation
  */
 public class Server {
 
@@ -29,7 +21,7 @@ public class Server {
 	}
 
 	/**
-	 * Method which invokes the setup and running of the multi-threaded server
+	 * Method which invokes the setup and running of the multi-threaded Server
 	 */
 	public void runServer() {
 		int port = 4444;
@@ -42,7 +34,7 @@ public class Server {
 				new ServerThread(client).start();
 			}
 		} catch (IOException e) {
-			System.out.println("Could not create server Socket");
+			System.out.println("Could not create Server Socket");
 			e.printStackTrace();
 		}
 	}

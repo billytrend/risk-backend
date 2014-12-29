@@ -1,7 +1,7 @@
 /**
  * 
  */
-package protocol;
+package Server.src.protocol;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;

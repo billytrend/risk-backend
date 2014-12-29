@@ -1,7 +1,7 @@
 /**
  * 
  */
-package server;
+package Server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.net.Socket;
 /**
  * @author 120011995
  * @category Class to implement multithreading in TCP 
- * 			 server
+ * 			 Server
  */
 public class ServerThread extends Thread {
 	Socket socket;
