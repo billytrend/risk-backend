@@ -1,3 +1,5 @@
+import GameState.*;
+
 import java.util.Arrays;
 import java.util.Random;
 
@@ -193,14 +195,13 @@ public class AttackEngine {
          * throwing dice, conducting the attack and removing the appropriate
          * amount of armies.
          * 
-         * @param player
          * @param attacker
          * @param defender
          * @return
          */
         static boolean attack(Territory attacker, Territory defender){
             
-            if(!checkAttack(GameState.players.get(GameState.currentPlayer), 
+            if(!checkAttack(State.players.get(State.currentPlayer),
             		attacker, defender)){
                 return false;
             }
@@ -245,7 +246,7 @@ public class AttackEngine {
             	// moving attackers armies to its new territory
                 GameEngine.moveArmy(armies, attacker, defender);
                 
-               	GameState.checkWin(attacker.player);
+               	State.checkWin(attacker.player);
                 return true;
             }
             else

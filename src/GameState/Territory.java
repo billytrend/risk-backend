@@ -1,14 +1,16 @@
+package GameState;
+
 import java.util.ArrayList;
 
 public class Territory {
 	
-	Player player;
+	public Player player;
 
-	Armies armies;
+	public Armies armies;
 
-	ArrayList<Territory> neighbours;
+	public ArrayList<Territory> neighbours;
 
-	Territory() {
+	public Territory() {
 		// think about it
 		player = null;
 		armies = new Armies(0);

@@ -1,18 +1,20 @@
+package GameState;
+
 import java.util.ArrayList;
 
 
-public class GameState {
+public class State {
 
-	static int numOfPlayers;
-	static Map map;
-	static ArrayList<Player> players = new ArrayList<Player>();
-	static int currentPlayer;
-	static boolean endOfGame = false;
+	public static int numOfPlayers;
+	public static Map map;
+	public static ArrayList<Player> players = new ArrayList<Player>();
+	public static int currentPlayer;
+	public static boolean endOfGame = false;
 	
 	/**
 	 * Printing the current state of the game to the console.
 	 */
-	static void print(){
+	public static void print(){
 		System.out.println("\nGAME STATE:");
 		System.out.println("------------------------------------");
 		System.out.println("Number of players: " + numOfPlayers);

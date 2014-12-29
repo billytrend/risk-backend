@@ -1,3 +1,4 @@
+package GameState;
 
 public class Card {
 	

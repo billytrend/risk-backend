@@ -1,3 +1,5 @@
+import GameState.Player;
+
 import java.util.Scanner;
 
 public class UIEngine {

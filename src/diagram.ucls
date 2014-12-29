@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <class-diagram version="1.1.6" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
   associations="true" dependencies="false" nesting-relationships="true">  
-  <class id="1" language="java" name="Armies" project="JH_Project" file="/JH_Project/src/Armies.java" binary="false" 
+  <class id="1" language="java" name="GameState.Armies" project="JH_Project" file="/JH_Project/src/GameState.Armies.java" binary="false"
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="940" y="847"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
@@ -10,7 +10,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="2" language="java" name="Card" project="JH_Project" file="/JH_Project/src/Card.java" binary="false" 
+  <class id="2" language="java" name="GameState.Card" project="JH_Project" file="/JH_Project/src/GameState.Card.java" binary="false"
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="545" y="527"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
@@ -19,7 +19,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="3" language="java" name="Player" project="JH_Project" file="/JH_Project/src/Player.java" binary="false" 
+  <class id="3" language="java" name="GameState.Player" project="JH_Project" file="/JH_Project/src/GameState.Player.java" binary="false"
     corner="BOTTOM_RIGHT">    
     <position height="95" width="112" x="732" y="185"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
@@ -37,7 +37,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="5" language="java" name="Territory" project="JH_Project" file="/JH_Project/src/Territory.java" 
+  <class id="5" language="java" name="GameState.Territory" project="JH_Project" file="/JH_Project/src/GameState.Territory.java"
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="831" y="657"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
@@ -46,7 +46,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="6" language="java" name="Map" project="JH_Project" file="/JH_Project/src/Map.java" binary="false" 
+  <class id="6" language="java" name="GameState.Map" project="JH_Project" file="/JH_Project/src/GameState.Map.java" binary="false"
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1266" y="239"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
@@ -55,7 +55,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="7" language="java" name="GameState" project="JH_Project" file="/JH_Project/src/GameState.java" 
+  <class id="7" language="java" name="GameState.GameState" project="JH_Project" file="/JH_Project/src/GameState.GameState.java"
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="95" width="111" x="884" y="185"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
@@ -73,7 +73,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <enumeration id="9" language="java" name="Card.Types" project="JH_Project" file="/JH_Project/src/Card.java" 
+  <enumeration id="9" language="java" name="GameState.Card.Types" project="JH_Project" file="/JH_Project/src/GameState.Card.java"
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="533" y="753"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
