@@ -16,6 +16,5 @@ public class Territory {
 		armies = new Armies(0);
 		neighbours = new ArrayList<Territory>();
 	}
-
-
+	
 }

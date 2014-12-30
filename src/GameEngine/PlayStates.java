@@ -1,0 +1,10 @@
+package GameEngine;
+
+public enum PlayStates {
+    BEGINNING_STATE,
+    FILLING_EMPTY_COUNTRIES,
+    USING_REMAINING_ARMIES,
+    PLAYER_PLACING_ARMIES,
+    PLAYER_CONVERTING_CARDS,
+
+}
