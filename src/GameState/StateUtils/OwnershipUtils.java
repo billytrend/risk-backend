@@ -30,4 +30,13 @@ public class OwnershipUtils {
     public static int getNumberOfTerritories(Player p) {
         return MapUtils.getPlayersTerritories(p).size();
     }
+
+    public static Player getTerritoryOwner(State state, Territory t) {
+        for (Player p : state.getPlayers()) {
+            if (MapUtils.getPlayersTerritories(p).contains(t)) {
+                return p;
+            }
+        }
+        return null;
+    }
 }

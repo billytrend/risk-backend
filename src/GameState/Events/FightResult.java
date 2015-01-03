@@ -1,5 +1,8 @@
 package GameState.Events;
 
+import GameState.Player;
+import GameState.Territory;
+
 /**
  * Created by bt on 30/12/2014.
  */
@@ -7,8 +10,19 @@ public class FightResult {
 
     private int defendersLoss;
     private int attackersLoss;
-    private int[] attackDiceRolled;
-    private int[] defendDiceRolled;
+    private Integer[] attackDiceRolled;
+    private Integer[] defendDiceRolled;
+    private final Player attacker;
+    private final Player defender;
+    private final Territory attackingTerritory;
+    private final Territory defendingTerritory;
+
+    public FightResult(Player attacker, Player defender, Territory attackingTerritory, Territory defendingTerritory) {
+        this.attacker = attacker;
+        this.defender = defender;
+        this.attackingTerritory = attackingTerritory;
+        this.defendingTerritory = defendingTerritory;
+    }
 
     public int getDefendersLoss() {
         return defendersLoss;
@@ -26,19 +40,19 @@ public class FightResult {
         this.attackersLoss = attackersLoss;
     }
 
-    public int[] getAttackDiceRolled() {
+    public Integer[] getAttackDiceRolled() {
         return attackDiceRolled;
     }
 
-    public void setAttackDiceRolled(int[] attackDiceRolled) {
+    public void setAttackDiceRolled(Integer[] attackDiceRolled) {
         this.attackDiceRolled = attackDiceRolled;
     }
 
-    public int[] getDefendDiceRolled() {
+    public Integer[] getDefendDiceRolled() {
         return defendDiceRolled;
     }
 
-    public void setDefendDiceRolled(int[] defendDiceRolled) {
+    public void setDefendDiceRolled(Integer[] defendDiceRolled) {
         this.defendDiceRolled = defendDiceRolled;
     }
 
@@ -50,4 +64,20 @@ public class FightResult {
         this.attackersLoss++;
     }
 
+    public Player getAttacker() {
+        return attacker;
+    }
+
+    public Player getDefender() {
+        return defender;
+    }
+
+    public Territory getAttackingTerritory() {
+        return attackingTerritory;
+    }
+
+    public Territory getDefendingTerritory() {
+        return defendingTerritory;
+    }
 }
+

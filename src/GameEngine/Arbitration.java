@@ -5,6 +5,7 @@ import GameState.State;
 import GameState.StateUtils.StateStats;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Random;
 
 /**
@@ -12,14 +13,14 @@ import java.util.Random;
  */
 public class Arbitration {
 
-    private static int dieThrow(){
+    private static Integer dieThrow(){
         Random ran = new Random();
-        int result = ran.nextInt(6) + 1;
+        Integer result = ran.nextInt(6) + 1;
         return result;
     }
 
-    private static int[] nDiceThrow(int numOfDice){
-        int[] result = new int[numOfDice];
+    private static Integer[] nDiceThrow(int numOfDice){
+        Integer[] result = new Integer[numOfDice];
         for(int i = 0; i < numOfDice; i++){
             result[i] = dieThrow();
         }
@@ -27,10 +28,18 @@ public class Arbitration {
     }
 
     public static void setFirstPlayer(State state) {
-        int noOfPlayers = StateStats.countPlayers(state);
+        Integer noOfPlayers = StateStats.countPlayers(state);
         Random ran = new Random();
-        int result = ran.nextInt(noOfPlayers);
+        Integer result = ran.nextInt(noOfPlayers);
         state.getPlayerQueue().setFirstPlayer(result);
+    }
+
+    public static FightResult carryOutFight(FightResult result, int dA, int dB) {
+
+        Integer[] attackDice = nDiceThrow(dA);
+        Integer[] defendDice = nDiceThrow(dB);
+
+        return arbitrateFight(result, attackDice, defendDice);
     }
 
     /**
@@ -44,21 +53,22 @@ public class Arbitration {
      * @param defender
      * @return
      */
-    private static FightResult arbitrateFight(int[] attacker, int[] defender){
-        Arrays.sort(attacker);
-        Arrays.sort(defender);
+    private static FightResult arbitrateFight(FightResult result, Integer[] attacker, Integer[] defender){
 
-        FightResult result = new FightResult();
+        // sort in descending order
+        Arrays.sort(attacker, Collections.reverseOrder());
+        Arrays.sort(defender, Collections.reverseOrder());
+
         result.setAttackDiceRolled(attacker);
         result.setDefendDiceRolled(defender);
 
         // the amount compared is the smaller number of dice
         // that were thrown
-        int numOfCompared = (attacker.length > defender.length)
-                ? defender.length : attacker.length;
+        int numberToCompare = (attacker.length > defender.length) ? defender.length : attacker.length;
 
-        for(int i = 1; i <= numOfCompared; i++){
-            if(attacker[attacker.length - i] > defender[defender.length - i]) {
+        for(int i = 1; i <= numberToCompare; i++){
+
+            if(attacker[i] > defender[i]) {
                 result.addDefendLoss();
             }
             else {

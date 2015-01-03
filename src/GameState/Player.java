@@ -1,5 +1,6 @@
 package GameState;
 
+import GameState.StateUtils.ArmyUtils;
 import PlayerInput.PlayerInterface;
 
 import java.util.ArrayList;
@@ -11,10 +12,11 @@ public class Player {
 	PlayerInterface interfaceMethod;
 	private ArrayList<Army> armies;
 
-	public Player(String id, PlayerInterface interfaceMethod) {
+	public Player(String id, PlayerInterface interfaceMethod, int startingArmies) {
 		this.id = id;
 		this.interfaceMethod = interfaceMethod;
 		armies = new ArrayList<Army>();
+		ArmyUtils.givePlayerNArmies(this, startingArmies);
 	}
 
 	public String getId() {

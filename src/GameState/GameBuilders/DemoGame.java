@@ -1,41 +1,48 @@
 package GameState.GameBuilders;
 
-import GameState.Player;
 import GameState.State;
+import GameState.StateUtils.MapUtils;
 import GameState.Territory;
+import PlayerInput.DumbBotInterface;
+import PlayerInput.TextInterface;
+
+import java.util.ArrayList;
 
 /**
  * Created by bt on 30/12/2014.
  */
 public class DemoGame {
 
-    public static void buildGame(State state) {
+    public static State buildGame() {
 
         // creating players
-        int numOfPlayers = 5;
+        int numOfPlayers = 4;
         int armiesAtTheStart = 10;
+        ArrayList<GameState.Player> ps = new ArrayList<GameState.Player>();
         for(int i = 0; i < numOfPlayers; i++){
-            state.addPlayer(
-                    new Player(armiesAtTheStart, "state.Player " + (i + 1)));
+            ps.add(new GameState.Player("Player " + i, new DumbBotInterface(), armiesAtTheStart));
         }
+        State state = new State(ps);
 
         // creating territories
-        Territory demoLandA = new Territory();
-        Territory demoLandB = new Territory();
-        Territory demoLandC = new Territory();
-        Territory demoLandD = new Territory();
+        Territory demoLandA = new Territory("demoland");
+        Territory demoLandB = new Territory("egstate");
+        Territory demoLandC = new Territory("someplace");
+        Territory demoLandD = new Territory("otherplace");
 
-        state.addTerritory(demoLandA);
-        state.addTerritory(demoLandB);
-        state.addTerritory(demoLandC);
-        state.addTerritory(demoLandD);
+        MapUtils.addTerritory(state, demoLandA);
+        MapUtils.addTerritory(state, demoLandB);
+        MapUtils.addTerritory(state, demoLandC);
+        MapUtils.addTerritory(state, demoLandD);
 
         //add neighbouring territories to each territory
-        state.addBorder(demoLandA, demoLandB);
-        state.addBorder(demoLandA, demoLandD);
-        state.addBorder(demoLandB, demoLandC);
-        state.addBorder(demoLandC, demoLandD);
-        state.addBorder(demoLandD, demoLandB);
+        MapUtils.addBorder(state, demoLandA, demoLandB);
+        MapUtils.addBorder(state, demoLandA, demoLandD);
+        MapUtils.addBorder(state, demoLandB, demoLandC);
+        MapUtils.addBorder(state, demoLandC, demoLandD);
+        MapUtils.addBorder(state, demoLandD, demoLandB);
+
+        return state;
 
     }
 

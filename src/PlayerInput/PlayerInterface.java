@@ -2,37 +2,27 @@ package PlayerInput;
 
 import GameState.Army;
 import GameState.Card;
-import GameState.Player;
 import GameState.Territory;
+import PlayerInput.PlayerChoice.ArmySelection;
 import PlayerInput.PlayerChoice.CountrySelection;
 import PlayerInput.PlayerChoice.DiceSelection;
-import PlayerInput.PlayerChoice.WarringCountries;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
- * Created by bt on 29/12/2014.
+ * Created by bt on 03/01/2015.
  */
-public class PlayerInterface {
+public interface PlayerInterface {
 
-    public DiceSelection getNumberOfDice(Player player, int max) {
-        return null;
-    }
+    public DiceSelection getNumberOfDice(GameState.Player player, int max);
 
-    public WarringCountries getWarringTerritories(Player attacker, Player defender, int maxAttackDice, int maxDefendDice) {
-        return null;
-    }
+    public CountrySelection getTerritory(GameState.Player player, HashSet<Territory> possibles);
 
-    public CountrySelection getTerritory(Player player, HashSet<Territory> possibles, ArrayList<Army> playersUndeployedArmies) {
-        return null;
-    }
+    public ArmySelection getNumberOfArmies(GameState.Player player, ArrayList<Army> playersUndeployedArmies);
 
-    public void giveCard(Player player, Card card) {
+    public void giveCard(GameState.Player player, Card card);
+
+    public Object getCardOptions();
 
     }
-
-    public Object getCardOptions() {
-        return cardOptions;
-    }
-}

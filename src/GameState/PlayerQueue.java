@@ -6,7 +6,7 @@ import java.util.Iterator;
 public class PlayerQueue implements Iterator {
 
     private int firstPlayer = 0;
-    private int curPlayer = -1;
+    private int curPlayer = 0;
     private final ArrayList<Player> players;
 
     public PlayerQueue(ArrayList<Player> players) {

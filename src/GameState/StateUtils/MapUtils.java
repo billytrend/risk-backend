@@ -1,9 +1,11 @@
 package GameState.StateUtils;
 
 import GameState.*;
+import org.jgrapht.Graphs;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,5 +42,44 @@ public class MapUtils {
 
     public static boolean hasEmptyTerritories(State state) {
         return getUnownedTerritories(state).size() > 0;
+    }
+
+    public static HashSet<Territory> getNeighbours(State state, Territory territory) {
+        return new HashSet<Territory>(Graphs.neighborListOf(state.getTerritories(), territory));
+    }
+
+    public static HashSet<Territory> getEnemyNeighbours(State state, Territory territory, Player player) {
+        HashSet<Territory> neighbours = getNeighbours(state, territory);
+        HashSet<Territory> playersTerritories = getPlayersTerritories(player);
+        neighbours.removeAll(playersTerritories);
+        return neighbours;
+    }
+
+    public static HashSet<Territory> getFriendlyNeighbours(State state, Territory territory, Player player) {
+        HashSet<Territory> neighbours = getNeighbours(state, territory);
+        HashSet<Territory> playersTerritories = getPlayersTerritories(player);
+        neighbours.retainAll(playersTerritories);
+        return neighbours;
+    }
+
+    public static HashSet<Territory> getTerritoriesWithMoreThanOneArmy(Player p) {
+        HashSet<Territory> foundArmies = new HashSet<Territory>();
+        HashSet<Territory> territoriesWithMoreThanOneArmy = new HashSet<Territory>();
+        for (Territory t : getPlayersTerritories(p)) {
+            if (foundArmies.contains(t)) {
+                territoriesWithMoreThanOneArmy.add(t);
+            } else {
+                foundArmies.add(t);
+            }
+        }
+        return territoriesWithMoreThanOneArmy;
+    }
+
+    public static void addTerritory(State state, Territory territory) {
+        state.getTerritories().addVertex(territory);
+    }
+
+    public static void addBorder(State state, Territory a, Territory b) {
+        state.getTerritories().addEdge(a, b);
     }
 }

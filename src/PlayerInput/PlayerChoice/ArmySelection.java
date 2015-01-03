@@ -1,19 +1,22 @@
 package PlayerInput.PlayerChoice;
 
+import GameState.Army;
+
+import java.util.ArrayList;
+
 /**
  * Created by bt on 30/12/2014.
  */
 public class ArmySelection extends Choice {
 
-    private final int nArmies;
+    private final ArrayList<Army> armies;
 
-    public ArmySelection(int nArmies) {
-        this.nArmies = nArmies;
+    public ArmySelection(ArrayList<Army> armies) {
+        this.armies = armies;
 
     }
 
-    public int getNArmies() {
-        return nArmies;
+    public ArrayList<Army> getArmies() {
+        return armies;
     }
-
 }

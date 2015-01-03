@@ -7,12 +7,8 @@ public class Choice {
 
     private boolean endGo = false;
 
-    public void toggleEndGo() {
-        this.endGo = !this.endGo;
-    }
-
-    public void setEndGo(boolean endGo) {
-        this.endGo = endGo;
+    public void setEndGo() {
+        this.endGo = true;
     }
 
     public boolean isEndGo() {

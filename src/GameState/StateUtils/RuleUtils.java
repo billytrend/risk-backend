@@ -1,9 +1,7 @@
 package GameState.StateUtils;
 
-import GameState.Army;
-import GameState.Continent;
-import GameState.Player;
-import GameState.State;
+import GameState.*;
+import GameState.Events.FightResult;
 
 import java.util.ArrayList;
 
@@ -28,4 +26,15 @@ public class RuleUtils {
         ArmyUtils.givePlayerNArmies(p, totalHandout);
     }
 
+
+    public static void applyFightResult(FightResult res) {
+        ArmyUtils.destroyArmies(res.getAttacker(), res.getAttackingTerritory(), res.getAttackersLoss());
+        ArmyUtils.destroyArmies(res.getDefender(), res.getDefendingTerritory(), res.getDefendersLoss());
+
+        // if country defeated then move minimal armies across
+        if (ArmyUtils.getNumberOfArmiesOnTerritory(res.getDefender(), res.getDefendingTerritory()) == 0) {
+            ArrayList<Army> armiesToMove = new ArrayList<Army>(ArmyUtils.getArmiesOnTerritory(res.getAttacker(), res.getAttackingTerritory()).subList(0, res.getAttackDiceRolled().length));
+            ArmyUtils.moveArmies(res.getDefendingTerritory(), armiesToMove);
+        }
+    }
 }

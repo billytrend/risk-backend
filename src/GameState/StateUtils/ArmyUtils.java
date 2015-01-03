@@ -3,6 +3,7 @@ package GameState.StateUtils;
 import GameState.Army;
 import GameState.Player;
 import GameState.State;
+import GameState.Territory;
 
 import java.util.ArrayList;
 
@@ -21,7 +22,7 @@ public class ArmyUtils {
         return undeployedArmies;
     }
 
-    public static boolean playerHasUndeployedArmies(State state) {
+    public static boolean somePlayerHasUndeployedArmies(State state) {
         for (Player p : state.getPlayers()) {
             if (getUndeployedArmies(p).size() > 0) return true;
         }
@@ -31,6 +32,43 @@ public class ArmyUtils {
     public static void givePlayerNArmies(Player p, int n) {
         for (int i = 0; i < n; i++) {
             p.getArmies().add(new Army());
+        }
+    }
+
+    public static ArrayList<Army> getArmiesOnTerritory(Player p, Territory t) {
+        ArrayList<Army> armies = new ArrayList<Army>();
+        for (Army a : p.getArmies()) {
+            if (a.getTerritory().equals(t)) {
+                armies.add(a);
+            }
+        }
+        return armies;
+    }
+
+    public static int getNumberOfArmiesOnTerritory(Player p, Territory t) {
+        int count = 0;
+        for (Army a : p.getArmies()) {
+            if (a.getTerritory().equals(t)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public static void destroyArmies(Player p, Territory t, int n) {
+        for (Army a : p.getArmies()) {
+            if (a.getTerritory().equals(t)) {
+                p.getArmies().remove(a);
+            }
+            if (--n == 0) {
+                return;
+            }
+        }
+    }
+
+    public static void moveArmies(Territory target, ArrayList<Army> armies) {
+        for(Army a : armies) {
+            a.setTerritory(target);
         }
     }
 
