@@ -1,15 +1,21 @@
 package GameState;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 public class PlayerQueue implements Iterator {
 
     private int firstPlayer = 0;
     private int curPlayer = -1;
+    private final ArrayList<Player> players;
+
+    public PlayerQueue(ArrayList<Player> players) {
+        this.players = players;
+    }
 
     public void setFirstPlayer(int firstPlayer) {
 
-        if (firstPlayer < State.countPlayers()) {
+        if (firstPlayer < this.players.size()) {
             this.firstPlayer = firstPlayer;
         }
 
@@ -32,14 +38,14 @@ public class PlayerQueue implements Iterator {
 
         else {
             this.curPlayer++;
-            this.curPlayer = this.curPlayer % State.countPlayers();
+            this.curPlayer = this.curPlayer % this.players.size();
         }
 
-        return State.getPlayer(this.curPlayer);
+        return this.players.get(curPlayer);
     }
 
     public Player getCurrent() {
-        return State.getPlayer(this.curPlayer);
+        return this.players.get(this.curPlayer);
     }
 
 }

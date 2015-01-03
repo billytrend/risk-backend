@@ -28,7 +28,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="4" language="java" name="GameEngine" project="JH_Project" file="/JH_Project/src/GameEngine.java" 
+  <class id="4" language="java" name="GameEngine.GameEngine" project="JH_Project" file="/JH_Project/src/GameEngine.GameEngine.java"
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="149" width="286" x="-109" y="185"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
@@ -64,7 +64,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="8" language="java" name="AttackEngine" project="JH_Project" file="/JH_Project/src/AttackEngine.java" 
+  <class id="8" language="java" name="GameEngine.AttackEngine" project="JH_Project" file="/JH_Project/src/GameEngine.AttackEngine.java"
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="257" width="280" x="217" y="185"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
@@ -82,7 +82,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </enumeration>  
-  <class id="10" language="java" name="UIEngine" project="JH_Project" file="/JH_Project/src/UIEngine.java" 
+  <class id="10" language="java" name="PlayerInput.UIEngine" project="JH_Project" file="/JH_Project/src/PlayerInput.UIEngine.java"
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="131" width="155" x="537" y="185"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 

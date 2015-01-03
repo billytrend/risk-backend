@@ -1,24 +1,43 @@
 package GameState;
 
+import PlayerInput.PlayerInterface;
+
 import java.util.ArrayList;
 
 
 public class Player {
 
-	// armies they have on board -- maybe for Ai?
+	private String id;
+	PlayerInterface interfaceMethod;
+	private ArrayList<Army> armies;
 
-	// armies to place on board
-	public int armiesToPlace;
-	public String id;
-	public ArrayList<Territory> territories;
+	public Player(String id, PlayerInterface interfaceMethod) {
+		this.id = id;
+		this.interfaceMethod = interfaceMethod;
+		armies = new ArrayList<Army>();
+	}
 
-	ArrayList<Card> cards;
-	
-	public Player(int armiesToPlace, String id){
-		this.armiesToPlace = armiesToPlace;
-		territories = new ArrayList<Territory>();
-		cards = new ArrayList<Card>();
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
 		this.id = id;
 	}
-	
+
+	public PlayerInterface getInterfaceMethod() {
+		return interfaceMethod;
+	}
+
+	public void setInterfaceMethod(PlayerInterface interfaceMethod) {
+		this.interfaceMethod = interfaceMethod;
+	}
+
+	public void setArmies(ArrayList<Army> armies) {
+		this.armies = armies;
+	}
+
+	public ArrayList<Army> getArmies() {
+		return armies;
+	}
 }

@@ -1,20 +1,116 @@
 package GameEngine;
 
 import GameState.*;
+import GameState.GameBuilders.DemoGame;
+import GameState.StateUtils.ArmyUtils;
+import GameState.StateUtils.MapUtils;
+import GameState.StateUtils.OwnershipUtils;
+import GameState.StateUtils.RuleUtils;
+import PlayerInput.PlayerChoice.CountrySelection;
+import PlayerInput.TextInterface;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 
+import static GameEngine.PlayStates.*;
 
 public abstract class GameEngine {
 
 	// armies assigned to the users at the beginning of the game
 	static int armiesAtTheStart = 5;
 
-	public static void main(String[] argvs){
-		setup();
-		startGame();
-		playGame();
+	public static void play() {
+		PlayStates playState = BEGINNING_STATE;
+		State gameState = new State();
+
+		while (true) {
+			Player curPlayer = gameState.getPlayerQueue().getCurrent();
+
+			switch (playState) {
+
+				case BEGINNING_STATE:
+
+					DemoGame.buildGame(gameState);
+
+					Arbitration.setFirstPlayer(gameState);
+
+					playState = FILLING_EMPTY_COUNTRIES;
+
+					break;
+
+				case FILLING_EMPTY_COUNTRIES:
+
+					HashSet<Territory> emptyTerritories = MapUtils.getUnownedTerritories(gameState);
+
+					ArrayList<Army> playersUndeployedArmies = ArmyUtils.getUndeployedArmies(curPlayer);
+
+					CountrySelection toFill = curPlayer.getInterfaceMethod().getTerritory(curPlayer, emptyTerritories, playersUndeployedArmies);
+
+					OwnershipUtils.deployArmies(toFill.getCountry(), new ArrayList<Army>(playersUndeployedArmies.subList(0, 0)));
+
+					if(!MapUtils.hasEmptyTerritories(gameState)) {
+						playState = USING_REMAINING_ARMIES;
+					}
+
+					gameState.getPlayerQueue().next();
+
+					break;
+
+				case USING_REMAINING_ARMIES:
+
+					HashSet<Territory> usersTerritories = MapUtils.getPlayersTerritories(curPlayer);
+
+					playersUndeployedArmies = ArmyUtils.getUndeployedArmies(curPlayer);
+
+					toFill = curPlayer.getInterfaceMethod().getTerritory(curPlayer, usersTerritories, playersUndeployedArmies);
+
+					OwnershipUtils.deployArmies(toFill.getCountry(), playersUndeployedArmies);
+
+					if(!ArmyUtils.playerHasUndeployedArmies(gameState)) {
+						playState = PLAYER_CONVERTING_CARDS;
+					}
+
+					gameState.getPlayerQueue().next();
+
+					break;
+
+				case PLAYER_CONVERTING_CARDS:
+
+					curPlayer.getInterfaceMethod().getCardOptions();
+
+					RuleUtils.doArmyHandout(gameState, curPlayer);
+
+					playState = PLAYER_PLACING_ARMIES;
+
+					break;
+
+				case PLAYER_PLACING_ARMIES:
+
+					playersUndeployedArmies = ArmyUtils.getUndeployedArmies(curPlayer);
+
+					HashSet<Territory> playersTerritories = MapUtils.getPlayersTerritories(curPlayer);
+
+					if(playersUndeployedArmies.size() == 0) {
+						playState = PLAYER_INVADING_COUNTRY;
+						break;
+					}
+
+					toFill = curPlayer.getInterfaceMethod().getTerritory(curPlayer, playersTerritories, playersUndeployedArmies);
+
+					break;
+
+
+				case PLAYER_INVADING_COUNTRY:
+					break;
+
+				case PLAYER_ENDED_GO:
+					break;
+
+				default:
+					break;
+			}
+		}
 	}
 
 	/**
@@ -34,43 +130,6 @@ public abstract class GameEngine {
 	}
 
 	/**
-	 * Setting the game up. Getting the number of players, creating map
-	 * and all the territories on it. Making all the necessary connections.
-	 *
-	 */
-	private static void setup(){
-		// creating players
-		State.numOfPlayers = UIEngine.getNumOfPlayers();
-		State.players = new ArrayList<Player>();
-		for(int i = 0; i < State.numOfPlayers; i++){
-			State.players.add(new Player(armiesAtTheStart, "State.Player "
-						+ (i + 1)));
-		}
-
-		// creating territories
-		ArrayList<Territory> territories = new ArrayList<Territory>();
-		// adding territories to map
-		for(int i = 0; i<4; i++){
-			Territory territory = new Territory();
-			territories.add(territory);
-		}
-
-		State.map = new Map(territories);
-
-		//add neighbouring territories to each territory
-		State.map.territories.get(0).neighbours.add(State.map.territories.get(1));
-		State.map.territories.get(0).neighbours.add(State.map.territories.get(2));
-		State.map.territories.get(1).neighbours.add(State.map.territories.get(0));
-		State.map.territories.get(1).neighbours.add(State.map.territories.get(3));
-		State.map.territories.get(2).neighbours.add(State.map.territories.get(0));
-		State.map.territories.get(2).neighbours.add(State.map.territories.get(3));
-		State.map.territories.get(3).neighbours.add(State.map.territories.get(1));
-		State.map.territories.get(3).neighbours.add(State.map.territories.get(2));
-
-		State.print();
-	}
-
-	/**
 	 * The players choose their territories and after all territories
 	 * are assigned they place their remaining armies to the territories
 	 * they choose.
@@ -87,7 +146,7 @@ public abstract class GameEngine {
         	player = State.players.get(State.currentPlayer);
         	System.out.println("\n"  + player.id + "\n");
 
-        	territory = State.map.territories.get(UIEngine.getTerritory(player) - 1);
+        	territory = State.map.territories.get(TextInterface.getTerritory(player) - 1);
         	if(territory.player == null){
         		placeArmies(player, 1, territory);
         		assignTerritory(player, territory);
@@ -106,7 +165,7 @@ public abstract class GameEngine {
         	System.out.println("\n"  + player.id);
         	System.out.println("State.Armies to place: " +
         			player.armiesToPlace + "\n");
-        	territory = State.map.territories.get(UIEngine.getTerritory(player) - 1);
+        	territory = State.map.territories.get(TextInterface.getTerritory(player) - 1);
         	if(territory.player == player){
         		placeArmies(player, 1, territory);
         		State.nextPlayer();
@@ -174,13 +233,13 @@ public abstract class GameEngine {
 			//until the user makes a valid choice
 			int choice = -1;
 			while((choice > 3) || (choice < 1)){
-				choice = UIEngine.getInitialChoice();
+				choice = TextInterface.getInitialChoice();
 			}
 
 			// ATTACK decision
 			if(choice == 1){
 				// attackChoice[0] = from, attackChoice[1] = to
-				int attackChoice[] = UIEngine.attackChoice();
+				int attackChoice[] = TextInterface.attackChoice();
 				boolean success = AttackEngine.attack(State.map.territories.get((attackChoice[0] - 1)),
 						State.map.territories.get((attackChoice[1] - 1)));
 				if(success == false){
@@ -194,7 +253,7 @@ public abstract class GameEngine {
 			// MOVING ARMIES decision
 			else if(choice == 2){
 				// moveChoice[0] = from, moveChoice[1] = to, moveChoice[2] = num of units
-				int moveChoice[] = UIEngine.moveChoice();
+				int moveChoice[] = TextInterface.moveChoice();
 				if (!fortifyTerritories(State.players.get(State.currentPlayer),
 						State.map.territories.get(moveChoice[0] - 1),
 						State.map.territories.get(moveChoice[1] - 1),
@@ -229,13 +288,13 @@ public abstract class GameEngine {
 		while(!playerOutOfArmies(player)){
 			State.print();
 
-			ter = State.map.territories.get(UIEngine.getTerritory(player) - 1);
+			ter = State.map.territories.get(TextInterface.getTerritory(player) - 1);
 			if(!player.territories.contains(ter)){
 				System.out.println("\nTHIS IS NOT YOUR TERRITORY.");
 				continue;
 			}
 
-			numOfArmies = UIEngine.getNumOfArmies(player);
+			numOfArmies = TextInterface.getNumOfArmies(player);
 			if(numOfArmies > player.armiesToPlace){
 				System.out.println("\nNOT ENOUGH ARMIES.");
 				continue;

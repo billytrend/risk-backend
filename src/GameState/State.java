@@ -2,46 +2,46 @@ package GameState;
 
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.SimpleGraph;
+import org.jgrapht.traverse.BreadthFirstIterator;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class State {
 
-	private static SimpleGraph<Territory, Border> territories = new SimpleGraph<Territory, Border>();
-	private static ArrayList<Player> players = new ArrayList<Player>();
-	private static final PlayerQueue playerQueue = new PlayerQueue();
+	SimpleGraph<Territory, Border> territories = new SimpleGraph<Territory, Border>(Border.class);
 
-	public static Player getPlayer(int i) {
-		return players.get(i);
+	private ArrayList<Player> players = new ArrayList<Player>();
+
+	private final PlayerQueue playerQueue = new PlayerQueue(this.players);
+
+	ArrayList<Continent> continents = new ArrayList<Continent>();
+
+	public SimpleGraph<Territory, Border> getTerritories() {
+		return territories;
 	}
 
-	public static void addPlayer(Player p) {
-		State.players.add(p);
+	public void setTerritories(SimpleGraph<Territory, Border> territories) {
+		this.territories = territories;
 	}
 
-	public static int countPlayers() {
-		return players.size();
+	public ArrayList<Player> getPlayers() {
+		return players;
 	}
 
-	public static PlayerQueue getPlayerQueue() {
+	public void setPlayers(ArrayList<Player> players) {
+		this.players = players;
+	}
+
+	public PlayerQueue getPlayerQueue() {
 		return playerQueue;
 	}
 
-	public static int countTerritories() {
-		return territories.vertexSet().size();
+	public ArrayList<Continent> getContinents() {
+		return continents;
 	}
 
-	public static List<Territory> getNeighbours(Territory t) {
-		return Graphs.neighborListOf(territories, t);
-	}
-
-	public static void addTerritory(Territory t) {
-		territories.addVertex(t);
-	}
-
-	public static void addBorder(Territory a, Territory b) {
-		territories.addEdge(a, b);
+	public void setContinents(ArrayList<Continent> continents) {
+		this.continents = continents;
 	}
 }

@@ -1,17 +1,19 @@
 package PlayerInput.PlayerChoice;
 
+import GameState.Territory;
+
 /**
  * Created by bt on 29/12/2014.
  */
 public class CountrySelection extends Choice {
 
-    public String country;
+    public Territory country;
 
-    public CountrySelection(String country) {
+    public CountrySelection(Territory country) {
         this.country = country;
     }
 
-    public String getCountry() {
+    public Territory getCountry() {
         return this.country;
     }
 }
