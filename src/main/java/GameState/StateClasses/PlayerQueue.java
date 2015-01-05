@@ -1,4 +1,4 @@
-package GameState;
+package GameState.StateClasses;
 
 import java.util.ArrayList;
 import java.util.Iterator;

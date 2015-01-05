@@ -1,13 +1,12 @@
 package GameState.StateUtils;
 
-import GameState.*;
+import GameState.StateClasses.Army;
+import GameState.StateClasses.Player;
+import GameState.StateClasses.State;
+import GameState.StateClasses.Territory;
 import org.jgrapht.Graphs;
-import org.jgrapht.traverse.BreadthFirstIterator;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by bt on 30/12/2014.

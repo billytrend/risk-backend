@@ -1,6 +1,6 @@
 package GameState.StateUtils;
 
-import GameState.State;
+import GameState.StateClasses.State;
 
 /**
  * Created by bt on 30/12/2014.

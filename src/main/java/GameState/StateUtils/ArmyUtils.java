@@ -1,9 +1,9 @@
 package GameState.StateUtils;
 
-import GameState.Army;
-import GameState.Player;
-import GameState.State;
-import GameState.Territory;
+import GameState.StateClasses.Army;
+import GameState.StateClasses.Player;
+import GameState.StateClasses.State;
+import GameState.StateClasses.Territory;
 
 import java.util.ArrayList;
 

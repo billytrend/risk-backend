@@ -1,16 +1,13 @@
 package GameEngine;
 
 import GameState.Events.FightResult;
-import GameState.State;
+import GameState.StateClasses.State;
 import GameState.StateUtils.StateStats;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
-/**
- * Created by bt on 30/12/2014.
- */
 public class Arbitration {
 
     private static Integer dieThrow(){

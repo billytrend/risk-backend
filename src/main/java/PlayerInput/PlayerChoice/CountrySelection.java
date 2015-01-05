@@ -1,9 +1,6 @@
 package PlayerInput.PlayerChoice;
 
-import GameState.Army;
-import GameState.Territory;
-
-import java.util.ArrayList;
+import GameState.StateClasses.Territory;
 
 /**
  * Created by bt on 29/12/2014.

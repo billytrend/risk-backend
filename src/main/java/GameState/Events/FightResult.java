@@ -1,11 +1,8 @@
 package GameState.Events;
 
-import GameState.Player;
-import GameState.Territory;
+import GameState.StateClasses.Player;
+import GameState.StateClasses.Territory;
 
-/**
- * Created by bt on 30/12/2014.
- */
 public class FightResult {
 
     private int defendersLoss;

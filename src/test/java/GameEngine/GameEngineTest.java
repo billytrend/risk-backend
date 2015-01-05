@@ -1,7 +1,7 @@
 package GameEngine;
 
 import GameState.GameBuilders.DemoGame;
-import GameState.State;
+import GameState.StateClasses.State;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

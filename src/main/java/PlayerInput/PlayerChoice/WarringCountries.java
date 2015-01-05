@@ -1,5 +1,5 @@
 package PlayerInput.PlayerChoice;
-import GameState.Territory;
+import GameState.StateClasses.Territory;
 
 /**
  * Created by bt on 29/12/2014.

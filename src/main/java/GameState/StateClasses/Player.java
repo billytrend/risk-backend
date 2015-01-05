@@ -1,4 +1,4 @@
-package GameState;
+package GameState.StateClasses;
 
 import GameState.StateUtils.ArmyUtils;
 import PlayerInput.PlayerInterface;

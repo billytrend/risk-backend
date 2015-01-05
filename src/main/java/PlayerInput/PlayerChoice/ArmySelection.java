@@ -1,6 +1,6 @@
 package PlayerInput.PlayerChoice;
 
-import GameState.Army;
+import GameState.StateClasses.Army;
 
 import java.util.ArrayList;
 

@@ -1,8 +1,6 @@
-package GameState;
+package GameState.StateClasses;
 
-import org.jgrapht.Graphs;
 import org.jgrapht.graph.SimpleGraph;
-import org.jgrapht.traverse.BreadthFirstIterator;
 
 import java.util.ArrayList;
 

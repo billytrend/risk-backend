@@ -1,6 +1,4 @@
-package GameState;
-
-import GameState.Territory;
+package GameState.StateClasses;
 
 import java.util.ArrayList;
 

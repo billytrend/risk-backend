@@ -1,7 +1,10 @@
 package GameState.StateUtils;
 
-import GameState.*;
 import GameState.Events.FightResult;
+import GameState.StateClasses.Army;
+import GameState.StateClasses.Continent;
+import GameState.StateClasses.Player;
+import GameState.StateClasses.State;
 
 import java.util.ArrayList;
 

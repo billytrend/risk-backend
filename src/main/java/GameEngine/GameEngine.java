@@ -1,14 +1,14 @@
 package GameEngine;
 
-import GameState.Army;
+import GameState.StateClasses.Army;
 import GameState.Events.FightResult;
-import GameState.Player;
-import GameState.State;
+import GameState.StateClasses.Player;
+import GameState.StateClasses.State;
 import GameState.StateUtils.ArmyUtils;
 import GameState.StateUtils.MapUtils;
 import GameState.StateUtils.OwnershipUtils;
 import GameState.StateUtils.RuleUtils;
-import GameState.Territory;
+import GameState.StateClasses.Territory;
 import PlayerInput.PlayerChoice.ArmySelection;
 import PlayerInput.PlayerChoice.CountrySelection;
 import PlayerInput.PlayerChoice.DiceSelection;

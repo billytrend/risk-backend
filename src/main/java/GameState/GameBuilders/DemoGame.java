@@ -1,16 +1,13 @@
 package GameState.GameBuilders;
 
-import GameState.Player;
-import GameState.State;
+import GameState.StateClasses.Player;
+import GameState.StateClasses.State;
 import GameState.StateUtils.MapUtils;
-import GameState.Territory;
+import GameState.StateClasses.Territory;
 import PlayerInput.DumbBotInterface;
 
 import java.util.ArrayList;
 
-/**
- * Created by bt on 30/12/2014.
- */
 public class DemoGame {
 
     public static State buildGame() {

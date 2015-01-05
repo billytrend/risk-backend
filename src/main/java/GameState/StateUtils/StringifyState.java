@@ -1,10 +1,5 @@
 package GameState.StateUtils;
 
-import GameState.Player;
-import GameState.PlayerQueue;
-import GameState.State;
-import GameState.Territory;
-
 /**
  * Created by bt on 30/12/2014.
  */

@@ -1,8 +1,9 @@
 package PlayerInput;
 
-import GameState.Army;
-import GameState.Card;
-import GameState.Territory;
+import GameState.StateClasses.Army;
+import GameState.StateClasses.Card;
+import GameState.StateClasses.Player;
+import GameState.StateClasses.Territory;
 import PlayerInput.PlayerChoice.ArmySelection;
 import PlayerInput.PlayerChoice.CountrySelection;
 import PlayerInput.PlayerChoice.DiceSelection;
@@ -13,7 +14,7 @@ import java.util.Scanner;
 
 public class TextInterface implements PlayerInterface {
 
-	protected void emit(GameState.Player p, String message) {
+	protected void emit(Player p, String message) {
 		System.out.print("[" + p.getId() + "]" + "\t\t");
 		System.out.println(message);
 	}
@@ -31,14 +32,14 @@ public class TextInterface implements PlayerInterface {
 		return a;
 	}
 
-	public DiceSelection getNumberOfDice(GameState.Player player, int max) {
+	public DiceSelection getNumberOfDice(Player player, int max) {
 		emit(player, " how many dice do you want to throw?");
 		int no = easyIn();
 		return new DiceSelection(no);
 	}
 
 
-	public CountrySelection getTerritory(GameState.Player player, HashSet<Territory> possibles) {
+	public CountrySelection getTerritory(Player player, HashSet<Territory> possibles) {
 		ArrayList<Territory> posList = new ArrayList<Territory>(possibles);
 		emit(player, "Please choose a territory");
 		for(int i = 0; i < possibles.size(); i++) {
@@ -48,13 +49,13 @@ public class TextInterface implements PlayerInterface {
 		return new CountrySelection(posList.get(0));
 	}
 
-	public ArmySelection getNumberOfArmies(GameState.Player player, ArrayList<Army> playersUndeployedArmies) {
+	public ArmySelection getNumberOfArmies(Player player, ArrayList<Army> playersUndeployedArmies) {
 		emit(player, "How many armies would you like to move? Max " + playersUndeployedArmies.size());
 //        Integer no = easyIn();
 		return new ArmySelection(playersUndeployedArmies);
 	}
 
-	public void giveCard(GameState.Player player, Card card) {
+	public void giveCard(Player player, Card card) {
 
 	}
 

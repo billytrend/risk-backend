@@ -1,6 +1,6 @@
 package GameState.StateUtils;
 
-import GameState.*;
+import GameState.StateClasses.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;

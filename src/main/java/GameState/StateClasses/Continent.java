@@ -1,12 +1,7 @@
-package GameState;
+package GameState.StateClasses;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
 
-/**
- * Created by bt on 03/01/2015.
- */
 public class Continent {
 
     private final HashSet<Territory> territories;

@@ -10,7 +10,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="2" language="java" name="GameState.Card" project="JH_Project" file="/JH_Project/src/GameState.Card.java" binary="false"
+  <class id="2" language="java" name="GameState.StateClasses.Card" project="JH_Project" file="/JH_Project/src/GameState.StateClasses.Card.java" binary="false"
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="545" y="527"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
@@ -19,7 +19,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="3" language="java" name="GameState.Player" project="JH_Project" file="/JH_Project/src/GameState.Player.java" binary="false"
+  <class id="3" language="java" name="GameState.StateClasses.Player" project="JH_Project" file="/JH_Project/src/GameState.StateClasses.Player.java" binary="false"
     corner="BOTTOM_RIGHT">    
     <position height="95" width="112" x="732" y="185"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
@@ -37,7 +37,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="5" language="java" name="GameState.Territory" project="JH_Project" file="/JH_Project/src/GameState.Territory.java"
+  <class id="5" language="java" name="GameState.StateClasses.Territory" project="JH_Project" file="/JH_Project/src/GameState.StateClasses.Territory.java"
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="831" y="657"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
@@ -46,7 +46,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="6" language="java" name="GameState.Map" project="JH_Project" file="/JH_Project/src/GameState.Map.java" binary="false"
+  <class id="6" language="java" name="GameState.StateClasses.Map" project="JH_Project" file="/JH_Project/src/GameState.StateClasses.Map.java" binary="false"
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1266" y="239"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
@@ -73,7 +73,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <enumeration id="9" language="java" name="GameState.Card.Types" project="JH_Project" file="/JH_Project/src/GameState.Card.java"
+  <enumeration id="9" language="java" name="GameState.StateClasses.Card.Types" project="JH_Project" file="/JH_Project/src/GameState.StateClasses.Card.java"
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="533" y="753"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
