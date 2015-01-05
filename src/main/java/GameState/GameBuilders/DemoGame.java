@@ -1,10 +1,10 @@
 package GameState.GameBuilders;
 
+import GameState.Player;
 import GameState.State;
 import GameState.StateUtils.MapUtils;
 import GameState.Territory;
 import PlayerInput.DumbBotInterface;
-import PlayerInput.TextInterface;
 
 import java.util.ArrayList;
 
@@ -18,9 +18,9 @@ public class DemoGame {
         // creating players
         int numOfPlayers = 4;
         int armiesAtTheStart = 10;
-        ArrayList<GameState.Player> ps = new ArrayList<GameState.Player>();
+        ArrayList<Player> ps = new ArrayList<Player>();
         for(int i = 0; i < numOfPlayers; i++){
-            ps.add(new GameState.Player("Player " + i, new DumbBotInterface(), armiesAtTheStart));
+            ps.add(new Player("Player " + i, new DumbBotInterface(), armiesAtTheStart));
         }
         State state = new State(ps);
 

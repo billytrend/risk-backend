@@ -1,12 +1,14 @@
 package GameEngine;
 
-import GameState.*;
+import GameState.Army;
 import GameState.Events.FightResult;
-import GameState.GameBuilders.DemoGame;
+import GameState.Player;
+import GameState.State;
 import GameState.StateUtils.ArmyUtils;
 import GameState.StateUtils.MapUtils;
 import GameState.StateUtils.OwnershipUtils;
 import GameState.StateUtils.RuleUtils;
+import GameState.Territory;
 import PlayerInput.PlayerChoice.ArmySelection;
 import PlayerInput.PlayerChoice.CountrySelection;
 import PlayerInput.PlayerChoice.DiceSelection;
@@ -16,18 +18,11 @@ import java.util.HashSet;
 
 import static GameEngine.PlayStates.*;
 
+
 public abstract class GameEngine {
 
-	// armies assigned to the users at the beginning of the game
-	static int armiesAtTheStart = 5;
-
-	public static void main(String[] args) {
-		play();
-	}
-
-	public static void play() {
+	public static void play(State gameState) {
 		PlayStates playState = BEGINNING_STATE;
-		State gameState = DemoGame.buildGame();
 		Player curPlayer = null;
 
 		while (true) {
