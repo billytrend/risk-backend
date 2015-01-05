@@ -1,5 +1,7 @@
 # Risk Backend
 
+    When you pull this, make sure maven is install on your computer, run `mvn test` after install
+
 ## Summary
 
 This is where all the centralised magic happens. This includes
