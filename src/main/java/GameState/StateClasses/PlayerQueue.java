@@ -26,6 +26,11 @@ public class PlayerQueue implements Iterator {
     }
 
     @Override
+    public void remove() {
+        
+    }
+    
+    @Override
     public boolean hasNext() {
         return true;
     }
