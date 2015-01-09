@@ -9,13 +9,21 @@ import java.util.Collections;
 import java.util.Random;
 
 public class Arbitration {
-
+    /**
+     * * 
+     * @return
+     */
     private static Integer dieThrow(){
         Random ran = new Random();
         Integer result = ran.nextInt(6) + 1;
         return result;
     }
 
+    /**
+     * * 
+     * @param numOfDice
+     * @return
+     */
     private static Integer[] nDiceThrow(int numOfDice){
         Integer[] result = new Integer[numOfDice];
         for(int i = 0; i < numOfDice; i++){
@@ -24,6 +32,10 @@ public class Arbitration {
         return result;
     }
 
+    /**
+     * * 
+     * @param state
+     */
     public static void setFirstPlayer(State state) {
         Integer noOfPlayers = StateStats.countPlayers(state);
         Random ran = new Random();
@@ -31,6 +43,13 @@ public class Arbitration {
         state.getPlayerQueue().setFirstPlayer(result);
     }
 
+    /**
+     * *
+     * @param result
+     * @param dA
+     * @param dB
+     * @return
+     */
     public static FightResult carryOutFight(FightResult result, int dA, int dB) {
 
         Integer[] attackDice = nDiceThrow(dA);

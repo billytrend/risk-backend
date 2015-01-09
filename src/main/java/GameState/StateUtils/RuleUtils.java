@@ -8,11 +8,13 @@ import GameState.StateClasses.State;
 
 import java.util.ArrayList;
 
-/**
- * Created by bt on 03/01/2015.
- */
 public class RuleUtils {
 
+    /**
+     * *
+     * @param state
+     * @param p
+     */
     public static void doArmyHandout(State state, Player p) {
         int totalHandout = 0;
         // hand out armies for the following reasons
@@ -30,6 +32,10 @@ public class RuleUtils {
     }
 
 
+    /**
+    *
+    * @param res
+    */
     public static void applyFightResult(FightResult res) {
         ArmyUtils.destroyArmies(res.getAttacker(), res.getAttackingTerritory(), res.getAttackersLoss());
         ArmyUtils.destroyArmies(res.getDefender(), res.getDefendingTerritory(), res.getDefendersLoss());

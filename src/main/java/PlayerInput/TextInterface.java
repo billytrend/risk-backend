@@ -32,6 +32,12 @@ public class TextInterface implements PlayerInterface {
 		return a;
 	}
 
+	/**
+	 * * 
+	 * @param player
+	 * @param max
+	 * @return
+	 */
 	public DiceSelection getNumberOfDice(Player player, int max) {
 		emit(player, " how many dice do you want to throw?");
 		int no = easyIn();
@@ -39,26 +45,47 @@ public class TextInterface implements PlayerInterface {
 	}
 
 
+	/**
+	 * *
+	 * @param player
+	 * @param possibles
+	 * @return
+	 */
 	public CountrySelection getTerritory(Player player, HashSet<Territory> possibles) {
 		ArrayList<Territory> posList = new ArrayList<Territory>(possibles);
 		emit(player, "Please choose a territory");
 		for(int i = 0; i < possibles.size(); i++) {
 			emit(player,  "\t" + i + ". " + posList.get(i).getId());
 		}
-//        int n = easyIn();
+		//        int n = easyIn();
 		return new CountrySelection(posList.get(0));
 	}
 
+	/**
+	 *
+	 * @param player
+	 * @param playersUndeployedArmies
+	 * @return
+	 */
 	public ArmySelection getNumberOfArmies(Player player, ArrayList<Army> playersUndeployedArmies) {
 		emit(player, "How many armies would you like to move? Max " + playersUndeployedArmies.size());
-//        Integer no = easyIn();
+		//        Integer no = easyIn();
 		return new ArmySelection(playersUndeployedArmies);
 	}
 
+	/**
+	 *
+	 * @param player
+	 * @param card
+	 */
 	public void giveCard(Player player, Card card) {
 
 	}
 
+	/**
+	 *
+	 * * @return
+	 */
 	public Object getCardOptions() {
 		return null;
 	}

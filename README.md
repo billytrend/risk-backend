@@ -45,8 +45,12 @@ The tests are in 'src/test/java/'. There's only one right now.
 
 ## TODO
 
-* Write loadsa tests
-* Develop AIs
-* Finish game implementation
-* Add websocket support
-* Finish front-end (in a separate repository)
+TODO: Write loadsa tests
+TODO: Develop AIs
+TODO: Finish game implementation
+TODO: Add websocket support
+TODO: Finish front-end (in a separate repository)
+TODO: allow maps to be parsed form JSON
+TODO: design a lobby which players can use to join, create games etc.
+TODO: Add more todos
+TODO:

@@ -21,6 +21,10 @@ import static GameEngine.PlayStates.*;
 
 public abstract class GameEngine {
 
+	/**
+	 * *
+	 * @param gameState
+	 */
 	public static void play(State gameState) {
 		PlayStates playState = BEGINNING_STATE;
 		Player curPlayer = null;
@@ -33,7 +37,6 @@ public abstract class GameEngine {
 
 
 					Arbitration.setFirstPlayer(gameState);
-
 					curPlayer = gameState.getPlayerQueue().getCurrent();
 
 					playState = FILLING_EMPTY_COUNTRIES;
