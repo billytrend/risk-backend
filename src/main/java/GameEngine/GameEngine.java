@@ -19,14 +19,28 @@ import java.util.HashSet;
 import static GameEngine.PlayStates.*;
 
 
-public abstract class GameEngine {
+public class GameEngine implements Runnable {
+
+	private State gameState;
+	
+	public GameEngine(State state) {
+		this.gameState = state;
+	}
+	
+	@Override
+	public void run() {
+		try {
+			play();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * This is essentially the game loop. It acts a bit like a finite state machine
 	 * 'PlayStates' are the states and each loop looks up the current state in the switch statement.
-	 * @param gameState
 	 */
-	public static void play(State gameState) throws InterruptedException, NullPointerException {
+	private void play() throws InterruptedException, NullPointerException {
 		PlayStates playState = BEGINNING_STATE;
 		Player curPlayer = null;
 

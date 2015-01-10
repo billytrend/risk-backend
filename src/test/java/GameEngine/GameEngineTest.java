@@ -22,6 +22,7 @@ public class GameEngineTest {
     @Test
     public void testDumbBot() throws Exception {
         State gameState = DemoGame.buildGame();
-        GameEngine.play(gameState);
+        GameEngine gameThr = new GameEngine(gameState);
+        gameThr.run();
     }
 }
