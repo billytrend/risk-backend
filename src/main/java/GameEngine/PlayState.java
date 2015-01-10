@@ -1,6 +1,6 @@
 package GameEngine;
 
-public enum PlayStates {
+public enum PlayState {
     BEGINNING_STATE,
     FILLING_EMPTY_COUNTRIES,
     USING_REMAINING_ARMIES,

@@ -12,15 +12,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.CountDownLatch;
 
-public class PlayerConnection implements PlayerInterface {
+public class PlayerConnection implements PlayerInterface  {
     
     private Player playerState;
     private WebSocket connection;
     private CountDownLatch waiter = null;
     private Choice mostRecentChoice = null;
 
-    public PlayerConnection(String id, WebSocket connection) {
-        this.playerState = new Player(id, this, 0);
+    public PlayerConnection(WebSocket connection) {
+        this.playerState = new Player(this, 0);
         this.connection = connection;
     }
 

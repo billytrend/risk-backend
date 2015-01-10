@@ -17,7 +17,7 @@ public class DemoGame {
         int armiesAtTheStart = 10;
         ArrayList<Player> ps = new ArrayList<Player>();
         for(int i = 0; i < numOfPlayers; i++){
-            ps.add(new Player("Player " + i, new DumbBotInterface(), armiesAtTheStart));
+            ps.add(new Player(new DumbBotInterface(), armiesAtTheStart));
         }
         State state = new State(ps);
 

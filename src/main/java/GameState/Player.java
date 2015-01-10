@@ -8,12 +8,11 @@ import java.util.ArrayList;
 
 public class Player {
 
-	private String id;
+	private String id = "Player " + this.hashCode();;
 	PlayerInterface interfaceMethod;
 	private ArrayList<Army> armies;
 
-	public Player(String id, PlayerInterface interfaceMethod, int startingArmies) {
-		this.id = id;
+	public Player(PlayerInterface interfaceMethod, int startingArmies) {
 		this.interfaceMethod = interfaceMethod;
 		armies = new ArrayList<Army>();
 		ArmyUtils.givePlayerNArmies(this, startingArmies);
