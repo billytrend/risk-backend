@@ -1,3 +1,5 @@
+!! have rearranged package paths since this was written so some of it is out of date.
+
 # Risk Backend
 
     When you pull this, make sure maven is install on your computer, run `mvn test` after install

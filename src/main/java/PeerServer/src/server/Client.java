@@ -1,7 +1,7 @@
 /**
  * 
  */
-package Server;
+package PeerServer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.net.UnknownHostException;
 
 /**
  * @author 120011995
- * @category Class which acts as a client to connect to the multi-threaded Server specified in Server class
+ * @category Class which acts as a client to connect to the multi-threaded PeerServer specified in PeerServer class
  */
 public class Client {
 	
@@ -24,16 +24,16 @@ public class Client {
 
 	/**
 	 * Method which creates client connections and 
-	 * communicates messages to Server class.
+	 * communicates messages to PeerServer class.
 	 */
 	public void clientConnection(String clientName){
 		int port = 4444;
 		try {
-			//create Client Socket and writer to used to send info to Server
+			//create Client Socket and writer to used to send info to PeerServer
 			Socket clientSocket = new Socket("localhost", port);
 			PrintWriter clientWriter = new PrintWriter(clientSocket.getOutputStream(), true);
 			BufferedReader clientReader = new BufferedReader(new InputStreamReader(System.in));
-			//loop to retrieve user data and then send to Server
+			//loop to retrieve user data and then send to PeerServer
 			while(true){
 				String readerInput = clientReader.readLine();
 				clientWriter.println(clientName + " :" + readerInput);

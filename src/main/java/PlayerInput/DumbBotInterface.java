@@ -59,7 +59,6 @@ public class DumbBotInterface implements PlayerInterface {
         return this;
     }
 
-
     public DumbBotInterface getTerritory(Player player, HashSet<Territory> possibles) {
         ArrayList<Territory> posList = new ArrayList<Territory>(possibles);
         emit(player, "Please choose a territory");

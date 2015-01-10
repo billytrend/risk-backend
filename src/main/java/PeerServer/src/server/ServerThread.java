@@ -1,7 +1,7 @@
 /**
  * 
  */
-package Server;
+package PeerServer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.net.Socket;
 /**
  * @author 120011995
  * @category Class to implement multithreading in TCP 
- * 			 Server
+ * 			 PeerServer
  */
 public class ServerThread extends Thread {
 	Socket socket;

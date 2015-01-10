@@ -1,7 +1,7 @@
 /**
  * 
  */
-package Server.src.protocol;
+package PeerServer.src.protocol;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
