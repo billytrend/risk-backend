@@ -1,10 +1,9 @@
 package GameUtils;
 
-import GameUtils.Events.FightResult;
-import GameState.Army;
 import GameState.Continent;
 import GameState.Player;
 import GameState.State;
+import GameUtils.Events.FightResult;
 
 import java.util.ArrayList;
 
@@ -42,8 +41,7 @@ public class RuleUtils {
 
         // if country defeated then move minimum armies across
         if (ArmyUtils.getNumberOfArmiesOnTerritory(res.getDefender(), res.getDefendingTerritory()) == 0) {
-            ArrayList<Army> armiesToMove = new ArrayList<Army>(ArmyUtils.getArmiesOnTerritory(res.getAttacker(), res.getAttackingTerritory()).subList(0, res.getAttackDiceRolled().length));
-            ArmyUtils.moveArmies(res.getDefendingTerritory(), armiesToMove);
+            ArmyUtils.moveArmies(res.getAttacker(), res.getAttackingTerritory(), res.getDefendingTerritory(), res.getAttackDiceRolled().length);
         }
     }
 }

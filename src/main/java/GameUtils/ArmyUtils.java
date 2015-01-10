@@ -98,10 +98,11 @@ public class ArmyUtils {
     /**
      *
      * @param target
-     * @param armies
+     * @param n
      */
-    public static void moveArmies(Territory target, ArrayList<Army> armies) {
-        for(Army a : armies) {
+    public static void moveArmies(Player sourceOwner, Territory source, Territory target, int n) {
+        ArrayList<Army> toMove = new ArrayList<Army>(getArmiesOnTerritory(sourceOwner, source).subList(0, n));
+        for(Army a : toMove) {
             a.setTerritory(target);
         }
     }
@@ -109,11 +110,16 @@ public class ArmyUtils {
     /**
      * *
      * @param target
-     * @param deployments
+     * @param n
      */
-    public static void deployArmies(Territory target, ArrayList<Army> deployments) {
-        for (Army a : deployments) {
+    public static void deployArmies(Player player, Territory target, int n) {
+        ArrayList<Army> toDeploy = new ArrayList<Army>(getUndeployedArmies(player).subList(0, n));
+        for (Army a : toDeploy) {
             a.setTerritory(target);
         }
+    }
+    
+    public static int getNumberOfMoveableArmies(Player p, Territory source) {
+        return getNumberOfArmiesOnTerritory(p, source) - 1;
     }
 }

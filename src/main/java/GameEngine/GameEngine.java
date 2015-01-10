@@ -24,6 +24,7 @@ public class GameEngine implements Runnable {
 	private State gameState;
 	private Player currentPlayer;
 	private PlayState playState = BEGINNING_STATE;
+	private
 
 	public GameEngine(State state) {
 		this.gameState = state;
@@ -118,41 +119,58 @@ public class GameEngine implements Runnable {
 		CountrySelection toFill = (CountrySelection) currentPlayer.getInterfaceMethod().getTerritory(currentPlayer, emptyTerritories).await();
 
 		// deploy a single army in this place
-		ArmyUtils.deployArmies(toFill.getCountry(), new ArrayList<Army>(playersUndeployedArmies.subList(0, 1)));
+		ArmyUtils.deployArmies(currentPlayer, toFill.getCountry(), 1);
 
+		endGo();
 
 		if (!TerritoryUtils.hasEmptyTerritories(gameState)) {
 			return USING_REMAINING_ARMIES;
 		}
-
-		endGo();
 
 		return FILLING_EMPTY_COUNTRIES;
 
 	}
 
 	private PlayState useARemainingArmy() {
-		HashSet<Territory> usersTerritories = TerritoryUtils.getPlayersTerritories(currentPlayer);
 
+		// get a list of a players undeployed armies
 		ArrayList<Army> playersUndeployedArmies = ArmyUtils.getUndeployedArmies(currentPlayer);
+		
+		// check player has undeployed armies
+		if (playersUndeployedArmies.size() == 0) {
 
-		CountrySelection toFill = (CountrySelection) currentPlayer.getInterfaceMethod().getTerritory(currentPlayer, usersTerritories).await();
+			endGo();
 
-		ArmySelection toDeploy = (ArmySelection) currentPlayer.getInterfaceMethod().getNumberOfArmies(currentPlayer, playersUndeployedArmies).await();
-
-		ArmyUtils.deployArmies(toFill.getCountry(), toDeploy.getArmies());
-
-		if (!ArmyUtils.somePlayerHasUndeployedArmies(gameState)) {
-			return PLAYER_CONVERTING_CARDS;
+			// check if any players have undeployed armies
+			if (!ArmyUtils.somePlayerHasUndeployedArmies(gameState)) {
+				return PLAYER_CONVERTING_CARDS;
+			}
+			
+			// keep going for the sake of the player who still has remaining armies
+			return USING_REMAINING_ARMIES;
 		}
 
-		endGo();
+		// get a list of the players territories
+		HashSet<Territory> usersTerritories = TerritoryUtils.getPlayersTerritories(currentPlayer);
+		
+		// ask a player what country they want to pic
+		CountrySelection toFill = (CountrySelection) currentPlayer.getInterfaceMethod().getTerritory(currentPlayer, usersTerritories).await();
 
+		// deploy the armies
+		ArmyUtils.deployArmies(currentPlayer, toFill.getCountry(), 1);
+		
+		endGo();
+		
 		return USING_REMAINING_ARMIES;
 
 	}
 
+	/**
+	 * TODO: all things card related!!
+	 * @return
+	 */
 	private PlayState convertCards() {
+		
 		currentPlayer.getInterfaceMethod().getCardOptions();
 
 		RuleUtils.doArmyHandout(gameState, currentPlayer);
@@ -163,63 +181,66 @@ public class GameEngine implements Runnable {
 
 	private PlayState placeArmy() {
 
+		// get a list of players undeployed armies
 		ArrayList<Army> playersUndeployedArmies = ArmyUtils.getUndeployedArmies(currentPlayer);
 
-		HashSet<Territory> playersTerritories = TerritoryUtils.getPlayersTerritories(currentPlayer);
-
+		// check if player has any armys left to place
 		if (playersUndeployedArmies.size() == 0) {
 			return PLAYER_INVADING_COUNTRY;
 		}
 
+		// get players territories
+		HashSet<Territory> playersTerritories = TerritoryUtils.getPlayersTerritories(currentPlayer);
+		
+		// find out which country the player wants to place in
 		CountrySelection toFill = (CountrySelection) currentPlayer.getInterfaceMethod().getTerritory(currentPlayer, playersTerritories).await();
 
-		ArmySelection toDeploy = (ArmySelection) currentPlayer.getInterfaceMethod().getNumberOfArmies(currentPlayer, playersUndeployedArmies).await();
+		// find out how many armies the player want to deploy there 
+		ArmySelection toDeploy = (ArmySelection) currentPlayer.getInterfaceMethod().getNumberOfArmies(currentPlayer, playersUndeployedArmies.size()).await();
 
-		ArmyUtils.deployArmies(toFill.getCountry(), toDeploy.getArmies());
+		// do the deployment!
+		ArmyUtils.deployArmies(currentPlayer, toFill.getCountry(), toDeploy.getArmies());
 
 		return PLAYER_PLACING_ARMIES;
-
 	}
 
 	private PlayState invadeCountry() {
 
+		// get the territories of the current player
 		HashSet<Territory> playersTerritories = TerritoryUtils.getPlayersTerritories(currentPlayer);
+		// find out which country the player wants to attack from
 		CountrySelection attacking = (CountrySelection) currentPlayer.getInterfaceMethod().getTerritory(currentPlayer, playersTerritories).await();
-		if (attacking.isEndGo()) {
-			return PLAYER_MOVING_ARMIES;
-		}
 
+		// get the enemy neighbours of the country
+		HashSet<Territory> attackable = TerritoryUtils.getEnemyNeighbours(gameState, attacking.getCountry(), currentPlayer);
+		// ask the player which country he wants to attack
+		CountrySelection defending = (CountrySelection) currentPlayer.getInterfaceMethod().getTerritory(currentPlayer, attackable).await();
+		// find out who owns this fated land
+		Player defendingPlayer = PlayerUtils.getTerritoryOwner(gameState, defending.getCountry());
+
+		// work out the max number of armies that may attack and how many may defend as per rules
 		int attackingArmies = ArmyUtils.getNumberOfArmiesOnTerritory(currentPlayer, attacking.getCountry());
 		int maxAttackingDice = attackingArmies > 3 ? 3 : attackingArmies - 1;
-
-		HashSet<Territory> attackable = TerritoryUtils.getEnemyNeighbours(gameState, attacking.getCountry(), currentPlayer);
-		CountrySelection defending = (CountrySelection) currentPlayer.getInterfaceMethod().getTerritory(currentPlayer, attackable).await();
-		if (defending.isEndGo()) {
-			return PLAYER_MOVING_ARMIES;
-		}
-		Player defendingPlayer = PlayerUtils.getTerritoryOwner(gameState, defending.getCountry());
 		int defendingArmies = ArmyUtils.getNumberOfArmiesOnTerritory(defendingPlayer, defending.getCountry());
 		int maxDefendingDice = defendingArmies > 2 ? 2 : defendingArmies;
 
+		// ask the players how many they would like to use
 		DiceSelection attackDice = (DiceSelection) currentPlayer.getInterfaceMethod().getNumberOfDice(currentPlayer, maxAttackingDice).await();
-		if (attackDice.isEndGo()) {
-			return PLAYER_MOVING_ARMIES;
-		}
 		DiceSelection defendDice = (DiceSelection) defendingPlayer.getInterfaceMethod().getNumberOfDice(defendingPlayer, maxDefendingDice).await();
 
+		// create an object to represent the fight
 		FightResult result = new FightResult(currentPlayer, defendingPlayer, attacking.getCountry(), defending.getCountry());
+		// decide the results of the fight
 		Arbitration.carryOutFight(result, attackDice.getNumberOfDice(), defendDice.getNumberOfDice());
+		// apply the results of the fight
 		RuleUtils.applyFightResult(result);
 
-		// if there are still surplus armies, give the option to move them
-		ArrayList<Army> remainingAttackArmies = ArmyUtils.getArmiesOnTerritory(currentPlayer, attacking.getCountry());
-		ArrayList<Army> moveableArmies = new ArrayList<Army>(remainingAttackArmies.subList(1, remainingAttackArmies.size()));
-		if (remainingAttackArmies.size() > 1) {
-			ArmySelection toMove = (ArmySelection) currentPlayer.getInterfaceMethod().getNumberOfArmies(currentPlayer, moveableArmies).await();
-			if (attacking.isEndGo()) {
-				return PLAYER_MOVING_ARMIES;
-			}
-			ArmyUtils.moveArmies(result.getDefendingTerritory(), toMove.getArmies());
+		// if the attacking player won and they still have surplus armies, give the option to move them
+		if(result.getDefendersLoss() == defendingArmies && (attackingArmies - result.getAttackersLoss() - attackDice.getNumberOfDice()) > 1) {
+			ArrayList<Army> remainingAttackArmies = ArmyUtils.getArmiesOnTerritory(currentPlayer, attacking.getCountry());
+			ArrayList<Army> moveableArmies = new ArrayList<Army>(remainingAttackArmies.subList(1, remainingAttackArmies.size()));
+			ArmySelection toMove = (ArmySelection) currentPlayer.getInterfaceMethod().getNumberOfArmies(currentPlayer, moveableArmies.size()).await();
+			ArmyUtils.moveArmies(result.getAttacker(), result.getDefendingTerritory(), result.getAttackingTerritory(), toMove.getArmies());
 		}
 
 		return PLAYER_INVADING_COUNTRY;
@@ -227,23 +248,24 @@ public class GameEngine implements Runnable {
 	}
 
 	private PlayState moveArmy() {
+		// get a list of territories a player can deploy from
 		HashSet<Territory> canBeDeployedFrom = TerritoryUtils.getTerritoriesWithMoreThanOneArmy(currentPlayer);
+		// find out which one the player wants to move from
 		CountrySelection source = (CountrySelection) currentPlayer.getInterfaceMethod().getTerritory(currentPlayer, canBeDeployedFrom);
-		if (source.isEndGo()) {
-			return PLAYER_ENDED_GO;
-		}
 
+		// get a list of territories a player can deploy too
 		HashSet<Territory> canBeDeployedTo = TerritoryUtils.getFriendlyNeighbours(gameState, source.getCountry(), currentPlayer);
+		// get the choice made
 		CountrySelection target = (CountrySelection) currentPlayer.getInterfaceMethod().getTerritory(currentPlayer, canBeDeployedTo);
-		if (target.isEndGo()) {
-			return PLAYER_ENDED_GO;
-		}
 
+		int numberOfArmiesThatMayBeMoved = ArmyUtils.getNumberOfMoveableArmies(currentPlayer, source.getCountry());
+		
+		
 		return PLAYER_MOVING_ARMIES;
 	}
 
 	private PlayState endGo() {
-		gameState.getPlayerQueue().next();
+		currentPlayer = gameState.getPlayerQueue().next();
 
 		return PLAYER_CONVERTING_CARDS;
 

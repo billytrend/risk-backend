@@ -1,12 +1,10 @@
 package PlayerInput;
 
-import GameState.Army;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
 import PlayerInput.PlayerChoice.Choice;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.CountDownLatch;
 
@@ -43,10 +41,10 @@ public interface PlayerInterface {
     /**
      *
      * @param player
-     * @param playersUndeployedArmies
+     * @param max
      * @return
      */
-    public PlayerInterface getNumberOfArmies(Player player, ArrayList<Army> playersUndeployedArmies);
+    public PlayerInterface getNumberOfArmies(Player player, int max);
 
     /**
      *

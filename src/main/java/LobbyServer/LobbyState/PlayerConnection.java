@@ -1,6 +1,5 @@
 package LobbyServer.LobbyState;
 
-import GameState.Army;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
@@ -8,7 +7,6 @@ import PlayerInput.PlayerChoice.Choice;
 import PlayerInput.PlayerInterface;
 import org.java_websocket.WebSocket;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.CountDownLatch;
 
@@ -64,7 +62,7 @@ public class PlayerConnection implements PlayerInterface  {
     }
 
     @Override
-    public PlayerConnection getNumberOfArmies(Player player, ArrayList<Army> playersUndeployedArmies) {
+    public PlayerConnection getNumberOfArmies(Player player, int playersUndeployedArmies) {
         return getWaiter();
     }
 

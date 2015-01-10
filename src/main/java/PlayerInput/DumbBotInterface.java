@@ -1,6 +1,5 @@
 package PlayerInput;
 
-import GameState.Army;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
@@ -70,10 +69,10 @@ public class DumbBotInterface implements PlayerInterface {
         return this;
     }
 
-    public DumbBotInterface getNumberOfArmies(Player player, ArrayList<Army> playersUndeployedArmies) {
-        emit(player, "How many armies would you like to move? Max " + playersUndeployedArmies.size());
-        emit(player, "Chose " + playersUndeployedArmies.size());
-        this.lastChoice = new ArmySelection(playersUndeployedArmies);
+    public DumbBotInterface getNumberOfArmies(Player player, int max) {
+        emit(player, "How many armies would you like to move? Max " + max);
+        emit(player, "Chose " + max);
+        this.lastChoice = new ArmySelection(max);
         return this;
     }
 
