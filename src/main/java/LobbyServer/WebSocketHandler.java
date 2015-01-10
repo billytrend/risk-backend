@@ -15,6 +15,18 @@ import java.util.Collection;
  */
 public class WebSocketHandler extends WebSocketServer {
 
+    public static void main( String[] args ) throws InterruptedException , IOException {
+        WebSocketImpl.DEBUG = true;
+        int port = 8887; // 843 flash policy port
+        try {
+            port = Integer.parseInt( args[ 0 ] );
+        } catch ( Exception ex ) {
+        }
+        WebSocketHandler s = new WebSocketHandler( port );
+        s.start();
+        System.out.println( "ChatServer started on port: " + s.getPort() );
+    }
+
     public WebSocketHandler( int port ) throws UnknownHostException {
         super( new InetSocketAddress( port ) );
     }
@@ -41,22 +53,6 @@ public class WebSocketHandler extends WebSocketServer {
         System.out.println( conn + ": " + message );
     }
 
-//    @Override
-//    public void onFragment( WebSocket conn, Framedata fragment ) {
-//        System.out.println( "received fragment: " + fragment );
-//    }
-
-    public static void main( String[] args ) throws InterruptedException , IOException {
-        WebSocketImpl.DEBUG = true;
-        int port = 8887; // 843 flash policy port
-        try {
-            port = Integer.parseInt( args[ 0 ] );
-        } catch ( Exception ex ) {
-        }
-        WebSocketHandler s = new WebSocketHandler( port );
-        s.start();
-        System.out.println( "ChatServer started on port: " + s.getPort() );
-    }
     @Override
     public void onError( WebSocket conn, Exception ex ) {
         ex.printStackTrace();

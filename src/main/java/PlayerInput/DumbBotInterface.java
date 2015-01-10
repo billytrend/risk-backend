@@ -5,12 +5,14 @@ import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
 import PlayerInput.PlayerChoice.ArmySelection;
+import PlayerInput.PlayerChoice.Choice;
 import PlayerInput.PlayerChoice.CountrySelection;
 import PlayerInput.PlayerChoice.DiceSelection;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
+import java.util.concurrent.CountDownLatch;
 
 public class DumbBotInterface implements PlayerInterface {
 
@@ -31,36 +33,57 @@ public class DumbBotInterface implements PlayerInterface {
         a = in.nextInt();
         return a;
     }
+    
+    private Choice lastChoice = null;
+    private CountDownLatch waiter = null;
 
-    public DiceSelection getNumberOfDice(Player player, int max) {
+    @Override
+    public Choice getChoice() {
+        return lastChoice;
+    }
+
+    @Override
+    public Choice await() {
+        return lastChoice;
+    }
+
+    @Override
+    public void setChoice(Choice ch) {
+
+    }
+
+    public DumbBotInterface getNumberOfDice(Player player, int max) {
         emit(player, " how many dice do you want to throw?");
         emit(player, "Chose " + max);
-        return new DiceSelection(max);
+        this.lastChoice = new DiceSelection(max);
+        return this;
     }
 
 
-    public CountrySelection getTerritory(Player player, HashSet<Territory> possibles) {
+    public DumbBotInterface getTerritory(Player player, HashSet<Territory> possibles) {
         ArrayList<Territory> posList = new ArrayList<Territory>(possibles);
         emit(player, "Please choose a territory");
         for(int i = 0; i < possibles.size(); i++) {
             emit(player,  "\t" + i + ". " + posList.get(i).getId());
         }
         emit(player, "Chose 0");
-        return new CountrySelection(posList.get(0));
+        this.lastChoice = new CountrySelection(posList.get(0));
+        return this;
     }
 
-    public ArmySelection getNumberOfArmies(Player player, ArrayList<Army> playersUndeployedArmies) {
+    public DumbBotInterface getNumberOfArmies(Player player, ArrayList<Army> playersUndeployedArmies) {
         emit(player, "How many armies would you like to move? Max " + playersUndeployedArmies.size());
         emit(player, "Chose " + playersUndeployedArmies.size());
-        return new ArmySelection(playersUndeployedArmies);
+        this.lastChoice = new ArmySelection(playersUndeployedArmies);
+        return this;
     }
 
-    public void giveCard(Player player, Card card) {
-
+    public DumbBotInterface giveCard(Player player, Card card) {
+        return this;
     }
 
-    public Object getCardOptions() {
-        return null;
+    public DumbBotInterface getCardOptions() {
+        return this;
     }
 
 }

@@ -54,6 +54,15 @@ public class PlayerUtils {
      * @return
      */
      public static int countPlayers(State state) {
-     return state.getPlayers().size();
+        return state.getPlayers().size();
      }
+
+    /**
+     * *
+     * @param p
+     * @return
+     */
+    public static boolean playerIsOut(Player p) {
+        return getNumberOfTerritoriesOwned(p) < 1;
+    }
 }

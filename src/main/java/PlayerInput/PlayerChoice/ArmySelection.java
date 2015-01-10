@@ -4,9 +4,6 @@ import GameState.Army;
 
 import java.util.ArrayList;
 
-/**
- * Created by bt on 30/12/2014.
- */
 public class ArmySelection extends Choice {
 
     private final ArrayList<Army> armies;

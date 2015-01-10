@@ -3,7 +3,7 @@ package GameUtils;
 /**
  * Created by bt on 30/12/2014.
  */
-public class StringifyState {
+public class Serialiser {
 
 //    /**
 //     * Printing the current state of the game to the console.
