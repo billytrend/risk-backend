@@ -1,9 +1,9 @@
-package GameState.GameBuilders;
+package GameBuilders;
 
-import GameState.StateClasses.Player;
-import GameState.StateClasses.State;
-import GameState.StateUtils.MapUtils;
-import GameState.StateClasses.Territory;
+import GameState.Player;
+import GameState.State;
+import GameUtils.TerritoryUtils;
+import GameState.Territory;
 import PlayerInput.DumbBotInterface;
 
 import java.util.ArrayList;
@@ -27,17 +27,17 @@ public class DemoGame {
         Territory demoLandC = new Territory("someplace");
         Territory demoLandD = new Territory("otherplace");
 
-        MapUtils.addTerritory(state, demoLandA);
-        MapUtils.addTerritory(state, demoLandB);
-        MapUtils.addTerritory(state, demoLandC);
-        MapUtils.addTerritory(state, demoLandD);
+        TerritoryUtils.addTerritory(state, demoLandA);
+        TerritoryUtils.addTerritory(state, demoLandB);
+        TerritoryUtils.addTerritory(state, demoLandC);
+        TerritoryUtils.addTerritory(state, demoLandD);
 
         //add neighbouring territories to each territory
-        MapUtils.addBorder(state, demoLandA, demoLandB);
-        MapUtils.addBorder(state, demoLandA, demoLandD);
-        MapUtils.addBorder(state, demoLandB, demoLandC);
-        MapUtils.addBorder(state, demoLandC, demoLandD);
-        MapUtils.addBorder(state, demoLandD, demoLandB);
+        TerritoryUtils.addBorder(state, demoLandA, demoLandB);
+        TerritoryUtils.addBorder(state, demoLandA, demoLandD);
+        TerritoryUtils.addBorder(state, demoLandB, demoLandC);
+        TerritoryUtils.addBorder(state, demoLandC, demoLandD);
+        TerritoryUtils.addBorder(state, demoLandD, demoLandB);
 
         return state;
 

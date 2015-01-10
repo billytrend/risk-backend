@@ -1,14 +1,14 @@
-package GameState.StateUtils;
+package GameUtils;
 
-import GameState.StateClasses.Army;
-import GameState.StateClasses.Player;
-import GameState.StateClasses.State;
-import GameState.StateClasses.Territory;
+import GameState.Army;
+import GameState.Player;
+import GameState.State;
+import GameState.Territory;
 import org.jgrapht.Graphs;
 
 import java.util.HashSet;
 
-public class MapUtils {
+public class TerritoryUtils {
 
     /**
      *  *
@@ -113,4 +113,13 @@ public class MapUtils {
     public static void addBorder(State state, Territory a, Territory b) {
         state.getTerritories().addEdge(a, b);
     }
+
+    /**
+    *
+    * * @param state
+    * @return
+    */
+   public static int countTerritories(State state) {
+       return getAllTerritories(state).size();
+   }
 }

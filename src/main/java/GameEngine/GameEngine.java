@@ -1,14 +1,14 @@
 package GameEngine;
 
-import GameState.StateClasses.Army;
-import GameState.Events.FightResult;
-import GameState.StateClasses.Player;
-import GameState.StateClasses.State;
-import GameState.StateUtils.ArmyUtils;
-import GameState.StateUtils.MapUtils;
-import GameState.StateUtils.OwnershipUtils;
-import GameState.StateUtils.RuleUtils;
-import GameState.StateClasses.Territory;
+import GameState.Army;
+import GameUtils.Events.FightResult;
+import GameState.Player;
+import GameState.State;
+import GameUtils.ArmyUtils;
+import GameUtils.TerritoryUtils;
+import GameUtils.PlayerUtils;
+import GameUtils.RuleUtils;
+import GameState.Territory;
 import PlayerInput.PlayerChoice.ArmySelection;
 import PlayerInput.PlayerChoice.CountrySelection;
 import PlayerInput.PlayerChoice.DiceSelection;
@@ -22,7 +22,8 @@ import static GameEngine.PlayStates.*;
 public abstract class GameEngine {
 
 	/**
-	 * *
+	 * This is essentially the game loop. It acts a bit like a finite state machine
+	 * 'PlayStates' are the states and each loop looks up the current state in the switch statement.
 	 * @param gameState
 	 */
 	public static void play(State gameState) {
@@ -35,25 +36,31 @@ public abstract class GameEngine {
 
 				case BEGINNING_STATE:
 
-
+					// set first player
 					Arbitration.setFirstPlayer(gameState);
+					// record this in the state
 					curPlayer = gameState.getPlayerQueue().getCurrent();
-
+					// move to first stage
 					playState = FILLING_EMPTY_COUNTRIES;
 
 					break;
 
 				case FILLING_EMPTY_COUNTRIES:
 
-					HashSet<Territory> emptyTerritories = MapUtils.getUnownedTerritories(gameState);
-
+					// get a list of empty territories avaiable
+					HashSet<Territory> emptyTerritories = TerritoryUtils.getUnownedTerritories(gameState);
+					
+					// get a list of cur players undeployed armies
 					ArrayList<Army> playersUndeployedArmies = ArmyUtils.getUndeployedArmies(curPlayer);
-
+					
+					// ask player what country they'd like to choose
 					CountrySelection toFill = curPlayer.getInterfaceMethod().getTerritory(curPlayer, emptyTerritories);
+					
+					// deploy a single army in this place
+					ArmyUtils.deployArmies(toFill.getCountry(), new ArrayList<Army>(playersUndeployedArmies.subList(0, 1)));
 
-					OwnershipUtils.deployArmies(toFill.getCountry(), new ArrayList<Army>(playersUndeployedArmies.subList(0, 1)));
-
-					if(!MapUtils.hasEmptyTerritories(gameState)) {
+					
+					if(!TerritoryUtils.hasEmptyTerritories(gameState)) {
 						playState = USING_REMAINING_ARMIES;
 					}
 
@@ -63,7 +70,7 @@ public abstract class GameEngine {
 
 				case USING_REMAINING_ARMIES:
 
-					HashSet<Territory> usersTerritories = MapUtils.getPlayersTerritories(curPlayer);
+					HashSet<Territory> usersTerritories = TerritoryUtils.getPlayersTerritories(curPlayer);
 
 					playersUndeployedArmies = ArmyUtils.getUndeployedArmies(curPlayer);
 
@@ -71,7 +78,7 @@ public abstract class GameEngine {
 
 					ArmySelection toDeploy = curPlayer.getInterfaceMethod().getNumberOfArmies(curPlayer, playersUndeployedArmies);
 
-					OwnershipUtils.deployArmies(toFill.getCountry(), toDeploy.getArmies());
+					ArmyUtils.deployArmies(toFill.getCountry(), toDeploy.getArmies());
 
 					if(!ArmyUtils.somePlayerHasUndeployedArmies(gameState)) {
 						playState = PLAYER_CONVERTING_CARDS;
@@ -95,7 +102,7 @@ public abstract class GameEngine {
 
 					playersUndeployedArmies = ArmyUtils.getUndeployedArmies(curPlayer);
 
-					HashSet<Territory> playersTerritories = MapUtils.getPlayersTerritories(curPlayer);
+					HashSet<Territory> playersTerritories = TerritoryUtils.getPlayersTerritories(curPlayer);
 
 					if(playersUndeployedArmies.size() == 0) {
 						playState = PLAYER_INVADING_COUNTRY;
@@ -106,13 +113,13 @@ public abstract class GameEngine {
 
 					toDeploy = curPlayer.getInterfaceMethod().getNumberOfArmies(curPlayer, playersUndeployedArmies);
 
-					OwnershipUtils.deployArmies(toFill.getCountry(), toDeploy.getArmies());
+					ArmyUtils.deployArmies(toFill.getCountry(), toDeploy.getArmies());
 
 					break;
 
 				case PLAYER_INVADING_COUNTRY:
 
-					playersTerritories = MapUtils.getPlayersTerritories(curPlayer);
+					playersTerritories = TerritoryUtils.getPlayersTerritories(curPlayer);
 					CountrySelection attacking = curPlayer.getInterfaceMethod().getTerritory(curPlayer, playersTerritories);
 					if (attacking.isEndGo()) {
 						playState = PLAYER_MOVING_ARMIES;
@@ -122,13 +129,13 @@ public abstract class GameEngine {
 					int attackingArmies = ArmyUtils.getNumberOfArmiesOnTerritory(curPlayer, attacking.getCountry());
 					int maxAttackingDice = attackingArmies > 3 ? 3 : attackingArmies - 1;
 
-					HashSet<Territory> attackable = MapUtils.getEnemyNeighbours(gameState, attacking.getCountry(), curPlayer);
+					HashSet<Territory> attackable = TerritoryUtils.getEnemyNeighbours(gameState, attacking.getCountry(), curPlayer);
 					CountrySelection defending = curPlayer.getInterfaceMethod().getTerritory(curPlayer, attackable);
 					if (defending.isEndGo()) {
 						playState = PLAYER_MOVING_ARMIES;
 						break;
 					}
-					Player defendingPlayer = OwnershipUtils.getTerritoryOwner(gameState, defending.getCountry());
+					Player defendingPlayer = PlayerUtils.getTerritoryOwner(gameState, defending.getCountry());
 					int defendingArmies = ArmyUtils.getNumberOfArmiesOnTerritory(defendingPlayer, defending.getCountry());
 					int maxDefendingDice = defendingArmies > 2 ? 2 : defendingArmies;
 
@@ -160,14 +167,14 @@ public abstract class GameEngine {
 
 				case PLAYER_MOVING_ARMIES:
 
-					HashSet<Territory> canBeDeployedFrom = MapUtils.getTerritoriesWithMoreThanOneArmy(curPlayer);
+					HashSet<Territory> canBeDeployedFrom = TerritoryUtils.getTerritoriesWithMoreThanOneArmy(curPlayer);
 					CountrySelection source = curPlayer.getInterfaceMethod().getTerritory(curPlayer, canBeDeployedFrom);
 					if (source.isEndGo()) {
 						playState = PLAYER_ENDED_GO;
 						break;
 					}
 
-					HashSet<Territory> canBeDeployedTo = MapUtils.getFriendlyNeighbours(gameState, source.getCountry(), curPlayer);
+					HashSet<Territory> canBeDeployedTo = TerritoryUtils.getFriendlyNeighbours(gameState, source.getCountry(), curPlayer);
 					CountrySelection target = curPlayer.getInterfaceMethod().getTerritory(curPlayer, canBeDeployedTo);
 					if (target.isEndGo()) {
 						playState = PLAYER_ENDED_GO;

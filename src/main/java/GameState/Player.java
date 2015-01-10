@@ -1,6 +1,6 @@
-package GameState.StateClasses;
+package GameState;
 
-import GameState.StateUtils.ArmyUtils;
+import GameUtils.ArmyUtils;
 import PlayerInput.PlayerInterface;
 
 import java.util.ArrayList;

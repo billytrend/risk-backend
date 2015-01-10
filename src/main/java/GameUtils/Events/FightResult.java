@@ -1,7 +1,7 @@
-package GameState.Events;
+package GameUtils.Events;
 
-import GameState.StateClasses.Player;
-import GameState.StateClasses.Territory;
+import GameState.Player;
+import GameState.Territory;
 
 public class FightResult {
 

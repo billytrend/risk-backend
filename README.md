@@ -20,7 +20,7 @@ functionality.
 pulls together functionality from all the other packages.
 * 'GameState' contains classes which can keep track of the state of a game, including the map, players, armies, cards,
 etc.
-    * 'StateUtils' contains utilities for manipulating the state.
+    * 'GameUtils' contains utilities for manipulating the state.
     * NB the current design tries to separate functionality and state. IE the actual state classes only really have 
     getters and setters
 * 'PlayerInput' contains classes for developing player interfaces (web interfaces etc) and also AIs - since they are

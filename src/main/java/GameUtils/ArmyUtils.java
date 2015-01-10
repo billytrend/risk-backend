@@ -1,9 +1,9 @@
-package GameState.StateUtils;
+package GameUtils;
 
-import GameState.StateClasses.Army;
-import GameState.StateClasses.Player;
-import GameState.StateClasses.State;
-import GameState.StateClasses.Territory;
+import GameState.Army;
+import GameState.Player;
+import GameState.State;
+import GameState.Territory;
 
 import java.util.ArrayList;
 
@@ -86,12 +86,11 @@ public class ArmyUtils {
      * @param n
      */
     public static void destroyArmies(Player p, Territory t, int n) {
-        for (Army a : p.getArmies()) {
-            if (a.getTerritory().equals(t)) {
-                p.getArmies().remove(a);
-            }
-            if (--n == 0) {
-                return;
+        ArrayList<Army> armies = p.getArmies();
+        for (int i = 0; i < armies.size() && n > 0; i++) {
+            if (armies.get(i).getTerritory().equals(t)) {
+                p.getArmies().remove(i);
+                n--;
             }
         }
     }
@@ -107,4 +106,14 @@ public class ArmyUtils {
         }
     }
 
+    /**
+     * *
+     * @param target
+     * @param deployments
+     */
+    public static void deployArmies(Territory target, ArrayList<Army> deployments) {
+        for (Army a : deployments) {
+            a.setTerritory(target);
+        }
+    }
 }

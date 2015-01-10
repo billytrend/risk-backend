@@ -1,9 +1,9 @@
 package PlayerInput;
 
-import GameState.StateClasses.Army;
-import GameState.StateClasses.Card;
-import GameState.StateClasses.Player;
-import GameState.StateClasses.Territory;
+import GameState.Army;
+import GameState.Card;
+import GameState.Player;
+import GameState.Territory;
 import PlayerInput.PlayerChoice.ArmySelection;
 import PlayerInput.PlayerChoice.CountrySelection;
 import PlayerInput.PlayerChoice.DiceSelection;

@@ -1,8 +1,8 @@
 package GameEngine;
 
-import GameState.Events.FightResult;
-import GameState.StateClasses.State;
-import GameState.StateUtils.StateStats;
+import GameUtils.Events.FightResult;
+import GameState.State;
+import GameUtils.PlayerUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,7 +37,7 @@ public class Arbitration {
      * @param state
      */
     public static void setFirstPlayer(State state) {
-        Integer noOfPlayers = StateStats.countPlayers(state);
+        Integer noOfPlayers = PlayerUtils.countPlayers(state);
         Random ran = new Random();
         Integer result = ran.nextInt(noOfPlayers);
         state.getPlayerQueue().setFirstPlayer(result);
@@ -82,7 +82,7 @@ public class Arbitration {
         // that were thrown
         int numberToCompare = (attacker.length > defender.length) ? defender.length : attacker.length;
 
-        for(int i = 1; i <= numberToCompare; i++){
+        for(int i = 0; i < numberToCompare; i++){
 
             if(attacker[i] > defender[i]) {
                 result.addDefendLoss();

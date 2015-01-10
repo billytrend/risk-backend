@@ -1,7 +1,7 @@
 package GameEngine;
 
-import GameState.GameBuilders.DemoGame;
-import GameState.StateClasses.State;
+import GameBuilders.DemoGame;
+import GameState.State;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,10 +22,6 @@ public class GameEngineTest {
     @Test
     public void testDumbBot() throws Exception {
         State gameState = DemoGame.buildGame();
-        try {
-            GameEngine.play(gameState);
-        } catch (Exception e) {
-
-        }
+        GameEngine.play(gameState);
     }
 }

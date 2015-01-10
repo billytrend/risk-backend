@@ -1,4 +1,4 @@
-package GameState.StateClasses;
+package GameState;
 
 public class Card {
 

@@ -1,10 +1,10 @@
-package GameState.StateUtils;
+package GameUtils;
 
-import GameState.Events.FightResult;
-import GameState.StateClasses.Army;
-import GameState.StateClasses.Continent;
-import GameState.StateClasses.Player;
-import GameState.StateClasses.State;
+import GameUtils.Events.FightResult;
+import GameState.Army;
+import GameState.Continent;
+import GameState.Player;
+import GameState.State;
 
 import java.util.ArrayList;
 
@@ -19,10 +19,10 @@ public class RuleUtils {
         int totalHandout = 0;
         // hand out armies for the following reasons
         // 1. armies you have
-        int n = OwnershipUtils.getNumberOfTerritories(p);
+        int n = PlayerUtils.getNumberOfTerritoriesOwned(p);
         totalHandout += n/3;
         // 2. continents you control
-        ArrayList<Continent> continents = OwnershipUtils.playerContinents(state, p);
+        ArrayList<Continent> continents = PlayerUtils.playerContinents(state, p);
         for (Continent c : continents) {
             totalHandout +=  c.getArmyReward();
         }

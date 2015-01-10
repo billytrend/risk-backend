@@ -1,4 +1,4 @@
-package GameState.StateUtils;
+package GameUtils;
 
 /**
  * Created by bt on 30/12/2014.
