@@ -1,5 +1,10 @@
 package LobbyServer;
 
+import LobbyServer.LobbyState.Lobby;
+import LobbyServer.LobbyState.ObjectFromClient.ClientMessage;
+import LobbyServer.LobbyState.PlayerConnection;
+import LobbyServer.LobbyUtils.LobbyUtils;
+import PlayerInput.PlayerChoice.Choice;
 import org.java_websocket.WebSocket;
 import org.java_websocket.WebSocketImpl;
 import org.java_websocket.handshake.ClientHandshake;
@@ -11,10 +16,10 @@ import java.net.UnknownHostException;
 import java.util.Collection;
 
 /**
- * A simple WebSocketServer implementation. Keeps track of a "chatroom".
+ * This is the websocket server which handles the players whether they're playing or waiting to play
  */
-public class WebSocketHandler extends WebSocketServer {
-
+public class GameServer extends WebSocketServer {
+    
     public static void main( String[] args ) throws InterruptedException , IOException {
         WebSocketImpl.DEBUG = true;
         int port = 8887; // 843 flash policy port
@@ -22,21 +27,24 @@ public class WebSocketHandler extends WebSocketServer {
             port = Integer.parseInt( args[ 0 ] );
         } catch ( Exception ex ) {
         }
-        WebSocketHandler s = new WebSocketHandler( port );
+        GameServer s = new GameServer( port );
         s.start();
         System.out.println( "ChatServer started on port: " + s.getPort() );
     }
 
-    public WebSocketHandler( int port ) throws UnknownHostException {
+    private Lobby lobby = new Lobby();
+    
+    public GameServer(int port) throws UnknownHostException {
         super( new InetSocketAddress( port ) );
     }
 
-    public WebSocketHandler( InetSocketAddress address ) {
+    public GameServer(InetSocketAddress address) {
         super( address );
     }
 
     @Override
     public void onOpen( WebSocket conn, ClientHandshake handshake ) {
+        // new person has connected :D
         this.sendToAll( "new connection: " + handshake.getResourceDescriptor() );
         System.out.println( conn.getRemoteSocketAddress().getAddress().getHostAddress() + " entered the room!" );
     }
@@ -49,8 +57,11 @@ public class WebSocketHandler extends WebSocketServer {
 
     @Override
     public void onMessage( WebSocket conn, String message ) {
-        this.sendToAll( message );
-        System.out.println( conn + ": " + message );
+        ClientMessage messageObject = WebServerUtils.getMessageObject(message);
+        PlayerConnection player = LobbyUtils.getPlayer(lobby, conn);
+        if (messageObject instanceof Choice) {
+            player.setChoice((Choice) messageObject);
+        }
     }
 
     @Override

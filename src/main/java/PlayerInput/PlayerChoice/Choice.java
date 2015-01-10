@@ -1,6 +1,8 @@
 package PlayerInput.PlayerChoice;
 
-public class Choice {
+import LobbyServer.LobbyState.ObjectFromClient.ClientMessage;
+
+public class Choice extends ClientMessage {
 
     private boolean endGo = false;
 

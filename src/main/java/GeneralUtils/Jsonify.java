@@ -8,5 +8,8 @@ public class Jsonify {
     public static String getObjectAsJsonString(Object o) {
         return new Gson().toJson(o);
     }
-    
+    public static Object getJsonStringAsObject(String s, Class c) {
+        return new Gson().fromJson(s, c);
+    }
+
 }
