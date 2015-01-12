@@ -1,7 +1,7 @@
 /**
  * 
  */
-package PeerServer;
+package PeerServer.src.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;

@@ -24,7 +24,6 @@ public class GameEngine implements Runnable {
 	private State gameState;
 	private Player currentPlayer;
 	private PlayState playState = BEGINNING_STATE;
-	private
 
 	public GameEngine(State state) {
 		this.gameState = state;
