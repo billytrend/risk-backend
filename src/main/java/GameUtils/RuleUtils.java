@@ -3,7 +3,7 @@ package GameUtils;
 import GameState.Continent;
 import GameState.Player;
 import GameState.State;
-import GameUtils.Events.FightResult;
+import GameUtils.Results.FightResult;
 
 import java.util.ArrayList;
 
@@ -43,5 +43,15 @@ public class RuleUtils {
         if (ArmyUtils.getNumberOfArmiesOnTerritory(res.getDefender(), res.getDefendingTerritory()) == 0) {
             ArmyUtils.moveArmies(res.getAttacker(), res.getAttackingTerritory(), res.getDefendingTerritory(), res.getAttackDiceRolled().length);
         }
+    }
+    
+    public static boolean aPlayerHasNoTerritories(State state) {
+        if (TerritoryUtils.getUnownedTerritories(state).size() > 0) return false;
+        for (Player p : state.getPlayers()) {
+            if (TerritoryUtils.getPlayersTerritories(p).size() == 0) {
+                return true;
+            }
+        }
+        return false;
     }
 }

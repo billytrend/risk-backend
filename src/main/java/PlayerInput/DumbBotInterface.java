@@ -3,10 +3,10 @@ package PlayerInput;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
-import PlayerInput.PlayerChoice.ArmySelection;
-import PlayerInput.PlayerChoice.Choice;
-import PlayerInput.PlayerChoice.CountrySelection;
-import PlayerInput.PlayerChoice.DiceSelection;
+import GameEngine.PlayerChoice.ArmySelection;
+import GameEngine.PlayerChoice.Choice;
+import GameEngine.PlayerChoice.CountrySelection;
+import GameEngine.PlayerChoice.DiceSelection;
 
 import java.util.ArrayList;
 import java.util.HashSet;

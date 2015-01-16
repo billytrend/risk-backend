@@ -4,7 +4,7 @@ import LobbyServer.LobbyState.Lobby;
 import LobbyServer.LobbyState.ObjectFromClient.ClientMessage;
 import LobbyServer.LobbyState.PlayerConnection;
 import LobbyServer.LobbyUtils.LobbyUtils;
-import PlayerInput.PlayerChoice.Choice;
+import GameEngine.PlayerChoice.Choice;
 import org.java_websocket.WebSocket;
 import org.java_websocket.WebSocketImpl;
 import org.java_websocket.handshake.ClientHandshake;

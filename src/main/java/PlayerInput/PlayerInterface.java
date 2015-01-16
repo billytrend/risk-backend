@@ -3,7 +3,7 @@ package PlayerInput;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
-import PlayerInput.PlayerChoice.Choice;
+import GameEngine.PlayerChoice.Choice;
 
 import java.util.HashSet;
 import java.util.concurrent.CountDownLatch;

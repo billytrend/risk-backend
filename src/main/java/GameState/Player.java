@@ -8,8 +8,8 @@ import java.util.ArrayList;
 
 public class Player {
 
-	private String id = "Player " + this.hashCode();;
-	PlayerInterface interfaceMethod;
+	private String id = "Player " + this.hashCode();
+	private PlayerInterface interfaceMethod;
 	private ArrayList<Army> armies;
 
 	public Player(PlayerInterface interfaceMethod, int startingArmies) {

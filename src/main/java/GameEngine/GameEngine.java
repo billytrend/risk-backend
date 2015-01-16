@@ -5,13 +5,13 @@ import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.ArmyUtils;
-import GameUtils.Events.FightResult;
+import GameUtils.Results.FightResult;
 import GameUtils.PlayerUtils;
 import GameUtils.RuleUtils;
 import GameUtils.TerritoryUtils;
-import PlayerInput.PlayerChoice.ArmySelection;
-import PlayerInput.PlayerChoice.CountrySelection;
-import PlayerInput.PlayerChoice.DiceSelection;
+import GameEngine.PlayerChoice.ArmySelection;
+import GameEngine.PlayerChoice.CountrySelection;
+import GameEngine.PlayerChoice.DiceSelection;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -36,6 +36,7 @@ public class GameEngine implements Runnable {
 	private void play() throws InterruptedException {
 		while (true) {
 			iterateGame();
+			if (RuleUtils.aPlayerHasNoTerritories(gameState)) return;
 		}
 	}
 
@@ -87,7 +88,6 @@ public class GameEngine implements Runnable {
 
 	}
 
-
 	@Override
 	public void run() {
 		try {
@@ -108,11 +108,8 @@ public class GameEngine implements Runnable {
 
 	private PlayState fillAnEmptyCountry() {
 
-		// get a list of empty territories avaiable
+		// get a list of empty territories available
 		HashSet<Territory> emptyTerritories = TerritoryUtils.getUnownedTerritories(gameState);
-
-		// get a list of cur players undeployed armies
-		ArrayList<Army> playersUndeployedArmies = ArmyUtils.getUndeployedArmies(currentPlayer);
 
 		// ask player what country they'd like to choose
 		CountrySelection toFill = (CountrySelection) currentPlayer.getInterfaceMethod().getTerritory(currentPlayer, emptyTerritories).await();
@@ -247,6 +244,7 @@ public class GameEngine implements Runnable {
 	}
 
 	private PlayState moveArmy() {
+		
 		// get a list of territories a player can deploy from
 		HashSet<Territory> canBeDeployedFrom = TerritoryUtils.getTerritoriesWithMoreThanOneArmy(currentPlayer);
 		// find out which one the player wants to move from

@@ -20,7 +20,6 @@ public class GameEngineTest {
 
     }
 
-    // This test causes an exception but at least it shows things are working!
     @Test
     public void testDumbBot() throws Exception {
         State gameState = DemoGame.buildGame();
