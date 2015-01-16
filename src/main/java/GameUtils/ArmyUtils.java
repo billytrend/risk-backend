@@ -72,9 +72,10 @@ public class ArmyUtils {
     public static int getNumberOfArmiesOnTerritory(Player p, Territory t) {
         int count = 0;
         for (Army a : p.getArmies()) {
-            if (a.getTerritory().equals(t)) {
-                count++;
-            }
+        	if(a.getTerritory() != null)
+	            if (a.getTerritory().equals(t)) {
+	                count++;
+	            }
         }
         return count;
     }

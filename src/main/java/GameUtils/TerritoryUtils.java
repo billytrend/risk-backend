@@ -49,6 +49,8 @@ public class TerritoryUtils {
         }
         return playersTerritories;
     }
+    
+
 
     /**
      *
@@ -88,18 +90,34 @@ public class TerritoryUtils {
      *
      */
     public static HashSet<Territory> getTerritoriesWithMoreThanOneArmy(Player p) {
-        HashSet<Territory> foundArmies = new HashSet<Territory>();
         HashSet<Territory> territoriesWithMoreThanOneArmy = new HashSet<Territory>();
         for (Territory t : getPlayersTerritories(p)) {
-            if (foundArmies.contains(t)) {
+            if (ArmyUtils.getArmiesOnTerritory(p, t).size() > 1) 
                 territoriesWithMoreThanOneArmy.add(t);
-            } else {
-                foundArmies.add(t);
-            }
         }
         return territoriesWithMoreThanOneArmy;
     }
+    
 
+	public static HashSet<Territory> getPossibleAttackingTerritories(State state, Player p) {
+		HashSet<Territory> attackers = new HashSet<Territory>();
+		for(Territory t : getTerritoriesWithMoreThanOneArmy(p)){
+			if(getEnemyNeighbours(state, t, p).size() > 0)
+				attackers.add(t);
+		}
+		return attackers;
+	}
+ 
+	public static HashSet<Territory> getDeployable(State state, Player p) {
+	   HashSet<Territory> deployable = new HashSet<Territory>();
+	   for(Territory t : getTerritoriesWithMoreThanOneArmy(p)){
+			if(getFriendlyNeighbours(state, t, p).size() > 0)
+				deployable.add(t);
+		}
+		return deployable;
+	}
+   
+   
     /**
      *
      */
@@ -122,4 +140,7 @@ public class TerritoryUtils {
    public static int countTerritories(State state) {
        return getAllTerritories(state).size();
    }
+
+
+	
 }

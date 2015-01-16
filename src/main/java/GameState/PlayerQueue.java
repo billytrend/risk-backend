@@ -7,27 +7,32 @@ public class PlayerQueue implements Iterator {
 
     private int firstPlayer = 0;
     private int curPlayer = 0;
-    private final ArrayList<Player> players;
+    private ArrayList<Player> players;
 
     public PlayerQueue(ArrayList<Player> players) {
         this.players = players;
     }
 
     public void setFirstPlayer(int firstPlayer) {
-
         if (firstPlayer < this.players.size()) {
             this.firstPlayer = firstPlayer;
         }
-
     }
-
     public int getFirstPlayer() {
         return firstPlayer;
     }
 
+    public int getNumberOfCurrentPlayers(){
+    	return players.size();
+    }
+    
+    public void removePlayer(Player p){
+    	players.remove(p);
+    }
+    
     @Override
     public void remove() {
-        
+ 
     }
     
     @Override

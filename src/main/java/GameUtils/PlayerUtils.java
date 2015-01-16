@@ -65,4 +65,16 @@ public class PlayerUtils {
     public static boolean playerIsOut(Player p) {
         return getNumberOfTerritoriesOwned(p) < 1;
     }
+    
+    
+    public static boolean checkWin(Player player, State state){
+		// if the player that just won has all the territories on map 
+    	System.out.println("player owns: " + getNumberOfTerritoriesOwned(player));
+    	System.out.println("num of terrs: " + TerritoryUtils.getAllTerritories(state).size());
+		if(getNumberOfTerritoriesOwned(player) == TerritoryUtils.getAllTerritories(state).size())
+			return true;
+		else
+			return false;
+	}
+    
 }

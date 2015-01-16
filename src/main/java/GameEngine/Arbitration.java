@@ -8,9 +8,28 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
-public class Arbitration {
+/**
+ * The class holds the implementation of any random events
+ * such as first player selection or dice throws.
+ * 
+ * It is also responsible for carrying out the fights. 
+ *  ----- should it be?
+ * 
+ */
+public class Arbitration{
+	
     /**
      * * 
+     * @param state
+     */
+    public static void setFirstPlayer(State state) {
+        Integer noOfPlayers = PlayerUtils.countPlayers(state);
+        Random ran = new Random();
+        Integer result = ran.nextInt(noOfPlayers);
+        state.getPlayerQueue().setFirstPlayer(result);
+    }
+   
+	/**
      * @return
      */
     private static Integer dieThrow(){
@@ -20,7 +39,7 @@ public class Arbitration {
     }
 
     /**
-     * * 
+     *
      * @param numOfDice
      * @return
      */
@@ -33,18 +52,11 @@ public class Arbitration {
     }
 
     /**
-     * * 
-     * @param state
-     */
-    public static void setFirstPlayer(State state) {
-        Integer noOfPlayers = PlayerUtils.countPlayers(state);
-        Random ran = new Random();
-        Integer result = ran.nextInt(noOfPlayers);
-        state.getPlayerQueue().setFirstPlayer(result);
-    }
-
-    /**
-     * *
+     * This method carries out the whole fight including dice throw,
+     * and the analysis of its result. It returns the fight result 
+     * which represents the amount of units that should be taken of
+     * the defender and the attacker. 
+     * 
      * @param result
      * @param dA
      * @param dB
@@ -59,7 +71,7 @@ public class Arbitration {
     }
 
     /**
-     * The method takes the result of dice throws and compares then
+     * The method takes the result of dice throws and compares them
      * to specify how many armies should be taken of each player.
      * The returned value is an array of ints where i[0] is an
      * amount taken of attacker and i[1] is an amount taken of
