@@ -16,7 +16,7 @@ public class State {
 	private final ArrayList<Player> players;
 	private final PlayerQueue playerQueue;
 	ArrayList<Continent> continents = new ArrayList<Continent>();
-	private boolean endOfGame = false;
+	
 
 	public State(ArrayList<Player> players) {
 		this.players = players;
@@ -47,13 +47,6 @@ public class State {
 		this.continents = continents;
 	}
 
-
-	public boolean isEndOfGame() {
-		return endOfGame;
-	}
-	public void setEndOfGame(boolean endOfGame) {
-		this.endOfGame = endOfGame;
-	}
 	
 	
 	public void print(){
@@ -66,7 +59,8 @@ public class State {
 			System.out.println(t.getId());
 			if(PlayerUtils.getTerritoryOwner(this, t) != null){
 				p = PlayerUtils.getTerritoryOwner(this, t);
-				System.out.println("\t" + p.getId());
+				System.out.println("\t" + p.getId() + " terrs: " + PlayerUtils.getNumberOfTerritoriesOwned(p)
+						+ "  undep: " + ArmyUtils.getUndeployedArmies(p));
 				System.out.println("\tarmies: " + ArmyUtils.getNumberOfArmiesOnTerritory(p, t));
 				System.out.print("\tneighbours: ");
 				for(Territory n : TerritoryUtils.getNeighbours(this, t)){

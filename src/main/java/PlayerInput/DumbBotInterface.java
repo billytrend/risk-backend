@@ -16,6 +16,8 @@ import java.util.concurrent.CountDownLatch;
 
 public class DumbBotInterface implements PlayerInterface {
 
+    Random ran = new Random();
+	
     protected void emit(Player p, String message) {
         System.out.print("[" + p.getId() + "]" + "\t\t");
         System.out.println(message);
@@ -76,7 +78,6 @@ public class DumbBotInterface implements PlayerInterface {
         }
         
         // random choice
-        Random ran = new Random();
         Integer choice = canResign ? ran.nextInt(posList.size() + 1) : 
         				(ran.nextInt(posList.size()) + 1);
         
@@ -90,7 +91,7 @@ public class DumbBotInterface implements PlayerInterface {
     public DumbBotInterface getNumberOfArmies(Player player, int max) {
         emit(player, "How many armies would you like to move? Max " + max);
         emit(player, "Chose " + max);
-        this.lastChoice = new ArmySelection(max);
+        this.lastChoice = new ArmySelection(ran.nextInt(max + 1));
         return this;
     }
 

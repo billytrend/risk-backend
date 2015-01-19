@@ -28,16 +28,19 @@ public class PlayerQueue implements Iterator {
     
     public void removePlayer(Player p){
     	players.remove(p);
+    	System.out.println("players queue size: " + players.size());
     }
     
     @Override
     public void remove() {
- 
     }
     
     @Override
     public boolean hasNext() {
-        return true;
+        if(players.size() == 1)
+        	return false;
+        else
+        	return true;
     }
 
     @Override

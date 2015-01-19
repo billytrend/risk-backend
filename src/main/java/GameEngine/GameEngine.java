@@ -54,9 +54,9 @@ public class GameEngine implements Runnable {
 	 * current state in the iterateGame function.
 	 */
 	private void play() throws InterruptedException {
-		while (!gameState.isEndOfGame()) {
-			gameState.print();
-			iterateGame();
+		while (true) {
+			if(!iterateGame())
+				break;
 		}
 	}
 
@@ -67,13 +67,14 @@ public class GameEngine implements Runnable {
 	 * @throws InterruptedException
 	 * @throws NullPointerException
 	 */
-	private void iterateGame() throws InterruptedException, NullPointerException {
+	private boolean iterateGame() throws InterruptedException, NullPointerException {
 
 		switch (this.playState) {
 
 			case BEGINNING_STATE:
 				System.out.println("\nBEGIN");
 				this.playState = begin();
+				gameState.print();
 				break;
 
 			case FILLING_EMPTY_COUNTRIES:
@@ -89,32 +90,41 @@ public class GameEngine implements Runnable {
 			case PLAYER_CONVERTING_CARDS:
 				System.out.println("\nCARDS");
 				this.playState = convertCards();
+				ArmyUtils.givePlayerNArmies(currentPlayer, 1);
 				break;
 
 			case PLAYER_PLACING_ARMIES:
+				gameState.print();
 				System.out.println("\nPLAYER PLACING ARMIES");
+				gameState.print();
 				this.playState = placeArmy();
 				break;
 
 			case PLAYER_INVADING_COUNTRY:
 				System.out.println("\nINVADING");
 				this.playState = invadeCountry(); 
+				gameState.print();
 				break;
 
 			case PLAYER_MOVING_ARMIES:
 				System.out.println("\nMOVING ARMIES");
 				this.playState = moveArmy();
+				gameState.print();
 				break;
 
 			case PLAYER_ENDED_GO:
 				System.out.println("\nEND GO");
 				this.playState = endGo();
 				break;
-
+				
+			case END_GAME:
+				System.out.println("\nEND GAME!");
+				return false;
 			default:
 				break;
 		}
-
+		
+		return true;
 	}
 
 	
@@ -215,6 +225,7 @@ public class GameEngine implements Runnable {
 
 		// check if player has any armys left to place
 		if (playersUndeployedArmies.size() == 0) {
+			System.out.println("HERE");
 			return PLAYER_INVADING_COUNTRY;
 		}
 
@@ -257,7 +268,7 @@ public class GameEngine implements Runnable {
 		}
 		
 		// get the enemy neighbours of the country
-			HashSet<Territory> attackable = TerritoryUtils
+		HashSet<Territory> attackable = TerritoryUtils
 				.getEnemyNeighbours(gameState, attacking.getCountry(), currentPlayer);
 		
 			
@@ -299,32 +310,51 @@ public class GameEngine implements Runnable {
 
 		// if the attacking player won and they still have surplus armies,
 		// give the option to move them
-		if(result.getDefendersLoss() == defendingArmies && 
-				(attackingArmies - result.getAttackersLoss() - attackDice.getNumberOfDice()) > 1) {
-			ArrayList<Army> remainingAttackArmies = ArmyUtils
-					.getArmiesOnTerritory(currentPlayer, attacking.getCountry());
-			
-			ArmySelection toMove = (ArmySelection) currentPlayer.getInterfaceMethod()
-					.getNumberOfArmies(currentPlayer, remainingAttackArmies.size() - 1).await();
-			
-			ArmyUtils.moveArmies(result.getAttacker(), result.getAttackingTerritory(), 
-					result.getDefendingTerritory(), toMove.getArmies());
+		if(result.getDefendersLoss() == defendingArmies){
+			//	&& (attackingArmies - result.getAttackersLoss() - attackDice.getNumberOfDice()) > 1) {
+	
+			if((attackingArmies - result.getAttackersLoss() - attackDice.getNumberOfDice()) > 1)
+				moveMoreArmies(result);
 			
 			if(PlayerUtils.playerIsOut(result.getDefender())){
-				System.out.println("PLAYER OUT!"); // remove him from the queue
 				gameState.getPlayerQueue().removePlayer(result.getDefender());
+				if(checkTheEndOfGame())
+					return END_GAME;
 			}
-
-			// if the player won the end of the game field is set to true
-			if(PlayerUtils.checkWin(currentPlayer, gameState)){
-				System.out.println("WON GAME!");
-				gameState.setEndOfGame(true);
-			}
+	
 		}
-		
 		return PLAYER_INVADING_COUNTRY;
 	}
 	
+	
+	
+	
+	private void moveMoreArmies(FightResult result){
+		ArrayList<Army> remainingAttackArmies = ArmyUtils
+				.getArmiesOnTerritory(currentPlayer, result.getAttackingTerritory());
+		
+		ArmySelection toMove = (ArmySelection) currentPlayer.getInterfaceMethod()
+				.getNumberOfArmies(currentPlayer, remainingAttackArmies.size() - 1).await();
+		
+		ArmyUtils.moveArmies(result.getAttacker(), result.getAttackingTerritory(), 
+				result.getDefendingTerritory(), toMove.getArmies());
+	}
+	
+	
+	
+	private boolean checkTheEndOfGame(){
+		// if the player won the end of the game field is set to true
+		//if(PlayerUtils.checkWin(currentPlayer, gameState)){
+		//	System.out.println("WON GAME!");
+		//	return true;
+		//}
+		if(gameState.getPlayerQueue().getNumberOfCurrentPlayers() == 1){
+			System.out.println("Checking win... num of players: " +
+					gameState.getPlayerQueue().getNumberOfCurrentPlayers());
+			return true;
+	}
+		return false;
+	}
 	
 
 	
@@ -354,8 +384,13 @@ public class GameEngine implements Runnable {
 
 		int numberOfArmiesThatMayBeMoved = ArmyUtils
 				.getNumberOfMoveableArmies(currentPlayer, source.getCountry());
+
 		
-		/// WHAT HERE?
+		ArmySelection toMove = (ArmySelection) currentPlayer.getInterfaceMethod()
+				.getNumberOfArmies(currentPlayer, numberOfArmiesThatMayBeMoved).await();
+		
+		ArmyUtils.moveArmies(currentPlayer, source.getCountry(), target.getCountry(), toMove.getArmies());
+		
 		
 		return PLAYER_MOVING_ARMIES;
 	}
@@ -363,7 +398,6 @@ public class GameEngine implements Runnable {
 	
 	private PlayState endGo() {
 		currentPlayer = gameState.getPlayerQueue().next();
-		
 		return PLAYER_CONVERTING_CARDS;
 	}
 

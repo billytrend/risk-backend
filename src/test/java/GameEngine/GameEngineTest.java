@@ -28,7 +28,6 @@ public class GameEngineTest {
         State gameState = DemoGame.buildGame(4, 10);
         GameEngine gameThr = new GameEngine(gameState);
         gameThr.run();
-        assertTrue(gameThr.getState().isEndOfGame());
         	
     }
     

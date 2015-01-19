@@ -63,6 +63,7 @@ public class PlayerUtils {
      * @return
      */
     public static boolean playerIsOut(Player p) {
+    	System.out.println("\t\tNumber owned: " + getNumberOfTerritoriesOwned(p));
         return getNumberOfTerritoriesOwned(p) < 1;
     }
     
