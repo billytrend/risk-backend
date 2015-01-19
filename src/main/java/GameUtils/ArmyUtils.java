@@ -87,12 +87,9 @@ public class ArmyUtils {
      * @param n
      */
     public static void destroyArmies(Player p, Territory t, int n) {
-        ArrayList<Army> armies = p.getArmies();
-        for (int i = 0; i < armies.size() && n > 0; i++) {
-            if (armies.get(i).getTerritory().equals(t)) {
-                p.getArmies().remove(i);
-                n--;
-            }
+        ArrayList<Army> armies = getArmiesOnTerritory(p, t);
+        for (int i = 0; i < n; i++) {
+                p.getArmies().remove(armies.get(i));
         }
     }
 

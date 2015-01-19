@@ -94,9 +94,7 @@ public class GameEngine implements Runnable {
 				break;
 
 			case PLAYER_PLACING_ARMIES:
-				gameState.print();
 				System.out.println("\nPLAYER PLACING ARMIES");
-				gameState.print();
 				this.playState = placeArmy();
 				break;
 
