@@ -2,11 +2,13 @@ package GameEngine;
 
 import GameBuilders.DemoGame;
 import GameState.State;
-import GameState.Territory;
 import GeneralUtils.Jsonify;
+import LobbyServer.LobbyState.Lobby;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 public class GameEngineTest {
 
@@ -29,6 +31,9 @@ public class GameEngineTest {
     
     @Test
     public void testJsonify() {
-        System.out.println(Jsonify.getObjectAsJsonString(new Territory("lol")));
+
+        Lobby t = new Lobby();
+        System.out.println(Jsonify.getObjectAsJsonString(t));
+//        System.out.println(Jsonify.getObjectAsJsonString(new Territory("lol")));
     }
 }

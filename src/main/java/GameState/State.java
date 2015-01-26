@@ -1,5 +1,6 @@
 package GameState;
 
+import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
 import java.util.ArrayList;
@@ -7,7 +8,7 @@ import java.util.ArrayList;
 
 public class State {
 
-	SimpleGraph<Territory, Border> territories = new SimpleGraph<Territory, Border>(Border.class);
+	SimpleGraph territories = new SimpleGraph(DefaultEdge.class);
 
 	private final ArrayList<Player> players;
 
@@ -20,11 +21,11 @@ public class State {
 		this.playerQueue = new PlayerQueue(players);
 	}
 
-	public SimpleGraph<Territory, Border> getTerritories() {
+	public SimpleGraph getTerritories() {
 		return territories;
 	}
 
-	public void setTerritories(SimpleGraph<Territory, Border> territories) {
+	public void setTerritories(SimpleGraph territories) {
 		this.territories = territories;
 	}
 
