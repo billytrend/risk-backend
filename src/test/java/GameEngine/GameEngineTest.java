@@ -1,14 +1,14 @@
 package GameEngine;
 
+import static org.junit.Assert.*;
 import GameBuilders.DemoGame;
 import GameState.State;
 import GeneralUtils.Jsonify;
+
 import LobbyServer.LobbyState.Lobby;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertTrue;
 
 public class GameEngineTest {
 
@@ -23,8 +23,8 @@ public class GameEngineTest {
     }
 
     @Test
-    public void testDumbBot() throws Exception {
-        State gameState = DemoGame.buildGame();
+    public void testDumbBot() {
+        State gameState = DemoGame.buildGame(4, 10);
         GameEngine gameThr = new GameEngine(gameState);
         gameThr.run();
     }

@@ -18,7 +18,7 @@ public class PlayerConnection implements PlayerInterface  {
     private Choice mostRecentChoice = null;
 
     public PlayerConnection(WebSocket connection) {
-        this.playerState = new Player(this, 0);
+        this.playerState = new Player(this, 0, 100); // this last number to be changed
         this.connection = connection;
     }
 
@@ -56,7 +56,8 @@ public class PlayerConnection implements PlayerInterface  {
     }
 
     @Override
-    public PlayerConnection getTerritory(Player player, HashSet<Territory> possibles) {
+    public PlayerConnection getTerritory(Player player, 
+    		HashSet<Territory> possibles, boolean canResign) {
 
         return getWaiter();
     }

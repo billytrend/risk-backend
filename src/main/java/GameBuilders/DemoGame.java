@@ -10,14 +10,12 @@ import java.util.ArrayList;
 
 public class DemoGame {
 
-    public static State buildGame() {
+    public static State buildGame(int numOfPlayers, int armiesAtTheStart) {
 
         // creating players
-        int numOfPlayers = 4;
-        int armiesAtTheStart = 10;
         ArrayList<Player> ps = new ArrayList<Player>();
         for(int i = 0; i < numOfPlayers; i++){
-            ps.add(new Player(new DumbBotInterface(), armiesAtTheStart));
+            ps.add(new Player(new DumbBotInterface(), armiesAtTheStart, i + 1));
         }
         State state = new State(ps);
 

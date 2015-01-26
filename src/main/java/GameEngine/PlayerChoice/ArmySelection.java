@@ -8,7 +8,6 @@ public class ArmySelection extends Choice {
         this.armies = armies;
 
     }
-
     public int getArmies() {
         return armies;
     }

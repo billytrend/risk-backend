@@ -41,7 +41,8 @@ public class RuleUtils {
 
         // if country defeated then move minimum armies across
         if (ArmyUtils.getNumberOfArmiesOnTerritory(res.getDefender(), res.getDefendingTerritory()) == 0) {
-            ArmyUtils.moveArmies(res.getAttacker(), res.getAttackingTerritory(), res.getDefendingTerritory(), res.getAttackDiceRolled().length);
+            ArmyUtils.moveArmies(res.getAttacker(), res.getAttackingTerritory(), 
+            		res.getDefendingTerritory(), res.getAttackDiceRolled().length);
         }
     }
     

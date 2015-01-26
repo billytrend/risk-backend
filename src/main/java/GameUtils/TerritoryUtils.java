@@ -4,11 +4,8 @@ import GameState.Army;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
-import org.javatuples.Pair;
 import org.jgrapht.Graphs;
-import org.jgrapht.graph.DefaultEdge;
 
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class TerritoryUtils {
@@ -21,16 +18,16 @@ public class TerritoryUtils {
     public static HashSet<Territory> getAllTerritories(State state) {
         return new HashSet<Territory>(state.getTerritories().vertexSet());
     }
-    
-    public static HashSet<Pair<Territory, Territory>> getAllBorders(State state) {
-        HashMap<Territory, Territory> borders = new HashMap<Territory, Territory>();
-        for (Territory d : getAllTerritories(state)) {
-            borders.add(
-                    state.getTerritories().get
-            )
-            borders.add(new Pair<Territory, Territory>(DefaultEdge., d.getTarget()));
-        }
-    }
+//
+//    public static HashSet<Pair<Territory, Territory>> getAllBorders(State state) {
+//        HashMap<Territory, Territory> borders = new HashMap<Territory, Territory>();
+//        for (Territory d : getAllTerritories(state)) {
+//            borders.add(
+//                    state.getTerritories().get
+//            );
+//            borders.add(new Pair<Territory, Territory>(DefaultEdge.getSource(), d.getTarget()));
+//        }
+//    }
 
     /**
      *
@@ -62,6 +59,8 @@ public class TerritoryUtils {
         }
         return playersTerritories;
     }
+    
+
 
     /**
      *
@@ -101,18 +100,34 @@ public class TerritoryUtils {
      *
      */
     public static HashSet<Territory> getTerritoriesWithMoreThanOneArmy(Player p) {
-        HashSet<Territory> foundArmies = new HashSet<Territory>();
         HashSet<Territory> territoriesWithMoreThanOneArmy = new HashSet<Territory>();
         for (Territory t : getPlayersTerritories(p)) {
-            if (foundArmies.contains(t)) {
+            if (ArmyUtils.getArmiesOnTerritory(p, t).size() > 1) 
                 territoriesWithMoreThanOneArmy.add(t);
-            } else {
-                foundArmies.add(t);
-            }
         }
         return territoriesWithMoreThanOneArmy;
     }
+    
 
+	public static HashSet<Territory> getPossibleAttackingTerritories(State state, Player p) {
+		HashSet<Territory> attackers = new HashSet<Territory>();
+		for(Territory t : getTerritoriesWithMoreThanOneArmy(p)){
+			if(getEnemyNeighbours(state, t, p).size() > 0)
+				attackers.add(t);
+		}
+		return attackers;
+	}
+ 
+	public static HashSet<Territory> getDeployable(State state, Player p) {
+	   HashSet<Territory> deployable = new HashSet<Territory>();
+	   for(Territory t : getTerritoriesWithMoreThanOneArmy(p)){
+			if(getFriendlyNeighbours(state, t, p).size() > 0)
+				deployable.add(t);
+		}
+		return deployable;
+	}
+   
+   
     /**
      *
      */
@@ -135,4 +150,7 @@ public class TerritoryUtils {
    public static int countTerritories(State state) {
        return getAllTerritories(state).size();
    }
+
+
+	
 }

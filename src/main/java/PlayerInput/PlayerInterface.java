@@ -31,12 +31,14 @@ public interface PlayerInterface {
     public PlayerInterface getNumberOfDice(Player player, int max);
 
     /**
-     * * 
+     * The choice can be made only from the set of possible territories.
+     * 
      * @param player
      * @param possibles
      * @return
      */
-    public PlayerInterface getTerritory(Player player, HashSet<Territory> possibles);
+    public PlayerInterface getTerritory(Player player,
+    		HashSet<Territory> possibles,boolean canResign);
 
     /**
      *

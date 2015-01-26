@@ -18,14 +18,21 @@ public class Player {
 		ArmyUtils.givePlayerNArmies(this, startingArmies);
 	}
 
+	public Player(PlayerInterface interfaceMethod, int startingArmies, int index) {
+		this.interfaceMethod = interfaceMethod;
+		armies = new ArrayList<Army>();
+		ArmyUtils.givePlayerNArmies(this, startingArmies);
+		id = "Player " + index;
+	}
+
 	public String getId() {
 		return id;
 	}
-
+	
 	public void setId(String id) {
 		this.id = id;
 	}
-
+	
 	public PlayerInterface getInterfaceMethod() {
 		return interfaceMethod;
 	}

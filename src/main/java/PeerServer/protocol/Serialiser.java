@@ -1,7 +1,7 @@
 /**
  * 
  */
-package PeerServer.src.protocol;
+package PeerServer.protocol;
 
 /**
  * @author 120011995
