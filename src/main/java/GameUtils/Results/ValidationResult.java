@@ -1,4 +1,4 @@
-package GameUtils.Events;
+package GameUtils.Results;
 
 public class ValidationResult {
 

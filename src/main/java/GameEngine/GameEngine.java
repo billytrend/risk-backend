@@ -5,13 +5,13 @@ import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.ArmyUtils;
-import GameUtils.Events.FightResult;
+import GameUtils.Results.FightResult;
 import GameUtils.PlayerUtils;
 import GameUtils.RuleUtils;
 import GameUtils.TerritoryUtils;
-import PlayerInput.PlayerChoice.ArmySelection;
-import PlayerInput.PlayerChoice.CountrySelection;
-import PlayerInput.PlayerChoice.DiceSelection;
+import GameEngine.PlayerChoice.ArmySelection;
+import GameEngine.PlayerChoice.CountrySelection;
+import GameEngine.PlayerChoice.DiceSelection;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -55,8 +55,7 @@ public class GameEngine implements Runnable {
 	 */
 	private void play() throws InterruptedException {
 		while (true) {
-			if(!iterateGame())
-				break;
+			iterateGame();
 		}
 	}
 
@@ -90,6 +89,7 @@ public class GameEngine implements Runnable {
 			case PLAYER_CONVERTING_CARDS:
 				System.out.println("\nCARDS");
 				this.playState = convertCards();
+				// TODO: why is this here?
 				ArmyUtils.givePlayerNArmies(currentPlayer, 1);
 				break;
 
@@ -135,14 +135,10 @@ public class GameEngine implements Runnable {
 		return FILLING_EMPTY_COUNTRIES;
 	}
 
-	
 	private PlayState fillAnEmptyCountry() {
 
-		// get a list of empty territories avaiable
+		// get a list of empty territories available
 		HashSet<Territory> emptyTerritories = TerritoryUtils.getUnownedTerritories(gameState);
-
-		// get a list of cur players undeployed armies
-		ArrayList<Army> playersUndeployedArmies = ArmyUtils.getUndeployedArmies(currentPlayer);
 
 		// player specifies the country
 		CountrySelection toFill = (CountrySelection) currentPlayer.getInterfaceMethod()
@@ -162,8 +158,6 @@ public class GameEngine implements Runnable {
 
 	}
 
-	
-	
 	private PlayState useARemainingArmy() {
 
 		// get a list of a players undeployed armies
@@ -215,7 +209,6 @@ public class GameEngine implements Runnable {
 
 	}
 
-	
 	private PlayState placeArmy() {
 
 		// get a list of players undeployed armies
@@ -223,7 +216,6 @@ public class GameEngine implements Runnable {
 
 		// check if player has any armys left to place
 		if (playersUndeployedArmies.size() == 0) {
-			System.out.println("HERE");
 			return PLAYER_INVADING_COUNTRY;
 		}
 
@@ -321,7 +313,9 @@ public class GameEngine implements Runnable {
 			}
 	
 		}
+
 		return PLAYER_INVADING_COUNTRY;
+
 	}
 	
 	
@@ -355,9 +349,8 @@ public class GameEngine implements Runnable {
 	}
 	
 
-	
-	
 	private PlayState moveArmy() {
+		
 		// get a list of territories a player can deploy from
 		HashSet<Territory> canBeDeployedFrom = TerritoryUtils
 				.getDeployable(gameState, currentPlayer);

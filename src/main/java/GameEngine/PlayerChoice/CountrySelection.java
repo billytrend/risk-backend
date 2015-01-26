@@ -1,4 +1,4 @@
-package PlayerInput.PlayerChoice;
+package GameEngine.PlayerChoice;
 
 import GameState.Territory;
 
@@ -20,4 +20,5 @@ public class CountrySelection extends Choice {
     public int getNumberOfArmies() {
         return numberOfArmies;
     }
+    
 }

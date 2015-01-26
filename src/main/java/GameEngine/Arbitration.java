@@ -1,6 +1,6 @@
 package GameEngine;
 
-import GameUtils.Events.FightResult;
+import GameUtils.Results.FightResult;
 import GameState.State;
 import GameUtils.PlayerUtils;
 

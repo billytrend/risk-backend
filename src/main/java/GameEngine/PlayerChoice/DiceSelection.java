@@ -1,4 +1,4 @@
-package PlayerInput.PlayerChoice;
+package GameEngine.PlayerChoice;
 
 /**
  * Created by bt on 29/12/2014.

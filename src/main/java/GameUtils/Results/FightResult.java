@@ -1,4 +1,4 @@
-package GameUtils.Events;
+package GameUtils.Results;
 
 import GameState.Player;
 import GameState.Territory;

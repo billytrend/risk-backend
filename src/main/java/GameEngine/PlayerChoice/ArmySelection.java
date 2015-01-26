@@ -1,4 +1,4 @@
-package PlayerInput.PlayerChoice;
+package GameEngine.PlayerChoice;
 
 public class ArmySelection extends Choice {
 

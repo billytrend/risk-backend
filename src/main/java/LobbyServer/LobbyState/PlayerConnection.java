@@ -3,7 +3,7 @@ package LobbyServer.LobbyState;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
-import PlayerInput.PlayerChoice.Choice;
+import GameEngine.PlayerChoice.Choice;
 import PlayerInput.PlayerInterface;
 import org.java_websocket.WebSocket;
 

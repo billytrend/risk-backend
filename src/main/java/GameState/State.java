@@ -1,5 +1,6 @@
 package GameState;
 
+import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
 import GameUtils.ArmyUtils;
@@ -12,37 +13,37 @@ import java.util.HashSet;
 
 public class State {
 
-	SimpleGraph<Territory, Border> territories = new SimpleGraph<Territory, Border>(Border.class);
+	SimpleGraph territories = new SimpleGraph(DefaultEdge.class);
+
 	private final ArrayList<Player> players;
 	private final PlayerQueue playerQueue;
 	ArrayList<Continent> continents = new ArrayList<Continent>();
-	
 
 	public State(ArrayList<Player> players) {
 		this.players = players;
 		this.playerQueue = new PlayerQueue(players);
 	}
 
-	
-	public SimpleGraph<Territory, Border> getTerritories() {
+	public SimpleGraph getTerritories() {
 		return territories;
 	}
-	public void setTerritories(SimpleGraph<Territory, Border> territories) {
+
+	public void setTerritories(SimpleGraph territories) {
 		this.territories = territories;
 	}
 
-	
 	public ArrayList<Player> getPlayers() {
 		return players;
 	}
+
 	public PlayerQueue getPlayerQueue() {
 		return playerQueue;
 	}
 
-	
 	public ArrayList<Continent> getContinents() {
 		return continents;
 	}
+
 	public void setContinents(ArrayList<Continent> continents) {
 		this.continents = continents;
 	}
