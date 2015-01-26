@@ -55,7 +55,7 @@ public class GameEngine implements Runnable {
 	 */
 	private void play() throws InterruptedException {
 		while (true) {
-			iterateGame();
+			if(!iterateGame()) return;
 		}
 	}
 
@@ -118,6 +118,7 @@ public class GameEngine implements Runnable {
 			case END_GAME:
 				System.out.println("\nEND GAME!");
 				return false;
+			
 			default:
 				break;
 		}

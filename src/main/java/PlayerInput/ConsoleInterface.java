@@ -1,11 +1,11 @@
 package PlayerInput;
 
-import java.util.HashSet;
-
+import GameEngine.PlayerChoice.Choice;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
-import PlayerInput.PlayerChoice.Choice;
+
+import java.util.HashSet;
 
 public class ConsoleInterface implements PlayerInterface {
 
