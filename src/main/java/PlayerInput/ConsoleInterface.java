@@ -7,6 +7,11 @@ import GameState.Territory;
 
 import java.util.HashSet;
 
+/**
+ * Used to serve a real player, typing their decisions
+ * in a console.
+ *
+ */
 public class ConsoleInterface implements PlayerInterface {
 
 	@Override

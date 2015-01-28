@@ -8,8 +8,15 @@ import PlayerInput.DumbBotInterface;
 
 import java.util.ArrayList;
 
+/*
+ * Class that sets up a game. Creates several players and the map.
+ */
 public class DemoGame {
 
+	/*
+	 * Builds a very basic game with four AIs playing against each other
+	 * and four territories.
+	 */
     public static State buildGame(int numOfPlayers, int armiesAtTheStart) {
 
         // creating players

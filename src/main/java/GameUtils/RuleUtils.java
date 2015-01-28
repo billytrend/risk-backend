@@ -10,7 +10,9 @@ import java.util.ArrayList;
 public class RuleUtils {
 
     /**
-     * *
+     * Gives a player a number of armies which depends
+     * on the number of their territories and controlled continents.
+     * 
      * @param state
      * @param p
      */
@@ -32,7 +34,11 @@ public class RuleUtils {
 
 
     /**
-    *
+    * The method destroys the suitable amount of armies both
+    * on attackers and defenders territory. If the attacker won
+    * then the method moves the minimum amount of armies to the
+    * defeated territory.
+    * 
     * @param res
     */
     public static void applyFightResult(FightResult res) {
@@ -46,6 +52,11 @@ public class RuleUtils {
         }
     }
     
+    /**
+     * 
+     * @param state
+     * @return
+     */
     public static boolean aPlayerHasNoTerritories(State state) {
         if (TerritoryUtils.getUnownedTerritories(state).size() > 0) return false;
         for (Player p : state.getPlayers()) {

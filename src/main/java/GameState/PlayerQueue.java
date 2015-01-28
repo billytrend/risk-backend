@@ -3,6 +3,11 @@ package GameState;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+/**
+ * The class enabling to iterate through all players
+ * that are still in the game - that haven't lost.
+ *
+ */
 public class PlayerQueue implements Iterator {
 
     private int firstPlayer = 0;
@@ -18,17 +23,32 @@ public class PlayerQueue implements Iterator {
             this.firstPlayer = firstPlayer;
         }
     }
+    
     public int getFirstPlayer() {
         return firstPlayer;
     }
-
+    
+    
     public int getNumberOfCurrentPlayers(){
     	return players.size();
     }
+
     
+    public Player getCurrent() {
+        return this.players.get(this.curPlayer);
+    }
+    
+    /**
+     * Called when a player has lost all their territories
+     * and have to be removed from the game.
+     * 
+     * TODO: It should be also used when a player dissapears
+     * from the game (connection is lost etc.)
+     * 
+     * @param p
+     */
     public void removePlayer(Player p){
     	players.remove(p);
-    	System.out.println("players queue size: " + players.size());
     }
     
     @Override
@@ -57,8 +77,7 @@ public class PlayerQueue implements Iterator {
         return this.players.get(curPlayer);
     }
 
-    public Player getCurrent() {
-        return this.players.get(this.curPlayer);
-    }
+
+
 
 }

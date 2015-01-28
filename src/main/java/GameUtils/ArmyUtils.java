@@ -7,10 +7,15 @@ import GameState.Territory;
 
 import java.util.ArrayList;
 
+/**
+ * A class that provides all the methods that are responsible
+ * for any kind of army management (moving armies, providing
+ * information about their location and size etc.)
+ *
+ */
 public class ArmyUtils {
 
     /**
-     *
      * @param player
      * @return
      */
@@ -25,7 +30,6 @@ public class ArmyUtils {
     }
 
     /**
-     *
      * @param state
      * @return
      */
@@ -37,7 +41,7 @@ public class ArmyUtils {
     }
 
     /**
-     * *
+   	 *
      * @param p
      * @param n
      */
@@ -48,7 +52,7 @@ public class ArmyUtils {
     }
 
     /**
-     * *
+     * 
      * @param p
      * @param t
      * @return
@@ -64,7 +68,6 @@ public class ArmyUtils {
     }
 
     /**
-     *
      * @param p
      * @param t
      * @return
@@ -80,6 +83,7 @@ public class ArmyUtils {
         return count;
     }
 
+    
     /**
      *
      * @param p
@@ -93,8 +97,8 @@ public class ArmyUtils {
         }
     }
 
+    
     /**
-     *
      * @param target
      * @param n
      */
@@ -108,7 +112,6 @@ public class ArmyUtils {
     }
 
     /**
-     * *
      * @param target
      * @param n
      */
@@ -119,6 +122,11 @@ public class ArmyUtils {
         }
     }
     
+    /**
+     * @param p
+     * @param source
+     * @return
+     */
     public static int getNumberOfMoveableArmies(Player p, Territory source) {
         return getNumberOfArmiesOnTerritory(p, source) - 1;
     }

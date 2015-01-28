@@ -8,19 +8,26 @@ import GameEngine.PlayerChoice.Choice;
 import java.util.HashSet;
 import java.util.concurrent.CountDownLatch;
 
+/**
+ * An interface allowing for a game to be played
+ * by AIs, locally by players, or over network.
+ * A class that implements this interface provides
+ * a specific way of communication with a player.
+ *  
+ */
 public interface PlayerInterface {
 
     CountDownLatch waiter = null;
-    
+   
     public Choice getChoice();
-    
+    void setChoice(Choice ch);
+   
+    /**
+     * 
+     * @return
+     */
     public Choice await();
 
-    /**
-     * *
-     * @param ch
-     */
-    void setChoice(Choice ch);
     
     /**
      * * 
@@ -41,6 +48,7 @@ public interface PlayerInterface {
     		HashSet<Territory> possibles,boolean canResign);
 
     /**
+     * The choice can only be made up to the specified max value.
      *
      * @param player
      * @param max
@@ -48,6 +56,7 @@ public interface PlayerInterface {
      */
     public PlayerInterface getNumberOfArmies(Player player, int max);
 
+    
     /**
      *
      * @param player
@@ -55,6 +64,7 @@ public interface PlayerInterface {
      */
     public PlayerInterface giveCard(Player player, Card card);
 
+    
     /**
      *
      * * @return

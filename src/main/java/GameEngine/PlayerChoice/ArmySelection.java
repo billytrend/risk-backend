@@ -1,5 +1,10 @@
 package GameEngine.PlayerChoice;
 
+/**
+ * Contains the information about the amount of armies
+ * specified by the player.
+ *
+ */
 public class ArmySelection extends Choice {
 
     private final int armies;

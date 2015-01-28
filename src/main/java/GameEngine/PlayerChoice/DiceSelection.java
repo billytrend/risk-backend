@@ -1,7 +1,9 @@
 package GameEngine.PlayerChoice;
 
 /**
- * Created by bt on 29/12/2014.
+ * Contains the information about the number
+ * of dice the player wants to throw.
+ * 
  */
 public class DiceSelection extends Choice {
 

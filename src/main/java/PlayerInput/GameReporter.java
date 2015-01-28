@@ -7,8 +7,7 @@ import GameEngine.PlayerChoice.CountrySelection;
 import GameEngine.PlayerChoice.DiceSelection;
 
 public interface GameReporter {
-
-
+	
     public void report(ArmySelection s);
     public void report(CardSelection s);
     public void report(CountrySelection s);

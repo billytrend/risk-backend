@@ -10,7 +10,12 @@ import GameUtils.TerritoryUtils;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-
+/**
+ * A class that represents a current state of the game including
+ * the information about players, still queuing players (still in the game),
+ * and all the continents. 
+ *
+ */
 public class State {
 
 	SimpleGraph territories = new SimpleGraph(DefaultEdge.class);
@@ -49,7 +54,11 @@ public class State {
 	}
 
 	
-	
+	/**
+	 * Method used to print the current state of the game.
+	 * Used for console versions only for the purpose of debugging.
+	 * To be deleted in later ones.
+	 */
 	public void print(){
 		System.out.println("\n-----------------------------\n"
 				+ "CURRENT STATE:");

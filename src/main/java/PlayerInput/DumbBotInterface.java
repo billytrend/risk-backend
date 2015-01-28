@@ -14,6 +14,10 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 
+/**
+ * Used for a very simple AI acting as a player
+ *
+ */
 public class DumbBotInterface implements PlayerInterface {
 
     Random ran = new Random();
@@ -54,6 +58,9 @@ public class DumbBotInterface implements PlayerInterface {
 
     }
 
+    /**
+     * 
+     */
     public DumbBotInterface getNumberOfDice(Player player, int max) {
         emit(player, " how many dice do you want to throw? Max " + max);
         emit(player, "Chose " + max);
@@ -61,9 +68,11 @@ public class DumbBotInterface implements PlayerInterface {
         return this;
     }
 
+    /**
+     * 
+     */
     public DumbBotInterface getTerritory(Player player, HashSet<Territory> possibles, 
     		boolean canResign) {
-    	System.out.println("possibles: " + possibles.size());
         ArrayList<Territory> posList = new ArrayList<Territory>(possibles);
         emit(player, "Please choose a territory");
        
@@ -87,7 +96,10 @@ public class DumbBotInterface implements PlayerInterface {
         
         return this;
     }
-
+    
+    /**
+     * 
+     */
     public DumbBotInterface getNumberOfArmies(Player player, int max) {
         emit(player, "How many armies would you like to move? Max " + max);
         emit(player, "Chose " + max);
@@ -95,10 +107,16 @@ public class DumbBotInterface implements PlayerInterface {
         return this;
     }
 
+    /**
+     * 
+     */
     public DumbBotInterface giveCard(Player player, Card card) {
         return this;
     }
 
+    /**
+     * 
+     */
     public DumbBotInterface getCardOptions() {
         return this;
     }

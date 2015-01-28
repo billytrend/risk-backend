@@ -5,10 +5,15 @@ import GameState.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+/**
+ * Holds all the methods that deal with any kind of
+ * 'player management' such as providing information about
+ * players.
+ *
+ */
 public class PlayerUtils {
 
     /**
-     *  *
      * @param state
      * @param player
      * @return
@@ -25,7 +30,6 @@ public class PlayerUtils {
     }
 
     /**
-     *
      * @param p
      * @return
      */
@@ -58,7 +62,6 @@ public class PlayerUtils {
      }
 
     /**
-     * *
      * @param p
      * @return
      */
@@ -66,16 +69,5 @@ public class PlayerUtils {
     	System.out.println("\t\tNumber owned: " + getNumberOfTerritoriesOwned(p));
         return getNumberOfTerritoriesOwned(p) < 1;
     }
-    
-    
-    public static boolean checkWin(Player player, State state){
-		// if the player that just won has all the territories on map 
-    	System.out.println("player owns: " + getNumberOfTerritoriesOwned(player));
-    	System.out.println("num of terrs: " + TerritoryUtils.getAllTerritories(state).size());
-		if(getNumberOfTerritoriesOwned(player) == TerritoryUtils.getAllTerritories(state).size())
-			return true;
-		else
-			return false;
-	}
     
 }

@@ -1,5 +1,6 @@
 package GameUtils.Results;
 
+
 public class ValidationResult {
 
     private boolean valid;
