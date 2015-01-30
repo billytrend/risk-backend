@@ -1,79 +1,52 @@
 package LobbyServer.LobbyState;
 
+import GameEngine.PlayerChoice.ArmySelection;
+import GameEngine.PlayerChoice.CardSelection;
+import GameEngine.PlayerChoice.CountrySelection;
+import GameEngine.PlayerChoice.DiceSelection;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
-import GameEngine.PlayerChoice.Choice;
 import PlayerInput.PlayerInterface;
 import org.java_websocket.WebSocket;
 
 import java.util.HashSet;
-import java.util.concurrent.CountDownLatch;
 
 public class PlayerConnection implements PlayerInterface  {
     
     private Player playerState;
     private WebSocket connection;
-    private CountDownLatch waiter = null;
-    private Choice mostRecentChoice = null;
 
     public PlayerConnection(WebSocket connection) {
         this.playerState = new Player(this, 0, 100); // this last number to be changed
         this.connection = connection;
     }
 
-    private PlayerConnection getWaiter() {
-        this.waiter = new CountDownLatch(1);
-        return this;
-    }
-    
     @Override
-    public Choice getChoice() {
-        return this.mostRecentChoice;
-    }
-
-    @Override
-    public Choice await() {
-        try {
-            waiter.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public DiceSelection getNumberOfDice(Player player, int max) {
         
-        return this.getChoice();
+        return null;
     }
 
     @Override
-    public void setChoice(Choice ch) {
-        this.mostRecentChoice = ch;
-        waiter.countDown();
+    public CountrySelection getTerritory(Player player,
+                                         HashSet<Territory> possibles, boolean canResign) {
+
+        return null;
     }
 
     @Override
-    public PlayerConnection getNumberOfDice(Player player, int max) {
-        
-        return getWaiter();
+    public ArmySelection getNumberOfArmies(Player player, int playersUndeployedArmies) {
+        return null;
     }
 
     @Override
-    public PlayerConnection getTerritory(Player player, 
-    		HashSet<Territory> possibles, boolean canResign) {
-
-        return getWaiter();
+    public void giveCard(Player player, Card card) {
+        return;
     }
 
     @Override
-    public PlayerConnection getNumberOfArmies(Player player, int playersUndeployedArmies) {
-        return getWaiter();
-    }
-
-    @Override
-    public PlayerConnection giveCard(Player player, Card card) {
-        return getWaiter();
-    }
-
-    @Override
-    public PlayerConnection getCardOptions() {
-        return getWaiter();
+    public CardSelection getCardOptions() {
+        return null;
     }
 }

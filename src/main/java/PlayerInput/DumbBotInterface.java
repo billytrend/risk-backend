@@ -1,18 +1,17 @@
 package PlayerInput;
 
+import GameEngine.PlayerChoice.ArmySelection;
+import GameEngine.PlayerChoice.CardSelection;
+import GameEngine.PlayerChoice.CountrySelection;
+import GameEngine.PlayerChoice.DiceSelection;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
-import GameEngine.PlayerChoice.ArmySelection;
-import GameEngine.PlayerChoice.Choice;
-import GameEngine.PlayerChoice.CountrySelection;
-import GameEngine.PlayerChoice.DiceSelection;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * Used for a very simple AI acting as a player
@@ -40,39 +39,21 @@ public class DumbBotInterface implements PlayerInterface {
         return a;
     }
     
-    private Choice lastChoice = null;
-    private CountDownLatch waiter = null;
-
-    @Override
-    public Choice getChoice() {
-        return lastChoice;
-    }
-
-    @Override
-    public Choice await() {
-        return lastChoice;
-    }
-
-    @Override
-    public void setChoice(Choice ch) {
-
-    }
 
     /**
      * 
      */
-    public DumbBotInterface getNumberOfDice(Player player, int max) {
+    public DiceSelection getNumberOfDice(Player player, int max) {
         emit(player, " how many dice do you want to throw? Max " + max);
         emit(player, "Chose " + max);
-        this.lastChoice = new DiceSelection(max);
-        return this;
+        return new DiceSelection(max);
     }
 
     /**
      * 
      */
-    public DumbBotInterface getTerritory(Player player, HashSet<Territory> possibles, 
-    		boolean canResign) {
+    public CountrySelection getTerritory(Player player, HashSet<Territory> possibles,
+                                         boolean canResign) {
         ArrayList<Territory> posList = new ArrayList<Territory>(possibles);
         emit(player, "Please choose a territory");
        
@@ -91,34 +72,32 @@ public class DumbBotInterface implements PlayerInterface {
         				(ran.nextInt(posList.size()) + 1);
         
         emit(player, "Chose " + choice);
-        this.lastChoice = (choice == 0) ? null : 
+        return  (choice == 0) ? null :
         				new CountrySelection(posList.get(choice - 1));
-        
-        return this;
+
     }
     
     /**
      * 
      */
-    public DumbBotInterface getNumberOfArmies(Player player, int max) {
+    public ArmySelection getNumberOfArmies(Player player, int max) {
         emit(player, "How many armies would you like to move? Max " + max);
         emit(player, "Chose " + max);
-        this.lastChoice = new ArmySelection(ran.nextInt(max + 1));
-        return this;
+        return new ArmySelection(ran.nextInt(max + 1));
     }
 
     /**
      * 
      */
-    public DumbBotInterface giveCard(Player player, Card card) {
-        return this;
+    public void giveCard(Player player, Card card) {
+        return;
     }
 
     /**
      * 
      */
-    public DumbBotInterface getCardOptions() {
-        return this;
+    public CardSelection getCardOptions() {
+        return null;
     }
 
 }

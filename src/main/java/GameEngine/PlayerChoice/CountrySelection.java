@@ -7,7 +7,7 @@ import GameState.Territory;
  * was chosen by the user.
  *
  */
-public class CountrySelection extends Choice {
+public class CountrySelection {
 
     private Territory country;
     private int numberOfArmies = 1; /// TODO: do we need it?

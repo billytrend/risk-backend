@@ -3,7 +3,6 @@ package LobbyServer;
 import GeneralUtils.Jsonify;
 import LobbyServer.LobbyState.Lobby;
 import LobbyServer.LobbyUtils.LobbyUtils;
-import GameEngine.PlayerChoice.Choice;
 import org.java_websocket.WebSocket;
 import org.java_websocket.WebSocketImpl;
 import org.java_websocket.handshake.ClientHandshake;

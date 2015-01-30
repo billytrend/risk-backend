@@ -1,9 +1,12 @@
 package PlayerInput;
 
+import GameEngine.PlayerChoice.ArmySelection;
+import GameEngine.PlayerChoice.CardSelection;
+import GameEngine.PlayerChoice.CountrySelection;
+import GameEngine.PlayerChoice.DiceSelection;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
-import GameEngine.PlayerChoice.Choice;
 
 import java.util.HashSet;
 import java.util.concurrent.CountDownLatch;
@@ -18,16 +21,6 @@ import java.util.concurrent.CountDownLatch;
 public interface PlayerInterface {
 
     CountDownLatch waiter = null;
-   
-    public Choice getChoice();
-    void setChoice(Choice ch);
-   
-    /**
-     * 
-     * @return
-     */
-    public Choice await();
-
     
     /**
      * * 
@@ -35,7 +28,7 @@ public interface PlayerInterface {
      * @param max
      * @return
      */
-    public PlayerInterface getNumberOfDice(Player player, int max);
+    public DiceSelection getNumberOfDice(Player player, int max);
 
     /**
      * The choice can be made only from the set of possible territories.
@@ -44,7 +37,7 @@ public interface PlayerInterface {
      * @param possibles
      * @return
      */
-    public PlayerInterface getTerritory(Player player,
+    public CountrySelection getTerritory(Player player,
     		HashSet<Territory> possibles,boolean canResign);
 
     /**
@@ -54,7 +47,7 @@ public interface PlayerInterface {
      * @param max
      * @return
      */
-    public PlayerInterface getNumberOfArmies(Player player, int max);
+    public ArmySelection getNumberOfArmies(Player player, int max);
 
     
     /**
@@ -62,13 +55,13 @@ public interface PlayerInterface {
      * @param player
      * @param card
      */
-    public PlayerInterface giveCard(Player player, Card card);
+    public void giveCard(Player player, Card card);
 
     
     /**
      *
      * * @return
      */
-    public PlayerInterface getCardOptions();
+    public CardSelection getCardOptions();
 
 }
