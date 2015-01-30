@@ -207,7 +207,7 @@ public class GameEngine implements Runnable {
 		// find out which country the player wants to attack from
 		CountrySelection attacking = (CountrySelection) currentPlayer.getInterfaceMethod().getTerritory(currentPlayer, playersTerritories).await();
 
-		// get the enemy neighbours of the country
+		// get the enemy neighbors of the country
 		HashSet<Territory> attackable = TerritoryUtils.getEnemyNeighbours(gameState, attacking.getCountry(), currentPlayer);
 		// ask the player which country he wants to attack
 		CountrySelection defending = (CountrySelection) currentPlayer.getInterfaceMethod().getTerritory(currentPlayer, attackable).await();

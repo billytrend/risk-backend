@@ -6,29 +6,41 @@ package PeerServer.src.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
  * @author 120011995
- * @category Class to implement multithreading in TCP 
- * 			 PeerServer
+ * @category Class to implement multithreading in TCP PeerServer
  */
 public class ServerThread extends Thread {
-	Socket socket;
-	ServerThread(Socket socket){
-		this.socket = socket;
+	public ServerSocket client;
+	ServerThread(ServerSocket client){
+		this.client = client;
 	}
 
 	public void run(){
+		Socket socket = null;
 		try {
-			String message = "";
-			BufferedReader reader = new BufferedReader (new InputStreamReader(socket.getInputStream()));
-			while((message = reader.readLine()) != null){
-				System.out.println("Incoming client message: " + message);
-			}
-			socket.close();
+			socket = client.accept();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		while(true){
+			try {
+				String message = "";
+				BufferedReader reader = new BufferedReader (new InputStreamReader(socket.getInputStream()));
+				while((message = reader.readLine()) != null){
+					System.out.println("Incoming client message: " + message);
+				}
+				//socket.close();	
+			} 
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 }
