@@ -5,5 +5,5 @@ package GameEngine.PlayerChoice;
  * was selected by the player.
  * 
  */
-public class CardSelection extends Choice {
+public class CardSelection {
 }

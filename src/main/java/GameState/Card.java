@@ -7,7 +7,8 @@ package GameState;
  */
 public class Card {
 
-	enum Types { SOLDIER, HORSE, CANNON};
+	enum Types { SOLDIER, HORSE, CANNON}
+
 	private final Types type;
 	private final Territory territory;
 

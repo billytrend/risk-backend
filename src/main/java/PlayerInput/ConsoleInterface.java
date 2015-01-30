@@ -1,6 +1,9 @@
 package PlayerInput;
 
-import GameEngine.PlayerChoice.Choice;
+import GameEngine.PlayerChoice.ArmySelection;
+import GameEngine.PlayerChoice.CardSelection;
+import GameEngine.PlayerChoice.CountrySelection;
+import GameEngine.PlayerChoice.DiceSelection;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
@@ -15,50 +18,32 @@ import java.util.HashSet;
 public class ConsoleInterface implements PlayerInterface {
 
 	@Override
-	public Choice getChoice() {
+	public DiceSelection getNumberOfDice(Player player, int max) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Choice await() {
+	public CountrySelection getTerritory(Player player,
+										 HashSet<Territory> possibles, boolean canResign) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void setChoice(Choice ch) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public PlayerInterface getNumberOfDice(Player player, int max) {
+	public ArmySelection getNumberOfArmies(Player player, int max) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public PlayerInterface getTerritory(Player player,
-			HashSet<Territory> possibles, boolean canResign) {
+	public void giveCard(Player player, Card card) {
 		// TODO Auto-generated method stub
-		return null;
+		return;
 	}
 
 	@Override
-	public PlayerInterface getNumberOfArmies(Player player, int max) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PlayerInterface giveCard(Player player, Card card) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PlayerInterface getCardOptions() {
+	public CardSelection getCardOptions() {
 		// TODO Auto-generated method stub
 		return null;
 	}

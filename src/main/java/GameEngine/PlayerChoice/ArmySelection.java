@@ -5,7 +5,7 @@ package GameEngine.PlayerChoice;
  * specified by the player.
  *
  */
-public class ArmySelection extends Choice {
+public class ArmySelection {
 
     private final int armies;
 

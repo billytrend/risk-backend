@@ -5,7 +5,7 @@ package GameEngine.PlayerChoice;
  * of dice the player wants to throw.
  * 
  */
-public class DiceSelection extends Choice {
+public class DiceSelection {
 
     private int numberOfDice;
 
