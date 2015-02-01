@@ -7,6 +7,7 @@ import GameState.Territory;
 import PlayerInput.DumbBotInterface;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /*
  * Class that sets up a game. Creates several players and the map.
@@ -48,7 +49,7 @@ public class DemoGameBuilder {
 
     }
     
-    public static State buildTestGame(){
+  /*  public static State buildTestGame(){
 
         // creating players
         ArrayList<Player> ps = new ArrayList<Player>();
@@ -66,6 +67,61 @@ public class DemoGameBuilder {
         TerritoryUtils.addBorder(gameState, demoLandA, demoLandB);
         
         return gameState;
-    }
+    }*/
+    
+    
+    /*
+     * Complicated method that should be simplified but I thought it might be cool to have it (for tests?)
+     * It can create any kind of state, given the number of players and territories.
+     * Neighbouring territories are set at random. 
+     */
+    public static State buildTestGame(int numOfPlayers, int armiesAtTheStart, int numOfTerritories) {
 
-}
+    	        // creating players
+    	        ArrayList<Player> ps = new ArrayList<Player>();
+    	        for(int i = 0; i < numOfPlayers; i++){
+    	            ps.add(new Player(new DumbBotInterface(), armiesAtTheStart, i + 1));
+    	        }
+    	        State state = new State(ps);
+    	        
+    	        
+    	        ArrayList<Territory> territories = new ArrayList<Territory>();
+    	        // creating the specified number of territories
+    	        for(int i = 0; i < numOfTerritories; i++){
+    	        	Territory ter = new Territory("country" + (i + 1));
+    	        	territories.add(ter);
+    	        	TerritoryUtils.addTerritory(state, ter);
+    	        }
+    	        
+    	        Random ran = new Random();
+    	        //add neighbouring territories to each territory
+    	        for(int i = 0; i < numOfTerritories; i++){
+    	        	
+    	        	// a territory can be neigbours with min 1 country
+    	        	// and max numOfTerritories countries
+    	        	Territory ter = territories.get(i);
+    	        	int numOfNeighbours = TerritoryUtils.getNeighbours(state, ter).size();
+    	        	int numOfAdditionalNeighbours = (numOfNeighbours != numOfTerritories - 1) ?
+    	        			(ran.nextInt(numOfTerritories - 1 - numOfNeighbours) + 1) : 0;
+    	        
+    	        	for(int j = 0; j < numOfAdditionalNeighbours; j++){
+    	        		
+    	        		// randomly get a neighbour...
+    	        		Territory neighbour;
+    	        		do{
+    	        	 		// need for this messy arithmetic since random can also 
+    	            		//return 0 which we dont want...
+    		        		int randomIndexOfNeighbour = 
+    		        				(i + (ran.nextInt(numOfTerritories - 1) + 1)) % numOfTerritories;
+    		        		neighbour = territories.get(randomIndexOfNeighbour);
+    	        		} while (TerritoryUtils.areNeighbours(state, ter, neighbour));
+    	        		
+    	        		TerritoryUtils.addBorder(state, ter, neighbour);
+    	        	}
+    	        
+    	        }
+    	        
+    	        return state;
+    	    }
+  }
+

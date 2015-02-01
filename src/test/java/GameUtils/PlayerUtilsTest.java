@@ -19,7 +19,7 @@ public class PlayerUtilsTest {
 	
 	@Before
 	public void stateSetUp(){
-		gameState = DemoGameBuilder.buildTestGame();
+		gameState = DemoGameBuilder.buildTestGame(2, 5, 2);
 		territories = new Territory[TerritoryUtils.getAllTerritories(gameState).size()];
 		TerritoryUtils.getAllTerritories(gameState).toArray(territories);
 	}

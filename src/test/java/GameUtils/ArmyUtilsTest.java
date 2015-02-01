@@ -17,7 +17,7 @@ public class ArmyUtilsTest {
 
 	@Before
 	public void stateSetUp(){
-		gameState = DemoGameBuilder.buildTestGame();
+		gameState = DemoGameBuilder.buildTestGame(2, 5, 2);
 		territories = new Territory[TerritoryUtils.getAllTerritories(gameState).size()];
 		TerritoryUtils.getAllTerritories(gameState).toArray(territories);
 	}
@@ -36,7 +36,7 @@ public class ArmyUtilsTest {
 		assertArrayEquals(ArmyUtils.getUndeployedArmies(player1).toArray(),
 				player1.getArmies().toArray());
 		
-		assertEquals(ArmyUtils.getUndeployedArmies(player2).size(), 4);
+		assertEquals(ArmyUtils.getUndeployedArmies(player2).size(), 5);
 		assertArrayEquals(ArmyUtils.getUndeployedArmies(player2).toArray(), 
 				player2.getArmies().toArray());
 		
@@ -54,7 +54,7 @@ public class ArmyUtilsTest {
 		ArmyUtils.deployArmies(players.get(0), territories[0], 5);
 		assertTrue(ArmyUtils.somePlayerHasUndeployedArmies(gameState));
 		
-		ArmyUtils.deployArmies(players.get(1), territories[1], 4);
+		ArmyUtils.deployArmies(players.get(1), territories[1], 5);
 		assertFalse(ArmyUtils.somePlayerHasUndeployedArmies(gameState));
 	}
 	
@@ -89,8 +89,8 @@ public class ArmyUtilsTest {
 		assertTrue(ArmyUtils.getArmiesOnTerritory(player1, territory1)
 				.contains(player1.getArmies().get(1)));
 		
-		ArmyUtils.deployArmies(player2, territory2, 4);
-		assertEquals(ArmyUtils.getArmiesOnTerritory(player2, territory2).size(), 4);
+		ArmyUtils.deployArmies(player2, territory2, 5);
+		assertEquals(ArmyUtils.getArmiesOnTerritory(player2, territory2).size(), 5);
 		assertArrayEquals(ArmyUtils.getArmiesOnTerritory(player2, territory2).toArray(),
 				player2.getArmies().toArray());
 	}

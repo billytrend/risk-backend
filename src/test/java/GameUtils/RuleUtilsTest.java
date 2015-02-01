@@ -1,14 +1,37 @@
+
 package GameUtils;
 
 import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.Test;
 
-public class RuleUtilsTest {
+import GameBuilders.DemoGameBuilder;
+import GameState.State;
+import GameState.Territory;
 
-	@Test
-	public void test() {
-		fail("Not yet implemented");
+public class RuleUtilsTest {
+	
+	private State gameState;
+	private Territory[] territories;
+
+	@Before
+	public void stateSetUp(){
+		gameState = DemoGameBuilder.buildTestGame(2, 5, 2);
+		territories = new Territory[TerritoryUtils.getAllTerritories(gameState).size()];
+		TerritoryUtils.getAllTerritories(gameState).toArray(territories);
 	}
+	
+	@Test
+	public void doArmyHandoutTest() {
+		
+	}
+	
+	@Test
+	public void applyFightResultTest(){
+		
+	}
+	
+	
 
 }
