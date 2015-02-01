@@ -55,25 +55,28 @@ public class ArmyUtilsTest {
 	@Test
 	public void getUndeployedArmiesTest(){
 		ArrayList<Player> players = gameState.getPlayers();
+		Player player1 = players.get(0);
+		Player player2 = players.get(1);
 		
-		assertEquals(ArmyUtils.getUndeployedArmies(players.get(0)).size(), 5);
+		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 5);
 		
 		// objects should be the same in both arrays
-		assertArrayEquals(ArmyUtils.getUndeployedArmies(players.get(0)).toArray(),
-				players.get(0).getArmies().toArray());
+		assertArrayEquals(ArmyUtils.getUndeployedArmies(player1).toArray(),
+				player1.getArmies().toArray());
 		
-		assertEquals(ArmyUtils.getUndeployedArmies(players.get(1)).size(), 4);
-		assertArrayEquals(ArmyUtils.getUndeployedArmies(players.get(1)).toArray(),
-				players.get(1).getArmies().toArray());
+		assertEquals(ArmyUtils.getUndeployedArmies(player2).size(), 4);
+		assertArrayEquals(ArmyUtils.getUndeployedArmies(player2).toArray(), 
+				player2.getArmies().toArray());
 		
-		ArmyUtils.deployArmies(players.get(0), territories.get(0), 2);
-		assertEquals(ArmyUtils.getUndeployedArmies(players.get(0)).size(), 3);
-		assertFalse(ArmyUtils.getUndeployedArmies(players.get(0)).equals(players.get(0).getArmies()));
+		ArmyUtils.deployArmies(player1, territories.get(0), 2);
+		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 3);
+		assertFalse(ArmyUtils.getUndeployedArmies(player1).equals(player1.getArmies()));
 	}
 	
 	@Test
 	public void somePlayerHasUndeployedArmies(){
 		ArrayList<Player> players = gameState.getPlayers();
+		
 		assertTrue(ArmyUtils.somePlayerHasUndeployedArmies(gameState));
 		
 		ArmyUtils.deployArmies(players.get(0), territories.get(0), 5);
@@ -81,6 +84,43 @@ public class ArmyUtilsTest {
 		
 		ArmyUtils.deployArmies(players.get(1), territories.get(1), 4);
 		assertFalse(ArmyUtils.somePlayerHasUndeployedArmies(gameState));
+	}
+	
+	@Test
+    public void givePlayerNArmiesTest() {
+		Player player1 = gameState.getPlayers().get(0);
+		assertEquals(player1.getArmies().size(), 5);
+		
+		ArmyUtils.givePlayerNArmies(player1, 3);
+		assertEquals(player1.getArmies().size(), 8);
+		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 8);
+    }
+	
+	@Test 
+	public void getArmiesOnTerritory(){
+		ArrayList<Player> players = gameState.getPlayers();
+		Player player1 = players.get(0);
+		Player player2 = players.get(1);
+		
+		Territory territory1 = territories.get(0);
+		Territory territory2 = territories.get(1);
+		
+		ArmyUtils.deployArmies(player1, territory1, 1);
+		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, territory1).size(), 1);
+		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, territory1).get(0),
+				player1.getArmies().get(0));
+		
+		ArmyUtils.deployArmies(player1, territory1, 1);
+		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, territory1).size(), 2);
+		assertTrue(ArmyUtils.getArmiesOnTerritory(player1, territory1)
+				.contains(player1.getArmies().get(0)));
+		assertTrue(ArmyUtils.getArmiesOnTerritory(player1, territory1)
+				.contains(player1.getArmies().get(1)));
+		
+		ArmyUtils.deployArmies(player2, territory2, 4);
+		assertEquals(ArmyUtils.getArmiesOnTerritory(player2, territory2).size(), 4);
+		assertArrayEquals(ArmyUtils.getArmiesOnTerritory(player2, territory2).toArray(),
+				player2.getArmies().toArray());
 	}
 
 	
