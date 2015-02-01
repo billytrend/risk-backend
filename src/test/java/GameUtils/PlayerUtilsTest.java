@@ -72,7 +72,6 @@ public class PlayerUtilsTest {
 	
 	@Test
 	public void countPlayersTest(){
-		Player player1 = gameState.getPlayers().get(0);
 		assertEquals(PlayerUtils.countPlayers(gameState), 2);
 	}
 	
@@ -90,8 +89,6 @@ public class PlayerUtilsTest {
 	@Test
 	public void removePlayerTest(){
 		Player player1 = gameState.getPlayers().get(0);
-		Player player2 = gameState.getPlayers().get(1);
-		
 		assertEquals(PlayerUtils.countPlayers(gameState), 2);
 		PlayerUtils.removePlayer(gameState, player1);
 		assertEquals(PlayerUtils.countPlayers(gameState), 1);

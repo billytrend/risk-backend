@@ -16,6 +16,7 @@ import java.util.Scanner;
 public class DumbBotInterface implements PlayerInterface {
 
     Random ran = new Random();
+	private static Scanner scanner;
 	
     protected void emit(Player p, String message) {
         System.out.print("[" + p.getId() + "]" + "\t\t");
@@ -30,8 +31,8 @@ public class DumbBotInterface implements PlayerInterface {
         // ADDITIONAL CHECKS?
         int a;
         System.out.print("Please enter your selection: ");
-        Scanner in = new Scanner(System.in);
-        a = in.nextInt();
+        scanner = new Scanner(System.in);
+		a = scanner.nextInt();
         return a;
     }
     

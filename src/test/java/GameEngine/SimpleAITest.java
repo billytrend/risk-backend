@@ -1,6 +1,5 @@
 package GameEngine;
 
-import static org.junit.Assert.*;
 import GameBuilders.DemoGame;
 import GameState.State;
 import GeneralUtils.Jsonify;
