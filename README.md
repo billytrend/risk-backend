@@ -10,7 +10,7 @@
 
 TODO: Write loadsa tests
 TODO: Develop AIs
-TODO: Finish game implementation
+TODO: Finish game implementation: continents etc.
 TODO: Add websocket support
 TODO: Finish front-end (in a separate repository)
 TODO: allow maps to be parsed form JSON

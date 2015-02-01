@@ -12,8 +12,8 @@ import PlayerInput.DumbBotInterface;
 
 public class ArmyUtilsTest {
 	
-	State gameState;
-	ArrayList<Territory> territories;
+	private State gameState;
+	private ArrayList<Territory> territories;
 
 	@Before
 	public void stateSetUp(){
@@ -29,25 +29,14 @@ public class ArmyUtilsTest {
         
         Territory demoLandA = new Territory("land1");
         Territory demoLandB = new Territory("land2");
-        Territory demoLandC = new Territory("land3");
-        Territory demoLandD = new Territory("land4");
         
         territories.add(demoLandA);
         territories.add(demoLandB);
-        territories.add(demoLandC);
-        territories.add(demoLandD);
         
         TerritoryUtils.addTerritory(gameState, demoLandA);
         TerritoryUtils.addTerritory(gameState, demoLandB);
-        TerritoryUtils.addTerritory(gameState, demoLandC);
-        TerritoryUtils.addTerritory(gameState, demoLandD);
 
-        //add neighbouring territories to each territory
         TerritoryUtils.addBorder(gameState, demoLandA, demoLandB);
-        TerritoryUtils.addBorder(gameState, demoLandA, demoLandD);
-        TerritoryUtils.addBorder(gameState, demoLandB, demoLandC);
-        TerritoryUtils.addBorder(gameState, demoLandC, demoLandD);
-        TerritoryUtils.addBorder(gameState, demoLandD, demoLandB);
 	}
 	
 
