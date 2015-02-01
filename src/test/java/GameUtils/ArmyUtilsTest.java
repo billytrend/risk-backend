@@ -122,6 +122,90 @@ public class ArmyUtilsTest {
 		assertArrayEquals(ArmyUtils.getArmiesOnTerritory(player2, territory2).toArray(),
 				player2.getArmies().toArray());
 	}
+	
+	@Test 
+	public void getNumberOfArmiesOnTerritory(){
+		ArrayList<Player> players = gameState.getPlayers();
+		Player player1 = players.get(0);
+		Player player2 = players.get(1);
+		
+		Territory territory1 = territories.get(0);
+		Territory territory2 = territories.get(1);
+		
+		ArmyUtils.deployArmies(player1, territory1, 2);
+		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player1, territory1), 2);
 
+		ArmyUtils.deployArmies(player2, territory2, 4);
+		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player2, territory2), 4);
+	}
+	
+	@Test
+    public void destroyArmiesTest() {
+    	Player player1 = gameState.getPlayers().get(0);
+		Territory territory1 = territories.get(0);
+		
+		ArmyUtils.deployArmies(player1, territory1, 2);
+		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player1, territory1), 2);
+		assertEquals(player1.getArmies().size(), 5);
+		
+		ArmyUtils.destroyArmies(player1, territory1, 1);
+		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player1, territory1), 1);
+		assertEquals(player1.getArmies().size(), 4);
+    }
+	
+	@Test
+	public void moveArmies(){
+		Player player1 = gameState.getPlayers().get(0);
+		Territory territory1 = territories.get(0);
+		Territory territory2 = territories.get(1);
+		
+		ArmyUtils.deployArmies(player1, territory1, 3);
+		ArmyUtils.deployArmies(player1, territory2, 2);
+		
+		ArrayList<Army> armiesOnTerritory1 = ArmyUtils.getArmiesOnTerritory(player1, territory1);
+		assertEquals(armiesOnTerritory1.size(), 3);
+		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player1, territory2), 2);
+		
+		ArmyUtils.moveArmies(player1, territory1, territory2, 2);
+		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player1, territory1), 1);
+		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player1, territory2), 4);
+		
+		ArrayList<Army> movedArmies = armiesOnTerritory1;
+		movedArmies.removeAll(ArmyUtils.getArmiesOnTerritory(player1, territory1));
+		assertTrue(ArmyUtils.getArmiesOnTerritory(player1, territory2).containsAll(movedArmies));	
+	}
+
+	@Test
+	public void deployArmies(){
+		Player player1 = gameState.getPlayers().get(0);
+		Territory territory1 = territories.get(0);
+		
+		assertEquals(TerritoryUtils.getPlayersTerritories(player1).size(), 0);
+		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 5);
+		
+		ArmyUtils.deployArmies(player1, territory1, 3);
+		assertEquals(TerritoryUtils.getPlayersTerritories(player1).size(), 1);
+		assertTrue(TerritoryUtils.getPlayersTerritories(player1).contains(territory1));
+		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 2);
+		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player1, territory1), 3);
+		
+		ArrayList<Army> deployedAndUndeployed = ArmyUtils.getArmiesOnTerritory(player1, territory1);
+		deployedAndUndeployed.addAll(ArmyUtils.getUndeployedArmies(player1));
+		
+		// all objects are correct
+		assertArrayEquals(deployedAndUndeployed.toArray(), player1.getArmies().toArray());
+	}
+	
+	@Test
+	public void getNumberOfMoveableArmies(){
+		Player player1 = gameState.getPlayers().get(0);
+		Territory territory1 = territories.get(0);
+		
+		ArmyUtils.deployArmies(player1, territory1, 1);
+		assertEquals(ArmyUtils.getNumberOfMoveableArmies(player1, territory1), 0);
+		
+		ArmyUtils.deployArmies(player1, territory1, 1);
+		assertEquals(ArmyUtils.getNumberOfMoveableArmies(player1, territory1), 1);
+	}
 	
 }
