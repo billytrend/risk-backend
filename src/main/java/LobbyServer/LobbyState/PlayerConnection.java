@@ -1,9 +1,5 @@
 package LobbyServer.LobbyState;
 
-import GameEngine.PlayerChoice.ArmySelection;
-import GameEngine.PlayerChoice.CardSelection;
-import GameEngine.PlayerChoice.CountrySelection;
-import GameEngine.PlayerChoice.DiceSelection;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
@@ -22,31 +18,35 @@ public class PlayerConnection implements PlayerInterface  {
         this.connection = connection;
     }
 
-    @Override
-    public DiceSelection getNumberOfDice(Player player, int max) {
-        
-        return null;
-    }
+	@Override
+	public int getNumberOfDice(Player player, int max) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
-    @Override
-    public CountrySelection getTerritory(Player player,
-                                         HashSet<Territory> possibles, boolean canResign) {
+	@Override
+	public Territory getTerritory(Player player, HashSet<Territory> possibles,
+			boolean canResign) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-        return null;
-    }
+	@Override
+	public int getNumberOfArmies(Player player, int max) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
-    @Override
-    public ArmySelection getNumberOfArmies(Player player, int playersUndeployedArmies) {
-        return null;
-    }
+	@Override
+	public void giveCard(Player player, Card card) {
+		// TODO Auto-generated method stub
+		
+	}
 
-    @Override
-    public void giveCard(Player player, Card card) {
-        return;
-    }
+	@Override
+	public Card getCardOptions() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public CardSelection getCardOptions() {
-        return null;
-    }
 }

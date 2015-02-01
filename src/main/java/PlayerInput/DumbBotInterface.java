@@ -1,9 +1,5 @@
 package PlayerInput;
 
-import GameEngine.PlayerChoice.ArmySelection;
-import GameEngine.PlayerChoice.CardSelection;
-import GameEngine.PlayerChoice.CountrySelection;
-import GameEngine.PlayerChoice.DiceSelection;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
@@ -43,16 +39,16 @@ public class DumbBotInterface implements PlayerInterface {
     /**
      * 
      */
-    public DiceSelection getNumberOfDice(Player player, int max) {
+    public int getNumberOfDice(Player player, int max) {
         emit(player, " how many dice do you want to throw? Max " + max);
         emit(player, "Chose " + max);
-        return new DiceSelection(max);
+        return max;
     }
 
     /**
      * 
      */
-    public CountrySelection getTerritory(Player player, HashSet<Territory> possibles,
+    public Territory getTerritory(Player player, HashSet<Territory> possibles,
                                          boolean canResign) {
         ArrayList<Territory> posList = new ArrayList<Territory>(possibles);
         emit(player, "Please choose a territory");
@@ -73,17 +69,17 @@ public class DumbBotInterface implements PlayerInterface {
         
         emit(player, "Chose " + choice);
         return  (choice == 0) ? null :
-        				new CountrySelection(posList.get(choice - 1));
+        				posList.get(choice - 1);
 
     }
     
     /**
      * 
      */
-    public ArmySelection getNumberOfArmies(Player player, int max) {
+    public int getNumberOfArmies(Player player, int max) {
         emit(player, "How many armies would you like to move? Max " + max);
         emit(player, "Chose " + max);
-        return new ArmySelection(ran.nextInt(max + 1));
+        return ran.nextInt(max + 1);
     }
 
     /**
@@ -96,7 +92,7 @@ public class DumbBotInterface implements PlayerInterface {
     /**
      * 
      */
-    public CardSelection getCardOptions() {
+    public Card getCardOptions() {
         return null;
     }
 
