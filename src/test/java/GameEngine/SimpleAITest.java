@@ -1,10 +1,10 @@
 package GameEngine;
 
-import GameBuilders.DemoGame;
+import GameBuilders.DemoGameBuilder;
 import GameState.State;
 import GeneralUtils.Jsonify;
-
 import LobbyServer.LobbyState.Lobby;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +23,7 @@ public class SimpleAITest {
 
     @Test
     public void testDumbBot() {
-        State gameState = DemoGame.buildGame(4, 10);
+        State gameState = DemoGameBuilder.buildGame(4, 10);
         GameEngine gameThr = new GameEngine(gameState);
         gameThr.run();
     }
