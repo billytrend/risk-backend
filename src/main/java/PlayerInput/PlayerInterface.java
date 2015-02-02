@@ -1,9 +1,5 @@
 package PlayerInput;
 
-import GameEngine.PlayerChoice.ArmySelection;
-import GameEngine.PlayerChoice.CardSelection;
-import GameEngine.PlayerChoice.CountrySelection;
-import GameEngine.PlayerChoice.DiceSelection;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
@@ -28,7 +24,7 @@ public interface PlayerInterface {
      * @param max
      * @return
      */
-    public DiceSelection getNumberOfDice(Player player, int max);
+    public int getNumberOfDice(Player player, int max);
 
     /**
      * The choice can be made only from the set of possible territories.
@@ -37,7 +33,7 @@ public interface PlayerInterface {
      * @param possibles
      * @return
      */
-    public CountrySelection getTerritory(Player player,
+    public Territory getTerritory(Player player,
     		HashSet<Territory> possibles,boolean canResign);
 
     /**
@@ -47,7 +43,7 @@ public interface PlayerInterface {
      * @param max
      * @return
      */
-    public ArmySelection getNumberOfArmies(Player player, int max);
+    public int getNumberOfArmies(Player player, int max);
 
     
     /**
@@ -62,6 +58,6 @@ public interface PlayerInterface {
      *
      * * @return
      */
-    public CardSelection getCardOptions();
+    public Card getCardOptions();
 
 }
