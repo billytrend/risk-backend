@@ -1,10 +1,10 @@
-package GameEngine;
+package GameUtils;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class GameEngineTest {
+public class TerritoryUtilsTest {
 
 	@Test
 	public void test() {

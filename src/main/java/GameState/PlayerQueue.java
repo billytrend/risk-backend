@@ -14,8 +14,9 @@ public class PlayerQueue implements Iterator {
     private int curPlayer = 0;
     private ArrayList<Player> players;
 
-    public PlayerQueue(ArrayList<Player> players) {
-        this.players = players;
+    public PlayerQueue(ArrayList<Player> players1) {
+    	players = new ArrayList<Player>();
+    	players.addAll(players1);
     }
 
     public void setFirstPlayer(int firstPlayer) {

@@ -60,7 +60,7 @@ public class ArmyUtils {
     public static ArrayList<Army> getArmiesOnTerritory(Player p, Territory t) {
         ArrayList<Army> armies = new ArrayList<Army>();
         for (Army a : p.getArmies()) {
-            if (a.getTerritory().equals(t)) {
+            if ((a.getTerritory() != null) && (a.getTerritory().equals(t))) {
                 armies.add(a);
             }
         }

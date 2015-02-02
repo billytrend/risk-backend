@@ -53,12 +53,13 @@ public class PlayerUtils {
     }
 
     /**
-     * *
+     * Counts players that are still in the game 
+     * 
      * @param state
      * @return
      */
      public static int countPlayers(State state) {
-        return state.getPlayers().size();
+        return state.getPlayerQueue().getNumberOfCurrentPlayers();
      }
 
     /**
@@ -69,5 +70,14 @@ public class PlayerUtils {
     	System.out.println("\t\tNumber owned: " + getNumberOfTerritoriesOwned(p));
         return getNumberOfTerritoriesOwned(p) < 1;
     }
+
+    /**
+     * 
+     * @param gameState
+     * @param player
+     */
+	public static void removePlayer(State gameState, Player player) {
+		gameState.getPlayerQueue().removePlayer(player);
+	}
     
 }

@@ -339,7 +339,7 @@ public class GameEngine implements Runnable {
 				moveMoreArmies(result);
 			
 			if(PlayerUtils.playerIsOut(result.getDefender())){
-				gameState.getPlayerQueue().removePlayer(result.getDefender());
+				PlayerUtils.removePlayer(gameState, result.getDefender());
 				if(checkTheEndOfGame())
 					return END_GAME;
 			}
@@ -382,7 +382,7 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	private boolean checkTheEndOfGame(){
-		if(gameState.getPlayerQueue().getNumberOfCurrentPlayers() == 1){
+		if(PlayerUtils.countPlayers(gameState) == 1){
 			return true;
 	}
 		return false;

@@ -51,12 +51,16 @@ public class RuleUtils {
             		res.getDefendingTerritory(), res.getAttackDiceRolled().length);
         }
     }
+ 
     
+    
+     // We dont need it?
+    /*
     /**
      * 
      * @param state
      * @return
-     */
+     *
     public static boolean aPlayerHasNoTerritories(State state) {
         if (TerritoryUtils.getUnownedTerritories(state).size() > 0) return false;
         for (Player p : state.getPlayers()) {
@@ -66,4 +70,5 @@ public class RuleUtils {
         }
         return false;
     }
+    */
 }
