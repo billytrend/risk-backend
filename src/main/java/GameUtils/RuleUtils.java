@@ -13,15 +13,21 @@ public class RuleUtils {
      * Gives a player a number of armies which depends
      * on the number of their territories and controlled continents.
      * 
+     * TODO: make sure it follows the actual rules
+     * 
      * @param state
      * @param p
      */
     public static void doArmyHandout(State state, Player p) {
-        int totalHandout = 0;
         // hand out armies for the following reasons
         // 1. armies you have
         int n = PlayerUtils.getNumberOfTerritoriesOwned(p);
-        totalHandout += n/3;
+        int totalHandout = n/3;
+        
+        // the number of armies received can never be less than 3
+        if(totalHandout < 3)
+        	totalHandout = 3;
+        
         // 2. continents you control
         ArrayList<Continent> continents = PlayerUtils.playerContinents(state, p);
         for (Continent c : continents) {
@@ -31,6 +37,7 @@ public class RuleUtils {
         // TODO: 4.
         ArmyUtils.givePlayerNArmies(p, totalHandout);
     }
+    
 
 
     /**
@@ -48,7 +55,7 @@ public class RuleUtils {
         // if country defeated then move minimum armies across
         if (ArmyUtils.getNumberOfArmiesOnTerritory(res.getDefender(), res.getDefendingTerritory()) == 0) {
             ArmyUtils.moveArmies(res.getAttacker(), res.getAttackingTerritory(), 
-            		res.getDefendingTerritory(), res.getAttackDiceRolled().length);
+            		res.getDefendingTerritory(), (res.getAttackDiceRolled().length - res.getAttackersLoss()));
         }
     }
  

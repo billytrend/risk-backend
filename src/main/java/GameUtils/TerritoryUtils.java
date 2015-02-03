@@ -4,6 +4,8 @@ import GameState.Army;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
+
+import org.javatuples.Pair;
 import org.jgrapht.Graphs;
 
 import java.util.HashSet;
@@ -23,16 +25,16 @@ public class TerritoryUtils {
         return new HashSet<Territory>(state.getTerritories().vertexSet());
     }
     
-//
-//    public static HashSet<Pair<Territory, Territory>> getAllBorders(State state) {
-//        HashMap<Territory, Territory> borders = new HashMap<Territory, Territory>();
-//        for (Territory d : getAllTerritories(state)) {
-//            borders.add(
-//                    state.getTerritories().get
-//            );
-//            borders.add(new Pair<Territory, Territory>(DefaultEdge.getSource(), d.getTarget()));
-//        }
-//    }
+/*
+    public static HashSet<Pair<Territory, Territory>> getAllBorders(State state) {
+        HashMap<Territory, Territory> borders = new HashMap<Territory, Territory>();
+        for (Territory d : getAllTerritories(state)) {
+            borders.add(
+                    state.getTerritories().get
+            );
+            borders.add(new Pair<Territory, Territory>(DefaultEdge.getSource(), d.getTarget()));
+        }
+    } */
 
     
     /**

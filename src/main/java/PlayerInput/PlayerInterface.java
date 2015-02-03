@@ -1,5 +1,6 @@
 package PlayerInput;
 
+import GameEngine.RequestReason;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
@@ -24,7 +25,7 @@ public interface PlayerInterface {
      * @param max
      * @return
      */
-    public int getNumberOfDice(Player player, int max);
+    public int getNumberOfDice(Player player, int max, RequestReason reason);
 
     /**
      * The choice can be made only from the set of possible territories.
@@ -34,7 +35,7 @@ public interface PlayerInterface {
      * @return
      */
     public Territory getTerritory(Player player,
-    		HashSet<Territory> possibles,boolean canResign);
+    		HashSet<Territory> possibles,boolean canResign, RequestReason reason);
 
     /**
      * The choice can only be made up to the specified max value.
@@ -43,7 +44,7 @@ public interface PlayerInterface {
      * @param max
      * @return
      */
-    public int getNumberOfArmies(Player player, int max);
+    public int getNumberOfArmies(Player player, int max, RequestReason reason);
 
     
     /**

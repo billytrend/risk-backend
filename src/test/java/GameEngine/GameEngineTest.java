@@ -6,7 +6,6 @@ public class GameEngineTest {
 
 	@Test
 	public void test() {
-
 	}
 
 }
