@@ -5,13 +5,56 @@ import GameState.State;
 import GameState.Territory;
 import junit.framework.TestCase;
 import org.javatuples.Pair;
-
 import java.util.HashSet;
+import static org.junit.Assert.*;
 
-public class TerritoryUtilsTest extends TestCase {
+import java.util.Arrays;
 
-    public void testGetAllTerritories() throws Exception {
+import org.junit.Before;
+import org.junit.Test;
 
+import GameBuilders.DemoGameBuilder;
+import GameState.State;
+import GameState.Territory;
+
+
+
+public class TerritoryUtilsTest {
+
+	private State gameState;
+	private Territory[] territories;
+
+	@Before
+	public void stateSetUp(){
+		gameState = DemoGameBuilder.buildGame(3, 5);
+		territories = new Territory[gameState.getTerritories().vertexSet().size()];
+		gameState.getTerritories().vertexSet().toArray(territories);
+	}
+	
+	@Test
+	public void getAllTerritoriesTest() {
+		assertEquals(TerritoryUtils.getAllTerritories(gameState).size(), 4);
+		assertTrue(TerritoryUtils.getAllTerritories(gameState).containsAll(Arrays.asList(territories)));
+		
+		gameState = DemoGameBuilder.buildTestGame(2, 5, 7);
+		assertEquals(TerritoryUtils.getAllTerritories(gameState).size(), 7);
+	}
+	
+	@Test
+	public void areNeighboursTest() {
+		Territory demoland;
+		Territory egstate;
+		Territory someplace;
+		
+		for(Territory t : territories){
+			String id = t.getId();
+			if(id.equals("demoland"))
+				demoland = t;
+			else if(id.equals("egstate"))
+				egstate = t;
+			else if(id.equals("someplace"))
+				someplace = t;
+		}
     }
 
     public void testGetAllBorders() throws Exception {
@@ -20,55 +63,4 @@ public class TerritoryUtilsTest extends TestCase {
         assertEquals(terrs.size(), 5);
     }
 
-    public void testAreNeighbours() throws Exception {
-
-    }
-
-    public void testGetUnownedTerritories() throws Exception {
-
-    }
-
-    public void testGetPlayersTerritories() throws Exception {
-
-    }
-
-    public void testHasEmptyTerritories() throws Exception {
-
-    }
-
-    public void testGetNeighbours() throws Exception {
-
-    }
-
-    public void testGetEnemyNeighbours() throws Exception {
-
-    }
-
-    public void testGetFriendlyNeighbours() throws Exception {
-
-    }
-
-    public void testGetTerritoriesWithMoreThanOneArmy() throws Exception {
-
-    }
-
-    public void testGetPossibleAttackingTerritories() throws Exception {
-
-    }
-
-    public void testGetDeployable() throws Exception {
-
-    }
-
-    public void testAddTerritory() throws Exception {
-
-    }
-
-    public void testAddBorder() throws Exception {
-
-    }
-
-    public void testCountTerritories() throws Exception {
-
-    }
 }

@@ -24,7 +24,6 @@ public class TerritoryUtils {
     public static HashSet<Territory> getAllTerritories(State state) {
         return new HashSet<Territory>(state.getTerritories().vertexSet());
     }
-    
 
     public static HashSet<Pair<Territory, Territory>> getAllBorders(State state) {
         HashSet<Pair<Territory, Territory>> borderPairs = new HashSet<Pair<Territory, Territory>>();
