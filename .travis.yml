@@ -2,3 +2,8 @@ language: java
 notifications:
   email:
     - wt6@st-andrews.ac.uk
+    - pjc8@st-andrews.ac.uk
+    - pc55@st-andrews.ac.uk
+    - am304@st-andrews.ac.uk
+    - ms255@st-andrews.ac.uk
+script: mvn test -q

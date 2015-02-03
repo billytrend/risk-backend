@@ -100,16 +100,9 @@ public class TerritoryUtilsTest {
 	
 	
 	@Test
-	public void addBorderTest(){
-		
+	public void addBorderTest() {
+
 	}
-	
-	
-	@Test
-	public void countTerritoriesTest(){
-		
-	}
-	
 	
 	
 
