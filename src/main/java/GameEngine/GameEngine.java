@@ -226,8 +226,8 @@ public class GameEngine implements Runnable {
 	private PlayState convertCards() {
 		
 		currentPlayer.getCommunicationMethod().getCardOptions();
-
-		RuleUtils.doArmyHandout(gameState, currentPlayer);
+		
+	//	RuleUtils.doArmyHandout(gameState, currentPlayer);
 
 		return PLAYER_PLACING_ARMIES;
 

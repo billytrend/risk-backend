@@ -120,7 +120,6 @@ public class DemoGameBuilder {
     	        	}
     	        
     	        }
-    	        
     	        return state;
     	    }
   }
