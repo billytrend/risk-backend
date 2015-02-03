@@ -1,14 +1,12 @@
 package GameState;
 
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.SimpleGraph;
-
 import GameUtils.ArmyUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.TerritoryUtils;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.SimpleGraph;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 /**
  * A class that represents a current state of the game including
@@ -18,8 +16,9 @@ import java.util.HashSet;
  */
 public class State {
 
-	SimpleGraph territories = new SimpleGraph(DefaultEdge.class);
-
+	SimpleGraph<Territory, DefaultEdge> territories =
+			new SimpleGraph<Territory, DefaultEdge>(DefaultEdge.class);
+	
 	private final ArrayList<Player> players;
 	private final PlayerQueue playerQueue;
 	ArrayList<Continent> continents = new ArrayList<Continent>();
@@ -29,11 +28,11 @@ public class State {
 		this.playerQueue = new PlayerQueue(players);
 	}
 
-	public SimpleGraph getTerritories() {
+	public SimpleGraph<Territory, DefaultEdge> getTerritories() {
 		return territories;
 	}
 
-	public void setTerritories(SimpleGraph territories) {
+	public void setTerritories(SimpleGraph<Territory, DefaultEdge> territories) {
 		this.territories = territories;
 	}
 

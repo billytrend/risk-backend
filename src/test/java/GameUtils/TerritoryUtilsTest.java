@@ -1,5 +1,11 @@
 package GameUtils;
 
+import GameBuilders.DemoGameBuilder;
+import GameState.State;
+import GameState.Territory;
+import junit.framework.TestCase;
+import org.javatuples.Pair;
+import java.util.HashSet;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
@@ -11,8 +17,10 @@ import GameBuilders.DemoGameBuilder;
 import GameState.State;
 import GameState.Territory;
 
+
+
 public class TerritoryUtilsTest {
-	
+
 	private State gameState;
 	private Territory[] territories;
 
@@ -47,63 +55,12 @@ public class TerritoryUtilsTest {
 			else if(id.equals("someplace"))
 				someplace = t;
 		}
-		
-		
-	}
-	
-	@Test
-	public void getUnownedTerritoriesTest() {
-	}
-	
-	@Test
-	public void getPlayersTerritoriesTest() {
-	}
-	
-	@Test
-	public void hasEmptyTerritoriesTest() {
-	}
-	
-	@Test
-	public void getNeighboursTest(){
-		
-	}
-	
-	@Test
-	public void getEnemyNeighboursTest(){
-		
-	}
-	
-	@Test
-	public void getFriendlyNeighboursTest(){
-		
-	}
-	
-	@Test
-	public void getTerritoriesWithMoreThanOneArmyTest(){
-		
-	}
-	
-	@Test
-	public void getPossibleAttackingTerritories(){
-		
-	}
-	
-	@Test
-	public void getDeployableTest(){
-		
-	}
-	
-	@Test
-	public void addTerritoryTest(){
-		
-	}
-	
-	
-	@Test
-	public void addBorderTest() {
+    }
 
-	}
-	
-	
+    public void testGetAllBorders() throws Exception {
+        State st = DemoGameBuilder.buildGame(4, 4);
+        HashSet<Pair<Territory, Territory>> terrs = TerritoryUtils.getAllBorders(st);
+        assertEquals(terrs.size(), 5);
+    }
 
 }
