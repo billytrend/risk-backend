@@ -154,7 +154,7 @@ public class GameEngine implements Runnable {
 
 		// player specifies the country
 		Territory toFill = currentPlayer.getCommunicationMethod()
-				.getTerritory(currentPlayer, emptyTerritories, false);
+				.getTerritory(currentPlayer, emptyTerritories, false, RequestReason.PLACING_ARMIES_SET_UP);
 
 		// deploy a single army in this place
 		ArmyUtils.deployArmies(currentPlayer, toFill, 1);
@@ -208,7 +208,7 @@ public class GameEngine implements Runnable {
 		
 		// ask a player what country they want to pick
 		Territory toFill = currentPlayer.getCommunicationMethod()
-				.getTerritory(currentPlayer, usersTerritories, false);
+				.getTerritory(currentPlayer, usersTerritories, false, RequestReason.PLACING_REMAINING_ARMIES_PHASE);
 
 		// deploy the armies
 		ArmyUtils.deployArmies(currentPlayer, toFill, 1);
@@ -256,11 +256,11 @@ public class GameEngine implements Runnable {
 		
 		// find out which country the player wants to place in
 		Territory toFill = currentPlayer.getCommunicationMethod()
-				.getTerritory(currentPlayer, playersTerritories, false);
+				.getTerritory(currentPlayer, playersTerritories, false, RequestReason.PLACING_ARMIES_PHASE);
 
 		// find out how many armies the player want to deploy there 
 		int deployedAmount = currentPlayer.getCommunicationMethod()
-				.getNumberOfArmies(currentPlayer, playersUndeployedArmies.size());
+				.getNumberOfArmies(currentPlayer, playersUndeployedArmies.size(), RequestReason.PLACING_ARMIES_PHASE);
 
 		// do the deployment!
 		ArmyUtils.deployArmies(currentPlayer, toFill, deployedAmount);
@@ -282,7 +282,7 @@ public class GameEngine implements Runnable {
 				.getPossibleAttackingTerritories(gameState, currentPlayer);
 		// find out which country the player wants to attack from
 		Territory attacking = currentPlayer.getCommunicationMethod()
-				.getTerritory(currentPlayer, possibleAttackingTerritories, true);
+				.getTerritory(currentPlayer, possibleAttackingTerritories, true, RequestReason.ATTACK_CHOICE);
 		
 		if(attacking == null){
 			// System.out.println("PLAYER DOESNT WANT TO INVADE");
@@ -296,7 +296,7 @@ public class GameEngine implements Runnable {
 			
 		// ask the player which country he wants to attack
 		Territory defending = currentPlayer
-				.getCommunicationMethod().getTerritory(currentPlayer, attackable, false);
+				.getCommunicationMethod().getTerritory(currentPlayer, attackable, false, RequestReason.DEFEND_CHOICE);
 		
 
 		// find out who owns this fated land
@@ -316,9 +316,9 @@ public class GameEngine implements Runnable {
 
 		// ask the players how many they would like to use
 		int attackDiceNumber = currentPlayer.
-				getCommunicationMethod().getNumberOfDice(currentPlayer, maxAttackingDice);
+				getCommunicationMethod().getNumberOfDice(currentPlayer, maxAttackingDice, RequestReason.ATTACK_CHOICE);
 		int defendDiceNumber = defendingPlayer.
-				getCommunicationMethod().getNumberOfDice(defendingPlayer, maxDefendingDice);
+				getCommunicationMethod().getNumberOfDice(defendingPlayer, maxDefendingDice, RequestReason.DEFEND_CHOICE);
 
 		// create an object to represent the fight
 		FightResult result = new FightResult(currentPlayer, defendingPlayer, 
@@ -368,7 +368,7 @@ public class GameEngine implements Runnable {
 		
 		// let the player decide how many armies they want to move
 		int movedAmount = currentPlayer.getCommunicationMethod()
-				.getNumberOfArmies(currentPlayer, remainingAttackArmies.size() - 1);
+				.getNumberOfArmies(currentPlayer, remainingAttackArmies.size() - 1, RequestReason.POST_ATTACK_MOVEMENT);
 		
 		ArmyUtils.moveArmies(result.getAttacker(), result.getAttackingTerritory(), 
 				result.getDefendingTerritory(), movedAmount);
@@ -405,7 +405,7 @@ public class GameEngine implements Runnable {
 		
 		// find out which one the player wants to move from
 		Territory source = currentPlayer
-				.getCommunicationMethod().getTerritory(currentPlayer, canBeDeployedFrom, true);
+				.getCommunicationMethod().getTerritory(currentPlayer, canBeDeployedFrom, true, RequestReason.REINFORCEMENT_PHASE);
 		
 		//------------------------------------
 		// HANDLE HERE NOT MOVING RESPONCE? - null country selection?
@@ -419,13 +419,13 @@ public class GameEngine implements Runnable {
 				.getFriendlyNeighbours(gameState, source, currentPlayer);
 		// get the choice made
 		Territory target = currentPlayer
-				.getCommunicationMethod().getTerritory(currentPlayer, canBeDeployedTo, false);
+				.getCommunicationMethod().getTerritory(currentPlayer, canBeDeployedTo, false, RequestReason.REINFORCEMENT_PHASE);
 
 		int numberOfArmiesThatMayBeMoved = ArmyUtils
 				.getNumberOfMoveableArmies(currentPlayer, source);
 		
 		int movedAmount = currentPlayer.getCommunicationMethod()
-				.getNumberOfArmies(currentPlayer, numberOfArmiesThatMayBeMoved);
+				.getNumberOfArmies(currentPlayer, numberOfArmiesThatMayBeMoved, RequestReason.REINFORCEMENT_PHASE);
 		
 		ArmyUtils.moveArmies(currentPlayer, source, target, movedAmount);
 		

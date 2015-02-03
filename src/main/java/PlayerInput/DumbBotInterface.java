@@ -1,5 +1,6 @@
 package PlayerInput;
 
+import GameEngine.RequestReason;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
@@ -40,7 +41,7 @@ public class DumbBotInterface implements PlayerInterface {
     /**
      * 
      */
-    public int getNumberOfDice(Player player, int max) {
+    public int getNumberOfDice(Player player, int max, RequestReason reason) {
         emit(player, " how many dice do you want to throw? Max " + max);
         emit(player, "Chose " + max);
         return max;
@@ -50,7 +51,7 @@ public class DumbBotInterface implements PlayerInterface {
      * 
      */
     public Territory getTerritory(Player player, HashSet<Territory> possibles,
-                                         boolean canResign) {
+                                         boolean canResign, RequestReason reason) {
         ArrayList<Territory> posList = new ArrayList<Territory>(possibles);
         emit(player, "Please choose a territory");
        
@@ -77,7 +78,7 @@ public class DumbBotInterface implements PlayerInterface {
     /**
      * 
      */
-    public int getNumberOfArmies(Player player, int max) {
+    public int getNumberOfArmies(Player player, int max, RequestReason reason) {
         emit(player, "How many armies would you like to move? Max " + max);
         emit(player, "Chose " + max);
         return ran.nextInt(max + 1);
