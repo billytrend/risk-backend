@@ -191,14 +191,5 @@ public class TerritoryUtils {
     public static void addBorder(State state, Territory a, Territory b) {
         state.getTerritories().addEdge(a, b);
     }
-
-    /**
-    *
-    * * @param state
-    * @return
-    */
-   public static int countTerritories(State state) {
-       return getAllTerritories(state).size();
-   }
 	
 }
