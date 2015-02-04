@@ -13,6 +13,8 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
 
+import static com.esotericsoftware.minlog.Log.debug;
+
 public class GameServer extends WebSocketServer {
     
     public static void main( String[] args ) throws InterruptedException , IOException {
@@ -44,15 +46,15 @@ public class GameServer extends WebSocketServer {
      */
     @Override
     public void onOpen( WebSocket conn, ClientHandshake handshake ) {
-        System.out.print("hi!");
+        debug("hi!");
         LobbyUtils.addConnection(this.lobby, conn);
-        System.out.println(Jsonify.getObjectAsJsonString(new Lobby()));
+        debug(Jsonify.getObjectAsJsonString(new Lobby()));
     }
 
     @Override
     public void onClose( WebSocket conn, int code, String reason, boolean remote ) {
         this.sendToAll( conn + " has left the room!" );
-        System.out.println(conn + " has left the room!");
+        debug(conn + " has left the room!");
     }
 
     /**
@@ -67,7 +69,7 @@ public class GameServer extends WebSocketServer {
      */
     @Override
     public void onMessage( WebSocket conn, String message ) {
-        System.out.print(message);
+        debug(message);
 //        ClientMessage messageObject = WebServerUtils.getMessageObject(message);
 //        PlayerConnection player = LobbyUtils.getPlayer(lobby, conn);
 //        if (messageObject instanceof Choice) {

@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import static com.esotericsoftware.minlog.Log.debug;
+
 /**
  * @author 120011995
  * @category Class to implement multithreading in TCP 
@@ -24,7 +26,7 @@ public class ServerThread extends Thread {
 			String message = "";
 			BufferedReader reader = new BufferedReader (new InputStreamReader(socket.getInputStream()));
 			while((message = reader.readLine()) != null){
-				System.out.println("Incoming client message: " + message);
+				debug("Incoming client message: " + message);
 			}
 			socket.close();
 		} catch (IOException e) {

@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Scanner;
 
+import static com.esotericsoftware.minlog.Log.*;
+
 /**
  * Used for a very simple AI acting as a player
  *
@@ -20,8 +22,8 @@ public class DumbBotInterface implements PlayerInterface {
 	private static Scanner scanner;
 	
     protected void emit(Player p, String message) {
-        System.out.print("[" + p.getId() + "]" + "\t\t");
-        System.out.println(message);
+        debug("[" + p.getId() + "]" + "\t\t");
+        debug(message);
     }
 
     /**
@@ -31,7 +33,7 @@ public class DumbBotInterface implements PlayerInterface {
     protected static int easyIn() {
         // ADDITIONAL CHECKS?
         int a;
-        System.out.print("Please enter your selection: ");
+        debug("Please enter your selection: ");
         scanner = new Scanner(System.in);
 		a = scanner.nextInt();
         return a;

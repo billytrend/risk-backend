@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 
+import Common.BeforeTests;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,7 +13,7 @@ import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 
-public class PlayerUtilsTest {
+public class PlayerUtilsTest extends BeforeTests {
 
 	private State gameState;
 	private Territory[] territories;
