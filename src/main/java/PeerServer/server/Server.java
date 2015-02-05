@@ -6,12 +6,19 @@ package PeerServer.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashSet;
+
+import GameEngine.RequestReason;
+import GameState.Card;
+import GameState.Player;
+import GameState.Territory;
+import PlayerInput.PlayerInterface;
 
 /**
  * @author 120011995
  * @category Class to hold the PeerServer for our multi-player risk implementation
  */
-public class Server {
+public class Server implements PlayerInterface {
 
 	private ServerThread thread;
 	
@@ -50,4 +57,47 @@ public class Server {
 		}
 	}
 	
+	public void createJSONString(){
+		//Creates the message to be sent to other players
+	}
+	
+	public void send(){
+		//Sends the JSON to other players
+		
+	}
+	
+	public void decode(){
+		//recieve other players messages then decode
+	}
+
+	@Override
+	public int getNumberOfDice(Player player, int max, RequestReason reason) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Territory getTerritory(Player player, HashSet<Territory> possibles,
+			boolean canResign, RequestReason reason) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getNumberOfArmies(Player player, int max, RequestReason reason) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void giveCard(Player player, Card card) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Card getCardOptions() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
