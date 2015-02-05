@@ -9,6 +9,8 @@ import com.google.gson.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+import org.javatuples.Pair;
+
 // example state
 //{
 //  "map": {
@@ -31,17 +33,24 @@ import java.util.ArrayList;
 public class GameStateSerialiser implements JsonSerializer<State> {
 
     @Override
-    public JsonElement serialize(State state, Type type, JsonSerializationContext jsonSerializationContext) {
+    public JsonElement serialize(State state,Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject jsonObject = new JsonObject();
-        Gson gson = new Gson();
 
-        JsonArray arr = new JsonArray();
-   
+        JsonArray countries = new JsonArray();
+        
         for (Territory t : TerritoryUtils.getAllTerritories(state) ) {
-        	arr.add(new JsonPrimitive(t.getId()));
+        	countries.add(new JsonPrimitive(t.getId()));
+        }
+        jsonObject.add("countries", countries);
+        
+        JsonArray borders = new JsonArray();
+        
+        for (Pair<Territory, Territory> p : TerritoryUtils.getAllBorders(state)){ 		
+        	borders.add(new JsonPrimitive(p.getValue0().getId()+ "," + p.getValue1().getId()));
         }
         
-        jsonObject.add("countries", arr);
+        jsonObject.add("borders", borders);
+
         return jsonObject;
     }
 }
