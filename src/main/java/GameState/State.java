@@ -8,6 +8,8 @@ import org.jgrapht.graph.SimpleGraph;
 
 import java.util.ArrayList;
 
+import static com.esotericsoftware.minlog.Log.debug;
+
 /**
  * A class that represents a current state of the game including
  * the information about players, still queuing players (still in the game),
@@ -59,23 +61,22 @@ public class State {
 	 * To be deleted in later ones.
 	 */
 	public void print(){
-		System.out.println("\n-----------------------------\n"
+		debug("\n-----------------------------\n"
 				+ "CURRENT STATE:");
-		System.out.println("Num of players: " + playerQueue.getNumberOfCurrentPlayers());
+		debug("Num of players: " + playerQueue.getNumberOfCurrentPlayers());
 		
 		Player p;
 		for(Territory t : TerritoryUtils.getAllTerritories(this)){
-			System.out.println(t.getId());
+			debug(t.getId());
 			if(PlayerUtils.getTerritoryOwner(this, t) != null){
 				p = PlayerUtils.getTerritoryOwner(this, t);
-				System.out.println("\t" + p.getId() + " terrs: " + PlayerUtils.getNumberOfTerritoriesOwned(p)
+				debug("\t" + p.getId() + " terrs: " + PlayerUtils.getNumberOfTerritoriesOwned(p)
 						+ "  undep: " + ArmyUtils.getUndeployedArmies(p));
-				System.out.println("\tarmies: " + ArmyUtils.getNumberOfArmiesOnTerritory(p, t));
-				System.out.print("\tneighbours: ");
+				debug("\tarmies: " + ArmyUtils.getNumberOfArmiesOnTerritory(p, t));
+				debug("\tneighbours: ");
 				for(Territory n : TerritoryUtils.getNeighbours(this, t)){
-					System.out.print(" " + n.getId());
+					debug(" " + n.getId());
 				}
-				System.out.println();
 			}
 		}
 		
