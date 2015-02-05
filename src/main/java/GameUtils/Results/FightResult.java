@@ -3,6 +3,12 @@ package GameUtils.Results;
 import GameState.Player;
 import GameState.Territory;
 
+/**
+ * A class that provides all the details about a fight
+ * including the loss on both sides, the information 
+ * about both players, the territories involved etc.
+ *
+ */
 public class FightResult {
 
     private int defendersLoss;

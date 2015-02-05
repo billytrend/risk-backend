@@ -1,10 +1,8 @@
 package LobbyServer;
 
+import GeneralUtils.Jsonify;
 import LobbyServer.LobbyState.Lobby;
-import LobbyServer.LobbyState.ObjectFromClient.ClientMessage;
-import LobbyServer.LobbyState.PlayerConnection;
 import LobbyServer.LobbyUtils.LobbyUtils;
-import GameEngine.PlayerChoice.Choice;
 import org.java_websocket.WebSocket;
 import org.java_websocket.WebSocketImpl;
 import org.java_websocket.handshake.ClientHandshake;
@@ -46,7 +44,9 @@ public class GameServer extends WebSocketServer {
      */
     @Override
     public void onOpen( WebSocket conn, ClientHandshake handshake ) {
+        System.out.print("hi!");
         LobbyUtils.addConnection(this.lobby, conn);
+        System.out.println(Jsonify.getObjectAsJsonString(new Lobby()));
     }
 
     @Override
@@ -67,11 +67,12 @@ public class GameServer extends WebSocketServer {
      */
     @Override
     public void onMessage( WebSocket conn, String message ) {
-        ClientMessage messageObject = WebServerUtils.getMessageObject(message);
-        PlayerConnection player = LobbyUtils.getPlayer(lobby, conn);
-        if (messageObject instanceof Choice) {
-            player.setChoice((Choice) messageObject);
-        }
+        System.out.print(message);
+//        ClientMessage messageObject = WebServerUtils.getMessageObject(message);
+//        PlayerConnection player = LobbyUtils.getPlayer(lobby, conn);
+//        if (messageObject instanceof Choice) {
+//            player.setChoice((Choice) messageObject);
+//        }
     }
 
     @Override

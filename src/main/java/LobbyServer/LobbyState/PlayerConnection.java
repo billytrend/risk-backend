@@ -1,78 +1,54 @@
 package LobbyServer.LobbyState;
 
+import GameEngine.RequestReason;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
-import GameEngine.PlayerChoice.Choice;
 import PlayerInput.PlayerInterface;
+
 import org.java_websocket.WebSocket;
 
 import java.util.HashSet;
-import java.util.concurrent.CountDownLatch;
 
 public class PlayerConnection implements PlayerInterface  {
     
     private Player playerState;
     private WebSocket connection;
-    private CountDownLatch waiter = null;
-    private Choice mostRecentChoice = null;
 
     public PlayerConnection(WebSocket connection) {
-        this.playerState = new Player(this, 0);
+        this.playerState = new Player(this, 0, 100); // this last number to be changed
         this.connection = connection;
     }
 
-    private PlayerConnection getWaiter() {
-        this.waiter = new CountDownLatch(1);
-        return this;
-    }
-    
-    @Override
-    public Choice getChoice() {
-        return this.mostRecentChoice;
-    }
+	@Override
+	public int getNumberOfDice(Player player, int max, RequestReason reason) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
-    @Override
-    public Choice await() {
-        try {
-            waiter.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        
-        return this.getChoice();
-    }
+	@Override
+	public Territory getTerritory(Player player, HashSet<Territory> possibles,
+			boolean canResign, RequestReason reason) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public void setChoice(Choice ch) {
-        this.mostRecentChoice = ch;
-        waiter.countDown();
-    }
+	@Override
+	public int getNumberOfArmies(Player player, int max, RequestReason reason) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
-    @Override
-    public PlayerConnection getNumberOfDice(Player player, int max) {
-        
-        return getWaiter();
-    }
+	@Override
+	public void giveCard(Player player, Card card) {
+		// TODO Auto-generated method stub
+		
+	}
 
-    @Override
-    public PlayerConnection getTerritory(Player player, HashSet<Territory> possibles) {
+	@Override
+	public Card getCardOptions() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-        return getWaiter();
-    }
-
-    @Override
-    public PlayerConnection getNumberOfArmies(Player player, int playersUndeployedArmies) {
-        return getWaiter();
-    }
-
-    @Override
-    public PlayerConnection giveCard(Player player, Card card) {
-        return getWaiter();
-    }
-
-    @Override
-    public PlayerConnection getCardOptions() {
-        return getWaiter();
-    }
 }

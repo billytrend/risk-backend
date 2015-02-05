@@ -2,6 +2,11 @@ package GameState;
 
 import java.util.HashSet;
 
+/**
+ * A class representing a continent along with its
+ * territories and the army reward it provides.
+ *
+ */
 public class Continent {
 
     private final HashSet<Territory> territories;

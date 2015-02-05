@@ -1,7 +1,7 @@
 /**
  * 
  */
-package PeerServer.src.server;
+package PeerServer.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;

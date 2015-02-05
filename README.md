@@ -4,6 +4,20 @@
 
     When you pull this, make sure maven is install on your computer, run `mvn test` after install
 
+*Build status* : https://magnum.travis-ci.com/billytrend/risk-backend/builds
+
+## TODO
+
+TODO: Write loadsa tests
+TODO: Develop AIs
+TODO: Finish game implementation: continents etc.
+TODO: Add websocket support
+TODO: Finish front-end (in a separate repository)
+TODO: allow maps to be parsed form JSON
+TODO: design a lobby which players can use to join, create games etc.
+TODO: Add more todos
+TODO:
+
 ## Summary
 
 This is where all the centralised magic happens. This includes
@@ -44,15 +58,3 @@ instructions.
 ## Tests
 
 The tests are in 'src/test/java/'. There's only one right now.
-
-## TODO
-
-TODO: Write loadsa tests
-TODO: Develop AIs
-TODO: Finish game implementation
-TODO: Add websocket support
-TODO: Finish front-end (in a separate repository)
-TODO: allow maps to be parsed form JSON
-TODO: design a lobby which players can use to join, create games etc.
-TODO: Add more todos
-TODO:

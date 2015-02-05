@@ -8,9 +8,29 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
-public class Arbitration {
+/**
+ * The class holds the implementation of any random events
+ * such as first player selection or dice throws.
+ * 
+ * It is also responsible for carrying out the fights. 
+ *  ----- should it be?
+ * 
+ */
+public class Arbitration{
+	
     /**
-     * * 
+     * Randomly selects a first player to start the game
+     * @param state
+     */
+    public static void setFirstPlayer(State state) {
+        Integer noOfPlayers = PlayerUtils.countPlayers(state);
+        Random ran = new Random();
+        Integer result = ran.nextInt(noOfPlayers);
+        state.getPlayerQueue().setFirstPlayer(result);
+    }
+   
+	/**
+	 * Returns a random result of one die throw.
      * @return
      */
     private static Integer dieThrow(){
@@ -20,7 +40,8 @@ public class Arbitration {
     }
 
     /**
-     * * 
+     * Returns a random result of multiple dice throw.
+     *
      * @param numOfDice
      * @return
      */
@@ -32,19 +53,13 @@ public class Arbitration {
         return result;
     }
 
+    
     /**
-     * * 
-     * @param state
-     */
-    public static void setFirstPlayer(State state) {
-        Integer noOfPlayers = PlayerUtils.countPlayers(state);
-        Random ran = new Random();
-        Integer result = ran.nextInt(noOfPlayers);
-        state.getPlayerQueue().setFirstPlayer(result);
-    }
-
-    /**
-     * *
+     * This method carries out the whole fight including dice throw,
+     * and the analysis of its result. It returns the FightResult instance 
+     * which represents the amount of units that should be taken of both
+     * the defender and the attacker. 
+     * 
      * @param result
      * @param dA
      * @param dB
@@ -58,12 +73,12 @@ public class Arbitration {
         return arbitrateFight(result, attackDice, defendDice);
     }
 
+    
     /**
-     * The method takes the result of dice throws and compares then
+     * The method takes the result of dice throws and compares them
      * to specify how many armies should be taken of each player.
-     * The returned value is an array of ints where i[0] is an
-     * amount taken of attacker and i[1] is an amount taken of
-     * defender
+     * The returned FightResult instance contains an information
+     * about the amount of armies taken of the attacker and the defender.
      *
      * @param attacker
      * @param defender
@@ -71,7 +86,7 @@ public class Arbitration {
      */
     private static FightResult arbitrateFight(FightResult result, Integer[] attacker, Integer[] defender){
 
-        // sort in descending order
+        // sort in descending order - to later compare the highest results
         Arrays.sort(attacker, Collections.reverseOrder());
         Arrays.sort(defender, Collections.reverseOrder());
 
@@ -83,7 +98,6 @@ public class Arbitration {
         int numberToCompare = (attacker.length > defender.length) ? defender.length : attacker.length;
 
         for(int i = 0; i < numberToCompare; i++){
-
             if(attacker[i] > defender[i]) {
                 result.addDefendLoss();
             }

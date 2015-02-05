@@ -1,7 +1,9 @@
 package GameState;
 
-import java.util.ArrayList;
-
+/**
+ * A class representing a territory.
+ *
+ */
 public class Territory {
 
 	private final String id;

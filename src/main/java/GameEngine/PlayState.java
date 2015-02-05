@@ -1,5 +1,10 @@
 package GameEngine;
 
+/**
+ * Enum representing all possible states of the game.
+ * Vital for the programs execution.
+ *
+ */
 public enum PlayState {
     BEGINNING_STATE,
     FILLING_EMPTY_COUNTRIES,
@@ -8,5 +13,6 @@ public enum PlayState {
     PLAYER_CONVERTING_CARDS,
     PLAYER_INVADING_COUNTRY,
     PLAYER_MOVING_ARMIES,
-    PLAYER_ENDED_GO,
+    PLAYER_ENDED_GO, 
+    END_GAME,
 }

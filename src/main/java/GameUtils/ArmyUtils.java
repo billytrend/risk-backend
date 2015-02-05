@@ -7,10 +7,15 @@ import GameState.Territory;
 
 import java.util.ArrayList;
 
+/**
+ * A class that provides all the methods that are responsible
+ * for any kind of army management (moving armies, providing
+ * information about their location and size etc.)
+ *
+ */
 public class ArmyUtils {
 
     /**
-     *
      * @param player
      * @return
      */
@@ -25,7 +30,6 @@ public class ArmyUtils {
     }
 
     /**
-     *
      * @param state
      * @return
      */
@@ -37,7 +41,7 @@ public class ArmyUtils {
     }
 
     /**
-     * *
+   	 *
      * @param p
      * @param n
      */
@@ -48,7 +52,7 @@ public class ArmyUtils {
     }
 
     /**
-     * *
+     * 
      * @param p
      * @param t
      * @return
@@ -56,7 +60,7 @@ public class ArmyUtils {
     public static ArrayList<Army> getArmiesOnTerritory(Player p, Territory t) {
         ArrayList<Army> armies = new ArrayList<Army>();
         for (Army a : p.getArmies()) {
-            if (a.getTerritory().equals(t)) {
+            if ((a.getTerritory() != null) && (a.getTerritory().equals(t))) {
                 armies.add(a);
             }
         }
@@ -64,7 +68,6 @@ public class ArmyUtils {
     }
 
     /**
-     *
      * @param p
      * @param t
      * @return
@@ -72,13 +75,15 @@ public class ArmyUtils {
     public static int getNumberOfArmiesOnTerritory(Player p, Territory t) {
         int count = 0;
         for (Army a : p.getArmies()) {
-            if (a.getTerritory().equals(t)) {
-                count++;
-            }
+        	if(a.getTerritory() != null)
+	            if (a.getTerritory().equals(t)) {
+	                count++;
+	            }
         }
         return count;
     }
 
+    
     /**
      *
      * @param p
@@ -86,39 +91,42 @@ public class ArmyUtils {
      * @param n
      */
     public static void destroyArmies(Player p, Territory t, int n) {
-        ArrayList<Army> armies = p.getArmies();
-        for (int i = 0; i < armies.size() && n > 0; i++) {
-            if (armies.get(i).getTerritory().equals(t)) {
-                p.getArmies().remove(i);
-                n--;
-            }
+        ArrayList<Army> armies = getArmiesOnTerritory(p, t);
+        for (int i = 0; i < n; i++) {
+                p.getArmies().remove(armies.get(i));
         }
     }
 
+    
     /**
-     *
      * @param target
      * @param n
      */
     public static void moveArmies(Player sourceOwner, Territory source, Territory target, int n) {
-        ArrayList<Army> toMove = new ArrayList<Army>(getArmiesOnTerritory(sourceOwner, source).subList(0, n));
-        for(Army a : toMove) {
-            a.setTerritory(target);
+        ArrayList<Army> moving = getArmiesOnTerritory(sourceOwner, source);
+        Army a;
+        for(int i = 0; i < n; i++) {
+        	a = moving.get(i);
+        	a.setTerritory(target);
         }
     }
 
     /**
-     * *
      * @param target
      * @param n
      */
     public static void deployArmies(Player player, Territory target, int n) {
-        ArrayList<Army> toDeploy = new ArrayList<Army>(getUndeployedArmies(player).subList(0, n));
-        for (Army a : toDeploy) {
-            a.setTerritory(target);
+        ArrayList<Army> toDeploy = getUndeployedArmies(player);
+        for (int i = 0; i < n; i++) {
+           toDeploy.get(i).setTerritory(target);
         }
     }
     
+    /**
+     * @param p
+     * @param source
+     * @return
+     */
     public static int getNumberOfMoveableArmies(Player p, Territory source) {
         return getNumberOfArmiesOnTerritory(p, source) - 1;
     }
