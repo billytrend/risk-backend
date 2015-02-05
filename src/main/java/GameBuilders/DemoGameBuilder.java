@@ -2,11 +2,15 @@ package GameBuilders;
 
 import GameState.Player;
 import GameState.State;
+import GameUtils.ContinentUtils;
 import GameUtils.TerritoryUtils;
 import GameState.Territory;
 import PlayerInput.DumbBotInterface;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Random;
 
 /*
@@ -45,6 +49,11 @@ public class DemoGameBuilder {
         TerritoryUtils.addBorder(state, demoLandB, demoLandC);
         TerritoryUtils.addBorder(state, demoLandC, demoLandD);
         TerritoryUtils.addBorder(state, demoLandD, demoLandB);
+        
+        Territory[] contAB = {demoLandA, demoLandB};
+        Territory[] contCD = {demoLandC, demoLandD};
+        ContinentUtils.addContinent(state, contAB, 4, "demoContAB");
+        ContinentUtils.addContinent(state, contCD, 3, "demoContCD");
 
         return state;
 
