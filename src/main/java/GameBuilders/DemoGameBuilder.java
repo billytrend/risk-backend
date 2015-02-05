@@ -5,6 +5,7 @@ import GameState.State;
 import GameUtils.ContinentUtils;
 import GameUtils.TerritoryUtils;
 import GameState.Territory;
+import PlayerInput.CommandLineInterface;
 import PlayerInput.DumbBotInterface;
 
 import java.lang.reflect.Array;
@@ -26,10 +27,12 @@ public class DemoGameBuilder {
 
         // creating players
         ArrayList<Player> ps = new ArrayList<Player>();
-        for(int i = 0; i < numOfPlayers; i++){
+        
+        ps.add(new Player(new CommandLineInterface(), armiesAtTheStart, 1));
+        for(int i = 1; i < numOfPlayers; i++){
             ps.add(new Player(new DumbBotInterface(), armiesAtTheStart, i + 1));
         }
-      
+        
         State state = new State(ps);
 
         // creating territories
