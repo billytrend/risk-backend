@@ -1,9 +1,13 @@
 package GeneralUtils.Serialisers;
 
 import GameState.State;
+import GameState.Territory;
+import GameUtils.TerritoryUtils;
+
 import com.google.gson.*;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 // example state
 //{
@@ -29,9 +33,15 @@ public class GameStateSerialiser implements JsonSerializer<State> {
     @Override
     public JsonElement serialize(State state, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonObject jsonObject = new JsonObject();
+        Gson gson = new Gson();
 
-
+        JsonArray arr = new JsonArray();
+   
+        for (Territory t : TerritoryUtils.getAllTerritories(state) ) {
+        	arr.add(new JsonPrimitive(t.getId()));
+        }
         
+        jsonObject.add("countries", arr);
         return jsonObject;
     }
 }

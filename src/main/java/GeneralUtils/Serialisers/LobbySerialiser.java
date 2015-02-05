@@ -1,6 +1,6 @@
 package GeneralUtils.Serialisers;
 
-import GameBuilders.DemoGameBuilder;
+import GameBuilders.DemoGame;
 import GameState.State;
 import LobbyServer.LobbyState.Lobby;
 
@@ -18,7 +18,7 @@ public class LobbySerialiser implements JsonSerializer<Lobby> {
         JsonObject jsonObject = new JsonObject();
 
         JSONArray games = new JSONArray();
-        jsonObject.add("lol", jsonSerializationContext.serialize(DemoGameBuilder.buildGame(2, 3)));
+        jsonObject.add("lol", jsonSerializationContext.serialize(DemoGame.buildGame(2, 3)));
         
         for (State s : lobby.getCurrentGames()) {
             games.add(jsonSerializationContext.serialize(s));
