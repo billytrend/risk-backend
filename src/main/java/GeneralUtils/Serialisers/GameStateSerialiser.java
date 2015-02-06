@@ -1,7 +1,9 @@
 package GeneralUtils.Serialisers;
 
+import GameState.Player;
 import GameState.State;
 import GameState.Territory;
+import GameUtils.PlayerUtils;
 import GameUtils.TerritoryUtils;
 
 import com.google.gson.*;
@@ -28,28 +30,47 @@ import org.javatuples.Pair;
 //      ["sime_land", "scandinavia"],
 //      ["_land", "scandinavia"]
 //  ]
+//  }
+//	
 // },
 
 public class GameStateSerialiser implements JsonSerializer<State> {
 
     @Override
     public JsonElement serialize(State state,Type type, JsonSerializationContext jsonSerializationContext) {
-        JsonObject jsonObject = new JsonObject();
-
+        
+    	JsonObject jsonObject = new JsonObject();
+    	JsonObject map = new JsonObject();
         JsonArray countries = new JsonArray();
         
         for (Territory t : TerritoryUtils.getAllTerritories(state) ) {
         	countries.add(new JsonPrimitive(t.getId()));
         }
-        jsonObject.add("countries", countries);
+        map.add("countries", countries);
         
         JsonArray borders = new JsonArray();
         
-        for (Pair<Territory, Territory> p : TerritoryUtils.getAllBorders(state)){ 		
-        	borders.add(new JsonPrimitive(p.getValue0().getId()+ "," + p.getValue1().getId()));
+        for (Pair<Territory, Territory> p : TerritoryUtils.getAllBorders(state)){ 	
+        	JsonArray pair = new JsonArray();
+        	pair.add(new JsonPrimitive(p.getValue0().getId()));
+        	pair.add(new JsonPrimitive(p.getValue1().getId()));
+        	
+        	borders.add(pair);
         }
         
-        jsonObject.add("borders", borders);
+        map.add("borders", borders);
+        
+        JsonObject players = new JsonObject();
+        for(Player p : state.getPlayers()){
+        	JsonArray territories = new JsonArray();
+        	for(Territory t : TerritoryUtils.getPlayersTerritories(p)){
+        		territories.add(new JsonPrimitive(t.getId()));
+        	}
+        	players.add(p.getId(), territories);
+        }
+       
+        jsonObject.add("map", map);
+        jsonObject.add("players", players);
 
         return jsonObject;
     }
