@@ -1,6 +1,7 @@
 package PlayerInput;
 
 import java.util.HashSet;
+import java.util.Iterator;
 
 import GameEngine.PlayState;
 import GameEngine.RequestReason;
@@ -21,7 +22,27 @@ public class CommunistDefensive implements PlayerInterface {
 	@Override
 	public Territory getTerritory(Player player, HashSet<Territory> possibles,
 			boolean canResign, RequestReason reason) {
-		// TODO Auto-generated method stub
+
+		
+		//NEEDS TO BE FINISHED
+		Iterator<Territory> i = possibles.iterator();
+
+		switch (reason) {
+		case PLACING_ARMIES_SET_UP:
+			return i.next();
+		case PLACING_REMAINING_ARMIES_PHASE:
+			return i.next();
+		case PLACING_ARMIES_PHASE:
+			return i.next();
+		case ATTACK_CHOICE:
+			return i.next();
+		case REINFORCEMENT_PHASE:
+			return null; // TODO: Figure out average and reinforce depending on
+							// links.
+		default:
+			break;
+		}
+
 		return null;
 	}
 
@@ -40,9 +61,10 @@ public class CommunistDefensive implements PlayerInterface {
 		case DEFEND_CHOICE:
 			return max;
 		case REINFORCEMENT_PHASE:
-			return 0; //TODO: Figure out average and reinforce depending on links.
+			return 0; // TODO: Figure out average and reinforce depending on
+						// links.
 		case POST_ATTACK_MOVEMENT:
-			return max -2;
+			return max - 2;
 		}
 
 		return 0;
