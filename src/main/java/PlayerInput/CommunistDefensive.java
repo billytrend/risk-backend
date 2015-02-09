@@ -12,7 +12,7 @@ import GameUtils.PlayerUtils;
 public class CommunistDefensive implements PlayerInterface {
 
 	private int averageToDeploy;
-	
+
 	@Override
 	public int getNumberOfDice(Player player, int max, RequestReason reason) {
 		return max;
@@ -24,44 +24,34 @@ public class CommunistDefensive implements PlayerInterface {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public int getNumberOfArmies(Player player, int max, RequestReason reason) {
-		
-		
-		switch(reason){
-	    case PLACING_ARMIES_SET_UP :
-	       return 1;
-	    case PLACING_REMAINING_ARMIES_PHASE :
-	       return 1;
-	    //You can have any number of case statements.
-	    default : //Optional
-	       //Statements
-	}
-		
-		
-		
-		if (reason.equals(PlayState.BEGINNING_STATE)){
+
+		switch (reason) {
+		case PLACING_ARMIES_SET_UP:
 			return 1;
-		}
-		
-		if (reason.equals(PlayState.FILLING_EMPTY_COUNTRIES)){
+		case PLACING_REMAINING_ARMIES_PHASE:
 			return 1;
-		}
-		
-		if (reason.equals(PlayState.PLAYER_PLACING_ARMIES)){
+		case PLACING_ARMIES_PHASE:
 			return 1;
+		case ATTACK_CHOICE:
+			return max;
+		case DEFEND_CHOICE:
+			return max;
+		case REINFORCEMENT_PHASE:
+			return 0; //TODO: Figure out average and reinforce depending on links.
+		case POST_ATTACK_MOVEMENT:
+			return max -2;
 		}
-		
-		
-		
+
 		return 0;
 	}
 
 	@Override
 	public void giveCard(Player player, Card card) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -69,6 +59,5 @@ public class CommunistDefensive implements PlayerInterface {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 }
