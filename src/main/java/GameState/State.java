@@ -18,12 +18,13 @@ import static com.esotericsoftware.minlog.Log.debug;
  */
 public class State {
 
-	SimpleGraph<Territory, DefaultEdge> territories =
+	SimpleGraph<Territory, DefaultEdge> territories = 
 			new SimpleGraph<Territory, DefaultEdge>(DefaultEdge.class);
 	
 	private final ArrayList<Player> players;
 	private final PlayerQueue playerQueue;
 	ArrayList<Continent> continents = new ArrayList<Continent>();
+	private final ArrayList<Card> cards = new ArrayList<Card>();
 
 	public State(ArrayList<Player> players) {
 		this.players = players;
@@ -50,6 +51,10 @@ public class State {
 		return continents;
 	}
 
+	public ArrayList<Card> getCards() {
+		return cards;
+	}
+	
 	public void setContinents(ArrayList<Continent> continents) {
 		this.continents = continents;
 	}
