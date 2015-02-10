@@ -136,6 +136,7 @@ public class CardUtilsTest {
         Card f = new Card(anotherTerr, CardType.SOLDIER);
         Card g = new Card(anotherTerr, CardType.SOLDIER);
         Card h = new Card(anotherTerr, CardType.SOLDIER);
+        assertEquals(0, CardUtils.getPossibleCardCombinations(this.st, aPlayer).size());
         CardUtils.addCard(this.st, c);
         CardUtils.addCard(this.st, d);
         CardUtils.addCard(this.st, e);
