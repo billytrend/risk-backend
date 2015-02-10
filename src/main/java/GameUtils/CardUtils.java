@@ -66,7 +66,10 @@ public class CardUtils {
         }
         return cardsOfType;
     }
-    
+    public static ArrayList<Card> getCardsOfType(State state, CardType cardType) {
+        return getCardsOfType(state.getCards(), cardType);
+    }
+
     public static ArrayList<Triplet<Card, Card, Card>> getPossibleCardCombinations(State s, Player p) {
         ArrayList<Card> playersCards = getPlayersCards(s, p);
         ArrayList<Triplet<Card, Card, Card>> combinations = new ArrayList<Triplet<Card, Card, Card>>();

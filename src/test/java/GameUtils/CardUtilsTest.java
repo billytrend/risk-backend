@@ -105,7 +105,25 @@ public class CardUtilsTest {
 
     @Test
     public void testGetCardsOfType() throws Exception {
-
+        Iterator<Territory> it = this.st.getTerritories().vertexSet().iterator();
+        Territory aTerr = it.next();
+        Territory anotherTerr = it.next();
+        Player aPlayer = this.st.getPlayers().get(0);
+        Card c = new Card(aTerr, CardType.CANNON);
+        Card d = new Card(aTerr, CardType.HORSE);
+        Card e = new Card(aTerr, CardType.SOLDIER);
+        Card f = new Card(anotherTerr, CardType.SOLDIER);
+        Card g = new Card(anotherTerr, CardType.SOLDIER);
+        Card h = new Card(anotherTerr, CardType.SOLDIER);
+        CardUtils.addCard(this.st, c);
+        CardUtils.addCard(this.st, d);
+        CardUtils.addCard(this.st, e);
+        CardUtils.addCard(this.st, f);
+        CardUtils.addCard(this.st, g);
+        CardUtils.addCard(this.st, h);
+        assertEquals(4, CardUtils.getCardsOfType(this.st, CardType.SOLDIER).size());
+        assertEquals(1, CardUtils.getCardsOfType(this.st, CardType.CANNON).size());
+        assertEquals(1, CardUtils.getCardsOfType(this.st, CardType.HORSE).size());
     }
 
     @Test
