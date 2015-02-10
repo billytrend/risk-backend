@@ -1,16 +1,13 @@
 package GameUtils;
 
 import GameBuilders.DemoGameBuilder;
-import GameState.Card;
-import GameState.CardType;
-import GameState.State;
-import GameState.Territory;
+import GameState.*;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Iterator;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class CardUtilsTest {
 
@@ -23,6 +20,7 @@ public class CardUtilsTest {
 
     @Test
     public void testAddCard() throws Exception {
+        assertEquals(this.st.getCards().size(), 0);
         Iterator<Territory> it = this.st.getTerritories().vertexSet().iterator();
         Territory aTerr = it.next();
         CardUtils.addCard(this.st, new Card(aTerr, CardType.CANNON));
@@ -38,11 +36,16 @@ public class CardUtilsTest {
     @Test
     public void testGetPlayersCards() throws Exception {
 
-    }
+        Iterator<Territory> it = this.st.getTerritories().vertexSet().iterator();
+        Territory aTerr = it.next();
+        Player aPlayer = this.st.getPlayers().get(0);
+        Card c = new Card(aTerr, CardType.CANNON);
+        CardUtils.addCard(this.st, c);
 
-    @Test
-    public void testGivePlayerCard() throws Exception {
-
+        assertEquals(CardUtils.getPlayersCards(this.st, aPlayer).size(), 0);
+        CardUtils.givePlayerCard(c, aPlayer);
+        assertEquals(CardUtils.getPlayersCards(this.st, aPlayer).size(), 1);
+        assertEquals(CardUtils.getPlayersCards(this.st, aPlayer).get(0), c);
     }
 
     @Test

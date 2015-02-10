@@ -22,7 +22,7 @@ public class CardUtils {
         ArrayList<Card> cards = new ArrayList<Card>();
         
         for (Card c : s.getCards()) {
-            if (c.getOwner().equals(p)) {
+            if (c.getOwner() != null && c.getOwner().equals(p)) {
                 cards.add(c);
             }
         }
