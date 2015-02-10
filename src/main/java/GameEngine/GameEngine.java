@@ -67,47 +67,47 @@ public class GameEngine implements Runnable {
 
 		switch (this.playState) {
 			case BEGINNING_STATE:
-			//	debug("\nBEGIN");
+				debug("\nBEGIN");
 				this.playState = begin();
 				gameState.print();
 				break;
 
 			case FILLING_EMPTY_COUNTRIES:
-			//	debug("\nFILLING EMPTY COUNTRIES");
+				debug("\nFILLING EMPTY COUNTRIES");
 				this.playState = fillAnEmptyCountry();
 				break;
 
 			case USING_REMAINING_ARMIES:
-			//	debug("\nUSING REMAINING ARMIES");
+				debug("\nUSING REMAINING ARMIES");
 				this.playState = useARemainingArmy();
 				break;
 
 			case PLAYER_CONVERTING_CARDS:
-			//	debug("\nCARDS");
+				debug("\nCARDS");
 				this.playState = convertCards();
 				// TODO: why is this here?
 				ArmyUtils.givePlayerNArmies(currentPlayer, 1);
 				break;
 
 			case PLAYER_PLACING_ARMIES:
-			//	debug("\nPLAYER PLACING ARMIES");
+				debug("\nPLAYER PLACING ARMIES");
 				this.playState = placeArmy();
 				break;
 
 			case PLAYER_INVADING_COUNTRY:
-			//	debug("\nINVADING");
+				debug("\nINVADING");
 				this.playState = invadeCountry(); 
 				gameState.print();
 				break;
 
 			case PLAYER_MOVING_ARMIES:
-			//	debug("\nMOVING ARMIES");
+				debug("\nMOVING ARMIES");
 				this.playState = moveArmy();
 				gameState.print();
 				break;
 
 			case PLAYER_ENDED_GO:
-			//	debug("\nEND GO");
+				debug("\nEND GO");
 				this.playState = endGo();
 				break;
 				
@@ -286,7 +286,7 @@ public class GameEngine implements Runnable {
 				.getTerritory(currentPlayer, possibleAttackingTerritories, true, RequestReason.ATTACK_CHOICE);
 		
 		if(attacking == null){
-			// debug("PLAYER DOESNT WANT TO INVADE");
+			debug("PLAYER DOESNT WANT TO INVADE");
 			return PLAYER_MOVING_ARMIES;
 		}
 		
