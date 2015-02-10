@@ -19,7 +19,7 @@ public class CommunistDefensive implements PlayerInterface {
 	public State currentState;
 	private int initialDeploymentCounter;
 	private int deploymentCounter;
-	private ArrayList<Territory> currentStrongTerritories  = new ArrayList();
+	private ArrayList<Territory> currentStrongTerritories  = new ArrayList<Territory>();
 	
 	private static final int MIN = 0;
 	
@@ -46,6 +46,7 @@ public class CommunistDefensive implements PlayerInterface {
 		Territory[] territoryArray = (Territory[]) possibles.toArray();
 		Random rand = new Random();
 		
+		//TODO: Make into helper method.
 		for(int i= 0; i < territoryArray.length; i++){
 			Player self = PlayerUtils.getTerritoryOwner(currentState, territoryArray[i]);
 			int strength = ArmyUtils.getArmiesOnTerritory(self, territoryArray[i]).size();
