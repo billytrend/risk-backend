@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class CardUtils {
-    
-    public void addCard(State s, Card c) {
+
+    public static void addCard(State s, Card c) {
         s.getCards().add(c);
     }
     
-    public ArrayList<Card> getPlayersCards(State s, Player p) {
+    public static ArrayList<Card> getPlayersCards(State s, Player p) {
         ArrayList<Card> cards = new ArrayList<Card>();
         
         for (Card c : s.getCards()) {
@@ -30,15 +30,15 @@ public class CardUtils {
         return cards;
     }
     
-    public void givePlayerCard(Card c, Player p) {
+    public static void givePlayerCard(Card c, Player p) {
         c.setOwner(p);
     }
     
-    public void releaseCard(Card c) {
+    public static void releaseCard(Card c) {
         c.setOwner(null);
     }
     
-    public ArrayList<Card> getUnownedCards(State s) {
+    public static ArrayList<Card> getUnownedCards(State s) {
         ArrayList<Card> unownedCards = new ArrayList<Card>();
         for (Card c : s.getCards()) {
             if (c.getOwner().equals(null)) {
@@ -48,7 +48,7 @@ public class CardUtils {
         return unownedCards;
     }
     
-    public Card givePlayerRandomCard(State s, Player p) {
+    public static Card givePlayerRandomCard(State s, Player p) {
         ArrayList<Card> unownedCards = getUnownedCards(s);
         Random r = new Random();
         int randIndex = r.nextInt(unownedCards.size());
@@ -57,7 +57,7 @@ public class CardUtils {
         return chosen;
     }
     
-    public ArrayList<Card> getCardsOfType(ArrayList<Card> cards, CardType cardType) {
+    public static ArrayList<Card> getCardsOfType(ArrayList<Card> cards, CardType cardType) {
         ArrayList<Card> cardsOfType = new ArrayList<Card>();
         for (Card c : cards) {
             if (c.getType() == cardType) {
@@ -67,7 +67,7 @@ public class CardUtils {
         return cardsOfType;
     }
     
-    public ArrayList<Triplet<Card, Card, Card>> getPossibleCardCombinations(State s, Player p) {
+    public static ArrayList<Triplet<Card, Card, Card>> getPossibleCardCombinations(State s, Player p) {
         ArrayList<Card> playersCards = getPlayersCards(s, p);
         ArrayList<Triplet<Card, Card, Card>> combinations = new ArrayList<Triplet<Card, Card, Card>>();
 
