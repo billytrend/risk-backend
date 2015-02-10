@@ -62,6 +62,19 @@ public class CardUtilsTest {
 
     @Test
     public void testGetUnownedCards() throws Exception {
+        Iterator<Territory> it = this.st.getTerritories().vertexSet().iterator();
+        Territory aTerr = it.next();
+        Player aPlayer = this.st.getPlayers().get(0);
+        Card c = new Card(aTerr, CardType.CANNON);
+        CardUtils.addCard(this.st, c);
+        assertEquals(CardUtils.getUnownedCards(this.st).get(0), c);
+        assertEquals(CardUtils.getUnownedCards(this.st).size(), 1);
+        CardUtils.givePlayerCard(c, aPlayer);
+        assertEquals(CardUtils.getUnownedCards(this.st).size(), 0);
+        Card d = new Card(aTerr, CardType.HORSE);
+        CardUtils.addCard(this.st, d);
+        assertEquals(CardUtils.getUnownedCards(this.st).size(), 1);
+        assertEquals(CardUtils.getUnownedCards(this.st).get(0), d);
 
     }
 

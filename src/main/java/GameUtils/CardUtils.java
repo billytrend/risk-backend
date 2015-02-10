@@ -41,7 +41,7 @@ public class CardUtils {
     public static ArrayList<Card> getUnownedCards(State s) {
         ArrayList<Card> unownedCards = new ArrayList<Card>();
         for (Card c : s.getCards()) {
-            if (c.getOwner().equals(null)) {
+            if (c.getOwner() == null) {
                 unownedCards.add(c);
             }
         }
