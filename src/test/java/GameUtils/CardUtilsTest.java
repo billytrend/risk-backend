@@ -8,6 +8,8 @@ import org.junit.Test;
 import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 public class CardUtilsTest {
 
@@ -80,7 +82,25 @@ public class CardUtilsTest {
 
     @Test
     public void testGivePlayerRandomCard() throws Exception {
+        Iterator<Territory> it = this.st.getTerritories().vertexSet().iterator();
+        Territory aTerr = it.next();
+        Player aPlayer = this.st.getPlayers().get(0);
+        Card c = new Card(aTerr, CardType.CANNON);
+        CardUtils.addCard(this.st, c);
+        Card d = new Card(aTerr, CardType.HORSE);
+        CardUtils.addCard(this.st, d);
+        CardUtils.givePlayerRandomCard(this.st, aPlayer);
+        assertTrue(
+                CardUtils.getPlayersCards(this.st, aPlayer).get(0).equals(c) ||
+                CardUtils.getPlayersCards(this.st, aPlayer).get(0).equals(d)
+        );
 
+        Player anotherPlayer = this.st.getPlayers().get(1);
+        CardUtils.givePlayerRandomCard(this.st, anotherPlayer);
+        assertNotEquals(
+                CardUtils.getPlayersCards(this.st, aPlayer).get(0),
+                CardUtils.getPlayersCards(this.st, anotherPlayer).get(0)
+        );
     }
 
     @Test
