@@ -50,7 +50,14 @@ public class CardUtilsTest {
 
     @Test
     public void testReleaseCard() throws Exception {
-
+        Iterator<Territory> it = this.st.getTerritories().vertexSet().iterator();
+        Territory aTerr = it.next();
+        Player aPlayer = this.st.getPlayers().get(0);
+        Card c = new Card(aTerr, CardType.CANNON);
+        CardUtils.addCard(this.st, c);
+        CardUtils.givePlayerCard(c, aPlayer);
+        CardUtils.releaseCard(c);
+        assertEquals(CardUtils.getPlayersCards(this.st, aPlayer).size(), 0);
     }
 
     @Test
