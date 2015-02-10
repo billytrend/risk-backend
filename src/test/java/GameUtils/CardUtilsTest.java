@@ -7,9 +7,7 @@ import org.junit.Test;
 
 import java.util.Iterator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class CardUtilsTest {
 
@@ -128,6 +126,32 @@ public class CardUtilsTest {
 
     @Test
     public void testGetPossibleCardCombinations() throws Exception {
-
+        Iterator<Territory> it = this.st.getTerritories().vertexSet().iterator();
+        Territory aTerr = it.next();
+        Territory anotherTerr = it.next();
+        Player aPlayer = this.st.getPlayers().get(0);
+        Card c = new Card(aTerr, CardType.CANNON);
+        Card d = new Card(aTerr, CardType.HORSE);
+        Card e = new Card(aTerr, CardType.SOLDIER);
+        Card f = new Card(anotherTerr, CardType.SOLDIER);
+        Card g = new Card(anotherTerr, CardType.SOLDIER);
+        Card h = new Card(anotherTerr, CardType.SOLDIER);
+        CardUtils.addCard(this.st, c);
+        CardUtils.addCard(this.st, d);
+        CardUtils.addCard(this.st, e);
+        CardUtils.givePlayerCard(c, aPlayer);
+        CardUtils.givePlayerCard(d, aPlayer);
+        CardUtils.givePlayerCard(e, aPlayer);
+        assertEquals(1, CardUtils.getPossibleCardCombinations(this.st, aPlayer).size());
+        assertTrue(CardUtils.getPossibleCardCombinations(this.st, aPlayer).get(0).contains(c));
+        assertTrue(CardUtils.getPossibleCardCombinations(this.st, aPlayer).get(0).contains(d));
+        assertTrue(CardUtils.getPossibleCardCombinations(this.st, aPlayer).get(0).contains(e));
+        CardUtils.addCard(this.st, f);
+        CardUtils.addCard(this.st, g);
+        CardUtils.addCard(this.st, h);
+        CardUtils.givePlayerCard(f, aPlayer);
+        CardUtils.givePlayerCard(g, aPlayer);
+        CardUtils.givePlayerCard(h, aPlayer);
+        assertEquals(8, CardUtils.getPossibleCardCombinations(this.st, aPlayer).size());
     }
 }
