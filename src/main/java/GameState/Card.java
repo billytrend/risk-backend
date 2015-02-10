@@ -6,16 +6,14 @@ package GameState;
  *
  */
 
-enum Types { SOLDIER, HORSE, CANNON }
-
 public class Card {
 
 
-	private final Types type;
+	private final CardType type;
 	private final Territory territory;
 	private Player owner;
 	
-	public Card(Types type, Territory territory) {
+	public Card(CardType type, Territory territory) {
 		this.type = type;
 		this.territory = territory;
 		owner = null;
@@ -27,6 +25,14 @@ public class Card {
 
 	public Player getOwner() {
 		return owner;
+	}
+
+	public CardType getType() {
+		return type;
+	}
+
+	public Territory getTerritory() {
+		return territory;
 	}
 	
 }
