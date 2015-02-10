@@ -14,16 +14,15 @@ import java.net.Socket;
  * @category Class to implement multithreading in TCP PeerServer
  */
 public class ServerThread extends Thread {
-	public ServerSocket client;
+	public ServerSocket server;
 	ServerThread(ServerSocket client){
-		this.client = client;
+		this.server = client;
 	}
 
 	public void run(){
 		Socket socket = null;
 		try {
-			socket = client.accept();
-			
+			socket = server.accept();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -35,7 +34,7 @@ public class ServerThread extends Thread {
 				while((message = reader.readLine()) != null){
 					System.out.println("Incoming client message: " + message);
 				}
-				//socket.close();	
+				socket.close();	
 			} 
 			catch (IOException e) {
 				e.printStackTrace();

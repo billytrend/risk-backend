@@ -12,10 +12,10 @@ import java.net.UnknownHostException;
 
 /**
  * @author 120011995
- * @category Class which acts as a client to connect to the multi-threaded PeerServer specified in PeerServer class
+ * @category Class which acts as a client to connect to the 
+ * 			multi-threaded PeerServer specified in PeerServer class
  */
 public class Client {
-	
 	
 	public static void main(String[] args) {
 		String clientName = args[0];
@@ -26,6 +26,7 @@ public class Client {
 	 * Method which creates client connections and 
 	 * communicates messages to PeerServer class.
 	 */
+	
 	public void clientConnection(String clientName){
 		int port = 4444;
 		try {

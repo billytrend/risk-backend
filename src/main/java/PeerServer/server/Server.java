@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
+import java.util.concurrent.CountDownLatch;
 
 import GameEngine.RequestReason;
 import GameState.Card;
@@ -21,6 +22,8 @@ import PlayerInput.PlayerInterface;
 public class Server implements PlayerInterface {
 
 	private ServerThread thread;
+	public CountDownLatch CDL = new CountDownLatch(1);
+
 	
 	/**
 	 * @param args
@@ -37,7 +40,7 @@ public class Server implements PlayerInterface {
 		try {
 			ServerSocket serverSocket = new ServerSocket(port);
 			System.out.println("PeerServer up and ready for connections on port: " + port);
-			//enables multithreading via blocking and waiting for clients
+			//enables multi-threading via blocking and waiting for clients
 			thread = new ServerThread(serverSocket);
 			thread.start();
 		} catch (IOException e) {
@@ -48,7 +51,7 @@ public class Server implements PlayerInterface {
 	
 	public void stopServer(){
 		try {
-			thread.client.close();
+			thread.server.close();
 			thread.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -56,48 +59,54 @@ public class Server implements PlayerInterface {
 			e.printStackTrace();
 		}
 	}
-	
-	public void createJSONString(){
-		//Creates the message to be sent to other players
-	}
-	
+		
 	public void send(){
-		//Sends the JSON to other players
+		//Requests and sends the JSON to a player
 		
 	}
 	
-	public void decode(){
-		//recieve other players messages then decode
+	public void sendToAll(){
+		//Sends a request or JSON message to all players
+		//for loop using send() method
 	}
-
+	
+	public void decode(){
+		//Receive other players messages then decode
+		//decrement countdown latch
+		CDL.countDown();
+	}
+	
+	public void waitForResponse(){
+		//waits players response messages
+		try {
+			CDL.wait();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
 	public int getNumberOfDice(Player player, int max, RequestReason reason) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public Territory getTerritory(Player player, HashSet<Territory> possibles,
 			boolean canResign, RequestReason reason) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public int getNumberOfArmies(Player player, int max, RequestReason reason) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public void giveCard(Player player, Card card) {
-		// TODO Auto-generated method stub
-		
+	public void giveCard(Player player, Card card) {		
 	}
 
 	@Override
 	public Card getCardOptions() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }
