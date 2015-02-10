@@ -1,5 +1,6 @@
 package PlayerInput;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
@@ -10,6 +11,7 @@ import GameState.Card;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
+import GameUtils.ArmyUtils;
 import GameUtils.PlayerUtils;
 
 public class CommunistDefensive implements PlayerInterface {
@@ -17,6 +19,8 @@ public class CommunistDefensive implements PlayerInterface {
 	public State currentState;
 	private int initialDeploymentCounter;
 	private int deploymentCounter;
+	private ArrayList<Territory> currentStrongTerritories  = new ArrayList();
+	
 	private static final int MIN = 0;
 	
 	public CommunistDefensive(State a)
@@ -42,6 +46,16 @@ public class CommunistDefensive implements PlayerInterface {
 		Territory[] territoryArray = (Territory[]) possibles.toArray();
 		Random rand = new Random();
 		
+		for(int i= 0; i < territoryArray.length; i++){
+			Player self = PlayerUtils.getTerritoryOwner(currentState, territoryArray[i]);
+			int strength = ArmyUtils.getArmiesOnTerritory(self, territoryArray[i]).size();
+			
+			if(strength < 3){
+				this.currentStrongTerritories.add(territoryArray[i]);
+			}
+			
+		}
+		
 		switch (reason) {
 		case PLACING_ARMIES_SET_UP:
 			int randomNumber = rand.nextInt(territoryArray.length - MIN + 1) + MIN;
@@ -59,12 +73,31 @@ public class CommunistDefensive implements PlayerInterface {
 			
 			return currentTerritory;
 			
+			
 		case PLACING_ARMIES_PHASE:
-			return null;
 			
+			Territory currentTerritoryPlacing = territoryArray[this.deploymentCounter];
 			
-		case ATTACK_CHOICE:
-			return null;
+			if(this.deploymentCounter == territoryArray.length - 1){
+				this.deploymentCounter = 0;
+			} else {
+				this.deploymentCounter++;
+			}
+			
+			return currentTerritoryPlacing;
+			
+		case ATTACK_CHOICE_FROM:
+			
+		
+		case ATTACK_CHOICE_TO:
+			
+			ArrayList<Territory> weakestTerritories = new ArrayList();
+			
+			for(int i = 0; i < territoryArray.length; i++){
+				Player enemyOwner = PlayerUtils.getTerritoryOwner(currentState, territoryArray[i]);
+				int numberOfEnemySoldiers = ArmyUtils.getNumberOfArmiesOnTerritory(enemyOwner, territoryArray[i]);
+				
+			}
 			
 		case REINFORCEMENT_PHASE:
 			return null; // TODO: Figure out average and reinforce depending on
@@ -86,9 +119,9 @@ public class CommunistDefensive implements PlayerInterface {
 			return 1;
 		case PLACING_ARMIES_PHASE:
 			return 1;
-		case ATTACK_CHOICE:
+		case ATTACK_CHOICE_DICE:
 			return max;
-		case DEFEND_CHOICE:
+		case DEFEND_CHOICE_DICE:
 			return max;
 		case REINFORCEMENT_PHASE:
 			return 0; // TODO: Figure out average and reinforce depending on
