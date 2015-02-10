@@ -1,19 +1,15 @@
 package GameUtils;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-
-import Common.BeforeTests;
-import org.junit.Before;
-import org.junit.Test;
-
 import GameBuilders.DemoGameBuilder;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
+import org.junit.Before;
+import org.junit.Test;
 
-public class PlayerUtilsTest extends BeforeTests {
+import static org.junit.Assert.*;
+
+public class PlayerUtilsTest {
 
 	private State gameState;
 	private Territory[] territories;

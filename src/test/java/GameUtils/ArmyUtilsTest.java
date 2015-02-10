@@ -1,11 +1,11 @@
 package GameUtils;
 
-import Common.BeforeTests;
 import GameBuilders.DemoGameBuilder;
 import GameState.Army;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
+import com.esotericsoftware.minlog.Log;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,13 +13,14 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
-public class ArmyUtilsTest extends BeforeTests {
+public class ArmyUtilsTest {
 	
 	private State gameState;
 	private Territory[] territories;
 
 	@Before
 	public void stateSetUp(){
+		Log.NONE();
 		gameState = DemoGameBuilder.buildTestGame(2, 5, 2);
 		territories = new Territory[TerritoryUtils.getAllTerritories(gameState).size()];
 		TerritoryUtils.getAllTerritories(gameState).toArray(territories);
