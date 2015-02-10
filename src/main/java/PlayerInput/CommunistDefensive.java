@@ -2,17 +2,31 @@ package PlayerInput;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Random;
 
 import GameEngine.PlayState;
 import GameEngine.RequestReason;
 import GameState.Card;
 import GameState.Player;
+import GameState.State;
 import GameState.Territory;
 import GameUtils.PlayerUtils;
 
 public class CommunistDefensive implements PlayerInterface {
+	
+	public State currentState;
+	private int initialDeploymentCounter;
+	private int deploymentCounter;
+	private static final int MIN = 0;
+	
+	public CommunistDefensive(State a)
+	{
+		this.initialDeploymentCounter = 0;
+		this.deploymentCounter = 0;
+		this.currentState = a;
+	}
 
-	private int averageToDeploy;
+
 
 	@Override
 	public int getNumberOfDice(Player player, int max, RequestReason reason) {
@@ -25,17 +39,33 @@ public class CommunistDefensive implements PlayerInterface {
 
 		
 		//NEEDS TO BE FINISHED
-		Iterator<Territory> i = possibles.iterator();
-
+		Territory[] territoryArray = (Territory[]) possibles.toArray();
+		Random rand = new Random();
+		
 		switch (reason) {
 		case PLACING_ARMIES_SET_UP:
-			return i.next();
+			int randomNumber = rand.nextInt(territoryArray.length - MIN + 1) + MIN;
+			return territoryArray[randomNumber];
+			
 		case PLACING_REMAINING_ARMIES_PHASE:
-			return i.next();
+			
+			Territory currentTerritory = territoryArray[this.initialDeploymentCounter];
+			
+			if(this.initialDeploymentCounter == territoryArray.length - 1){
+				this.initialDeploymentCounter = 0;
+			} else {
+				this.initialDeploymentCounter++;
+			}
+			
+			return currentTerritory;
+			
 		case PLACING_ARMIES_PHASE:
-			return i.next();
+			return null;
+			
+			
 		case ATTACK_CHOICE:
-			return i.next();
+			return null;
+			
 		case REINFORCEMENT_PHASE:
 			return null; // TODO: Figure out average and reinforce depending on
 							// links.
