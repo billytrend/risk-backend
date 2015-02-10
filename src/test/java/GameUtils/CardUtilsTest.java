@@ -2,6 +2,7 @@ package GameUtils;
 
 import GameBuilders.DemoGameBuilder;
 import GameState.*;
+import com.esotericsoftware.minlog.Log;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,6 +17,7 @@ public class CardUtilsTest {
     @Before
     public void setUp() throws Exception {
         this.st = DemoGameBuilder.buildGame(4, 4);
+        Log.NONE();
     }
 
     @Test

@@ -21,6 +21,7 @@ public class TerritoryUtilsTest {
 
 	private State gameState;
 	private Territory[] territories;
+	
 	@Before
 	public void setUp() throws Exception {
 		Log.NONE();
