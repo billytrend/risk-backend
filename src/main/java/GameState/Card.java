@@ -13,9 +13,9 @@ public class Card {
 	private final Territory territory;
 	private Player owner;
 	
-	public Card(CardType type, Territory territory) {
-		this.type = type;
-		this.territory = territory;
+	public Card(Territory terr, CardType cardType) {
+		this.territory = terr;
+		this.type = cardType;
 		owner = null;
 	}
 
