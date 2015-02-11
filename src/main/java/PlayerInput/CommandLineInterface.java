@@ -56,8 +56,17 @@ public class CommandLineInterface implements PlayerInterface {
      */
     public Territory getTerritory(Player player, HashSet<Territory> possibles, boolean canResign, RequestReason reason) {
         ArrayList<Territory> posList = new ArrayList<Territory>(possibles);
-        emit(player, "Please choose a territory.");
-       
+        emit(player, reason.toString());
+        String out = "Please choose a territory";
+        switch(reason){
+        case ATTACK_CHOICE:
+        	out += " to attack";
+        	break;
+        default: 
+        	out += " to place an army on";
+
+        }
+        emit(player, out);
         // the player can decide not to make a choice
         // in case of starting an attack or moving armies
         if(canResign){

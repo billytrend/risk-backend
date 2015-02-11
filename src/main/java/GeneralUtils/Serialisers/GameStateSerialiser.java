@@ -42,24 +42,22 @@ public class GameStateSerialiser implements JsonSerializer<State> {
     	JsonObject jsonObject = new JsonObject();
     	JsonObject map = new JsonObject();
         JsonArray countries = new JsonArray();
-        
+        //add countries
         for (Territory t : TerritoryUtils.getAllTerritories(state) ) {
         	countries.add(new JsonPrimitive(t.getId()));
         }
         map.add("countries", countries);
         
         JsonArray borders = new JsonArray();
-        
+        //add bordering countries
         for (Pair<Territory, Territory> p : TerritoryUtils.getAllBorders(state)){ 	
         	JsonArray pair = new JsonArray();
         	pair.add(new JsonPrimitive(p.getValue0().getId()));
         	pair.add(new JsonPrimitive(p.getValue1().getId()));
-        	
         	borders.add(pair);
         }
-        
         map.add("borders", borders);
-        
+        //add each players territories
         JsonObject players = new JsonObject();
         for(Player p : state.getPlayers()){
         	JsonArray territories = new JsonArray();
