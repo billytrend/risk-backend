@@ -66,13 +66,13 @@ public class CardUtils {
         return unownedCards;
     }
     
-    public static Card givePlayerRandomCard(State s, Player p) {
+    public static void givePlayerRandomCard(State s, Player p) {
         ArrayList<Card> unownedCards = getUnownedCards(s);
+        if (unownedCards.size() == 0) return;
         Random r = new Random();
         int randIndex = r.nextInt(unownedCards.size());
         Card chosen = unownedCards.get(randIndex);
         givePlayerCard(chosen, p);
-        return chosen;
     }
     
     public static ArrayList<Card> getCardsOfType(ArrayList<Card> cards, CardType cardType) {

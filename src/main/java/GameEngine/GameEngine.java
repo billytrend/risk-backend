@@ -22,6 +22,7 @@ public class GameEngine implements Runnable {
 	private State gameState;
 	private Player currentPlayer;
 	private PlayState playState = BEGINNING_STATE;
+	private boolean currentPlayerHasTakenCountry = false;
 	
 	public GameEngine(State state) {
 		this.gameState = state;
@@ -338,13 +339,15 @@ public class GameEngine implements Runnable {
 		// if the attacking player won and they still have surplus armies,
 		// give the option to move them
 		if(result.getDefendersLoss() == defendingArmies){
-			//	&& (attackingArmies - result.getAttackersLoss() - attackDice.getNumberOfDice()) > 1) {
-	
+			
+			currentPlayerHasTakenCountry = true;
+			
 			if((attackingArmies - result.getAttackersLoss() - attackDiceNumber) > 1)
 				moveMoreArmies(result);
 			
 			if(PlayerUtils.playerIsOut(result.getDefender())){
 				PlayerUtils.removePlayer(gameState, result.getDefender());
+				// TODO: do we need this?
 				if(checkTheEndOfGame())
 					return END_GAME;
 			}
@@ -445,7 +448,14 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	private PlayState endGo() {
+		
+		if (currentPlayerHasTakenCountry) {
+			CardUtils.givePlayerRandomCard(gameState, currentPlayer);
+			currentPlayerHasTakenCountry = false;
+		}
+		
 		currentPlayer = gameState.getPlayerQueue().next();
+		
 		return PLAYER_CONVERTING_CARDS;
 	}
 
