@@ -4,7 +4,9 @@ import GameEngine.RequestReason;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
+import org.javatuples.Triplet;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -42,20 +44,11 @@ public interface PlayerInterface {
      * @return
      */
     public int getNumberOfArmies(Player player, int max, RequestReason reason);
-
-    
-    /**
-     *
-     * @param player
-     * @param card
-     */
-    public void giveCard(Player player, Card card);
-
     
     /**
      *
      * * @return
      */
-    public Card getCardOptions();
+    public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations);
 
 }

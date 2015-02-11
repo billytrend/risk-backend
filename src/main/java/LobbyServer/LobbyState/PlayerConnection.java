@@ -7,7 +7,9 @@ import GameState.Territory;
 import PlayerInput.PlayerInterface;
 
 import org.java_websocket.WebSocket;
+import org.javatuples.Triplet;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 public class PlayerConnection implements PlayerInterface  {
@@ -40,14 +42,7 @@ public class PlayerConnection implements PlayerInterface  {
 	}
 
 	@Override
-	public void giveCard(Player player, Card card) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public Card getCardOptions() {
-		// TODO Auto-generated method stub
+	public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
 		return null;
 	}
 

@@ -1,14 +1,10 @@
 package GameEngine;
 
-import GameState.Army;
-import GameState.Player;
-import GameState.State;
-import GameState.Territory;
-import GameUtils.ArmyUtils;
+import GameState.*;
+import GameUtils.*;
 import GameUtils.Results.FightResult;
-import GameUtils.PlayerUtils;
-import GameUtils.RuleUtils;
-import GameUtils.TerritoryUtils;
+import org.javatuples.Triplet;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -225,10 +221,18 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	private PlayState convertCards() {
+
+		ArrayList<Triplet<Card, Card, Card>> possibleCombinations = CardUtils.getPossibleCardCombinations(gameState, currentPlayer);
 		
-		currentPlayer.getCommunicationMethod().getCardOptions();
+		if (possibleCombinations.size() == 0) return PLAYER_PLACING_ARMIES;
+
+		Triplet<Card, Card, Card> choice = currentPlayer.getCommunicationMethod().getCardChoice(currentPlayer, possibleCombinations);
 		
-	//	RuleUtils.doArmyHandout(gameState, currentPlayer);
+		int payout = CardUtils.getCurrentArmyPayout(gameState);
+		
+		ArmyUtils.givePlayerNArmies(currentPlayer, payout);
+		
+		CardUtils.releaseCards(choice);
 
 		return PLAYER_PLACING_ARMIES;
 
@@ -385,7 +389,7 @@ public class GameEngine implements Runnable {
 	private boolean checkTheEndOfGame(){
 		if(PlayerUtils.countPlayers(gameState) == 1){
 			return true;
-	}
+		}
 		return false;
 	}
 	

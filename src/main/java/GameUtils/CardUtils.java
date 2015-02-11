@@ -50,6 +50,12 @@ public class CardUtils {
         c.setOwner(null);
     }
     
+    public static void releaseCards(Triplet<Card, Card, Card> cards) {
+        for (Object c : cards) {
+            releaseCard((Card) c);
+        }
+    }
+    
     public static ArrayList<Card> getUnownedCards(State s) {
         ArrayList<Card> unownedCards = new ArrayList<Card>();
         for (Card c : s.getCards()) {
