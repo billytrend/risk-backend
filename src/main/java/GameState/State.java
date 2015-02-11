@@ -25,10 +25,12 @@ public class State {
 	private final PlayerQueue playerQueue;
 	ArrayList<Continent> continents = new ArrayList<Continent>();
 	private final ArrayList<Card> cards = new ArrayList<Card>();
-
+	private int numberOfCardSetsUsed;
+	
 	public State(ArrayList<Player> players) {
 		this.players = players;
 		this.playerQueue = new PlayerQueue(players);
+		numberOfCardSetsUsed = 0;
 	}
 
 	public SimpleGraph<Territory, DefaultEdge> getTerritories() {
@@ -59,7 +61,14 @@ public class State {
 		this.continents = continents;
 	}
 
-	
+	public int getNumberOfCardSetsUsed() {
+		return numberOfCardSetsUsed;
+	}
+
+	public void setNumberOfCardSetsUsed(int numberOfCardSetsUsed) {
+		this.numberOfCardSetsUsed = numberOfCardSetsUsed;
+	}
+
 	/**
 	 * Method used to print the current state of the game.
 	 * Used for console versions only for the purpose of debugging.

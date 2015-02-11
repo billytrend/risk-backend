@@ -14,6 +14,18 @@ import java.util.Random;
 
 public class CardUtils {
 
+    public static int getCurrentArmyPayout(State state) {
+        int[] initial = new int[]{4, 6, 8};
+        if (state.getNumberOfCardSetsUsed() < initial.length) return initial[state.getNumberOfCardSetsUsed()];
+        int payout = (state.getNumberOfCardSetsUsed() - 1) * 5;
+        if (payout > 60) return 60;
+        return payout;
+    }
+    
+    public static void incrementNumberOfCardSetsUsed(State state) {
+        state.setNumberOfCardSetsUsed(state.getNumberOfCardSetsUsed() + 1);
+    }
+    
     public static void addCard(State s, Card c) {
         s.getCards().add(c);
     }
