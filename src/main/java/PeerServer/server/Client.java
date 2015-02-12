@@ -13,20 +13,24 @@ import java.net.UnknownHostException;
 /**
  * @author 120011995
  * @category Class which acts as a client to connect to the 
- * 			multi-threaded PeerServer specified in PeerServer class
+ * 			 multi-threaded PeerServer.
  */
 public class Client {
 	
+	/**
+	 * @category Creates client and assigns them a name
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		String clientName = args[0];
 		new Client().clientConnection(clientName); 
 	}
 
 	/**
-	 * Method which creates client connections and 
-	 * communicates messages to PeerServer class.
+	 * @category Method which creates client connections and 
+	 * 			 communicates messages to PeerServer class.
+	 * @param clientName
 	 */
-	
 	public void clientConnection(String clientName){
 		int port = 4444;
 		try {
@@ -45,5 +49,10 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
-
+	
+	
+	public void onConnection(){
+		//Client sends join_game request
+	}
+	
 }

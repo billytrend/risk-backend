@@ -11,30 +11,27 @@ import java.net.Socket;
 
 /**
  * @author 120011995
- * @category Class to implement multithreading in TCP PeerServer
+ * @category Class to implement multi-threading in TCP PeerServer
  */
-public class ServerThread extends Thread {
-	public ServerSocket server;
-	ServerThread(ServerSocket client){
-		this.server = client;
+public class ServerThread implements Runnable {
+	public Socket client;
+	
+	
+	ServerThread(Socket client){
+		this.client = client;
 	}
 
+	@Override
 	public void run(){
-		Socket socket = null;
-		try {
-			socket = server.accept();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 		while(true){
 			try {
 				String message = "";
-				BufferedReader reader = new BufferedReader (new InputStreamReader(socket.getInputStream()));
+				BufferedReader reader = new BufferedReader (new InputStreamReader
+						(client.getInputStream()));
 				while((message = reader.readLine()) != null){
 					System.out.println("Incoming client message: " + message);
 				}
-				socket.close();	
+				client.close();	
 			} 
 			catch (IOException e) {
 				e.printStackTrace();
