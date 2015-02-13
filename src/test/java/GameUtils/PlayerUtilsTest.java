@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 
 import Common.BeforeTests;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,6 +13,8 @@ import GameBuilders.DemoGameBuilder;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
+import PlayerInput.DumbBotInterface;
+import PlayerInput.PlayerInterface;
 
 public class PlayerUtilsTest extends BeforeTests {
 
@@ -20,7 +23,8 @@ public class PlayerUtilsTest extends BeforeTests {
 	
 	@Before
 	public void stateSetUp(){
-		gameState = DemoGameBuilder.buildTestGame(2, 5, 2);
+		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
+		gameState = DemoGameBuilder.buildTestGame(2, 5, 2, interfaces);
 		territories = new Territory[TerritoryUtils.getAllTerritories(gameState).size()];
 		TerritoryUtils.getAllTerritories(gameState).toArray(territories);
 	}

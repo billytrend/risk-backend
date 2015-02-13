@@ -283,7 +283,7 @@ public class GameEngine implements Runnable {
 				.getPossibleAttackingTerritories(gameState, currentPlayer);
 		// find out which country the player wants to attack from
 		Territory attacking = currentPlayer.getCommunicationMethod()
-				.getTerritory(currentPlayer, possibleAttackingTerritories, true, RequestReason.ATTACK_CHOICE);
+				.getTerritory(currentPlayer, possibleAttackingTerritories, true, RequestReason.ATTACK_CHOICE_FROM);
 		
 		if(attacking == null){
 			// debug("PLAYER DOESNT WANT TO INVADE");
@@ -297,7 +297,7 @@ public class GameEngine implements Runnable {
 			
 		// ask the player which country he wants to attack
 		Territory defending = currentPlayer
-				.getCommunicationMethod().getTerritory(currentPlayer, attackable, false, RequestReason.DEFEND_CHOICE);
+				.getCommunicationMethod().getTerritory(currentPlayer, attackable, false, RequestReason.ATTACK_CHOICE_TO);
 		
 
 		// find out who owns this fated land
@@ -317,9 +317,9 @@ public class GameEngine implements Runnable {
 
 		// ask the players how many they would like to use
 		int attackDiceNumber = currentPlayer.
-				getCommunicationMethod().getNumberOfDice(currentPlayer, maxAttackingDice, RequestReason.ATTACK_CHOICE);
+				getCommunicationMethod().getNumberOfDice(currentPlayer, maxAttackingDice, RequestReason.ATTACK_CHOICE_DICE);
 		int defendDiceNumber = defendingPlayer.
-				getCommunicationMethod().getNumberOfDice(defendingPlayer, maxDefendingDice, RequestReason.DEFEND_CHOICE);
+				getCommunicationMethod().getNumberOfDice(defendingPlayer, maxDefendingDice, RequestReason.DEFEND_CHOICE_DICE);
 
 		// create an object to represent the fight
 		FightResult result = new FightResult(currentPlayer, defendingPlayer, 
