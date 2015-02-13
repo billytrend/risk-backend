@@ -1,6 +1,5 @@
 package GameUtils;
 
-import Common.BeforeTests;
 import GameBuilders.DemoGameBuilder;
 import GameState.Army;
 import GameState.Player;
@@ -16,7 +15,7 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
-public class ArmyUtilsTest extends BeforeTests {
+public class ArmyUtilsTest{
 	
 	private State gameState;
 	private Territory[] territories;

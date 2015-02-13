@@ -35,6 +35,11 @@ public class GameEngine implements Runnable {
 		return gameState;
 	}
 	
+	// for testing purposes
+	public void setCurrentPlayer(Player player){
+		currentPlayer = player;
+	}
+	
 	@Override
 	public void run() {
 		try {
@@ -445,4 +450,20 @@ public class GameEngine implements Runnable {
 		return PLAYER_CONVERTING_CARDS;
 	}
 
+	public PlayState testCall(PlayState callType){
+		switch(callType){
+			case FILLING_EMPTY_COUNTRIES:
+				return fillAnEmptyCountry();
+			case USING_REMAINING_ARMIES:
+				return useARemainingArmy();
+			case PLAYER_PLACING_ARMIES:
+				return placeArmy();
+			case PLAYER_INVADING_COUNTRY:
+				return invadeCountry();
+			case PLAYER_MOVING_ARMIES:
+				return moveArmy();
+			default:
+				return null;
+		}
+	}
 }

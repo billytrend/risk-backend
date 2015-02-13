@@ -1,6 +1,6 @@
 package GameUtils;
 
-import Common.BeforeTests;
+
 import GameBuilders.DemoGameBuilder;
 import GameState.Player;
 import GameState.State;
@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 
 
 
-public class TerritoryUtilsTest extends BeforeTests {
+public class TerritoryUtilsTest {
 
 	private State gameState;
 	private Territory[] territories;

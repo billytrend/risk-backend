@@ -1,6 +1,5 @@
 package GameEngine;
 
-import Common.BeforeTests;
 import GameBuilders.DemoGameBuilder;
 import GameState.State;
 import GeneralUtils.Jsonify;
@@ -16,7 +15,7 @@ import org.junit.Test;
 
 import static com.esotericsoftware.minlog.Log.debug;
 
-public class SimpleAITest extends BeforeTests {
+public class SimpleAITest {
 
 
     @Before

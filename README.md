@@ -11,11 +11,13 @@
 TODO: Write loadsa tests
 TODO: Develop AIs
 TODO: Finish game implementation: continents etc.
+TODO: let players change their decisions (on our side)
+TODO: Add minimum number of armies someone can move
 TODO: Add websocket support
 TODO: Finish front-end (in a separate repository)
 TODO: allow maps to be parsed form JSON
 TODO: design a lobby which players can use to join, create games etc.
-TODO: Add more todos
+TODO: Check the end of game differently - what saleem was talking about - when playing a subset of a game
 TODO:
 
 ## Summary
