@@ -23,8 +23,8 @@ import static com.esotericsoftware.minlog.Log.debug;
  */
 public class GameEngine implements Runnable {
 
-	private State gameState;
-	private Player currentPlayer;
+	protected State gameState;
+	protected Player currentPlayer;
 	private PlayState playState = BEGINNING_STATE;
 	
 	public GameEngine(State state) {
@@ -34,11 +34,7 @@ public class GameEngine implements Runnable {
 	public State getState(){
 		return gameState;
 	}
-	
-	// for testing purposes
-	public void setCurrentPlayer(Player player){
-		currentPlayer = player;
-	}
+
 	
 	@Override
 	public void run() {
@@ -153,15 +149,16 @@ public class GameEngine implements Runnable {
 	 *  
 	 * @return
 	 */
-	private PlayState fillAnEmptyCountry() {
+	protected PlayState fillAnEmptyCountry() {
 
 		// get a list of empty territories available
 		HashSet<Territory> emptyTerritories = TerritoryUtils.getUnownedTerritories(gameState);
-
+		
 		// player specifies the country
 		Territory toFill = currentPlayer.getCommunicationMethod()
 				.getTerritory(currentPlayer, emptyTerritories, false, RequestReason.PLACING_ARMIES_SET_UP);
 
+		System.out.println(toFill.getId());
 		// deploy a single army in this place
 		ArmyUtils.deployArmies(currentPlayer, toFill, 1);
 
@@ -188,7 +185,7 @@ public class GameEngine implements Runnable {
 	 * 
 	 * @return
 	 */
-	private PlayState useARemainingArmy() {
+	protected PlayState useARemainingArmy() {
 
 		// get a list of a players undeployed armies
 		ArrayList<Army> playersUndeployedArmies = ArmyUtils.getUndeployedArmies(currentPlayer);
@@ -248,7 +245,7 @@ public class GameEngine implements Runnable {
 	 * 
 	 * @return
 	 */
-	private PlayState placeArmy() {
+	protected PlayState placeArmy() {
 		// get a list of players undeployed armies
 		ArrayList<Army> playersUndeployedArmies = ArmyUtils.getUndeployedArmies(currentPlayer);
 
@@ -281,7 +278,7 @@ public class GameEngine implements Runnable {
 	 * 
 	 * @return
 	 */
-	private PlayState invadeCountry() {
+	protected PlayState invadeCountry() {
 		
 		// get the territories of the current player
 		HashSet<Territory> possibleAttackingTerritories = TerritoryUtils
@@ -403,7 +400,7 @@ public class GameEngine implements Runnable {
 	 * 
 	 * @return
 	 */
-	private PlayState moveArmy() {
+	protected PlayState moveArmy() {
 		
 		// get a list of territories a player can deploy from
 		HashSet<Territory> canBeDeployedFrom = TerritoryUtils
@@ -450,20 +447,4 @@ public class GameEngine implements Runnable {
 		return PLAYER_CONVERTING_CARDS;
 	}
 
-	public PlayState testCall(PlayState callType){
-		switch(callType){
-			case FILLING_EMPTY_COUNTRIES:
-				return fillAnEmptyCountry();
-			case USING_REMAINING_ARMIES:
-				return useARemainingArmy();
-			case PLAYER_PLACING_ARMIES:
-				return placeArmy();
-			case PLAYER_INVADING_COUNTRY:
-				return invadeCountry();
-			case PLAYER_MOVING_ARMIES:
-				return moveArmy();
-			default:
-				return null;
-		}
-	}
 }
