@@ -9,8 +9,10 @@ import GameUtils.Results.FightResult;
 import GameUtils.PlayerUtils;
 import GameUtils.RuleUtils;
 import GameUtils.TerritoryUtils;
+
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Random;
 
 import static GameEngine.PlayState.*;
 import static com.esotericsoftware.minlog.Log.debug;
@@ -29,10 +31,15 @@ public class TestableGameEngine extends GameEngine {
 	}
 
 	// for testing purposes
-	public void setCurrentPlayer(Player player){
-		currentPlayer = player;
+	public void setFirstPlayer(int index){
+	    gameState.getPlayerQueue().setFirstPlayer(index);
+		currentPlayer =  gameState.getPlayerQueue().getCurrent();
 	}
 
+	public Player getCurrentPlayer(){
+		return currentPlayer;
+	}
+	
 	public PlayState testCall(PlayState callType){
 		switch(callType){
 			case FILLING_EMPTY_COUNTRIES:

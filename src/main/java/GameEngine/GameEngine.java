@@ -9,8 +9,10 @@ import GameUtils.Results.FightResult;
 import GameUtils.PlayerUtils;
 import GameUtils.RuleUtils;
 import GameUtils.TerritoryUtils;
+
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import static GameEngine.PlayState.*;
 import static com.esotericsoftware.minlog.Log.debug;
@@ -158,6 +160,7 @@ public class GameEngine implements Runnable {
 		Territory toFill = currentPlayer.getCommunicationMethod()
 				.getTerritory(currentPlayer, emptyTerritories, false, RequestReason.PLACING_ARMIES_SET_UP);
 
+		
 		// deploy a single army in this place
 		ArmyUtils.deployArmies(currentPlayer, toFill, 1);
 

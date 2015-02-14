@@ -9,6 +9,7 @@ import GameBuilders.DemoGameBuilder;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
+import GameUtils.ArmyUtils;
 import GameUtils.TerritoryUtils;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
@@ -63,6 +64,8 @@ public class GameEngineTest{
 			if(subsets.size() > 0)
 				allSubsets.addAll(subsets);
 
+			subsets = getSubsets(reducedSet);
+			
 			for (HashSet<Territory> subset : subsets) {
 				subset.add(ter);
 			}
@@ -89,8 +92,14 @@ public class GameEngineTest{
 		ArrayList<HashSet<Territory>> subsets = getSubsets(allTerrs);
 
 		for(HashSet<Territory> subset : subsets){
-			when(player1Interface.getTerritory((Player) anyObject(), argThat(new isGivenHashSet(subset)),
-					anyBoolean(), (RequestReason) anyObject())).thenReturn(subset.iterator().next());
+			if(subset.size() > 0){
+				when(player1Interface.getTerritory((Player) anyObject(), eq(subset),
+						anyBoolean(), (RequestReason) anyObject())).thenReturn(subset.iterator().next());
+			}
+			else{
+				when(player1Interface.getTerritory((Player) anyObject(), eq(subset),
+						anyBoolean(), (RequestReason) anyObject())).thenReturn(null);
+			}
 		}	
 
 		// mock that always moves the maximum number of armies
@@ -118,9 +127,15 @@ public class GameEngineTest{
 
 		// resigning mock
 		for(HashSet<Territory> subset : subsets){
-			when(player1Interface.getTerritory((Player) anyObject(), argThat(new isGivenHashSet(subset)),
-					eq(false), (RequestReason) anyObject())).thenReturn(subset.iterator().next());
-			when(player1Interface.getTerritory((Player) anyObject(), argThat(new isGivenHashSet(subset)),
+			if(subset.size() > 0){
+				when(player1Interface.getTerritory((Player) anyObject(), eq(subset),
+						eq(false), (RequestReason) anyObject())).thenReturn(subset.iterator().next());
+			}
+			else{
+				when(player1Interface.getTerritory((Player) anyObject(), eq(subset),
+						eq(false), (RequestReason) anyObject())).thenReturn(null);
+			}
+			when(player1Interface.getTerritory((Player) anyObject(),  eq(subset),
 					eq(true), (RequestReason) anyObject())).thenReturn(null);
 		}	
 		
@@ -144,7 +159,8 @@ public class GameEngineTest{
 	public void fillAnEmptyCountryTest(){
 		
 		Player player1 = gameState.getPlayers().get(0);
-		gameEngine.setCurrentPlayer(player1);
+		Player player2 = gameState.getPlayers().get(1);
+		gameEngine.setFirstPlayer(0);
 		
 		assertEquals(TerritoryUtils.getUnownedTerritories(gameState).size(), 4);
 		
@@ -153,37 +169,86 @@ public class GameEngineTest{
 		assertEquals(TerritoryUtils.getUnownedTerritories(gameState).size(), 3);
 		assertFalse(TerritoryUtils.getUnownedTerritories(gameState).
 				contains(TerritoryUtils.getPlayersTerritories(player1)));
+		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, 
+				TerritoryUtils.getPlayersTerritories(player1).iterator().next()).size(), 1);
+		assertEquals(returnValue, PlayState.FILLING_EMPTY_COUNTRIES);
+		assertEquals(gameEngine.getCurrentPlayer(), player2);
 		
+		gameEngine.testCall(PlayState.FILLING_EMPTY_COUNTRIES);
+		gameEngine.testCall(PlayState.FILLING_EMPTY_COUNTRIES);
+		returnValue = gameEngine.testCall(PlayState.FILLING_EMPTY_COUNTRIES);
+		
+		assertEquals(TerritoryUtils.getUnownedTerritories(gameState).size(), 0);
+		assertFalse(TerritoryUtils.hasEmptyTerritories(gameState));
+		
+		assertEquals(returnValue, PlayState.USING_REMAINING_ARMIES);
 	}
+	
 	
 	@Test
 	public void useARemainingArmy(){
-		gameEngine.setCurrentPlayer(gameState.getPlayers().get(0));
+		Player player1 = gameState.getPlayers().get(0);
+		Player player2 = gameState.getPlayers().get(1);
+		gameEngine.setFirstPlayer(0);
 		
-	//	PlayState returnValue = gameEngine.testCall(PlayState.USING_REMAINING_ARMIES);
+		Iterator<Territory> it = territories.iterator();
+		while(it.hasNext()){
+			ArmyUtils.deployArmies(player1, it.next(), 1);
+			if(it.hasNext())
+				ArmyUtils.deployArmies(player2, it.next(), 1);
+		}
 		
+		HashSet<Territory> player1Territories = TerritoryUtils.getPlayersTerritories(player1);
+		HashSet<Territory> player2Territories = TerritoryUtils.getPlayersTerritories(player2);
+		assertEquals(player1Territories.size(), 2);
+		assertEquals(player2Territories.size(), 2);
+		
+		it = player1Territories.iterator();
+		while(it.hasNext()){
+			assertEquals(ArmyUtils.getArmiesOnTerritory(player1, it.next()).size(), 1);
+		}
+
+		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 13);
+		PlayState returnValue = gameEngine.testCall(PlayState.USING_REMAINING_ARMIES);
+		
+		assertEquals(returnValue, PlayState.USING_REMAINING_ARMIES);
+		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 12);
+		
+		it = player1Territories.iterator();
+		
+		int twoArmyCountriesCount = 0;
+		while(it.hasNext()){
+			if(ArmyUtils.getArmiesOnTerritory(player1, it.next()).size() == 2)
+				if(twoArmyCountriesCount > 0)
+					fail();
+				else
+					twoArmyCountriesCount++;
+		}
+		
+		while(ArmyUtils.getUndeployedArmies(player2).size() > 0){
+			gameEngine.testCall(PlayState.USING_REMAINING_ARMIES);
+		}
+		returnValue = gameEngine.testCall(PlayState.USING_REMAINING_ARMIES);
+		
+		assertFalse(ArmyUtils.somePlayerHasUndeployedArmies(gameState));
+		assertEquals(returnValue, PlayState.PLAYER_CONVERTING_CARDS);
 	}
 	
 	@Test
-	public void placeArmy(){
-		gameEngine.setCurrentPlayer(gameState.getPlayers().get(0));
-		
+	public void placeArmy(){	
 	//	PlayState returnValue = gameEngine.testCall(PlayState.PLAYER_PLACING_ARMIES);
 		
 	}
 	
 	@Test
 	public void invadeCountry(){
-		gameEngine.setCurrentPlayer(gameState.getPlayers().get(0));
-		
+
 	//	PlayState returnValue = gameEngine.testCall(PlayState.PLAYER_INVADING_COUNTRY);
 		
 	}
 	
 	@Test
-	public void moveArmy(){
-		gameEngine.setCurrentPlayer(gameState.getPlayers().get(0));
-		
+	public void moveArmy(){		
 	//	PlayState returnValue = gameEngine.testCall(PlayState.PLAYER_MOVING_ARMIES);
 		
 	}
