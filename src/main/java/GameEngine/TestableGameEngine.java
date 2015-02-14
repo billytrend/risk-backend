@@ -33,7 +33,11 @@ public class TestableGameEngine extends GameEngine {
 	// for testing purposes
 	public void setFirstPlayer(int index){
 	    gameState.getPlayerQueue().setFirstPlayer(index);
-		currentPlayer =  gameState.getPlayerQueue().getCurrent();
+		currentPlayer = gameState.getPlayerQueue().getCurrent();
+	}
+
+	public void nextPlayer(){
+		currentPlayer = gameState.getPlayerQueue().next();
 	}
 
 	public Player getCurrentPlayer(){

@@ -250,7 +250,7 @@ public class GameEngineTest{
 		
 		// this player goes for the maximum 
 		PlayState returnValue = gameEngine.testCall(PlayState.PLAYER_PLACING_ARMIES);
-		
+		System.out.println("a");
 		assertEquals(returnValue, PlayState.PLAYER_PLACING_ARMIES);
 		assertEquals(gameEngine.getCurrentPlayer(), player1);
 		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 0);
@@ -265,6 +265,26 @@ public class GameEngineTest{
 			assertEquals(ArmyUtils.getArmiesOnTerritory(player1, it.next()).size(), 1);
 		}
 		
+		returnValue = gameEngine.testCall(PlayState.PLAYER_PLACING_ARMIES);
+		System.out.println("b");
+		assertEquals(returnValue, PlayState.PLAYER_INVADING_COUNTRY);
+		
+		gameEngine.nextPlayer();
+		
+		returnValue = gameEngine.testCall(PlayState.PLAYER_PLACING_ARMIES);
+		System.out.println("c");
+	//	assertEquals(returnValue, PlayState.PLAYER_PLACING_ARMIES);
+		assertEquals(ArmyUtils.getUndeployedArmies(player2).size(), 12);
+		
+		it = TerritoryUtils.getPlayersTerritories(player2).iterator();
+		armiesOnFirstTerritory = ArmyUtils.getArmiesOnTerritory(player2, it.next()).size();
+		if(armiesOnFirstTerritory == 1){
+			assertEquals(ArmyUtils.getArmiesOnTerritory(player2, it.next()).size(), 2);
+		}
+		else{
+			assertEquals(armiesOnFirstTerritory, 2);
+			assertEquals(ArmyUtils.getArmiesOnTerritory(player2, it.next()).size(), 1);
+		}
 	}
 	
 	

@@ -32,7 +32,7 @@ public class DemoGameBuilder {
         // creating players
         ArrayList<Player> ps = new ArrayList<Player>();
         for(int i = 0; i < numOfPlayers; i++){
-            ps.add(new Player(interfaces[0], armiesAtTheStart, i + 1));
+            ps.add(new Player(interfaces[i], armiesAtTheStart, i + 1));
         }
         State state = new State(ps);
 
@@ -99,7 +99,7 @@ public class DemoGameBuilder {
     	  // creating players
     	  ArrayList<Player> ps = new ArrayList<Player>();
           for(int i = 0; i < numOfPlayers; i++){
-        	  ps.add(new Player(interfaces[0], armiesAtTheStart, i + 1));
+        	  ps.add(new Player(interfaces[i], armiesAtTheStart, i + 1));
     	  }
           State state = new State(ps);
     	        

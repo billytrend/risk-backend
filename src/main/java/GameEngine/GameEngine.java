@@ -251,6 +251,7 @@ public class GameEngine implements Runnable {
 		// get a list of players undeployed armies
 		ArrayList<Army> playersUndeployedArmies = ArmyUtils.getUndeployedArmies(currentPlayer);
 
+		System.out.println(currentPlayer.getId());
 		// check if player has any armys left to place
 		if (playersUndeployedArmies.size() == 0) {
 			return PLAYER_INVADING_COUNTRY;
