@@ -158,7 +158,6 @@ public class GameEngine implements Runnable {
 		Territory toFill = currentPlayer.getCommunicationMethod()
 				.getTerritory(currentPlayer, emptyTerritories, false, RequestReason.PLACING_ARMIES_SET_UP);
 
-		System.out.println(toFill.getId());
 		// deploy a single army in this place
 		ArmyUtils.deployArmies(currentPlayer, toFill, 1);
 
@@ -299,9 +298,12 @@ public class GameEngine implements Runnable {
 			
 		// ask the player which country he wants to attack
 		Territory defending = currentPlayer
-				.getCommunicationMethod().getTerritory(currentPlayer, attackable, false, RequestReason.ATTACK_CHOICE_TO);
+				.getCommunicationMethod().getTerritory(currentPlayer, attackable, true, RequestReason.ATTACK_CHOICE_TO);
 		
-
+		if(defending == null){
+			return PLAYER_MOVING_ARMIES;
+		}
+		
 		// find out who owns this fated land
 		Player defendingPlayer = PlayerUtils.getTerritoryOwner(gameState, defending);
 

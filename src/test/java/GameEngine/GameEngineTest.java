@@ -43,6 +43,8 @@ public class GameEngineTest{
 	}
 	
 	
+	// method that returns all subsets of given array of territories
+	// used for accurate mocking
 	private ArrayList<HashSet<Territory>> getSubsets(ArrayList<Territory> set) {
 
 		ArrayList<HashSet<Territory>> allSubsets = new ArrayList<HashSet<Territory>>();
@@ -97,8 +99,7 @@ public class GameEngineTest{
 			when(player1Interface.getNumberOfArmies((Player) anyObject(), eq(i),
 					(RequestReason) anyObject())).thenReturn(i);
 		}
-		
-	
+
 	}
 	
 	
@@ -115,6 +116,7 @@ public class GameEngineTest{
 		
 		ArrayList<HashSet<Territory>> subsets = getSubsets(allTerrs);
 
+		// resigning mock
 		for(HashSet<Territory> subset : subsets){
 			when(player1Interface.getTerritory((Player) anyObject(), argThat(new isGivenHashSet(subset)),
 					eq(false), (RequestReason) anyObject())).thenReturn(subset.iterator().next());
