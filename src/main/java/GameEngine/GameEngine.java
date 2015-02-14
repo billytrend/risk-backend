@@ -267,6 +267,8 @@ public class GameEngine implements Runnable {
 		int deployedAmount = currentPlayer.getCommunicationMethod()
 				.getNumberOfArmies(currentPlayer, playersUndeployedArmies.size(), RequestReason.PLACING_ARMIES_PHASE);
 
+		System.out.println(deployedAmount);
+		
 		// do the deployment!
 		ArmyUtils.deployArmies(currentPlayer, toFill, deployedAmount);
 
