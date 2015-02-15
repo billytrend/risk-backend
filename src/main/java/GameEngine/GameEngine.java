@@ -3,10 +3,12 @@ package GameEngine;
 import GameState.*;
 import GameUtils.*;
 import GameUtils.Results.FightResult;
+
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import static GameEngine.PlayState.*;
 import static com.esotericsoftware.minlog.Log.debug;
@@ -19,8 +21,8 @@ import static com.esotericsoftware.minlog.Log.debug;
  */
 public class GameEngine implements Runnable {
 
-	private State gameState;
-	private Player currentPlayer;
+	protected State gameState;
+	protected Player currentPlayer;
 	private PlayState playState = BEGINNING_STATE;
 	private boolean currentPlayerHasTakenCountry = false;
 	
@@ -31,6 +33,7 @@ public class GameEngine implements Runnable {
 	public State getState(){
 		return gameState;
 	}
+
 	
 	@Override
 	public void run() {
@@ -145,15 +148,16 @@ public class GameEngine implements Runnable {
 	 *  
 	 * @return
 	 */
-	private PlayState fillAnEmptyCountry() {
+	protected PlayState fillAnEmptyCountry() {
 
 		// get a list of empty territories available
 		HashSet<Territory> emptyTerritories = TerritoryUtils.getUnownedTerritories(gameState);
-
+		
 		// player specifies the country
 		Territory toFill = currentPlayer.getCommunicationMethod()
 				.getTerritory(currentPlayer, emptyTerritories, false, RequestReason.PLACING_ARMIES_SET_UP);
 
+		
 		// deploy a single army in this place
 		ArmyUtils.deployArmies(currentPlayer, toFill, 1);
 
@@ -180,7 +184,7 @@ public class GameEngine implements Runnable {
 	 * 
 	 * @return
 	 */
-	private PlayState useARemainingArmy() {
+	protected PlayState useARemainingArmy() {
 
 		// get a list of a players undeployed armies
 		ArrayList<Army> playersUndeployedArmies = ArmyUtils.getUndeployedArmies(currentPlayer);
@@ -248,7 +252,7 @@ public class GameEngine implements Runnable {
 	 * 
 	 * @return
 	 */
-	private PlayState placeArmy() {
+	protected PlayState placeArmy() {
 		// get a list of players undeployed armies
 		ArrayList<Army> playersUndeployedArmies = ArmyUtils.getUndeployedArmies(currentPlayer);
 
@@ -281,14 +285,14 @@ public class GameEngine implements Runnable {
 	 * 
 	 * @return
 	 */
-	private PlayState invadeCountry() {
+	protected PlayState invadeCountry() {
 		
 		// get the territories of the current player
 		HashSet<Territory> possibleAttackingTerritories = TerritoryUtils
 				.getPossibleAttackingTerritories(gameState, currentPlayer);
 		// find out which country the player wants to attack from
 		Territory attacking = currentPlayer.getCommunicationMethod()
-				.getTerritory(currentPlayer, possibleAttackingTerritories, true, RequestReason.ATTACK_CHOICE);
+				.getTerritory(currentPlayer, possibleAttackingTerritories, true, RequestReason.ATTACK_CHOICE_FROM);
 		
 		if(attacking == null){
 			debug("PLAYER DOESNT WANT TO INVADE");
@@ -302,9 +306,12 @@ public class GameEngine implements Runnable {
 			
 		// ask the player which country he wants to attack
 		Territory defending = currentPlayer
-				.getCommunicationMethod().getTerritory(currentPlayer, attackable, false, RequestReason.DEFEND_CHOICE);
+				.getCommunicationMethod().getTerritory(currentPlayer, attackable, true, RequestReason.ATTACK_CHOICE_TO);
 		
-
+		if(defending == null){
+			return PLAYER_MOVING_ARMIES;
+		}
+		
 		// find out who owns this fated land
 		Player defendingPlayer = PlayerUtils.getTerritoryOwner(gameState, defending);
 
@@ -322,9 +329,9 @@ public class GameEngine implements Runnable {
 
 		// ask the players how many they would like to use
 		int attackDiceNumber = currentPlayer.
-				getCommunicationMethod().getNumberOfDice(currentPlayer, maxAttackingDice, RequestReason.ATTACK_CHOICE);
+				getCommunicationMethod().getNumberOfDice(currentPlayer, maxAttackingDice, RequestReason.ATTACK_CHOICE_DICE);
 		int defendDiceNumber = defendingPlayer.
-				getCommunicationMethod().getNumberOfDice(defendingPlayer, maxDefendingDice, RequestReason.DEFEND_CHOICE);
+				getCommunicationMethod().getNumberOfDice(defendingPlayer, maxDefendingDice, RequestReason.DEFEND_CHOICE_DICE);
 
 		// create an object to represent the fight
 		FightResult result = new FightResult(currentPlayer, defendingPlayer, 
@@ -405,7 +412,7 @@ public class GameEngine implements Runnable {
 	 * 
 	 * @return
 	 */
-	private PlayState moveArmy() {
+	protected PlayState moveArmy() {
 		
 		// get a list of territories a player can deploy from
 		HashSet<Territory> canBeDeployedFrom = TerritoryUtils

@@ -56,6 +56,7 @@ public class DumbBotInterface implements PlayerInterface {
     public Territory getTerritory(Player player, HashSet<Territory> possibles,
                                          boolean canResign, RequestReason reason) {
         ArrayList<Territory> posList = new ArrayList<Territory>(possibles);
+       
         emit(player, "Please choose a territory");
        
         // the player can decide not to make a choice
