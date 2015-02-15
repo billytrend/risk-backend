@@ -185,7 +185,6 @@ public class GameEngineTest{
 		//player one attacks territory 2 from territory 0
 		// player1 throws 3 dice and player2 throws 2 dice
 		PlayState returnValue = gameEngine.testCall(PlayState.PLAYER_INVADING_COUNTRY);
-		System.out.println("test other");
 		
 		assertEquals(returnValue, PlayState.PLAYER_INVADING_COUNTRY);
 		// number of armies on other territories dont change
@@ -217,8 +216,6 @@ public class GameEngineTest{
 		
 		//player one attacks territory 2 from territory 0
 		// player1 throws 3 dice and player2 throws 1 dice
-		System.out.println("important");
-		System.out.println(ArmyUtils.getArmiesOnTerritory(player1, sortedTerritories.get(0)).size());
 		
 		while(TerritoryUtils.getPlayersTerritories(player2).contains(sortedTerritories.get(2))){
 			gameEngine.testCall(PlayState.PLAYER_INVADING_COUNTRY);
