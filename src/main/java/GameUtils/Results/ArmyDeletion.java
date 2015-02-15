@@ -25,4 +25,10 @@ public class ArmyDeletion {
 	public Territory getTerritory(){
 		return territory;
 	}
+	
+	public String toString(){
+		return "owner: " + armyOwner.getId() + " from: " + territory.getId() + 
+					" number: " + amount;
+
+	}
 }

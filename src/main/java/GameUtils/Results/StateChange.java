@@ -38,6 +38,29 @@ public class StateChange {
 		removedPlayers.add(player);
 	}
 	
+	// show change?
+	public String toString(){
+		String change = "PLAYER: " + actingPlayer.getId() + "  ACTION: " + actionPlayed.toString();
+		if(armyMovements.size() > 0){
+			change += "\n\n\tARMY MOVEMENTS:";
+			for(ArmyMovement movement : armyMovements){
+				change += "\n\t" + movement.toString();
+			}
+		}
+		if(destroyedArmies.size() > 0){
+			change += "\n\n\tARMIES DESTROYED:";
+			for(ArmyDeletion deletion : destroyedArmies){
+				change += "\n\t" + deletion.toString();
+			}
+		}
+		if(removedPlayers.size() > 0){
+			change += "\n\n\tPLAYERS REMOVED:";
+			for(Player player : removedPlayers){
+				change += "\n\t" + player.getId();
+			}
+		}
+		return change;
+	}
 	
 	public ArrayList<ArmyMovement> getArmyMovements(){
 		return armyMovements;

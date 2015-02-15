@@ -202,6 +202,30 @@ public class GameEngineTest{
 		assertFalse(TerritoryUtils.getPlayersTerritories(player1).contains(sortedTerritories.get(2)));
 	}
 	
+	@Test
+	public void invadeCountryResignTest(){
+		Player player1 = gameState.getPlayers().get(0);
+		Player player2 = gameState.getPlayers().get(1);
+		gameEngine.setFirstPlayer(0);
+		gameEngine.nextPlayer();
+		
+		ArmyUtils.deployArmies(player1, sortedTerritories.get(0), 10);
+		ArmyUtils.deployArmies(player1, sortedTerritories.get(1), 5);
+		ArmyUtils.deployArmies(player2, sortedTerritories.get(2), 5);
+		ArmyUtils.deployArmies(player2, sortedTerritories.get(3), 10);
+
+		assertEquals(gameEngine.getCurrentPlayer(), player2);
+		// player 2 resigns from attacking
+		PlayState returnValue = gameEngine.testCall(PlayState.PLAYER_INVADING_COUNTRY);
+
+		assertEquals(returnValue, PlayState.PLAYER_MOVING_ARMIES);
+		
+		// number of armies on territories dont change
+		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player1, sortedTerritories.get(1)), 5);
+		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player2, sortedTerritories.get(3)), 10);
+		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player1, sortedTerritories.get(0)), 10);
+		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player2, sortedTerritories.get(2)), 5);
+	}
 	
 	@Test
 	public void invadeCountryTakeOverTest(){
@@ -233,6 +257,7 @@ public class GameEngineTest{
 		
 		// and the maximum number of armies were moved to the new territory (player1 mock defined)
 		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, sortedTerritories.get(2)).size(), 13 - tries);
+		
 	}
 	
 	

@@ -31,4 +31,13 @@ public class ArmyMovement {
 	public int getAmount(){
 		return amount;
 	}
+	
+	public String toString(){
+		if(movingFrom != null)
+			return "owner: " + armyOwner.getId() + " from: " + movingFrom.getId() + 
+					"  to: " + movingTo.getId() + " number: " + amount;
+		else
+			return "owner: " + armyOwner.getId() + 
+					"  to: " + movingTo.getId() + " number: " + amount;
+	}
 }

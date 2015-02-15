@@ -11,6 +11,10 @@ public class StateChangeRecord {
 	private static ArrayList<StateChange> gameStateChanges = new ArrayList<StateChange>();
 	private static StateChange lastChange;
 	
+	public static void clearRecord(){
+		gameStateChanges = new ArrayList<StateChange>();
+	}
+	
 	/**
 	 * Adds a given state change to the record of all changes
 	 * 
@@ -78,7 +82,7 @@ public class StateChangeRecord {
 	 * 
 	 * @return
 	 */
-	public ArrayList<ArrayList<StateChange>> getPlayersTurns(){
+	public static ArrayList<ArrayList<StateChange>> getPlayersTurns(){
 		Iterator<StateChange> it = getIterator();
 		ArrayList<ArrayList<StateChange>> allMoves = new ArrayList<ArrayList<StateChange>>();
 	
@@ -101,6 +105,16 @@ public class StateChangeRecord {
 		}
 		
 		return allMoves;
+	}
+	
+	public static void printAllChanges(){
+		Iterator<StateChange> it = getIterator();
+		int i = 1;
+		while(it.hasNext()){
+			System.out.println("\nCHANGE " + i);
+			System.out.println(it.next().toString());
+			i++;
+		}
 	}
 	
 }
