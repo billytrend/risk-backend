@@ -16,6 +16,7 @@ public class CardUtilsTest {
     
     @Before
     public void setUp() throws Exception {
+    	
         this.st = DemoGameBuilder.buildGame(4, 4);
         Log.NONE();
     }
