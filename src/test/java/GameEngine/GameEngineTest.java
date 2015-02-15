@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import GameBuilders.DemoGameBuilder;
+import com.esotericsoftware.minlog.Log;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
@@ -35,6 +36,7 @@ public class GameEngineTest{
 
 	@Before
 	public void stateSetUp(){
+		Log.NONE();
 		PlayerInterface[] interfaces = new PlayerInterface[]{player1Interface, player2Interface};
 		
 		// creates a game with 4 territories
@@ -151,6 +153,7 @@ public class GameEngineTest{
 		
 		gameEngine.nextPlayer();
 		gameEngine.testCall(PlayState.PLAYER_PLACING_ARMIES);
+
 
 		assertEquals(ArmyUtils.getUndeployedArmies(player2).size(), 12);
 		assertEquals(ArmyUtils.getArmiesOnTerritory(player2, sortedTerritories.get(2)).size(), 2);

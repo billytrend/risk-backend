@@ -9,7 +9,6 @@ import GameState.Territory;
 import GameUtils.Results.FightResult;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
-
 import org.junit.Before;
 import org.junit.Test;
 

@@ -4,6 +4,7 @@ import GameEngine.RequestReason;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
+import org.javatuples.Triplet;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -87,17 +88,8 @@ public class DumbBotInterface implements PlayerInterface {
         return ran.nextInt(max + 1);
     }
 
-    /**
-     * 
-     */
-    public void giveCard(Player player, Card card) {
-        return;
-    }
-
-    /**
-     * 
-     */
-    public Card getCardOptions() {
+    @Override
+    public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
         return null;
     }
 
