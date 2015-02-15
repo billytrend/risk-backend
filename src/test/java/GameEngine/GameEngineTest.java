@@ -2,8 +2,10 @@ package GameEngine;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 import GameBuilders.DemoGameBuilder;
 import GameState.Player;
@@ -24,135 +26,31 @@ import static org.mockito.Mockito.*;
 public class GameEngineTest{
 
 	PlayerInterface player1Interface = mock(PlayerInterface.class);
-	
 	PlayerInterface player2Interface = mock(PlayerInterface.class);
 	
-	TestableGameEngine gameEngine;
-	
-	
+	Comparator comparator = new TerritoryIdComparator();
+	ArrayList<Territory> sortedTerritories;
 	private State gameState;
-	private HashSet<Territory> territories;
+	TestableGameEngine gameEngine;
 
 	@Before
 	public void stateSetUp(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{player1Interface, player2Interface};
+		
+		// creates a game with 4 territories
 		gameState = DemoGameBuilder.buildGame(2, 15, interfaces);
-		territories = TerritoryUtils.getAllTerritories(gameState);
+		HashSet<Territory> territories = TerritoryUtils.getAllTerritories(gameState);
 	    gameEngine = new TestableGameEngine(gameState);
+	   
+		sortedTerritories = new ArrayList<Territory>();
+		sortedTerritories.addAll(territories);
+		Collections.sort(sortedTerritories, comparator);
 		createMockOne();
 		createMockTwo();
 	}
+
 	
 	
-	// method that returns all subsets of given array of territories
-	// used for accurate mocking
-	private ArrayList<HashSet<Territory>> getSubsets(ArrayList<Territory> set) {
-
-		ArrayList<HashSet<Territory>> allSubsets = new ArrayList<HashSet<Territory>>();
-
-		if(set.size() == 0){
-			allSubsets.add(new HashSet<Territory>());
-		}
-		if (set.size() != 0) {
-			ArrayList<Territory> reducedSet = new ArrayList<Territory>();
-			reducedSet.addAll(set);
-
-			Territory ter = reducedSet.remove(0);
-			
-			ArrayList<HashSet<Territory>> subsets = getSubsets(reducedSet);
-			
-			if(subsets.size() > 0)
-				allSubsets.addAll(subsets);
-
-			subsets = getSubsets(reducedSet);
-			
-			for (HashSet<Territory> subset : subsets) {
-				subset.add(ter);
-			}
-
-			allSubsets.addAll(subsets);
-			
-		}
-
-		return allSubsets;
-	}
-	
-	
-	private void createMockOne(){
-
-		for(int i = 1; i < 4 ; i++){
-			when(player1Interface.getNumberOfDice((Player) anyObject(), eq(i),
-				(RequestReason) anyObject())).thenReturn(i);
-		}
-		
-
-		ArrayList<Territory> allTerrs = new ArrayList<Territory>();
-		allTerrs.addAll(territories);
-		
-		ArrayList<HashSet<Territory>> subsets = getSubsets(allTerrs);
-
-		for(HashSet<Territory> subset : subsets){
-			if(subset.size() > 0){
-				when(player1Interface.getTerritory((Player) anyObject(), eq(subset),
-						anyBoolean(), (RequestReason) anyObject())).thenReturn(subset.iterator().next());
-			}
-			else{
-				when(player1Interface.getTerritory((Player) anyObject(), eq(subset),
-						anyBoolean(), (RequestReason) anyObject())).thenReturn(null);
-			}
-		}	
-
-		// mock that always moves the maximum number of armies
-		int predictedMaxNumOfArmies = 200;
-		for(int i = 0; i < predictedMaxNumOfArmies; i++){
-			when(player1Interface.getNumberOfArmies((Player) anyObject(), eq(i),
-					(RequestReason) anyObject())).thenReturn(i);
-		}
-
-	}
-	
-	
-	private void createMockTwo(){
-
-		for(int i = 1; i < 4 ; i++){
-			when(player2Interface.getNumberOfDice((Player) anyObject(), eq(i),
-				(RequestReason) anyObject())).thenReturn(i);
-		}
-		
-
-		ArrayList<Territory> allTerrs = new ArrayList<Territory>();
-		allTerrs.addAll(territories);
-		
-		ArrayList<HashSet<Territory>> subsets = getSubsets(allTerrs);
-
-		// resigning mock
-		for(HashSet<Territory> subset : subsets){
-			if(subset.size() > 0){
-				when(player2Interface.getTerritory((Player) anyObject(), eq(subset),
-						eq(false), (RequestReason) anyObject())).thenReturn(subset.iterator().next());
-			}
-			else{
-				when(player2Interface.getTerritory((Player) anyObject(), eq(subset),
-						eq(false), (RequestReason) anyObject())).thenReturn(null);
-			}
-			when(player2Interface.getTerritory((Player) anyObject(),  eq(subset),
-					eq(true), (RequestReason) anyObject())).thenReturn(null);
-		}	
-		
-		// mock that always moves minimum number of armies
-		int predictedMaxNumOfArmies = 200;
-		for(int i = 0; i < predictedMaxNumOfArmies; i++){
-			if(i == 0){
-				when(player2Interface.getNumberOfArmies((Player) anyObject(), eq(i),
-						eq(RequestReason.REINFORCEMENT_PHASE))).thenReturn(0);
-			}
-			else{
-				when(player2Interface.getNumberOfArmies((Player) anyObject(), eq(i),
-						eq(RequestReason.PLACING_ARMIES_PHASE))).thenReturn(1);
-			}
-		}
-		
-	}
 	
 	
 	@Test
@@ -166,23 +64,28 @@ public class GameEngineTest{
 		
 		PlayState returnValue = gameEngine.testCall(PlayState.FILLING_EMPTY_COUNTRIES);
 		
-		assertEquals(TerritoryUtils.getUnownedTerritories(gameState).size(), 3);
-		assertFalse(TerritoryUtils.getUnownedTerritories(gameState).
-				contains(TerritoryUtils.getPlayersTerritories(player1)));
-		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, 
-				TerritoryUtils.getPlayersTerritories(player1).iterator().next()).size(), 1);
 		assertEquals(returnValue, PlayState.FILLING_EMPTY_COUNTRIES);
 		assertEquals(gameEngine.getCurrentPlayer(), player2);
+		assertEquals(TerritoryUtils.getUnownedTerritories(gameState).size(), 3);
 		
-		gameEngine.testCall(PlayState.FILLING_EMPTY_COUNTRIES);
-		gameEngine.testCall(PlayState.FILLING_EMPTY_COUNTRIES);
-		returnValue = gameEngine.testCall(PlayState.FILLING_EMPTY_COUNTRIES);
 		
-		assertEquals(TerritoryUtils.getUnownedTerritories(gameState).size(), 0);
-		assertFalse(TerritoryUtils.hasEmptyTerritories(gameState));
+		// the mock always chooses first out of alphabetically sorted list 
+		// of territories
+		Territory chosenTerritory = sortedTerritories.get(0);
+		assertTrue(TerritoryUtils.getPlayersTerritories(player1).contains(chosenTerritory));
+		assertFalse(TerritoryUtils.getUnownedTerritories(gameState).
+				contains(chosenTerritory));
+		
+		// territory was just taken so it should host only 1 army
+		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, chosenTerritory).size(), 1);
+		
+		while(TerritoryUtils.hasEmptyTerritories(gameState)){
+			returnValue = gameEngine.testCall(PlayState.FILLING_EMPTY_COUNTRIES);
+		}
 		
 		assertEquals(returnValue, PlayState.USING_REMAINING_ARMIES);
 	}
+	
 	
 	
 	@Test
@@ -191,39 +94,22 @@ public class GameEngineTest{
 		Player player2 = gameState.getPlayers().get(1);
 		gameEngine.setFirstPlayer(0);
 		
-		Iterator<Territory> it = territories.iterator();
-		while(it.hasNext()){
-			ArmyUtils.deployArmies(player1, it.next(), 1);
-			if(it.hasNext())
-				ArmyUtils.deployArmies(player2, it.next(), 1);
-		}
+		ArmyUtils.deployArmies(player1, sortedTerritories.get(0), 1);
+		ArmyUtils.deployArmies(player1, sortedTerritories.get(1), 1);
+		ArmyUtils.deployArmies(player2, sortedTerritories.get(2), 1);
+		ArmyUtils.deployArmies(player2, sortedTerritories.get(3), 1);
 		
 		HashSet<Territory> player1Territories = TerritoryUtils.getPlayersTerritories(player1);
 		HashSet<Territory> player2Territories = TerritoryUtils.getPlayersTerritories(player2);
-		assertEquals(player1Territories.size(), 2);
-		assertEquals(player2Territories.size(), 2);
-		
-		it = player1Territories.iterator();
-		while(it.hasNext()){
-			assertEquals(ArmyUtils.getArmiesOnTerritory(player1, it.next()).size(), 1);
-		}
 
 		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 13);
+		
 		PlayState returnValue = gameEngine.testCall(PlayState.USING_REMAINING_ARMIES);
 		
 		assertEquals(returnValue, PlayState.USING_REMAINING_ARMIES);
 		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 12);
 		
-		it = player1Territories.iterator();
-		
-		int twoArmyCountriesCount = 0;
-		while(it.hasNext()){
-			if(ArmyUtils.getArmiesOnTerritory(player1, it.next()).size() == 2)
-				if(twoArmyCountriesCount > 0)
-					fail();
-				else
-					twoArmyCountriesCount++;
-		}
+		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, sortedTerritories.get(0)).size(), 2);
 		
 		while(ArmyUtils.getUndeployedArmies(player2).size() > 0){
 			gameEngine.testCall(PlayState.USING_REMAINING_ARMIES);
@@ -241,50 +127,40 @@ public class GameEngineTest{
 		Player player2 = gameState.getPlayers().get(1);
 		gameEngine.setFirstPlayer(0);
 		
-		Iterator<Territory> it = territories.iterator();
-		while(it.hasNext()){
-			ArmyUtils.deployArmies(player1, it.next(), 1);
-			if(it.hasNext())
-				ArmyUtils.deployArmies(player2, it.next(), 1);
-		}
+		ArmyUtils.deployArmies(player1, sortedTerritories.get(0), 1);
+		ArmyUtils.deployArmies(player1, sortedTerritories.get(1), 1);
+		ArmyUtils.deployArmies(player2, sortedTerritories.get(2), 1);
+		ArmyUtils.deployArmies(player2, sortedTerritories.get(3), 1);
 		
 		// this player goes for the maximum 
 		PlayState returnValue = gameEngine.testCall(PlayState.PLAYER_PLACING_ARMIES);
-		System.out.println("a");
 		assertEquals(returnValue, PlayState.PLAYER_PLACING_ARMIES);
+		
+		// the player does not end his go after placing armies
 		assertEquals(gameEngine.getCurrentPlayer(), player1);
 		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 0);
 		
-		it = TerritoryUtils.getPlayersTerritories(player1).iterator();
-		int armiesOnFirstTerritory = ArmyUtils.getArmiesOnTerritory(player1, it.next()).size();
-		if(armiesOnFirstTerritory == 1){
-			assertEquals(ArmyUtils.getArmiesOnTerritory(player1, it.next()), 14);
-		}
-		else{
-			assertEquals(armiesOnFirstTerritory, 14);
-			assertEquals(ArmyUtils.getArmiesOnTerritory(player1, it.next()).size(), 1);
-		}
+		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, sortedTerritories.get(0)).size(), 14);
+		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, sortedTerritories.get(1)).size(), 1);
 		
 		returnValue = gameEngine.testCall(PlayState.PLAYER_PLACING_ARMIES);
-		System.out.println("b");
 		assertEquals(returnValue, PlayState.PLAYER_INVADING_COUNTRY);
 		
+		///////////////
+		
 		gameEngine.nextPlayer();
-		
-		returnValue = gameEngine.testCall(PlayState.PLAYER_PLACING_ARMIES);
-		System.out.println("c");
-	//	assertEquals(returnValue, PlayState.PLAYER_PLACING_ARMIES);
+		gameEngine.testCall(PlayState.PLAYER_PLACING_ARMIES);
+
 		assertEquals(ArmyUtils.getUndeployedArmies(player2).size(), 12);
+		assertEquals(ArmyUtils.getArmiesOnTerritory(player2, sortedTerritories.get(2)).size(), 2);
+		assertEquals(ArmyUtils.getArmiesOnTerritory(player2, sortedTerritories.get(3)).size(), 1);
 		
-		it = TerritoryUtils.getPlayersTerritories(player2).iterator();
-		armiesOnFirstTerritory = ArmyUtils.getArmiesOnTerritory(player2, it.next()).size();
-		if(armiesOnFirstTerritory == 1){
-			assertEquals(ArmyUtils.getArmiesOnTerritory(player2, it.next()).size(), 2);
+		while(ArmyUtils.getUndeployedArmies(player2).size() > 0){
+			gameEngine.testCall(PlayState.PLAYER_PLACING_ARMIES);
 		}
-		else{
-			assertEquals(armiesOnFirstTerritory, 2);
-			assertEquals(ArmyUtils.getArmiesOnTerritory(player2, it.next()).size(), 1);
-		}
+		returnValue = gameEngine.testCall(PlayState.PLAYER_PLACING_ARMIES);
+		
+		assertEquals(returnValue, PlayState.PLAYER_INVADING_COUNTRY);
 	}
 	
 	
@@ -293,6 +169,11 @@ public class GameEngineTest{
 		Player player1 = gameState.getPlayers().get(0);
 		Player player2 = gameState.getPlayers().get(1);
 		gameEngine.setFirstPlayer(0);
+		
+		ArmyUtils.deployArmies(player1, sortedTerritories.get(0), 1);
+		ArmyUtils.deployArmies(player1, sortedTerritories.get(1), 1);
+		ArmyUtils.deployArmies(player2, sortedTerritories.get(2), 1);
+		ArmyUtils.deployArmies(player2, sortedTerritories.get(3), 1);
 		
 		PlayState returnValue = gameEngine.testCall(PlayState.PLAYER_INVADING_COUNTRY);
 		
@@ -305,11 +186,142 @@ public class GameEngineTest{
 		Player player2 = gameState.getPlayers().get(1);
 		gameEngine.setFirstPlayer(0);
 		
+		ArmyUtils.deployArmies(player1, sortedTerritories.get(0), 5);
+		ArmyUtils.deployArmies(player1, sortedTerritories.get(1), 10);
+		ArmyUtils.deployArmies(player2, sortedTerritories.get(2), 5);
+		ArmyUtils.deployArmies(player2, sortedTerritories.get(3), 10);
+		
 		PlayState returnValue = gameEngine.testCall(PlayState.PLAYER_MOVING_ARMIES);
+		
+		// player moves all possible armies
+		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, sortedTerritories.get(0)).size(), 1);
+		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, sortedTerritories.get(1)).size(), 14);
+		
+		gameEngine.nextPlayer();
+		
+		returnValue = gameEngine.testCall(PlayState.PLAYER_MOVING_ARMIES);
+		
+		// player resigns from moving armies
+		assertEquals(ArmyUtils.getArmiesOnTerritory(player2, sortedTerritories.get(2)).size(), 5);
+		assertEquals(ArmyUtils.getArmiesOnTerritory(player2, sortedTerritories.get(3)).size(), 10);
+		
+		assertEquals(returnValue, PlayState.PLAYER_ENDED_GO);
 		
 	}
 	
 	
 	//convertCards()
 
+	
+	private void createMockOne(){
+		for(int i = 1; i < 4 ; i++){
+			when(player1Interface.getNumberOfDice((Player) anyObject(), eq(i),
+				(RequestReason) anyObject())).thenReturn(i);
+		}
+		
+		ArrayList<HashSet<Territory>> subsets = getSubsets(sortedTerritories);
+		List<Territory> sorted;
+		
+		for(HashSet<Territory> subset : subsets){
+			sorted = new ArrayList<Territory>();
+			sorted.addAll(subset);
+			
+			// always return the first territory from alphabetically sorted list
+			// == the output is deterministic
+			Collections.sort(sorted, comparator);
+			if(sorted.size() > 0){
+				when(player1Interface.getTerritory((Player) anyObject(), eq(subset),
+						anyBoolean(), (RequestReason) anyObject())).thenReturn(sorted.get(0));
+			}
+
+		}	
+
+		// mock that always moves the maximum number of armies
+		int predictedMaxNumOfArmies = 200;
+		for(int i = 0; i < predictedMaxNumOfArmies; i++){
+			when(player1Interface.getNumberOfArmies((Player) anyObject(), eq(i),
+					(RequestReason) anyObject())).thenReturn(i);
+		}
+
+	}
+	
+	
+	private void createMockTwo(){
+		for(int i = 1; i < 4 ; i++){
+			when(player2Interface.getNumberOfDice((Player) anyObject(), eq(i),
+				(RequestReason) anyObject())).thenReturn(i);
+		}
+		
+		ArrayList<HashSet<Territory>> subsets = getSubsets(sortedTerritories);
+		List<Territory> sorted;
+
+		// resigning mock
+		for(HashSet<Territory> subset : subsets){
+			sorted = new ArrayList<Territory>();
+			sorted.addAll(subset);
+			
+			Collections.sort(sorted, comparator);
+			if(sorted.size() > 0){
+				when(player2Interface.getTerritory((Player) anyObject(), eq(subset),
+						eq(false), (RequestReason) anyObject())).thenReturn(sorted.get(0));
+
+				// resign if you can
+				when(player2Interface.getTerritory((Player) anyObject(), eq(subset),
+						eq(true), (RequestReason) anyObject())).thenReturn(null);
+			}
+		}	
+		
+		// mock that always moves minimum number of armies
+		int predictedMaxNumOfArmies = 200;
+		for(int i = 0; i < predictedMaxNumOfArmies; i++){
+			if(i == 0){
+				when(player2Interface.getNumberOfArmies((Player) anyObject(), eq(i),
+						eq(RequestReason.REINFORCEMENT_PHASE))).thenReturn(0);
+			}else{
+				when(player2Interface.getNumberOfArmies((Player) anyObject(), eq(i),
+						eq(RequestReason.PLACING_ARMIES_PHASE))).thenReturn(1);
+			}
+		}
+	}
+	
+
+	// method that returns all subsets of given array of territories
+	// used for accurate mocking
+	private ArrayList<HashSet<Territory>> getSubsets(ArrayList<Territory> set) {
+
+		ArrayList<HashSet<Territory>> allSubsets = new ArrayList<HashSet<Territory>>();
+
+		if(set.size() == 0){
+			allSubsets.add(new HashSet<Territory>());
+		}
+		if (set.size() != 0) {
+			ArrayList<Territory> reducedSet = new ArrayList<Territory>();
+			reducedSet.addAll(set);
+			
+			Territory ter = reducedSet.remove(0);
+			ArrayList<HashSet<Territory>> subsets = getSubsets(reducedSet);
+			
+			if(subsets.size() > 0)
+				allSubsets.addAll(subsets);
+
+			subsets = getSubsets(reducedSet);
+			for (HashSet<Territory> subset : subsets) {
+				subset.add(ter);
+			}
+
+			allSubsets.addAll(subsets);
+		}
+		return allSubsets;
+	}
+	
+	
+	// compares territories in terms of the alphabetical order of their ids
+	public class TerritoryIdComparator implements Comparator {
+		@Override
+		public int compare(Object ob1, Object ob2) {
+			Territory ter1 = (Territory) ob1;
+			Territory ter2 = (Territory) ob2;
+			return (ter1.getId().compareToIgnoreCase(ter2.getId()));
+		}
+	}
 }
