@@ -3,6 +3,8 @@ package GameEngine;
 import GameState.*;
 import GameUtils.*;
 import GameUtils.Results.FightResult;
+import GameUtils.Results.StateChange;
+import GameUtils.Results.StateChangeRecord;
 
 import org.javatuples.Triplet;
 
@@ -149,6 +151,7 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	protected PlayState fillAnEmptyCountry() {
+		StateChange stateChange = new StateChange(FILLING_EMPTY_COUNTRIES, currentPlayer);
 
 		// get a list of empty territories available
 		HashSet<Territory> emptyTerritories = TerritoryUtils.getUnownedTerritories(gameState);
@@ -159,10 +162,12 @@ public class GameEngine implements Runnable {
 
 		
 		// deploy a single army in this place
-		ArmyUtils.deployArmies(currentPlayer, toFill, 1);
+		ArmyUtils.deployArmies(currentPlayer, toFill, 1, stateChange);
 
 		endGo();
-
+		
+		StateChangeRecord.addStateChange(stateChange);
+		
 		if (!TerritoryUtils.hasEmptyTerritories(gameState)) {
 			debug("ALL COUNTRIES TAKEN");
 			return USING_REMAINING_ARMIES;
@@ -185,6 +190,7 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	protected PlayState useARemainingArmy() {
+		StateChange stateChange = new StateChange(USING_REMAINING_ARMIES, currentPlayer);
 
 		// get a list of a players undeployed armies
 		ArrayList<Army> playersUndeployedArmies = ArmyUtils.getUndeployedArmies(currentPlayer);
@@ -213,9 +219,11 @@ public class GameEngine implements Runnable {
 				.getTerritory(currentPlayer, usersTerritories, false, RequestReason.PLACING_REMAINING_ARMIES_PHASE);
 
 		// deploy the armies
-		ArmyUtils.deployArmies(currentPlayer, toFill, 1);
+		ArmyUtils.deployArmies(currentPlayer, toFill, 1, stateChange);
 		
 		endGo();
+		
+		StateChangeRecord.addStateChange(stateChange);
 		
 		return USING_REMAINING_ARMIES;
 
@@ -253,6 +261,8 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	protected PlayState placeArmy() {
+		StateChange stateChange = new StateChange(PLAYER_PLACING_ARMIES, currentPlayer);
+		
 		// get a list of players undeployed armies
 		ArrayList<Army> playersUndeployedArmies = ArmyUtils.getUndeployedArmies(currentPlayer);
 
@@ -273,8 +283,10 @@ public class GameEngine implements Runnable {
 				.getNumberOfArmies(currentPlayer, playersUndeployedArmies.size(), RequestReason.PLACING_ARMIES_PHASE);
 
 		// do the deployment!
-		ArmyUtils.deployArmies(currentPlayer, toFill, deployedAmount);
+		ArmyUtils.deployArmies(currentPlayer, toFill, deployedAmount, stateChange);
 
+		StateChangeRecord.addStateChange(stateChange);
+		
 		return PLAYER_PLACING_ARMIES;
 	}
 
@@ -286,6 +298,7 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	protected PlayState invadeCountry() {
+		StateChange stateChange = new StateChange(PlayState.PLAYER_INVADING_COUNTRY, currentPlayer);
 		
 		// get the territories of the current player
 		HashSet<Territory> possibleAttackingTerritories = TerritoryUtils
@@ -341,7 +354,7 @@ public class GameEngine implements Runnable {
 		Arbitration.carryOutFight(result, attackDiceNumber, defendDiceNumber);
 		
 		// apply the results of the fight
-		RuleUtils.applyFightResult(result);
+		RuleUtils.applyFightResult(result, stateChange);
 
 		// if the attacking player won and they still have surplus armies,
 		// give the option to move them
@@ -350,7 +363,7 @@ public class GameEngine implements Runnable {
 			currentPlayerHasTakenCountry = true;
 			
 			if((attackingArmies - result.getAttackersLoss() - attackDiceNumber) > 1)
-				moveMoreArmies(result);
+				moveMoreArmies(result, stateChange);
 			
 			if(PlayerUtils.playerIsOut(result.getDefender())){
 				PlayerUtils.removePlayer(gameState, result.getDefender());
@@ -360,6 +373,8 @@ public class GameEngine implements Runnable {
 			}
 	
 		}
+		
+		StateChangeRecord.addStateChange(stateChange);
 
 		return PLAYER_INVADING_COUNTRY;
 
@@ -377,7 +392,7 @@ public class GameEngine implements Runnable {
 	 *  
 	 * @param result
 	 */
-	private void moveMoreArmies(FightResult result){
+	private void moveMoreArmies(FightResult result, StateChange stateChange){
 		ArrayList<Army> remainingAttackArmies = ArmyUtils
 				.getArmiesOnTerritory(currentPlayer, result.getAttackingTerritory());
 		
@@ -386,7 +401,7 @@ public class GameEngine implements Runnable {
 				.getNumberOfArmies(currentPlayer, remainingAttackArmies.size() - 1, RequestReason.POST_ATTACK_MOVEMENT);
 		
 		ArmyUtils.moveArmies(result.getAttacker(), result.getAttackingTerritory(), 
-				result.getDefendingTerritory(), movedAmount);
+				result.getDefendingTerritory(), movedAmount, stateChange);
 	}
 	
 	
@@ -413,6 +428,8 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	protected PlayState moveArmy() {
+		
+		StateChange stateChange = new StateChange(PLAYER_MOVING_ARMIES, currentPlayer);
 		
 		// get a list of territories a player can deploy from
 		HashSet<Territory> canBeDeployedFrom = TerritoryUtils
@@ -442,8 +459,9 @@ public class GameEngine implements Runnable {
 		int movedAmount = currentPlayer.getCommunicationMethod()
 				.getNumberOfArmies(currentPlayer, numberOfArmiesThatMayBeMoved, RequestReason.REINFORCEMENT_PHASE);
 		
-		ArmyUtils.moveArmies(currentPlayer, source, target, movedAmount);
+		ArmyUtils.moveArmies(currentPlayer, source, target, movedAmount, stateChange);
 		
+		StateChangeRecord.addStateChange(stateChange);
 		
 		return PLAYER_MOVING_ARMIES;
 	}

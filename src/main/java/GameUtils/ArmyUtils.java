@@ -4,6 +4,7 @@ import GameState.Army;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
+import GameUtils.Results.StateChange;
 
 import java.util.ArrayList;
 
@@ -90,36 +91,39 @@ public class ArmyUtils {
      * @param t
      * @param n
      */
-    public static void destroyArmies(Player p, Territory t, int n) {
+    public static void destroyArmies(Player p, Territory t, int n, StateChange change) {
         ArrayList<Army> armies = getArmiesOnTerritory(p, t);
         for (int i = 0; i < n; i++) {
                 p.getArmies().remove(armies.get(i));
         }
+        change.addDestroyedArmies(p, t, n);
     }
-
+    
     
     /**
      * @param target
      * @param n
      */
-    public static void moveArmies(Player sourceOwner, Territory source, Territory target, int n) {
+    public static void moveArmies(Player sourceOwner, Territory source, Territory target, int n, StateChange change) {
         ArrayList<Army> moving = getArmiesOnTerritory(sourceOwner, source);
         Army a;
         for(int i = 0; i < n; i++) {
         	a = moving.get(i);
         	a.setTerritory(target);
         }
+        change.addArmyMovement(sourceOwner, source, target, n);
     }
 
     /**
      * @param target
      * @param n
      */
-    public static void deployArmies(Player player, Territory target, int n) {
+    public static void deployArmies(Player player, Territory target, int n, StateChange change) {
         ArrayList<Army> toDeploy = getUndeployedArmies(player);
         for (int i = 0; i < n; i++) {
            toDeploy.get(i).setTerritory(target);
         }
+        change.addArmyMovement(player, null, target, n);
     }
     
     /**

@@ -4,6 +4,7 @@ import GameState.Continent;
 import GameState.Player;
 import GameState.State;
 import GameUtils.Results.FightResult;
+import GameUtils.Results.StateChange;
 
 import java.util.ArrayList;
 
@@ -48,14 +49,14 @@ public class RuleUtils {
     * 
     * @param res
     */
-    public static void applyFightResult(FightResult res) {
-        ArmyUtils.destroyArmies(res.getAttacker(), res.getAttackingTerritory(), res.getAttackersLoss());
-        ArmyUtils.destroyArmies(res.getDefender(), res.getDefendingTerritory(), res.getDefendersLoss());
+    public static void applyFightResult(FightResult res, StateChange change) {
+        ArmyUtils.destroyArmies(res.getAttacker(), res.getAttackingTerritory(), res.getAttackersLoss(), change);
+        ArmyUtils.destroyArmies(res.getDefender(), res.getDefendingTerritory(), res.getDefendersLoss(), change);
 
         // if country defeated then move minimum armies across
         if (ArmyUtils.getNumberOfArmiesOnTerritory(res.getDefender(), res.getDefendingTerritory()) == 0) {
             ArmyUtils.moveArmies(res.getAttacker(), res.getAttackingTerritory(), 
-            		res.getDefendingTerritory(), (res.getAttackDiceRolled().length - res.getAttackersLoss()));
+            		res.getDefendingTerritory(), (res.getAttackDiceRolled().length - res.getAttackersLoss()), change);
         }
     }
  
