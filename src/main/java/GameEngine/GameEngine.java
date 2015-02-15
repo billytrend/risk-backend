@@ -367,9 +367,8 @@ public class GameEngine implements Runnable {
 			
 			if(PlayerUtils.playerIsOut(result.getDefender())){
 				PlayerUtils.removePlayer(gameState, result.getDefender());
+				stateChange.addRemovedPlayer(result.getDefender());
 				// TODO: do we need this?
-				if(checkTheEndOfGame())
-					return END_GAME;
 			}
 	
 		}
@@ -474,10 +473,14 @@ public class GameEngine implements Runnable {
 	 */
 	private PlayState endGo() {
 		
+		if(checkTheEndOfGame())
+			return END_GAME;
+		
 		if (currentPlayerHasTakenCountry) {
 			CardUtils.givePlayerRandomCard(gameState, currentPlayer);
 			currentPlayerHasTakenCountry = false;
 		}
+		
 		
 		currentPlayer = gameState.getPlayerQueue().next();
 		

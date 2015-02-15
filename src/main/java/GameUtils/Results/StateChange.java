@@ -19,8 +19,10 @@ public class StateChange {
 	
 	public StateChange(PlayState actionPlayed, Player actingPlayer){
 		this.actingPlayer = actingPlayer;
-		this.armyMovements = new ArrayList<ArmyMovement>();
-		this.destroyedArmies = new ArrayList<ArmyDeletion>();
+		this.actionPlayed = actionPlayed;
+		armyMovements = new ArrayList<ArmyMovement>();
+		destroyedArmies = new ArrayList<ArmyDeletion>();
+		removedPlayers = new ArrayList<Player>();
 	}
 	
 	

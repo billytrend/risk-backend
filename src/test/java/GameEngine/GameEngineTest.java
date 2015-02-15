@@ -216,9 +216,10 @@ public class GameEngineTest{
 		
 		//player one attacks territory 2 from territory 0
 		// player1 throws 3 dice and player2 throws 1 dice
-		
+		int tries = -1;
 		while(TerritoryUtils.getPlayersTerritories(player2).contains(sortedTerritories.get(2))){
 			gameEngine.testCall(PlayState.PLAYER_INVADING_COUNTRY);
+			tries++;
 		}
 		
 		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player1, sortedTerritories.get(1)), 1);
@@ -231,7 +232,7 @@ public class GameEngineTest{
 		assertEquals(TerritoryUtils.getPlayersTerritories(player2).size(), 1);
 		
 		// and the maximum number of armies were moved to the new territory (player1 mock defined)
-		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, sortedTerritories.get(2)).size(), 13);
+		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, sortedTerritories.get(2)).size(), 13 - tries);
 	}
 	
 	
