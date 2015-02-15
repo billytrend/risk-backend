@@ -8,12 +8,15 @@ import java.util.Iterator;
 import java.util.List;
 
 import GameBuilders.DemoGameBuilder;
+
 import com.esotericsoftware.minlog.Log;
+
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.ArmyUtils;
 import GameUtils.TerritoryUtils;
+import GameUtils.Results.StateChange;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
 
@@ -182,6 +185,8 @@ public class GameEngineTest{
 		//player one attacks territory 2 from territory 0
 		// player1 throws 3 dice and player2 throws 2 dice
 		PlayState returnValue = gameEngine.testCall(PlayState.PLAYER_INVADING_COUNTRY);
+		System.out.println("test other");
+		
 		assertEquals(returnValue, PlayState.PLAYER_INVADING_COUNTRY);
 		// number of armies on other territories dont change
 		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player1, sortedTerritories.get(1)), 5);
@@ -212,21 +217,21 @@ public class GameEngineTest{
 		
 		//player one attacks territory 2 from territory 0
 		// player1 throws 3 dice and player2 throws 1 dice
+		System.out.println("important");
+		System.out.println(ArmyUtils.getArmiesOnTerritory(player1, sortedTerritories.get(0)).size());
 		
-		int attackersLoss = 0;
-		int defendersLoss = 0;
-		
-		while(defendersLoss == 0){
+		while(TerritoryUtils.getPlayersTerritories(player2).contains(sortedTerritories.get(2))){
 			gameEngine.testCall(PlayState.PLAYER_INVADING_COUNTRY);
-			
-			// the total loss of armies should be 1 since 1 dice is compared
-			attackersLoss = 10 - ArmyUtils.getArmiesOnTerritory(player1, sortedTerritories.get(0)).size();
-			defendersLoss = 1 - ArmyUtils.getArmiesOnTerritory(player2, sortedTerritories.get(2)).size();
 		}
+		
+		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player1, sortedTerritories.get(1)), 1);
+		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player2, sortedTerritories.get(3)), 10);		
 		
 		// the territory was taken over
 		assertTrue(TerritoryUtils.getPlayersTerritories(player1).contains(sortedTerritories.get(2)));
 		assertFalse(TerritoryUtils.getPlayersTerritories(player2).contains(sortedTerritories.get(2)));
+		assertEquals(TerritoryUtils.getPlayersTerritories(player1).size(), 3);
+		assertEquals(TerritoryUtils.getPlayersTerritories(player2).size(), 1);
 		
 		// and the maximum number of armies were moved to the new territory (player1 mock defined)
 		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, sortedTerritories.get(2)).size(), 13);

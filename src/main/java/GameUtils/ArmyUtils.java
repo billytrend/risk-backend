@@ -92,12 +92,24 @@ public class ArmyUtils {
      * @param n
      */
     public static void destroyArmies(Player p, Territory t, int n, StateChange change) {
-        ArrayList<Army> armies = getArmiesOnTerritory(p, t);
-        for (int i = 0; i < n; i++) {
-                p.getArmies().remove(armies.get(i));
-        }
+    	System.out.println("in the wrapper function");
+        destroyArmies(p, t, n);
         change.addDestroyedArmies(p, t, n);
     }
+    
+    /**
+    *
+    * @param p
+    * @param t
+    * @param n
+    */
+   public static void destroyArmies(Player p, Territory t, int n) {
+	   System.out.println("destoryy " + p.getId() + "  num " + n);
+       ArrayList<Army> armies = getArmiesOnTerritory(p, t);
+       for (int i = 0; i < n; i++) {
+               p.getArmies().remove(armies.get(i));
+       }
+   }
     
     
     /**
@@ -105,24 +117,39 @@ public class ArmyUtils {
      * @param n
      */
     public static void moveArmies(Player sourceOwner, Territory source, Territory target, int n, StateChange change) {
+        moveArmies(sourceOwner, source, target, n);
+        change.addArmyMovement(sourceOwner, source, target, n);
+    }
+    
+    /**
+     * @param target
+     * @param n
+     */
+    public static void moveArmies(Player sourceOwner, Territory source, Territory target, int n) {
         ArrayList<Army> moving = getArmiesOnTerritory(sourceOwner, source);
         Army a;
         for(int i = 0; i < n; i++) {
         	a = moving.get(i);
         	a.setTerritory(target);
         }
-        change.addArmyMovement(sourceOwner, source, target, n);
     }
 
     /**
      * @param target
      * @param n
      */
-    public static void deployArmies(Player player, Territory target, int n, StateChange change) {
+    public static void deployArmies(Player player, Territory target, int n) {
         ArrayList<Army> toDeploy = getUndeployedArmies(player);
         for (int i = 0; i < n; i++) {
            toDeploy.get(i).setTerritory(target);
         }
+    }
+    /**
+     * @param target
+     * @param n
+     */
+    public static void deployArmies(Player player, Territory target, int n, StateChange change) {
+        deployArmies(player, target, n);
         change.addArmyMovement(player, null, target, n);
     }
     

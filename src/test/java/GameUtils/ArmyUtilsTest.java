@@ -5,9 +5,12 @@ import GameState.Army;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
+import GameUtils.Results.StateChange;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
+
 import com.esotericsoftware.minlog.Log;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -58,6 +61,7 @@ public class ArmyUtilsTest {
 		
 		assertTrue(ArmyUtils.somePlayerHasUndeployedArmies(gameState));
 		
+
 		ArmyUtils.deployArmies(players.get(0), territories[0], 5);
 		assertTrue(ArmyUtils.somePlayerHasUndeployedArmies(gameState));
 		
