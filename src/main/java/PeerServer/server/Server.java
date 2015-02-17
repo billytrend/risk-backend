@@ -10,6 +10,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.CountDownLatch;
 
+import static com.esotericsoftware.minlog.Log.debug;
+
 /**
  * @author 120011995
  * @category Class to hold the PeerServer for our multi-player risk implementation
@@ -55,7 +57,7 @@ public class Server {
 			}
 			
 		} catch (IOException e) {
-			System.out.println("Could not create PeerServer Socket");
+			debug("Could not create PeerServer Socket");
 			e.printStackTrace();
 		}
 	}
@@ -70,7 +72,7 @@ public class Server {
 			//e.printStackTrace();
 		//}
 	}
-	
+
 	public void routeMessage(String jsonString) {
 		// if busy with other message
 		try {

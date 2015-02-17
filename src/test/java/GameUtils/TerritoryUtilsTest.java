@@ -4,6 +4,7 @@ import GameBuilders.DemoGameBuilder;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
+import com.esotericsoftware.minlog.Log;
 import org.javatuples.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +21,10 @@ public class TerritoryUtilsTest {
 
 	private State gameState;
 	private Territory[] territories;
+	@Before
+	public void setUp() throws Exception {
+		Log.NONE();
+	}
 
 	@Before
 	public void stateSetUp(){

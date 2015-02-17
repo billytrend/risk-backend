@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import static GameEngine.PlayState.*;
+import static com.esotericsoftware.minlog.Log.debug;
 
 /**
  * An instance of this class represents a game that
@@ -66,52 +67,52 @@ public class GameEngine implements Runnable {
 
 		switch (this.playState) {
 			case BEGINNING_STATE:
-			//	System.out.println("\nBEGIN");
+			//	debug("\nBEGIN");
 				this.playState = begin();
 				gameState.print();
 				break;
 
 			case FILLING_EMPTY_COUNTRIES:
-			//	System.out.println("\nFILLING EMPTY COUNTRIES");
+			//	debug("\nFILLING EMPTY COUNTRIES");
 				this.playState = fillAnEmptyCountry();
 				break;
 
 			case USING_REMAINING_ARMIES:
-			//	System.out.println("\nUSING REMAINING ARMIES");
+			//	debug("\nUSING REMAINING ARMIES");
 				this.playState = useARemainingArmy();
 				break;
 
 			case PLAYER_CONVERTING_CARDS:
-			//	System.out.println("\nCARDS");
+			//	debug("\nCARDS");
 				this.playState = convertCards();
 				// TODO: why is this here?
 				ArmyUtils.givePlayerNArmies(currentPlayer, 1);
 				break;
 
 			case PLAYER_PLACING_ARMIES:
-			//	System.out.println("\nPLAYER PLACING ARMIES");
+			//	debug("\nPLAYER PLACING ARMIES");
 				this.playState = placeArmy();
 				break;
 
 			case PLAYER_INVADING_COUNTRY:
-			//	System.out.println("\nINVADING");
+			//	debug("\nINVADING");
 				this.playState = invadeCountry(); 
 				gameState.print();
 				break;
 
 			case PLAYER_MOVING_ARMIES:
-			//	System.out.println("\nMOVING ARMIES");
+			//	debug("\nMOVING ARMIES");
 				this.playState = moveArmy();
 				gameState.print();
 				break;
 
 			case PLAYER_ENDED_GO:
-			//	System.out.println("\nEND GO");
+			//	debug("\nEND GO");
 				this.playState = endGo();
 				break;
 				
 			case END_GAME:
-				System.out.println("\nEND GAME!");
+				debug("\nEND GAME!");
 				return false;
 			
 			default:
@@ -162,7 +163,7 @@ public class GameEngine implements Runnable {
 		endGo();
 
 		if (!TerritoryUtils.hasEmptyTerritories(gameState)) {
-			System.out.println("ALL COUNTRIES TAKEN");
+			debug("ALL COUNTRIES TAKEN");
 			return USING_REMAINING_ARMIES;
 		}
 
@@ -285,7 +286,7 @@ public class GameEngine implements Runnable {
 				.getTerritory(currentPlayer, possibleAttackingTerritories, true, RequestReason.ATTACK_CHOICE);
 		
 		if(attacking == null){
-			// System.out.println("PLAYER DOESNT WANT TO INVADE");
+			// debug("PLAYER DOESNT WANT TO INVADE");
 			return PLAYER_MOVING_ARMIES;
 		}
 		
@@ -307,7 +308,7 @@ public class GameEngine implements Runnable {
 		// and how many may defend as per rules
 		int attackingArmies = ArmyUtils
 				.getNumberOfArmiesOnTerritory(currentPlayer, attacking);
-		System.out.println("attacking armies: " + attackingArmies);
+		debug("attacking armies: " + attackingArmies);
 		int maxAttackingDice = (attackingArmies > 3) ? 3 : attackingArmies - 1;
 		
 		int defendingArmies = ArmyUtils
@@ -410,7 +411,7 @@ public class GameEngine implements Runnable {
 		//------------------------------------
 		// HANDLE HERE NOT MOVING RESPONCE? - null country selection?
 		if(source == null){
-			System.out.println("PLAYER DOESNT WANT TO MOVE");
+			debug("PLAYER DOESNT WANT TO MOVE");
 			return PLAYER_ENDED_GO;
 		}
 

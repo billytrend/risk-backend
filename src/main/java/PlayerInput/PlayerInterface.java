@@ -6,7 +6,6 @@ import GameState.Player;
 import GameState.Territory;
 
 import java.util.HashSet;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * An interface allowing for a game to be played
@@ -16,8 +15,6 @@ import java.util.concurrent.CountDownLatch;
  *  
  */
 public interface PlayerInterface {
-
-    CountDownLatch waiter = null;
     
     /**
      * * 
