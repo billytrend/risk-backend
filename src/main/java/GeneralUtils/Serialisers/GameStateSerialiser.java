@@ -41,24 +41,18 @@ public class GameStateSerialiser implements JsonSerializer<State> {
         
     	JsonObject jsonObject = new JsonObject();
     	JsonObject map = new JsonObject();
-        JsonArray countries = new JsonArray();
-        //add countries
-        for (Territory t : TerritoryUtils.getAllTerritories(state) ) {
-        	countries.add(new JsonPrimitive(t.getId()));
-        }
-        map.add("countries", countries);
         
-        JsonArray borders = new JsonArray();
-        //add bordering countries
-        for (Pair<Territory, Territory> p : TerritoryUtils.getAllBorders(state)){ 	
-        	JsonArray pair = new JsonArray();
-        	pair.add(new JsonPrimitive(p.getValue0().getId()));
-        	pair.add(new JsonPrimitive(p.getValue1().getId()));
-        	borders.add(pair);
-        }
-        map.add("borders", borders);
-        //add each players territories
-        JsonObject players = new JsonObject();
+        map.add("countries", serializeCountries(state));
+        map.add("borders", serializeBorders(state));
+        jsonObject.add("map", map);
+        jsonObject.add("players", serializePlayers(state));
+
+        return jsonObject;
+    }
+    
+    //gets each player and all the territories they own
+    public JsonElement serializePlayers(State state){
+    	JsonObject players = new JsonObject();
         for(Player p : state.getPlayers()){
         	JsonArray territories = new JsonArray();
         	for(Territory t : TerritoryUtils.getPlayersTerritories(p)){
@@ -66,10 +60,25 @@ public class GameStateSerialiser implements JsonSerializer<State> {
         	}
         	players.add(p.getId(), territories);
         }
-       
-        jsonObject.add("map", map);
-        jsonObject.add("players", players);
-
-        return jsonObject;
+        return players;
     }
+    public JsonElement serializeBorders(State state){
+        JsonArray borders = new JsonArray();
+        for (Pair<Territory, Territory> p : TerritoryUtils.getAllBorders(state)){ 	
+        	JsonArray pair = new JsonArray();
+        	pair.add(new JsonPrimitive(p.getValue0().getId()));
+        	pair.add(new JsonPrimitive(p.getValue1().getId()));
+        	borders.add(pair);
+        }
+        return borders;
+    }
+    
+    public JsonElement serializeCountries(State state){
+    	JsonArray countries = new JsonArray();
+        for (Territory t : TerritoryUtils.getAllTerritories(state) ) {
+        	countries.add(new JsonPrimitive(t.getId()));
+        }
+        return countries;
+    }
+    
 }

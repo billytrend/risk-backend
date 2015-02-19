@@ -3,6 +3,8 @@ package GeneralUtils.Serialisers;
 import GameBuilders.DemoGameBuilder;
 import GameState.State;
 import LobbyServer.LobbyState.Lobby;
+import PlayerInput.DumbBotInterface;
+import PlayerInput.PlayerInterface;
 
 import com.google.gson.*;
 
@@ -18,7 +20,11 @@ public class LobbySerialiser implements JsonSerializer<Lobby> {
         JsonObject jsonObject = new JsonObject();
 
         JSONArray games = new JSONArray();
-        jsonObject.add("nlol", jsonSerializationContext.serialize(DemoGameBuilder.buildGame(2, 3)));
+
+
+        PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
+        jsonObject.add("lol", jsonSerializationContext.serialize(DemoGameBuilder.buildGame(2, 3, interfaces)));
+
         
         for (State s : lobby.getCurrentGames()) {
             games.add(jsonSerializationContext.serialize(s));
