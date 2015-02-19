@@ -1,9 +1,13 @@
 package GameUtils;
 
+
 import GameBuilders.DemoGameBuilder;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
+import PlayerInput.DumbBotInterface;
+import PlayerInput.PlayerInterface;
+
 import org.javatuples.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,10 +24,12 @@ public class TerritoryUtilsTest {
 
 	private State gameState;
 	private Territory[] territories;
+	PlayerInterface[] interfaces;
 
 	@Before
 	public void stateSetUp(){
-		gameState = DemoGameBuilder.buildGame(3, 10);
+		interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
+		gameState = DemoGameBuilder.buildGame(2, 10, interfaces);
 		territories = new Territory[gameState.getTerritories().vertexSet().size()];
 		gameState.getTerritories().vertexSet().toArray(territories);
 	}
@@ -33,7 +39,7 @@ public class TerritoryUtilsTest {
 		assertEquals(TerritoryUtils.getAllTerritories(gameState).size(), 4);
 		assertTrue(TerritoryUtils.getAllTerritories(gameState).containsAll(Arrays.asList(territories)));
 		
-		gameState = DemoGameBuilder.buildTestGame(2, 5, 7);
+		gameState = DemoGameBuilder.buildTestGame(2, 5, 7, interfaces);
 		assertEquals(TerritoryUtils.getAllTerritories(gameState).size(), 7);
 	}
 	
@@ -60,8 +66,7 @@ public class TerritoryUtilsTest {
 
 	@Test
 	public void testGetAllBorders() throws Exception {
-		State st = DemoGameBuilder.buildGame(4, 4);
-		HashSet<Pair<Territory, Territory>> terrs = TerritoryUtils.getAllBorders(st);
+		HashSet<Pair<Territory, Territory>> terrs = TerritoryUtils.getAllBorders(gameState);
 		assertEquals(terrs.size(), 5);
 	}
 

@@ -1,27 +1,30 @@
 
 package GameUtils;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-
-import org.junit.Before;
-import org.junit.Test;
 
 import GameBuilders.DemoGameBuilder;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.Results.FightResult;
+import PlayerInput.DumbBotInterface;
+import PlayerInput.PlayerInterface;
+import org.junit.Before;
+import org.junit.Test;
 
-public class RuleUtilsTest {
+import java.util.ArrayList;
+
+import static org.junit.Assert.*;
+
+public class RuleUtilsTest{
 	
 	private State gameState;
 	private Territory[] territories;
 
 	@Before
 	public void stateSetUp(){
-		gameState = DemoGameBuilder.buildTestGame(2, 15, 15);
+		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
+		gameState = DemoGameBuilder.buildTestGame(2, 15, 15, interfaces);
 		territories = new Territory[TerritoryUtils.getAllTerritories(gameState).size()];
 		TerritoryUtils.getAllTerritories(gameState).toArray(territories);
 	}
