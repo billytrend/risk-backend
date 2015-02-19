@@ -5,7 +5,7 @@ import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
 import GeneralUtils.Jsonify;
-import LobbyServer.LobbyState.ObjectFromClient.*;
+import LobbyServer.LobbyState.ObjectFromClient.GameComms.*;
 import PlayerInput.PlayerInterface;
 import org.java_websocket.WebSocket;
 import org.javatuples.Triplet;

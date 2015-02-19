@@ -1,4 +1,4 @@
-package LobbyServer.LobbyState.ObjectFromClient;
+package LobbyServer.LobbyState.ObjectFromClient.GameComms;
 
 import GameState.Territory;
 
