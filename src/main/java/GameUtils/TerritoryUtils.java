@@ -17,6 +17,16 @@ import java.util.HashSet;
  */
 public class TerritoryUtils {
 
+    public static Territory getTerritoryWithName(State state, String name) {
+        for (Territory t : getAllTerritories(state)) {
+            if (t.getId().equals(name)) {
+                return t;
+            }
+        }
+        
+        return null;
+    }
+    
     /**
      * @param state
      * @return
