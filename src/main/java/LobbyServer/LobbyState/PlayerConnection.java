@@ -5,9 +5,8 @@ import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
 import GeneralUtils.Jsonify;
-import LobbyServer.LobbyState.ObjectFromClient.ClientMessage;
+import LobbyServer.LobbyState.ObjectFromClient.*;
 import PlayerInput.PlayerInterface;
-
 import org.java_websocket.WebSocket;
 import org.javatuples.Triplet;
 
@@ -15,40 +14,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-
-
-class Request extends ClientMessage{
-	RequestReason reason;
-}
-
-class DiceNumberRequest extends Request {
-	int max;
-}
-
-class TerritoryRequest extends Request {
-	HashSet<Territory> possibles;
-	boolean canResign;
-}
-
-class ArmyRequest extends Request {
-	int max;
-}
-
-class Response extends ClientMessage {
-	
-}
-
-class DiceNumberResponse extends Response {
-	int n;
-}
-
-class TerritoryResponse extends Response {
-	Territory territory;
-}
-
-class ArmyResponse extends Response {
-	int n;
-}
 
 
 public class PlayerConnection implements PlayerInterface  {

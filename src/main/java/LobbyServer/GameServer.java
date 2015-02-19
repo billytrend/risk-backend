@@ -2,12 +2,15 @@ package LobbyServer;
 
 import GeneralUtils.Jsonify;
 import LobbyServer.LobbyState.Lobby;
+import LobbyServer.LobbyState.ObjectFromClient.ClientMessage;
+import LobbyServer.LobbyState.PlayerConnection;
 import LobbyServer.LobbyUtils.LobbyUtils;
 import org.java_websocket.WebSocket;
 import org.java_websocket.WebSocketImpl;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -70,11 +73,11 @@ public class GameServer extends WebSocketServer {
     @Override
     public void onMessage( WebSocket conn, String message ) {
         debug(message);
-//        ClientMessage messageObject = WebServerUtils.getMessageObject(message);
-//        PlayerConnection player = LobbyUtils.getPlayer(lobby, conn);
-//        if (messageObject instanceof Choice) {
-//            player.setChoice((Choice) messageObject);
-//        }
+        ClientMessage messageObject = WebServerUtils.getMessageObject(message);
+        PlayerConnection player = LobbyUtils.getPlayer(lobby, conn);
+        if (messageObject instanceof Response) {
+            player.setChoice((Choice) messageObject);
+        }
     }
 
     @Override
