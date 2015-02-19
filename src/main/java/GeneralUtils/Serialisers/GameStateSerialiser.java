@@ -1,8 +1,10 @@
 package GeneralUtils.Serialisers;
 
+import GameState.Card;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
+import GameUtils.CardUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.TerritoryUtils;
 
@@ -53,12 +55,20 @@ public class GameStateSerialiser implements JsonSerializer<State> {
     //gets each player and all the territories they own
     public JsonElement serializePlayers(State state){
     	JsonObject players = new JsonObject();
+    	JsonObject playersItems = new JsonObject();
+    	
         for(Player p : state.getPlayers()){
         	JsonArray territories = new JsonArray();
         	for(Territory t : TerritoryUtils.getPlayersTerritories(p)){
         		territories.add(new JsonPrimitive(t.getId()));
         	}
-        	players.add(p.getId(), territories);
+        	JsonArray cards = new JsonArray();
+        	for(Card c : CardUtils.getPlayersCards(state, p)){
+        		cards.add(new JsonPrimitive(c.getType().toString()));
+        	}
+        	playersItems.add("cards", cards);
+        	playersItems.add("territories", territories);
+        	players.add(p.getId(), playersItems);
         }
         return players;
     }

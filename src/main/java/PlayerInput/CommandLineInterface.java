@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Scanner;
 
+import org.javatuples.Triplet;
+
 /**
  * Used for a very simple AI acting as a player
  *
@@ -58,14 +60,14 @@ public class CommandLineInterface implements PlayerInterface {
         ArrayList<Territory> posList = new ArrayList<Territory>(possibles);
         emit(player, reason.toString());
         String out = "Please choose a territory";
-        switch(reason){
-        case ATTACK_CHOICE:
-        	out += " to attack";
-        	break;
-        default: 
-        	out += " to place an army on";
-
-        }
+//        switch(reason){
+//        case ATTACK_CHOICE:
+//        	out += " to attack";
+//        	break;
+//        default: 
+//        	out += " to place an army on";
+//
+//        }
         emit(player, out);
         // the player can decide not to make a choice
         // in case of starting an attack or moving armies
@@ -110,6 +112,13 @@ public class CommandLineInterface implements PlayerInterface {
     public Card getCardOptions() {
         return null;
     }
+
+	@Override
+	public Triplet<Card, Card, Card> getCardChoice(Player player,
+			ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
 

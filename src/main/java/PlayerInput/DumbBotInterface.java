@@ -59,14 +59,14 @@ public class DumbBotInterface implements PlayerInterface {
         ArrayList<Territory> posList = new ArrayList<Territory>(possibles);
 
         String out = "Please choose a territory";
-        switch(reason){
-        case ATTACK_CHOICE:
-        	out += " to attack";
-        	break;
-        default: 
-        	out += " to place an army on";
-
-        }
+//        switch(reason){
+//        case ATTACK_CHOICE:
+//        	out += " to attack";
+//        	break;
+//        default: 
+//        	out += " to place an army on";
+//
+//        }
         emit(player, out);
 	
        

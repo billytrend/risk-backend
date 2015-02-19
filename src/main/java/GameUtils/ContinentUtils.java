@@ -1,9 +1,9 @@
 package GameUtils;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 import GameState.Continent;
+import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 
@@ -16,6 +16,19 @@ public class ContinentUtils {
 		}
 		Continent continent = new Continent(cont, reward, id);
 		state.getContinents().add(continent);
+	}
+	
+	public static HashSet<Continent> getPlayersContinents(State state, Player player){
+		HashSet<Continent> continentsOwned = new HashSet<Continent>();
+		for(Continent c : state.getContinents()){
+			if(checkPlayerOwnsContinent(player, c)) continentsOwned.add(c);
+		}
+		
+		return continentsOwned;
+	}
+	public static boolean checkPlayerOwnsContinent(Player player, Continent continent){
+		if (TerritoryUtils.getPlayersTerritories(player).containsAll(continent.getTerritories())) return true;		
+		return false;
 	}
 
 }

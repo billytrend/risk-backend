@@ -10,6 +10,8 @@ import GameState.Territory;
 import GameUtils.TerritoryUtils;
 import GeneralUtils.Serialisers.GameStateSerialiser;
 import GeneralUtils.Serialisers.LobbySerialiser;
+import PlayerInput.DumbBotInterface;
+import PlayerInput.PlayerInterface;
 
 
 public class SerialiseTest {
@@ -19,7 +21,8 @@ public class SerialiseTest {
 	
 	@Before
 	public void stateSetUp(){
-		gameState = DemoGameBuilder.buildGame(4, 10);
+		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
+		gameState = DemoGameBuilder.buildGame(2, 10, interfaces);
 		territories = new Territory[TerritoryUtils.getAllTerritories(gameState).size()];
 		TerritoryUtils.getAllTerritories(gameState).toArray(territories);
 		

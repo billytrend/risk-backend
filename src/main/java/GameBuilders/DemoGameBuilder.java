@@ -26,14 +26,14 @@ public class DemoGameBuilder {
 	 */
     public static State buildGame(int numOfPlayers, int armiesAtTheStart, PlayerInterface[] interfaces) {
 
-    	if(interfaces.length != numOfPlayers)
+    	if(interfaces.length != numOfPlayers){
 			try {
 				throw new Exception();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-    	
+    	}   	
         // creating players
         ArrayList<Player> ps = new ArrayList<Player>();
         
