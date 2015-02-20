@@ -20,12 +20,12 @@ public class Server {
 
 	private Thread thread;
 	public CountDownLatch recevingMessage = new CountDownLatch(0);
-	
+
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
+
 		new Server().runServer();
 	}
 
@@ -37,25 +37,25 @@ public class Server {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		int port = 4444; //4444 for default
 		String portFromClient;
-		
+
 		try {
 			portFromClient = br.readLine();
 			port = Integer.parseInt(portFromClient);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		
+
 		Socket connectionSocket = null;
 		try {
 			ServerSocket serverSocket = new ServerSocket(port);
 			System.out.println("PeerServer up and ready for connections on port: " + port);
 			//enables multi-threading via blocking and waiting for clients
-			
+
 			while (true){
 				connectionSocket = serverSocket.accept();
 				new Thread(new ServerThread(connectionSocket)).start();
 			}
-			
+
 		} catch (IOException e) {
 			debug("Could not create PeerServer Socket");
 			e.printStackTrace();
@@ -69,7 +69,7 @@ public class Server {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} //catch (IOException e) {
-			//e.printStackTrace();
+		//e.printStackTrace();
 		//}
 	}
 
@@ -88,7 +88,4 @@ public class Server {
 		// relevantPlayerInterface.setPlayerResponse(jsonObject);
 		this.recevingMessage.countDown();
 	}
-	
-	
-	
 }

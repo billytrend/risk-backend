@@ -16,25 +16,25 @@ import static com.esotericsoftware.minlog.Log.debug;
  */
 public class ServerThread implements Runnable {
 	public Socket client;
-	
-	
+
+
 	ServerThread(Socket client){
 		this.client = client;
 	}
 
 	@Override
 	public void run() {
-		
+
 		while(true){
 			try {
-				
+
 				String message = "";
 				BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-				
+
 				while((message = reader.readLine()) != null){
 					System.out.println("Incoming client message: " + message);
 				}
-				
+
 				client.close();	
 			} 
 			catch (IOException e) {
@@ -43,24 +43,4 @@ public class ServerThread implements Runnable {
 		}
 
 	}
-
-//	public void run(){
-//		
-//		while(true){
-//			try {
-//				
-//				String message = "";
-//				BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-//				
-//				while((message = reader.readLine()) != null){
-//					System.out.println("Incoming client message: " + message);
-//				}
-//				client.close();	
-//			} 
-//			catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//
-//	}
 }

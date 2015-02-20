@@ -16,7 +16,7 @@ import java.net.UnknownHostException;
  * 			 multi-threaded PeerServer.
  */
 public class Client {
-	
+
 	/**
 	 * @category Creates client and assigns them a name
 	 * @param args
@@ -49,10 +49,10 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
+
 	public void onConnection(){
 		//Client sends join_game request
 	}
-	
+
 }
