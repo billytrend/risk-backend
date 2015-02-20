@@ -4,83 +4,82 @@ import GameState.Player;
 import GameState.Territory;
 
 /**
- * A class that provides all the details about a fight
- * including the loss on both sides, the information 
- * about both players, the territories involved etc.
+ * A class that provides all the details about a fight including the loss on
+ * both sides, the information about both players, the territories involved etc.
  *
  */
 public class FightResult {
 
-    private int defendersLoss;
-    private int attackersLoss;
-    private Integer[] attackDiceRolled;
-    private Integer[] defendDiceRolled;
-    private final Player attacker;
-    private final Player defender;
-    private final Territory attackingTerritory;
-    private final Territory defendingTerritory;
+	private int defendersLoss;
+	private int attackersLoss;
+	private Integer[] attackDiceRolled;
+	private Integer[] defendDiceRolled;
+	private final Player attacker;
+	private final Player defender;
+	private final Territory attackingTerritory;
+	private final Territory defendingTerritory;
 
-    public FightResult(Player attacker, Player defender, Territory attackingTerritory, Territory defendingTerritory) {
-        this.attacker = attacker;
-        this.defender = defender;
-        this.attackingTerritory = attackingTerritory;
-        this.defendingTerritory = defendingTerritory;
-    }
+	public FightResult(Player attacker, Player defender,
+			Territory attackingTerritory, Territory defendingTerritory) {
+		this.attacker = attacker;
+		this.defender = defender;
+		this.attackingTerritory = attackingTerritory;
+		this.defendingTerritory = defendingTerritory;
+	}
 
-    public int getDefendersLoss() {
-        return defendersLoss;
-    }
+	public int getDefendersLoss() {
+		return defendersLoss;
+	}
 
-    public void setDefendersLoss(int defendersLoss) {
-        this.defendersLoss = defendersLoss;
-    }
+	public void setDefendersLoss(int defendersLoss) {
+		this.defendersLoss = defendersLoss;
+	}
 
-    public int getAttackersLoss() {
-        return attackersLoss;
-    }
+	public int getAttackersLoss() {
+		return attackersLoss;
+	}
 
-    public void setAttackersLoss(int attackersLoss) {
-        this.attackersLoss = attackersLoss;
-    }
+	public void setAttackersLoss(int attackersLoss) {
+		this.attackersLoss = attackersLoss;
+	}
 
-    public Integer[] getAttackDiceRolled() {
-        return attackDiceRolled;
-    }
+	public Integer[] getAttackDiceRolled() {
+		return attackDiceRolled;
+	}
 
-    public void setAttackDiceRolled(Integer[] attackDiceRolled) {
-        this.attackDiceRolled = attackDiceRolled;
-    }
+	public void setAttackDiceRolled(Integer[] attackDiceRolled) {
+		this.attackDiceRolled = attackDiceRolled;
+	}
 
-    public Integer[] getDefendDiceRolled() {
-        return defendDiceRolled;
-    }
+	public Integer[] getDefendDiceRolled() {
+		return defendDiceRolled;
+	}
 
-    public void setDefendDiceRolled(Integer[] defendDiceRolled) {
-        this.defendDiceRolled = defendDiceRolled;
-    }
+	public void setDefendDiceRolled(Integer[] defendDiceRolled) {
+		this.defendDiceRolled = defendDiceRolled;
+	}
 
-    public void addDefendLoss() {
-        this.defendersLoss++;
-    }
+	public void addDefendLoss() {
+		this.defendersLoss++;
+	}
 
-    public void addAttackLoss() {
-        this.attackersLoss++;
-    }
+	public void addAttackLoss() {
+		this.attackersLoss++;
+	}
 
-    public Player getAttacker() {
-        return attacker;
-    }
+	public Player getAttacker() {
+		return attacker;
+	}
 
-    public Player getDefender() {
-        return defender;
-    }
+	public Player getDefender() {
+		return defender;
+	}
 
-    public Territory getAttackingTerritory() {
-        return attackingTerritory;
-    }
+	public Territory getAttackingTerritory() {
+		return attackingTerritory;
+	}
 
-    public Territory getDefendingTerritory() {
-        return defendingTerritory;
-    }
+	public Territory getDefendingTerritory() {
+		return defendingTerritory;
+	}
 }
-

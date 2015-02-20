@@ -11,7 +11,8 @@ import static com.esotericsoftware.minlog.Log.debug;
 
 /**
  * @author 120011995
- * @category Class to hold the PeerServer for our multi-player risk implementation
+ * @category Class to hold the PeerServer for our multi-player risk
+ *           implementation
  */
 public class Server {
 
@@ -23,15 +24,16 @@ public class Server {
 	}
 
 	/**
-	 * Method which invokes the setup and running of the multi-threaded PeerServer
+	 * Method which invokes the setup and running of the multi-threaded
+	 * PeerServer
 	 */
 	public void runServer() {
 		int port = 4444;
 		try {
 			ServerSocket serverSocket = new ServerSocket(port);
 			debug("PeerServer up and ready for connections on port: " + port);
-			//enables multithreading via blocking and waiting for clients
-			while(true){
+			// enables multithreading via blocking and waiting for clients
+			while (true) {
 				Socket client = serverSocket.accept();
 				new ServerThread(client).start();
 			}

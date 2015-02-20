@@ -6,8 +6,8 @@ import org.junit.Ignore;
 
 @Ignore
 public class BeforeTests {
-    @BeforeClass
-    public static void setUpBaseClass() {
-        Log.NONE();
-    }
+	@BeforeClass
+	public static void setUpBaseClass() {
+		Log.NONE();
+	}
 }

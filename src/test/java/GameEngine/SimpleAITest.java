@@ -17,31 +17,31 @@ import static com.esotericsoftware.minlog.Log.debug;
 
 public class SimpleAITest {
 
+	@Before
+	public void setUp() throws Exception {
+		Log.NONE();
+	}
 
-    @Before
-    public void setUp() throws Exception {
-        Log.NONE();
-    }
+	@After
+	public void tearDown() throws Exception {
 
-    @After
-    public void tearDown() throws Exception {
+	}
 
-    }
+	@Test
+	public void testDumbBot() {
+		PlayerInterface[] interfaces = new PlayerInterface[] {
+				new DumbBotInterface(), new DumbBotInterface(),
+				new DumbBotInterface(), new DumbBotInterface() };
+		State gameState = DemoGameBuilder.buildGame(4, 10, interfaces);
+		GameEngine gameThr = new GameEngine(gameState);
+		gameThr.run();
+	}
 
-    @Test
-    public void testDumbBot() {
-	    PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface(),
-	    		new DumbBotInterface(), new DumbBotInterface()};
-        State gameState = DemoGameBuilder.buildGame(4, 10, interfaces);
-        GameEngine gameThr = new GameEngine(gameState);
-        gameThr.run();
-    }
-    
-    @Test
-    public void testJsonify() {
+	@Test
+	public void testJsonify() {
 
-        Lobby t = new Lobby();
-        debug(Jsonify.getObjectAsJsonString(t));
-//        debug(Jsonify.getObjectAsJsonString(new Territory("lol")));
-    }
+		Lobby t = new Lobby();
+		debug(Jsonify.getObjectAsJsonString(t));
+		// debug(Jsonify.getObjectAsJsonString(new Territory("lol")));
+	}
 }
