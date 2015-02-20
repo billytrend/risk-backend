@@ -12,15 +12,16 @@ import org.javatuples.Triplet;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class PlayerConnection implements PlayerInterface  {
-    
-    private Player playerState;
-    private WebSocket connection;
+public class PlayerConnection implements PlayerInterface {
 
-    public PlayerConnection(WebSocket connection) {
-        this.playerState = new Player(this, 0, 100); // this last number to be changed
-        this.connection = connection;
-    }
+	private Player playerState;
+	private WebSocket connection;
+
+	public PlayerConnection(WebSocket connection) {
+		this.playerState = new Player(this, 0, 100); // this last number to be
+														// changed
+		this.connection = connection;
+	}
 
 	@Override
 	public int getNumberOfDice(Player player, int max, RequestReason reason) {
@@ -42,7 +43,8 @@ public class PlayerConnection implements PlayerInterface  {
 	}
 
 	@Override
-	public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
+	public Triplet<Card, Card, Card> getCardChoice(Player player,
+			ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
 		return null;
 	}
 

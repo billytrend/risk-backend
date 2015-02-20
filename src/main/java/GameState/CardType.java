@@ -1,3 +1,5 @@
 package GameState;
 
-public enum CardType { SOLDIER, HORSE, CANNON }
+public enum CardType {
+	SOLDIER, HORSE, CANNON
+}

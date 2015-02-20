@@ -1,18 +1,17 @@
 package GameState;
 
 /**
- * Class representing a card. Each card has
- * a specific type and refers to a specific territory.
+ * Class representing a card. Each card has a specific type and refers to a
+ * specific territory.
  *
  */
 
 public class Card {
 
-
 	private final CardType type;
 	private final Territory territory;
 	private Player owner;
-	
+
 	public Card(Territory terr, CardType cardType) {
 		this.territory = terr;
 		this.type = cardType;
@@ -34,5 +33,5 @@ public class Card {
 	public Territory getTerritory() {
 		return territory;
 	}
-	
+
 }

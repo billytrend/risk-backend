@@ -15,28 +15,28 @@ import static com.esotericsoftware.minlog.Log.debug;
 
 /**
  * @author 120011995
- * @category JSON parsing used to translate messages recieved from other implementations into internal moves 
+ * @category JSON parsing used to translate messages recieved from other
+ *           implementations into internal moves
  */
 public class Parser {
 
-	//testing will be done with a local file
+	// testing will be done with a local file
 	private static final String filePath = "somewhere in my file system lol";
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//creates a Parser object and invokes parsing
+		// creates a Parser object and invokes parsing
 		new Parser().parseJSON();
 
 	}
 
 	/**
-	 * Reads in JSON file from disk (eventually network) and
-	 * begins to parse it for translation into internal moves
-	 * by Serialiser class
+	 * Reads in JSON file from disk (eventually network) and begins to parse it
+	 * for translation into internal moves by Serialiser class
 	 */
-	public void parseJSON(){
+	public void parseJSON() {
 
 		// read the json file
 		try {
@@ -44,20 +44,21 @@ public class Parser {
 			JSONParser jsonParser = new JSONParser();
 			JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
 
-			//get command from JSON
+			// get command from JSON
 			String command = (String) jsonObject.get("command");
 			debug("The command : " + command);
 
-			//get payload which is a JSON object :( 
-			JSONObject payloadStructure = (JSONObject) jsonObject.get("payload");
+			// get payload which is a JSON object :(
+			JSONObject payloadStructure = (JSONObject) jsonObject
+					.get("payload");
 			String payload = (String) payloadStructure.get("type");
 			debug("Payload is: " + payload);
 
-			//get player_id
+			// get player_id
 			String player_id = (String) jsonObject.get("player_id");
 			debug("The player_id : " + player_id);
 
-			//get (optional) acknowledgment request
+			// get (optional) acknowledgment request
 			String ack_req = (String) jsonObject.get("ack_req");
 			debug("The ack_req : " + ack_req);
 

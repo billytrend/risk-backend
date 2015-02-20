@@ -5,8 +5,8 @@ package PeerServer.protocol;
 
 /**
  * @author 120011995
- * @category Class to turn internal move representation into 
- * 			 a JSON file to exchange with other implementations
+ * @category Class to turn internal move representation into a JSON file to
+ *           exchange with other implementations
  */
 public class Serialiser {
 
