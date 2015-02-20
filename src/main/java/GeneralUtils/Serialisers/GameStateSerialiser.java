@@ -1,6 +1,7 @@
 package GeneralUtils.Serialisers;
 
 import GameState.Card;
+import GameState.Continent;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
@@ -46,6 +47,7 @@ public class GameStateSerialiser implements JsonSerializer<State> {
         
         map.add("countries", serializeCountries(state));
         map.add("borders", serializeBorders(state));
+        map.add("continents", serializeContinents(state));
         jsonObject.add("map", map);
         jsonObject.add("players", serializePlayers(state));
 
@@ -71,6 +73,18 @@ public class GameStateSerialiser implements JsonSerializer<State> {
         	players.add(p.getId(), playersItems);
         }
         return players;
+    }
+    
+    public JsonElement serializeContinents(State state){
+    	JsonObject continents = new JsonObject();
+    	for(Continent c : state.getContinents()){
+    		JsonArray territories = new JsonArray();
+    		for(Territory t : c.getTerritories()){
+    			territories.add(new JsonPrimitive(t.getId()));
+    		}
+    		continents.add(c.getId(), territories);
+    	}
+    	return continents;
     }
     public JsonElement serializeBorders(State state){
         JsonArray borders = new JsonArray();
