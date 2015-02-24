@@ -25,6 +25,7 @@ public class RiskMapGameBuilder {
 		State state = new State(ps);
 
 		// creating territories
+		//Create territories for North America
 		Territory alaska = new Territory("Alaska");
 		Territory northwestTerritory = new Territory("Northwest Territory");
 		Territory greenland = new Territory("Greenland");
@@ -35,11 +36,13 @@ public class RiskMapGameBuilder {
 		Territory easternUS = new Territory("Eastern US");
 		Territory centralAmerica = new Territory("Central America");
 
+		//Create territories for South America
 		Territory venezuela = new Territory("Venezuela");
 		Territory peru = new Territory("Peru");
 		Territory brazil = new Territory("Brazil");
 		Territory argentina = new Territory("Argentina");
 
+		//Create territories for Europe
 		Territory iceland = new Territory("Iceland");
 		Territory scandinavia = new Territory("Scandinavia");
 		Territory ukraine = new Territory("Ukraine");
@@ -48,6 +51,7 @@ public class RiskMapGameBuilder {
 		Territory westernEurope = new Territory("Western Europe");
 		Territory southernEurope = new Territory("Southern Europe");
 
+		//Create territories for Africa
 		Territory northAfrica = new Territory("North Africa");
 		Territory egypt = new Territory("Egypt");
 		Territory eastAfrica = new Territory("East Africa");
@@ -55,6 +59,7 @@ public class RiskMapGameBuilder {
 		Territory southAfrica = new Territory("South Africa");
 		Territory madagascar = new Territory("Madagascar");
 
+		//Create territories for Asia
 		Territory ural = new Territory("Ural");
 		Territory siberia = new Territory("Siberia");
 		Territory yakutsk = new Territory("Yakutsk");
@@ -68,11 +73,14 @@ public class RiskMapGameBuilder {
 		Territory india = new Territory("India");
 		Territory siam = new Territory("Siam");
 
+		//Create territories for Australian Archipelago
 		Territory indonesia = new Territory("Indonesia");
 		Territory newGuinea = new Territory("New Guinea");
 		Territory westernAustralia = new Territory("Western Australia");
 		Territory easternAustralia = new Territory("Eastern Australia");
 
+		//Add Territories
+		//Add territories for North America
 		TerritoryUtils.addTerritory(state, alaska);
 		TerritoryUtils.addTerritory(state, northwestTerritory);
 		TerritoryUtils.addTerritory(state, greenland);
@@ -83,11 +91,13 @@ public class RiskMapGameBuilder {
 		TerritoryUtils.addTerritory(state, easternUS);
 		TerritoryUtils.addTerritory(state, centralAmerica);
 
+		//Add territories for South America
 		TerritoryUtils.addTerritory(state, venezuela);
 		TerritoryUtils.addTerritory(state, peru);
 		TerritoryUtils.addTerritory(state, brazil);
 		TerritoryUtils.addTerritory(state, argentina);
 
+		//Add territories for Europe
 		TerritoryUtils.addTerritory(state, iceland);
 		TerritoryUtils.addTerritory(state, scandinavia);
 		TerritoryUtils.addTerritory(state, ukraine);
@@ -96,6 +106,7 @@ public class RiskMapGameBuilder {
 		TerritoryUtils.addTerritory(state, westernEurope);
 		TerritoryUtils.addTerritory(state, southernEurope);
 
+		//Add territories for Africa
 		TerritoryUtils.addTerritory(state, northAfrica);
 		TerritoryUtils.addTerritory(state, egypt);
 		TerritoryUtils.addTerritory(state, congo);
@@ -103,6 +114,7 @@ public class RiskMapGameBuilder {
 		TerritoryUtils.addTerritory(state, southAfrica);
 		TerritoryUtils.addTerritory(state, madagascar);
 
+		//Add territories for Asia
 		TerritoryUtils.addTerritory(state, ural);
 		TerritoryUtils.addTerritory(state, siberia);
 		TerritoryUtils.addTerritory(state, yakutsk);
@@ -116,11 +128,14 @@ public class RiskMapGameBuilder {
 		TerritoryUtils.addTerritory(state, india);
 		TerritoryUtils.addTerritory(state, siam);
 
+		//Add territories for Australian Archipelago
 		TerritoryUtils.addTerritory(state, indonesia);
 		TerritoryUtils.addTerritory(state, newGuinea);
 		TerritoryUtils.addTerritory(state, westernAustralia);
 		TerritoryUtils.addTerritory(state, easternAustralia);
 
+		//Add borders
+		//Add borders for North America
 		TerritoryUtils.addBorder(state, alaska, kamchatka);
 		TerritoryUtils.addBorder(state, alaska, northwestTerritory);
 		TerritoryUtils.addBorder(state, alaska, alberta);
@@ -141,6 +156,7 @@ public class RiskMapGameBuilder {
 		TerritoryUtils.addBorder(state, easternUS, centralAmerica);
 		TerritoryUtils.addBorder(state, centralAmerica, venezuela);
 
+		//Add borders for South America
 		TerritoryUtils.addBorder(state, venezuela, peru);
 		TerritoryUtils.addBorder(state, venezuela, brazil);
 		TerritoryUtils.addBorder(state, peru, brazil);
@@ -148,6 +164,7 @@ public class RiskMapGameBuilder {
 		TerritoryUtils.addBorder(state, brazil, northAfrica);
 		TerritoryUtils.addBorder(state, brazil, argentina);
 		
+		//Add borders for Europe
 		TerritoryUtils.addBorder(state, iceland, scandinavia);
 		TerritoryUtils.addBorder(state, iceland, greatBritain);
 		TerritoryUtils.addBorder(state, greatBritain, scandinavia);
@@ -168,7 +185,7 @@ public class RiskMapGameBuilder {
 		TerritoryUtils.addBorder(state, ukraine, afghanistan);
 		TerritoryUtils.addBorder(state, ukraine, middleEast);
 		
-		
+		//Add borders for Africa
 		TerritoryUtils.addBorder(state, northAfrica, egypt);
 		TerritoryUtils.addBorder(state, northAfrica, eastAfrica);
 		TerritoryUtils.addBorder(state, northAfrica, congo);
@@ -181,7 +198,7 @@ public class RiskMapGameBuilder {
 		TerritoryUtils.addBorder(state, eastAfrica, madagascar);
 		TerritoryUtils.addBorder(state, southAfrica, madagascar);
 		
-		
+		//Add borders for Asia
 		TerritoryUtils.addBorder(state, ural, siberia);
 		TerritoryUtils.addBorder(state, ural, china);
 		TerritoryUtils.addBorder(state, ural, afghanistan);
@@ -206,7 +223,7 @@ public class RiskMapGameBuilder {
 		TerritoryUtils.addBorder(state, india, siam);
 		TerritoryUtils.addBorder(state, siam, indonesia);
 		
-		
+		//Add borders for Australian Archipelago
 		TerritoryUtils.addBorder(state, indonesia, newGuinea);
 		TerritoryUtils.addBorder(state, indonesia, westernAustralia);
 		TerritoryUtils.addBorder(state, indonesia, newGuinea);
