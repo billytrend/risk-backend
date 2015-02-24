@@ -11,10 +11,12 @@ public class Continent {
 
     private final HashSet<Territory> territories;
     private final int armyReward;
+    private final String id;
 
-    public Continent(HashSet<Territory> territories, int armyReward) {
+    public Continent(HashSet<Territory> territories, int armyReward, String id) {
         this.territories = territories;
         this.armyReward = armyReward;
+        this.id = id;
     }
 
     public HashSet<Territory> getTerritories() {
@@ -23,5 +25,9 @@ public class Continent {
 
     public int getArmyReward() {
         return armyReward;
+    }
+    
+    public String getId(){
+    	return id;
     }
 }

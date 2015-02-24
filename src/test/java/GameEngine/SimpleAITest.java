@@ -29,7 +29,7 @@ public class SimpleAITest {
     public void testDumbBot() {
 	    PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface(),
 	    		new DumbBotInterface(), new DumbBotInterface()};
-        State gameState = DemoGameBuilder.buildGame(4, 10, interfaces);
+        State gameState = DemoGameBuilder.buildGame(10, interfaces);
         GameEngine gameThr = new GameEngine(gameState);
         gameThr.run();
     }
