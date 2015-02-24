@@ -1,17 +1,12 @@
 package GameUtils;
-import static org.junit.Assert.*;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import GameBuilders.DemoGameBuilder;
 import GameState.State;
 import GameState.Territory;
-import GameUtils.TerritoryUtils;
 import GeneralUtils.Serialisers.GameStateSerialiser;
-import GeneralUtils.Serialisers.LobbySerialiser;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
+import org.junit.Before;
+import org.junit.Test;
 
 
 public class SerialiseTest {
@@ -22,7 +17,7 @@ public class SerialiseTest {
 	@Before
 	public void stateSetUp(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
-		gameState = DemoGameBuilder.buildGame(2, 10, interfaces);
+		gameState = DemoGameBuilder.buildGame(10, interfaces);
 		territories = new Territory[TerritoryUtils.getAllTerritories(gameState).size()];
 		TerritoryUtils.getAllTerritories(gameState).toArray(territories);
 		

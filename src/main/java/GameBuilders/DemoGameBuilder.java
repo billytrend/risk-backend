@@ -2,17 +2,13 @@ package GameBuilders;
 
 import GameState.Player;
 import GameState.State;
+import GameState.Territory;
 import GameUtils.ContinentUtils;
 import GameUtils.TerritoryUtils;
-import GameState.Territory;
-import PlayerInput.CommandLineInterface;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Random;
 
 /*
@@ -24,21 +20,13 @@ public class DemoGameBuilder {
 	 * Builds a very basic game with four AIs playing against each other
 	 * and four territories.
 	 */
-    public static State buildGame(int numOfPlayers, int armiesAtTheStart, PlayerInterface[] interfaces) {
+    public static State buildGame(int armiesAtTheStart, PlayerInterface[] interfaces) {
 
-    	if(interfaces.length != numOfPlayers){
-			try {
-				throw new Exception();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    	}   	
         // creating players
         ArrayList<Player> ps = new ArrayList<Player>();
         
-        ps.add(new Player(new CommandLineInterface(), armiesAtTheStart, 1));
-        for(int i = 1; i < numOfPlayers; i++){
+        ps.add(new Player(new DumbBotInterface(), armiesAtTheStart, 1));
+        for(int i = 1; i < interfaces.length; i++){
             ps.add(new Player(new DumbBotInterface(), armiesAtTheStart, i + 1));
 
         }

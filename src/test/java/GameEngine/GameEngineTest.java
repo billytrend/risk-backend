@@ -1,25 +1,17 @@
 package GameEngine;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-
 import GameBuilders.DemoGameBuilder;
-import com.esotericsoftware.minlog.Log;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.ArmyUtils;
 import GameUtils.TerritoryUtils;
-import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
-
+import com.esotericsoftware.minlog.Log;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
+
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -40,7 +32,7 @@ public class GameEngineTest{
 		PlayerInterface[] interfaces = new PlayerInterface[]{player1Interface, player2Interface};
 		
 		// creates a game with 4 territories
-		gameState = DemoGameBuilder.buildGame(2, 15, interfaces);
+		gameState = DemoGameBuilder.buildGame(15, interfaces);
 		HashSet<Territory> territories = TerritoryUtils.getAllTerritories(gameState);
 	    gameEngine = new TestableGameEngine(gameState);
 	   

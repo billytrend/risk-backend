@@ -1,20 +1,14 @@
 package GeneralUtils.Serialisers;
 
 import GameState.Card;
-import GameState.Continent;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.CardUtils;
-import GameUtils.PlayerUtils;
 import GameUtils.TerritoryUtils;
-
 import com.google.gson.*;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-
-import org.javatuples.Pair;
 
 // example state
 //{
@@ -48,8 +42,8 @@ public class GameStateSerialiser implements JsonSerializer<State> {
         
     	JsonObject jsonObject = new JsonObject();
     	JsonObject map = new JsonObject();
-        BoardSerialiser JsonBoard = new BoardSerialiser();
-        map = (JsonObject) JsonBoard.serializeMap(state);
+//        BoardSerialiser JsonBoard = new BoardSerialiser();
+//        map = (JsonObject) JsonBoard.serializeMap(state);
         jsonObject.add("map", map);
         jsonObject.add("players", serializePlayers(state));
 

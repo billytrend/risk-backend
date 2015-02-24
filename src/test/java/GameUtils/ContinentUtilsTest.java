@@ -1,12 +1,5 @@
 package GameUtils;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import GameBuilders.DemoGameBuilder;
 import GameState.Continent;
 import GameState.Player;
@@ -14,6 +7,13 @@ import GameState.State;
 import GameState.Territory;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ContinentUtilsTest {
 	
@@ -23,7 +23,7 @@ public class ContinentUtilsTest {
 	@Before
 	public void stateSetUp(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
-		gameState = DemoGameBuilder.buildGame(2, 4, interfaces);
+		gameState = DemoGameBuilder.buildGame(4, interfaces);
 		territories = new Territory[gameState.getTerritories().vertexSet().size()];
 		gameState.getTerritories().vertexSet().toArray(territories);
 	}
