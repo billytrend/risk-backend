@@ -6,9 +6,6 @@ import GeneralUtils.Jsonify;
 import LobbyServer.LobbyState.Lobby;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
-
-import com.esotericsoftware.minlog.Log;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +17,7 @@ public class SimpleAITest {
 
     @Before
     public void setUp() throws Exception {
-        Log.NONE();
+//        Log.NONE();
     }
 
     @After

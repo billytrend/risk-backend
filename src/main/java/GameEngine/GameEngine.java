@@ -3,12 +3,10 @@ package GameEngine;
 import GameState.*;
 import GameUtils.*;
 import GameUtils.Results.FightResult;
-
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 
 import static GameEngine.PlayState.*;
 import static com.esotericsoftware.minlog.Log.debug;
