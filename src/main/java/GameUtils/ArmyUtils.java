@@ -46,6 +46,8 @@ public class ArmyUtils {
 	 * @param p
 	 * @param n
 	 */
+	
+	//could use better variable names
 	public static void givePlayerNArmies(Player p, int n) {
 		for (int i = 0; i < n; i++) {
 			p.getArmies().add(new Army());
@@ -123,9 +125,10 @@ public class ArmyUtils {
 	}
 
 	/**
+	 * Description
 	 * @param p
 	 * @param source
-	 * @return
+	 * @return 
 	 */
 	public static int getNumberOfMoveableArmies(Player p, Territory source) {
 		return getNumberOfArmiesOnTerritory(p, source) - 1;

@@ -25,20 +25,17 @@ public class PlayerConnection implements PlayerInterface {
 
 	@Override
 	public int getNumberOfDice(Player player, int max, RequestReason reason) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public Territory getTerritory(Player player, HashSet<Territory> possibles,
 			boolean canResign, RequestReason reason) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public int getNumberOfArmies(Player player, int max, RequestReason reason) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 

@@ -18,7 +18,7 @@ import java.util.HashSet;
 public interface PlayerInterface {
 
 	/**
-	 * *
+	 * Can we comment this?!?!
 	 * 
 	 * @param player
 	 * @param max
@@ -46,7 +46,7 @@ public interface PlayerInterface {
 	public int getNumberOfArmies(Player player, int max, RequestReason reason);
 
 	/**
-	 *
+	 * 
 	 * * @return
 	 */
 	public Triplet<Card, Card, Card> getCardChoice(Player player,
