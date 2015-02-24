@@ -54,7 +54,9 @@ public class RiskMapGameBuilder {
         Territory egypt = new Territory("Egypt");
         Territory eastAfrica = new Territory("East Africa");
         Territory congo = new Territory("Congo");
-
+        Territory southAfrica = new Territory("South Africa");
+        Territory madagascar = new Territory("Madagascar");
+        
         Territory ural = new Territory("Ural");
         Territory siberia = new Territory("Siberia");
         Territory yakutsk = new Territory("Yakutsk");
@@ -75,24 +77,63 @@ public class RiskMapGameBuilder {
         Territory easternAustralia = new Territory("Eastern Australia");
 
         
-        Territory demoLandB = new Territory("egstate");
-        Territory demoLandC = new Territory("someplace");
-        Territory demoLandD = new Territory("otherplace");
-        Territory demoLandA = new Territory("demoland");
-
-
         
-        TerritoryUtils.addTerritory(state, demoLandA);
-        TerritoryUtils.addTerritory(state, demoLandB);
-        TerritoryUtils.addTerritory(state, demoLandC);
-        TerritoryUtils.addTerritory(state, demoLandD);
+        TerritoryUtils.addTerritory(state, alaska);
+        TerritoryUtils.addTerritory(state, northwestTerritory);
+        TerritoryUtils.addTerritory(state, greenland);
+        TerritoryUtils.addTerritory(state, alberta);
+        TerritoryUtils.addTerritory(state, ontario);
+        TerritoryUtils.addTerritory(state, quebec);
+        TerritoryUtils.addTerritory(state, westernUS);
+        TerritoryUtils.addTerritory(state, easternUS);
+        TerritoryUtils.addTerritory(state, centralAmerica);
+        
+        TerritoryUtils.addTerritory(state, venezuela);
+        TerritoryUtils.addTerritory(state,peru);
+        TerritoryUtils.addTerritory(state, brazil);
+        TerritoryUtils.addTerritory(state, argentina);
+        
+        TerritoryUtils.addTerritory(state, iceland);
+        TerritoryUtils.addTerritory(state, scandinavia);
+        TerritoryUtils.addTerritory(state, ukraine);
+        TerritoryUtils.addTerritory(state, greatBritain);
+        TerritoryUtils.addTerritory(state, northernEurope);
+        TerritoryUtils.addTerritory(state, westernEurope);
+        TerritoryUtils.addTerritory(state, southernEurope);
+        
+        TerritoryUtils.addTerritory(state, northAfrica);
+        TerritoryUtils.addTerritory(state, egypt);
+        TerritoryUtils.addTerritory(state, congo);
+        TerritoryUtils.addTerritory(state, eastAfrica);
+        TerritoryUtils.addTerritory(state, southAfrica);
+        TerritoryUtils.addTerritory(state, madagascar);
+        
+        TerritoryUtils.addTerritory(state, ural);
+        TerritoryUtils.addTerritory(state, siberia);
+        TerritoryUtils.addTerritory(state, yakutsk);
+        TerritoryUtils.addTerritory(state, kamchatka);
+        TerritoryUtils.addTerritory(state, irkutsk);
+        TerritoryUtils.addTerritory(state, mongolia);
+        TerritoryUtils.addTerritory(state, japan);
+        TerritoryUtils.addTerritory(state, afghanistan);
+        TerritoryUtils.addTerritory(state, china);
+        TerritoryUtils.addTerritory(state, middleEast);
+        TerritoryUtils.addTerritory(state, india);
+        TerritoryUtils.addTerritory(state, siam);
+        
+        TerritoryUtils.addTerritory(state, indonesia);
+        TerritoryUtils.addTerritory(state, newGuinea);
+        TerritoryUtils.addTerritory(state, westernAustralia);
+        TerritoryUtils.addTerritory(state, easternAustralia);
+        
+        
 
         //add neighbouring territories to each territory
-        TerritoryUtils.addBorder(state, demoLandA, demoLandB);
-        TerritoryUtils.addBorder(state, demoLandA, demoLandD);
-        TerritoryUtils.addBorder(state, demoLandB, demoLandC);
-        TerritoryUtils.addBorder(state, demoLandC, demoLandD);
-        TerritoryUtils.addBorder(state, demoLandD, demoLandB);
+//        TerritoryUtils.addBorder(state, demoLandA, demoLandB);
+//        TerritoryUtils.addBorder(state, demoLandA, demoLandD);
+//        TerritoryUtils.addBorder(state, demoLandB, demoLandC);
+//        TerritoryUtils.addBorder(state, demoLandC, demoLandD);
+//        TerritoryUtils.addBorder(state, demoLandD, demoLandB);
 
         return state;
 
