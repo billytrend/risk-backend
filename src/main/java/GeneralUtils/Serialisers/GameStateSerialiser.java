@@ -19,6 +19,10 @@ import org.javatuples.Pair;
 // example state
 //{
 //  "map": {
+//	"continents":{
+//		"Europe":["great_britain", "iceland", "northern_europe"],
+//	"continent_values":{
+//		"Europe":7, "Australia":2
 //  "countries": ["great_britain", "iceland", "northern_europe", "southern_europe", "western_europe", "scandinavia", "ukraine"],
 //  "borders": [
 //      ["great_britain", "iceland"],
@@ -44,10 +48,8 @@ public class GameStateSerialiser implements JsonSerializer<State> {
         
     	JsonObject jsonObject = new JsonObject();
     	JsonObject map = new JsonObject();
-        
-        map.add("countries", serializeCountries(state));
-        map.add("borders", serializeBorders(state));
-        map.add("continents", serializeContinents(state));
+        BoardSerialiser JsonBoard = new BoardSerialiser();
+        map = (JsonObject) JsonBoard.serializeMap(state);
         jsonObject.add("map", map);
         jsonObject.add("players", serializePlayers(state));
 
@@ -75,34 +77,6 @@ public class GameStateSerialiser implements JsonSerializer<State> {
         return players;
     }
     
-    public JsonElement serializeContinents(State state){
-    	JsonObject continents = new JsonObject();
-    	for(Continent c : state.getContinents()){
-    		JsonArray territories = new JsonArray();
-    		for(Territory t : c.getTerritories()){
-    			territories.add(new JsonPrimitive(t.getId()));
-    		}
-    		continents.add(c.getId(), territories);
-    	}
-    	return continents;
-    }
-    public JsonElement serializeBorders(State state){
-        JsonArray borders = new JsonArray();
-        for (Pair<Territory, Territory> p : TerritoryUtils.getAllBorders(state)){ 	
-        	JsonArray pair = new JsonArray();
-        	pair.add(new JsonPrimitive(p.getValue0().getId()));
-        	pair.add(new JsonPrimitive(p.getValue1().getId()));
-        	borders.add(pair);
-        }
-        return borders;
-    }
-    
-    public JsonElement serializeCountries(State state){
-    	JsonArray countries = new JsonArray();
-        for (Territory t : TerritoryUtils.getAllTerritories(state) ) {
-        	countries.add(new JsonPrimitive(t.getId()));
-        }
-        return countries;
-    }
+
     
 }
