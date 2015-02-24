@@ -99,12 +99,14 @@ public class CommunistDefensive implements PlayerInterface {
 			return currentTerritoryPlacing;
 
 		case ATTACK_CHOICE_FROM:
-
+			return territoryArray[attackFromCounter];
+			
+			
 		case ATTACK_CHOICE_TO:
 
-			//Creates an arraylist of the weakest enemy territories (1 soldier)
-			//Chooses a random one of these and returns it.
-			ArrayList<Territory> weakestTerritories = new ArrayList();
+			// Creates an arraylist of the weakest enemy territories (1 soldier)
+			// Chooses a random one of these and returns it.
+			ArrayList<Territory> weakestTerritories = new ArrayList<Territory>();
 
 			for (int i = 0; i < territoryArray.length; i++) {
 				Player enemyOwner = PlayerUtils.getTerritoryOwner(currentState,
@@ -139,6 +141,7 @@ public class CommunistDefensive implements PlayerInterface {
 		switch (reason) {
 		case PLACING_ARMIES_SET_UP:
 			return 1;
+			
 		case PLACING_REMAINING_ARMIES_PHASE:
 			return 1;
 		case PLACING_ARMIES_PHASE:
@@ -151,7 +154,7 @@ public class CommunistDefensive implements PlayerInterface {
 			return 0; // TODO: Figure out average and reinforce depending on
 						// links.
 		case POST_ATTACK_MOVEMENT:
-			return max; //Moves the maximum number of armies post attack.
+			return max; // Moves the maximum number of armies post attack.
 		}
 
 		return 0;
