@@ -207,13 +207,13 @@ public class RiskMapGameBuilder {
 		TerritoryUtils.addBorder(state, siam, indonesia);
 		
 		
-		
-		// add neighbouring territories to each territory
-		// TerritoryUtils.addBorder(state, demoLandA, demoLandB);
-		// TerritoryUtils.addBorder(state, demoLandA, demoLandD);
-		// TerritoryUtils.addBorder(state, demoLandB, demoLandC);
-		// TerritoryUtils.addBorder(state, demoLandC, demoLandD);
-		// TerritoryUtils.addBorder(state, demoLandD, demoLandB);
+		TerritoryUtils.addBorder(state, indonesia, newGuinea);
+		TerritoryUtils.addBorder(state, indonesia, westernAustralia);
+		TerritoryUtils.addBorder(state, indonesia, newGuinea);
+		TerritoryUtils.addBorder(state, newGuinea, westernAustralia);
+		TerritoryUtils.addBorder(state, newGuinea, easternAustralia);
+		TerritoryUtils.addBorder(state, westernAustralia, easternAustralia);
+
 
 		return state;
 
