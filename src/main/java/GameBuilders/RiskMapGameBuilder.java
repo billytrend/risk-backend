@@ -182,6 +182,32 @@ public class RiskMapGameBuilder {
 		TerritoryUtils.addBorder(state, southAfrica, madagascar);
 		
 		
+		TerritoryUtils.addBorder(state, ural, siberia);
+		TerritoryUtils.addBorder(state, ural, china);
+		TerritoryUtils.addBorder(state, ural, afghanistan);
+		TerritoryUtils.addBorder(state, siberia, yakutsk);
+		TerritoryUtils.addBorder(state, siberia, irkutsk);
+		TerritoryUtils.addBorder(state, siberia, mongolia);
+		TerritoryUtils.addBorder(state, siberia, china);
+		TerritoryUtils.addBorder(state, yakutsk, kamchatka);
+		TerritoryUtils.addBorder(state, yakutsk, irkutsk);
+		TerritoryUtils.addBorder(state, irkutsk, kamchatka);
+		TerritoryUtils.addBorder(state, irkutsk,mongolia);
+		TerritoryUtils.addBorder(state, mongolia, japan);
+		TerritoryUtils.addBorder(state, mongolia, kamchatka);
+		TerritoryUtils.addBorder(state, mongolia, china);
+		TerritoryUtils.addBorder(state, kamchatka, japan);
+		TerritoryUtils.addBorder(state, afghanistan, middleEast);
+		TerritoryUtils.addBorder(state, afghanistan, india);
+		TerritoryUtils.addBorder(state, afghanistan, china);
+		TerritoryUtils.addBorder(state, china, india);
+		TerritoryUtils.addBorder(state, china, siam);
+		TerritoryUtils.addBorder(state, middleEast, india);
+		TerritoryUtils.addBorder(state, india, siam);
+		TerritoryUtils.addBorder(state, siam, indonesia);
+		
+		
+		
 		// add neighbouring territories to each territory
 		// TerritoryUtils.addBorder(state, demoLandA, demoLandB);
 		// TerritoryUtils.addBorder(state, demoLandA, demoLandD);
