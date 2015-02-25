@@ -332,8 +332,7 @@ public class GameEngine implements Runnable {
 		
 		debug("attacking armies: " + attackingArmies);
 		int maxAttackingDice = (attackingArmies > 3) ? 3 : attackingArmies - 1;
-	
-	
+		
 		int defendingArmies = ArmyUtils
 				.getNumberOfArmiesOnTerritory(defendingPlayer, defending);
 		int maxDefendingDice = defendingArmies > 2 ? 2 : defendingArmies;
