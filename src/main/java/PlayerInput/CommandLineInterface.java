@@ -4,27 +4,26 @@ import GameEngine.RequestReason;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
-import org.javatuples.Triplet;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Scanner;
 
-import static com.esotericsoftware.minlog.Log.*;
+import org.javatuples.Triplet;
 
 /**
  * Used for a very simple AI acting as a player
  *
  */
-public class DumbBotInterface implements PlayerInterface {
+public class CommandLineInterface implements PlayerInterface {
 
     Random ran = new Random();
 	private static Scanner scanner;
 	
     protected void emit(Player p, String message) {
-        debug("[" + p.getId() + "]" + "\t\t");
-        debug(message);
+        System.out.print("[" + p.getId() + "]" + "\t\t");
+        System.out.println(message);
     }
 
     /**
@@ -34,7 +33,7 @@ public class DumbBotInterface implements PlayerInterface {
     protected static int easyIn() {
         // ADDITIONAL CHECKS?
         int a;
-        debug("Please enter your selection: ");
+        System.out.print("Please enter your selection: ");
         scanner = new Scanner(System.in);
 		a = scanner.nextInt();
         return a;
@@ -45,19 +44,21 @@ public class DumbBotInterface implements PlayerInterface {
      * 
      */
     public int getNumberOfDice(Player player, int max, RequestReason reason) {
-        emit(player, " how many dice do you want to throw? Max " + max);
-        emit(player, "Chose " + max);
+        emit(player, "How many dice would you like to throw? Max " + max);
+        int dice = easyIn();
+        if(dice > max){
+        	emit(player, "You don't have that many dice.");
+        	getNumberOfDice(player, max, reason);
+        }
         return max;
     }
 
     /**
      * 
      */
-    public Territory getTerritory(Player player, HashSet<Territory> possibles,
-                                         boolean canResign, RequestReason reason) {
-    	
+    public Territory getTerritory(Player player, HashSet<Territory> possibles, boolean canResign, RequestReason reason) {
         ArrayList<Territory> posList = new ArrayList<Territory>(possibles);
-
+        emit(player, reason.toString());
         String out = "Please choose a territory";
 //        switch(reason){
 //        case ATTACK_CHOICE:
@@ -68,8 +69,6 @@ public class DumbBotInterface implements PlayerInterface {
 //
 //        }
         emit(player, out);
-	
-       
         // the player can decide not to make a choice
         // in case of starting an attack or moving armies
         if(canResign){
@@ -80,11 +79,8 @@ public class DumbBotInterface implements PlayerInterface {
             emit(player,  "\t" + (i + 1) + ". " + posList.get(i).getId());
         }
         
-        // random choice
-        Integer choice = canResign ? ran.nextInt(posList.size() + 1) : 
-        				(ran.nextInt(posList.size()) + 1);
+        int choice = easyIn();
         
-        emit(player, "Chose " + choice);
         return  (choice == 0) ? null :
         				posList.get(choice - 1);
 
@@ -95,13 +91,34 @@ public class DumbBotInterface implements PlayerInterface {
      */
     public int getNumberOfArmies(Player player, int max, RequestReason reason) {
         emit(player, "How many armies would you like to move? Max " + max);
-        emit(player, "Chose " + max);
-        return ran.nextInt(max + 1);
+        int armies = easyIn();
+        if(armies > max){
+        	emit(player, "You don't have that many armies.");
+        	getNumberOfArmies(player, max, reason);
+        }
+        return armies;
     }
 
-    @Override
-    public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
+    /**
+     * 
+     */
+    public void giveCard(Player player, Card card) {
+        return;
+    }
+
+    /**
+     * 
+     */
+    public Card getCardOptions() {
         return null;
     }
 
+	@Override
+	public Triplet<Card, Card, Card> getCardChoice(Player player,
+			ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
+

@@ -20,8 +20,11 @@ public class LobbySerialiser implements JsonSerializer<Lobby> {
         JsonObject jsonObject = new JsonObject();
 
         JSONArray games = new JSONArray();
+
+
         PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
-        jsonObject.add("lol", jsonSerializationContext.serialize(DemoGameBuilder.buildGame(2, 3, interfaces)));
+        jsonObject.add("lol", jsonSerializationContext.serialize(DemoGameBuilder.buildGame(3, interfaces)));
+
         
         for (State s : lobby.getCurrentGames()) {
             games.add(jsonSerializationContext.serialize(s));

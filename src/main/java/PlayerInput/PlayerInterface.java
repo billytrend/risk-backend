@@ -47,7 +47,7 @@ public interface PlayerInterface {
     
     /**
      *
-     * * @return
+     * @return a triplet of cards which represents choice
      */
     public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations);
 
