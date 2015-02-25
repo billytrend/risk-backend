@@ -25,9 +25,8 @@ public class DemoGameBuilder {
         // creating players
         ArrayList<Player> ps = new ArrayList<Player>();
         
-        ps.add(new Player(new DumbBotInterface(), armiesAtTheStart, 1));
-        for(int i = 1; i < interfaces.length; i++){
-            ps.add(new Player(new DumbBotInterface(), armiesAtTheStart, i + 1));
+        for(int i = 0; i < interfaces.length; i++){
+            ps.add(new Player(interfaces[i], armiesAtTheStart, i + 1));
 
         }
         
