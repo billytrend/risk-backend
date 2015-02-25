@@ -11,7 +11,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import org.mockito.Mock;
 
 public class GameEngineTest{
 
@@ -64,8 +63,7 @@ public class GameEngineTest{
 		// of territories
 		Territory chosenTerritory = sortedTerritories.get(0);
 		assertTrue(TerritoryUtils.getPlayersTerritories(player1).contains(chosenTerritory));
-		assertFalse(TerritoryUtils.getUnownedTerritories(gameState).
-				contains(chosenTerritory));
+		assertFalse(TerritoryUtils.getUnownedTerritories(gameState).contains(chosenTerritory));
 		
 		// territory was just taken so it should host only 1 army
 		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, chosenTerritory).size(), 1);
@@ -224,6 +222,9 @@ public class GameEngineTest{
 		ArmyUtils.deployArmies(player2, sortedTerritories.get(2), 1);
 		ArmyUtils.deployArmies(player2, sortedTerritories.get(3), 10);
 		
+		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player1, sortedTerritories.get(0)), 14);
+		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player2, sortedTerritories.get(2)), 1);
+		
 		//player one attacks territory 2 from territory 0
 		// player1 throws 3 dice and player2 throws 1 dice
 		int tries = -1;
@@ -243,7 +244,6 @@ public class GameEngineTest{
 		
 		// and the maximum number of armies were moved to the new territory (player1 mock defined)
 		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, sortedTerritories.get(2)).size(), 13 - tries);
-		
 	}
 	
 	

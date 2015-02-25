@@ -22,7 +22,7 @@ public class StateChangeRecordTest {
 	@Before
 	public void setUp(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
-        State gameState = DemoGameBuilder.buildGame(2, 10, interfaces);
+        State gameState = DemoGameBuilder.buildGame(10, interfaces);
         GameEngine gameThr = new GameEngine(gameState);
         changeRecord = gameThr.getStateChangeRecord();
         gameThr.run();
