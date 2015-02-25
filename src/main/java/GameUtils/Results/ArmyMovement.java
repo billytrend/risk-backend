@@ -1,43 +1,38 @@
 package GameUtils.Results;
 
+import GameEngine.GameEngine;
+import GameEngine.PlayState;
 import GameState.Player;
+import GameState.State;
 import GameState.Territory;
+import GameUtils.ArmyUtils;
 
-public class ArmyMovement {
-	private Player armyOwner;
-	private Territory movingFrom;
-	private Territory movingTo;
-	private int amount;
+public class ArmyMovement extends ArmyChange{
 	
-	public ArmyMovement(Player player, Territory from, Territory to, int number){
-		armyOwner = player;
-		movingFrom = from;
-		movingTo = to;
-		amount = number;
+	private Territory source;
+	private Territory target;
+	
+	public ArmyMovement(Player player, Territory source, Territory target, int number, PlayState actionPlayed) {
+		super(player, number, actionPlayed);
+		this.source = source;
+		this.target = target;
 	}
 	
-	public Player getArmyOwner(){
-		return armyOwner;
+
+	public Territory getTargetTerritory(){
+		return target;
 	}
 	
-	public Territory getMovingFromTerritory(){
-		return movingFrom;
+	public Territory getSourceTerritory(){
+		return source;
 	}
-	
-	public Territory getMovingToTerritory(){
-		return movingTo;
-	}
-	
-	public int getAmount(){
-		return amount;
-	}
-	
+
 	public String toString(){
-		if(movingFrom != null)
-			return "owner: " + armyOwner.getId() + " from: " + movingFrom.getId() + 
-					"  to: " + movingTo.getId() + " number: " + amount;
-		else
-			return "owner: " + armyOwner.getId() + 
-					"  to: " + movingTo.getId() + " number: " + amount;
+		return super.toString() + "\n\tARMY MOVEMENT\n\t" + armyOwner.getId() + " moves " + 
+				amount + " armies from " + source.getId() + " to " + target.getId() + ".";
+	}
+	
+	public void applyChange(){
+			ArmyUtils.moveArmies(armyOwner, source, target, amount);
 	}
 }

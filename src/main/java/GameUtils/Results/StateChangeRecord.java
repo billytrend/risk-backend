@@ -8,11 +8,11 @@ import GameState.Player;
 
 public class StateChangeRecord {
 	
-	private static ArrayList<StateChange> gameStateChanges = new ArrayList<StateChange>();
-	private static StateChange lastChange;
-	
-	public static void clearRecord(){
-		gameStateChanges = new ArrayList<StateChange>();
+	private ArrayList<Change> gameStateChanges;
+	private Change lastChange;
+		
+	public StateChangeRecord(){
+		gameStateChanges = new ArrayList<Change>();
 	}
 	
 	/**
@@ -20,7 +20,7 @@ public class StateChangeRecord {
 	 * 
 	 * @param change
 	 */
-	public static void addStateChange(StateChange change){
+	public  void addStateChange(Change change){
 		gameStateChanges.add(change);
 		lastChange = change;
 	}
@@ -29,7 +29,7 @@ public class StateChangeRecord {
 	 * Returns the last change that was added
 	 * @return
 	 */
-	public static StateChange getLastChange(){
+	public Change getLastChange(){
 		return lastChange;
 	}
 	
@@ -37,7 +37,7 @@ public class StateChangeRecord {
 	 * 
 	 * @return
 	 */
-	public static int getSize(){
+	public int getSize(){
 		return gameStateChanges.size();
 	}
 	
@@ -52,12 +52,12 @@ public class StateChangeRecord {
 	 * @param n
 	 * @return
 	 */
-	public static ArrayList<StateChange> getNLastChanges(int n){
+	public ArrayList<Change> getNLastChanges(int n){
 		if(n > gameStateChanges.size())
 			n = gameStateChanges.size();
 		
-		ArrayList<StateChange> changes = new ArrayList<StateChange>();
-		Iterator<StateChange> it = gameStateChanges.listIterator(gameStateChanges.size() - n);
+		ArrayList<Change> changes = new ArrayList<Change>();
+		Iterator<Change> it = gameStateChanges.listIterator(gameStateChanges.size() - n);
 		
 		while(it.hasNext()){
 			changes.add(it.next());
@@ -70,7 +70,7 @@ public class StateChangeRecord {
 	 * to be followed from the beginning of the game
 	 * @return
 	 */
-	public static Iterator<StateChange> getIterator(){
+	public Iterator<Change> getIterator(){
 		return gameStateChanges.iterator();
 	}
 	
@@ -82,13 +82,13 @@ public class StateChangeRecord {
 	 * 
 	 * @return
 	 */
-	public static ArrayList<ArrayList<StateChange>> getPlayersTurns(){
-		Iterator<StateChange> it = getIterator();
-		ArrayList<ArrayList<StateChange>> allMoves = new ArrayList<ArrayList<StateChange>>();
+	public ArrayList<ArrayList<Change>> getPlayersTurns(){
+		Iterator<Change> it = getIterator();
+		ArrayList<ArrayList<Change>> allMoves = new ArrayList<ArrayList<Change>>();
 	
-		ArrayList<StateChange> moveChanges = new ArrayList<StateChange>();
+		ArrayList<Change> moveChanges = new ArrayList<Change>();
 		Player player = null;
-		StateChange change;
+		Change change;
 		while(it.hasNext()){
 			change = it.next();
 			if(player == null)
@@ -98,7 +98,7 @@ public class StateChangeRecord {
 			}
 			else{
 				allMoves.add(moveChanges);
-				moveChanges = new ArrayList<StateChange>();
+				moveChanges = new ArrayList<Change>();
 				player = change.getActingPlayer();
 				moveChanges.add(change);
 			}
@@ -107,11 +107,12 @@ public class StateChangeRecord {
 		return allMoves;
 	}
 	
-	public static void printAllChanges(){
-		Iterator<StateChange> it = getIterator();
+	
+	public void printAllChanges(){
+		Iterator<Change> it = getIterator();
 		int i = 1;
 		while(it.hasNext()){
-			System.out.println("\nCHANGE " + i);
+			System.out.println("\nSTATE CHANGE " + i);
 			System.out.println(it.next().toString());
 			i++;
 		}

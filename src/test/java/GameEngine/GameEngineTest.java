@@ -16,7 +16,6 @@ import GameState.State;
 import GameState.Territory;
 import GameUtils.ArmyUtils;
 import GameUtils.TerritoryUtils;
-import GameUtils.Results.StateChange;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
 

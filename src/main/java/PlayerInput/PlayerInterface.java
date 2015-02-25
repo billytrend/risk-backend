@@ -50,5 +50,5 @@ public interface PlayerInterface {
      * * @return
      */
     public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations);
-
+    
 }

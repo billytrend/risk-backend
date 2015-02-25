@@ -17,51 +17,44 @@ import PlayerInput.PlayerInterface;
 
 public class StateChangeRecordTest {
 
-	
+	private StateChangeRecord changeRecord;
+
 	@Before
 	public void setUp(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
         State gameState = DemoGameBuilder.buildGame(2, 10, interfaces);
         GameEngine gameThr = new GameEngine(gameState);
+        changeRecord = gameThr.getStateChangeRecord();
         gameThr.run();
 	}
 	
     @Test
     public void recordSizeTest() {
    	
-        assertTrue(StateChangeRecord.getSize() > 0);
-        assertTrue(StateChangeRecord.getPlayersTurns().size() > 0);
-        assertTrue(StateChangeRecord.getPlayersTurns().size() < StateChangeRecord.getSize());
-        
-        Iterator<StateChange> it = StateChangeRecord.getIterator();
-        StateChange change;
-        while(it.hasNext()){
-        	change = it.next();
-        	assertTrue((change.getArmyMovements().size() > 0) || (change.getDestroyedArmies().size() > 0));
-        }
-        
+        assertTrue(changeRecord.getSize() > 0);
+        assertTrue(changeRecord.getPlayersTurns().size() > 0);
+        assertTrue(changeRecord.getPlayersTurns().size() < changeRecord.getSize());
     }
     
     @Test
     public void getPlayersTurnsTest(){
-    	ArrayList<ArrayList<StateChange>> playersTurns = StateChangeRecord.getPlayersTurns();
+    	ArrayList<ArrayList<Change>> playersTurns = changeRecord.getPlayersTurns();
     	Player player;
-    	for(ArrayList<StateChange> turnChanges : playersTurns){
+    	for(ArrayList<Change> turnChanges : playersTurns){
     		if(turnChanges.size() <= 0)
     			fail();
     		player = turnChanges.get(0).getActingPlayer();
-    		for(StateChange change : turnChanges){
+    		for(Change change : turnChanges){
     			assertEquals(change.getActingPlayer(), player);
-    			assertTrue((change.getArmyMovements().size() > 0) || (change.getDestroyedArmies().size() > 0));
     		}
     	}
     }
     
     @Test
     public void printTest(){
-    	StateChangeRecord.printAllChanges();
+    	changeRecord.printAllChanges();
     }
     
-    
+   
     
 }

@@ -4,7 +4,6 @@ import GameState.Army;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
-import GameUtils.Results.StateChange;
 
 import java.util.ArrayList;
 
@@ -85,16 +84,6 @@ public class ArmyUtils {
     }
 
     
-    /**
-     *
-     * @param p
-     * @param t
-     * @param n
-     */
-    public static void destroyArmies(Player p, Territory t, int n, StateChange change) {
-        destroyArmies(p, t, n);
-        change.addDestroyedArmies(p, t, n);
-    }
     
     /**
     *
@@ -110,14 +99,6 @@ public class ArmyUtils {
    }
     
     
-    /**
-     * @param target
-     * @param n
-     */
-    public static void moveArmies(Player sourceOwner, Territory source, Territory target, int n, StateChange change) {
-        moveArmies(sourceOwner, source, target, n);
-        change.addArmyMovement(sourceOwner, source, target, n);
-    }
     
     /**
      * @param target
@@ -142,14 +123,7 @@ public class ArmyUtils {
            toDeploy.get(i).setTerritory(target);
         }
     }
-    /**
-     * @param target
-     * @param n
-     */
-    public static void deployArmies(Player player, Territory target, int n, StateChange change) {
-        deployArmies(player, target, n);
-        change.addArmyMovement(player, null, target, n);
-    }
+
     
     /**
      * @param p

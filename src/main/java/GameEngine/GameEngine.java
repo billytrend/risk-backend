@@ -2,15 +2,10 @@ package GameEngine;
 
 import GameState.*;
 import GameUtils.*;
-import GameUtils.Results.FightResult;
-import GameUtils.Results.StateChange;
-import GameUtils.Results.StateChangeRecord;
-
+import GameUtils.Results.*;
 import org.javatuples.Triplet;
-
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 
 import static GameEngine.PlayState.*;
 import static com.esotericsoftware.minlog.Log.debug;
@@ -27,9 +22,15 @@ public class GameEngine implements Runnable {
 	protected Player currentPlayer;
 	private PlayState playState = BEGINNING_STATE;
 	private boolean currentPlayerHasTakenCountry = false;
+	private StateChangeRecord changeRecord;
+	
+	public StateChangeRecord getStateChangeRecord(){
+		return changeRecord;
+	}
 	
 	public GameEngine(State state) {
 		this.gameState = state;
+		changeRecord = new StateChangeRecord();
 	}
 	
 	public State getState(){
@@ -40,7 +41,6 @@ public class GameEngine implements Runnable {
 	@Override
 	public void run() {
 		try {
-			StateChangeRecord.clearRecord();
 			play();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -152,7 +152,6 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	protected PlayState fillAnEmptyCountry() {
-		StateChange stateChange = new StateChange(FILLING_EMPTY_COUNTRIES, currentPlayer);
 
 		// get a list of empty territories available
 		HashSet<Territory> emptyTerritories = TerritoryUtils.getUnownedTerritories(gameState);
@@ -161,13 +160,12 @@ public class GameEngine implements Runnable {
 		Territory toFill = currentPlayer.getCommunicationMethod()
 				.getTerritory(currentPlayer, emptyTerritories, false, RequestReason.PLACING_ARMIES_SET_UP);
 
-		
 		// deploy a single army in this place
-		ArmyUtils.deployArmies(currentPlayer, toFill, 1, stateChange);
-
-		endGo();
+		Change stateChange = new ArmyPlacement(currentPlayer, toFill, 1, FILLING_EMPTY_COUNTRIES);
+		stateChange.applyChange();
+		changeRecord.addStateChange(stateChange);
 		
-		StateChangeRecord.addStateChange(stateChange);
+		endGo();
 		
 		if (!TerritoryUtils.hasEmptyTerritories(gameState)) {
 			debug("ALL COUNTRIES TAKEN");
@@ -191,7 +189,6 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	protected PlayState useARemainingArmy() {
-		StateChange stateChange = new StateChange(USING_REMAINING_ARMIES, currentPlayer);
 
 		// get a list of a players undeployed armies
 		ArrayList<Army> playersUndeployedArmies = ArmyUtils.getUndeployedArmies(currentPlayer);
@@ -220,12 +217,12 @@ public class GameEngine implements Runnable {
 				.getTerritory(currentPlayer, usersTerritories, false, RequestReason.PLACING_REMAINING_ARMIES_PHASE);
 
 		// deploy the armies
-		ArmyUtils.deployArmies(currentPlayer, toFill, 1, stateChange);
+		Change stateChange = new ArmyPlacement(currentPlayer, toFill, 1, USING_REMAINING_ARMIES);
+		stateChange.applyChange();
+		changeRecord.addStateChange(stateChange);
 		
 		endGo();
-		
-		StateChangeRecord.addStateChange(stateChange);
-		
+	
 		return USING_REMAINING_ARMIES;
 
 	}
@@ -262,7 +259,6 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	protected PlayState placeArmy() {
-		StateChange stateChange = new StateChange(PLAYER_PLACING_ARMIES, currentPlayer);
 		
 		// get a list of players undeployed armies
 		ArrayList<Army> playersUndeployedArmies = ArmyUtils.getUndeployedArmies(currentPlayer);
@@ -282,11 +278,11 @@ public class GameEngine implements Runnable {
 		// find out how many armies the player want to deploy there 
 		int deployedAmount = currentPlayer.getCommunicationMethod()
 				.getNumberOfArmies(currentPlayer, playersUndeployedArmies.size(), RequestReason.PLACING_ARMIES_PHASE);
-
+		
 		// do the deployment!
-		ArmyUtils.deployArmies(currentPlayer, toFill, deployedAmount, stateChange);
-
-		StateChangeRecord.addStateChange(stateChange);
+		Change stateChange = new ArmyPlacement(currentPlayer, toFill, deployedAmount, PLAYER_PLACING_ARMIES);
+		stateChange.applyChange();
+		changeRecord.addStateChange(stateChange);
 		
 		return PLAYER_PLACING_ARMIES;
 	}
@@ -299,7 +295,6 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	protected PlayState invadeCountry() {
-		StateChange stateChange = new StateChange(PlayState.PLAYER_INVADING_COUNTRY, currentPlayer);
 		
 		// get the territories of the current player
 		HashSet<Territory> possibleAttackingTerritories = TerritoryUtils
@@ -334,9 +329,11 @@ public class GameEngine implements Runnable {
 		// and how many may defend as per rules
 		int attackingArmies = ArmyUtils
 				.getNumberOfArmiesOnTerritory(currentPlayer, attacking);
+		
 		debug("attacking armies: " + attackingArmies);
 		int maxAttackingDice = (attackingArmies > 3) ? 3 : attackingArmies - 1;
-		
+	
+	
 		int defendingArmies = ArmyUtils
 				.getNumberOfArmiesOnTerritory(defendingPlayer, defending);
 		int maxDefendingDice = defendingArmies > 2 ? 2 : defendingArmies;
@@ -353,10 +350,9 @@ public class GameEngine implements Runnable {
 	
 		// decide the results of the fight
 		Arbitration.carryOutFight(result, attackDiceNumber, defendDiceNumber);
+		result.applyChange();
+		changeRecord.addStateChange(result);
 		
-		// apply the results of the fight
-		RuleUtils.applyFightResult(result, stateChange);
-
 		// if the attacking player won and they still have surplus armies,
 		// give the option to move them
 		if(result.getDefendersLoss() == defendingArmies){
@@ -364,17 +360,15 @@ public class GameEngine implements Runnable {
 			currentPlayerHasTakenCountry = true;
 			
 			if((attackingArmies - result.getAttackersLoss() - attackDiceNumber) > 1)
-				moveMoreArmies(result, stateChange);
+				moveMoreArmies(result);
 			
 			if(PlayerUtils.playerIsOut(result.getDefender())){
-				PlayerUtils.removePlayer(gameState, result.getDefender());
-				stateChange.addRemovedPlayer(result.getDefender());
-				// TODO: do we need this?
+				Change stateChange= new PlayerRemoval(currentPlayer, result.getDefender(), gameState);
+				stateChange.applyChange();
+				changeRecord.addStateChange(stateChange);
 			}
 	
 		}
-		
-		StateChangeRecord.addStateChange(stateChange);
 
 		return PLAYER_INVADING_COUNTRY;
 
@@ -392,7 +386,7 @@ public class GameEngine implements Runnable {
 	 *  
 	 * @param result
 	 */
-	private void moveMoreArmies(FightResult result, StateChange stateChange){
+	private void moveMoreArmies(FightResult result){
 		ArrayList<Army> remainingAttackArmies = ArmyUtils
 				.getArmiesOnTerritory(currentPlayer, result.getAttackingTerritory());
 		
@@ -400,8 +394,15 @@ public class GameEngine implements Runnable {
 		int movedAmount = currentPlayer.getCommunicationMethod()
 				.getNumberOfArmies(currentPlayer, remainingAttackArmies.size() - 1, RequestReason.POST_ATTACK_MOVEMENT);
 		
-		ArmyUtils.moveArmies(result.getAttacker(), result.getAttackingTerritory(), 
-				result.getDefendingTerritory(), movedAmount, stateChange);
+		if(movedAmount > 0){
+			// add a new change to the state
+			Change stateChange = new ArmyMovement(currentPlayer, result.getAttackingTerritory(), result.getDefendingTerritory(), 
+					movedAmount, PLAYER_INVADING_COUNTRY);
+			stateChange.applyChange();
+			changeRecord.addStateChange(stateChange);
+		}
+		
+		
 	}
 	
 	
@@ -428,8 +429,6 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	protected PlayState moveArmy() {
-		
-		StateChange stateChange = new StateChange(PLAYER_MOVING_ARMIES, currentPlayer);
 		
 		// get a list of territories a player can deploy from
 		HashSet<Territory> canBeDeployedFrom = TerritoryUtils
@@ -459,9 +458,9 @@ public class GameEngine implements Runnable {
 		int movedAmount = currentPlayer.getCommunicationMethod()
 				.getNumberOfArmies(currentPlayer, numberOfArmiesThatMayBeMoved, RequestReason.REINFORCEMENT_PHASE);
 		
-		ArmyUtils.moveArmies(currentPlayer, source, target, movedAmount, stateChange);
-		
-		StateChangeRecord.addStateChange(stateChange);
+		Change stateChange = new ArmyMovement(currentPlayer, source, target, movedAmount, PLAYER_MOVING_ARMIES);
+		stateChange.applyChange();
+		changeRecord.addStateChange(stateChange);
 		
 		return PLAYER_MOVING_ARMIES;
 	}

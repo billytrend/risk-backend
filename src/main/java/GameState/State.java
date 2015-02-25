@@ -22,7 +22,7 @@ public class State {
 			new SimpleGraph<Territory, DefaultEdge>(DefaultEdge.class);
 	
 	private final ArrayList<Player> players;
-	private final PlayerQueue playerQueue;
+	private PlayerQueue playerQueue;
 	ArrayList<Continent> continents = new ArrayList<Continent>();
 	private final ArrayList<Card> cards = new ArrayList<Card>();
 	private int numberOfCardSetsUsed;
