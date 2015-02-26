@@ -37,7 +37,6 @@ public class ContinentUtilsTest {
 		assertEquals(contAB.getTerritories().size(), 2);
 		assertEquals(contAB.getArmyReward(), 4);
 
-	
 	}
 	
 	@Test

@@ -13,15 +13,17 @@ public class SerialiseTest {
 
 	private State gameState;
 	private Territory[] territories;
-	
+
 	@Before
 	public void stateSetUp(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
-		gameState = DemoGameBuilder.buildGame(10, interfaces);
-		territories = new Territory[TerritoryUtils.getAllTerritories(gameState).size()];
-		TerritoryUtils.getAllTerritories(gameState).toArray(territories);
+		gameState = DemoGameBuilder.buildGame(4, interfaces);
+		territories = new Territory[gameState.getTerritories().vertexSet().size()];
+		gameState.getTerritories().vertexSet().toArray(territories);
 		
-	//	ArmyUtils.deployArmies(gameState.getPlayerQueue().getCurrent(), TerritoryUtils.getAllTerritories(gameState).contains(), 2);
+		
+
+		//ArmyUtils.deployArmies(gameState.getPlayerQueue().getCurrent(), TerritoryUtils.getUnownedTerritories(state), 2);
 	}
 	@Test
 	public void test() {

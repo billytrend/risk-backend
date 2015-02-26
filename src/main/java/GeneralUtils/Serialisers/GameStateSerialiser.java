@@ -1,6 +1,7 @@
 package GeneralUtils.Serialisers;
 
 import GameState.Card;
+
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
@@ -42,8 +43,8 @@ public class GameStateSerialiser implements JsonSerializer<State> {
         
     	JsonObject jsonObject = new JsonObject();
     	JsonObject map = new JsonObject();
-//        BoardSerialiser JsonBoard = new BoardSerialiser();
-//        map = (JsonObject) JsonBoard.serializeMap(state);
+    	BoardSerialiser JsonBoard = new BoardSerialiser();
+    	map = (JsonObject) JsonBoard.serializeMap(state);
         jsonObject.add("map", map);
         jsonObject.add("players", serializePlayers(state));
 
