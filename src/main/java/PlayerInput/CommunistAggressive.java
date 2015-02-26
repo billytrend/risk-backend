@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 
+import org.javatuples.Triplet;
+
 import GameEngine.RequestReason;
 import GameState.Card;
 import GameState.Player;
@@ -158,14 +160,19 @@ public class CommunistAggressive implements PlayerInterface {
 		return 0;
 	}
 
-	@Override
 	public void giveCard(Player player, Card card) {
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public Card getCardOptions() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Triplet<Card, Card, Card> getCardChoice(Player player,
+			ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
 		// TODO Auto-generated method stub
 		return null;
 	}

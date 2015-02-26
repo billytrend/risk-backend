@@ -45,23 +45,23 @@ public class ArmyUtils {
      * @param p
      * @param n
      */
-    public static void givePlayerNArmies(Player p, int n) {
-        for (int i = 0; i < n; i++) {
-            p.getArmies().add(new Army());
+    public static void givePlayerNArmies(Player player, int numberOfArmies) {
+        for (int i = 0; i < numberOfArmies; i++) {
+            player.getArmies().add(new Army());
         }
     }
 
     /**
      * 
-     * @param p
-     * @param t
+     * @param player
+     * @param territory
      * @return
      */
-    public static ArrayList<Army> getArmiesOnTerritory(Player p, Territory t) {
+    public static ArrayList<Army> getArmiesOnTerritory(Player player, Territory territory) {
         ArrayList<Army> armies = new ArrayList<Army>();
-        for (Army a : p.getArmies()) {
-            if ((a.getTerritory() != null) && (a.getTerritory().equals(t))) {
-                armies.add(a);
+        for (Army army : player.getArmies()) {
+            if ((army.getTerritory() != null) && (army.getTerritory().equals(territory))) {
+                armies.add(army);
             }
         }
         return armies;

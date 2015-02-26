@@ -38,6 +38,10 @@ public class Arbitration{
         Integer result = ran.nextInt(6) + 1;
         return result;
     }
+    
+    public static Integer dieThrowWrapper(){
+    	return dieThrow();
+    }
 
     /**
      * Returns a random result of multiple dice throw.

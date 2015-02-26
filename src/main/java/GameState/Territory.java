@@ -16,5 +16,4 @@ public class Territory {
 		return id;
 	}
 
-
 }

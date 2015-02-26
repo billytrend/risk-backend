@@ -3,10 +3,14 @@ package GameState;
 import GameUtils.ArmyUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.TerritoryUtils;
+
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+
+import static com.esotericsoftware.minlog.Log.debug;
 
 /**
  * A class that represents a current state of the game including
@@ -16,16 +20,19 @@ import java.util.ArrayList;
  */
 public class State {
 
-	SimpleGraph<Territory, DefaultEdge> territories =
+	SimpleGraph<Territory, DefaultEdge> territories = 
 			new SimpleGraph<Territory, DefaultEdge>(DefaultEdge.class);
 	
 	private final ArrayList<Player> players;
 	private final PlayerQueue playerQueue;
 	ArrayList<Continent> continents = new ArrayList<Continent>();
-
+	private final ArrayList<Card> cards = new ArrayList<Card>();
+	private int numberOfCardSetsUsed;
+	
 	public State(ArrayList<Player> players) {
 		this.players = players;
 		this.playerQueue = new PlayerQueue(players);
+		numberOfCardSetsUsed = 0;
 	}
 
 	public SimpleGraph<Territory, DefaultEdge> getTerritories() {
@@ -48,34 +55,44 @@ public class State {
 		return continents;
 	}
 
+	public ArrayList<Card> getCards() {
+		return cards;
+	}
+	
 	public void setContinents(ArrayList<Continent> continents) {
 		this.continents = continents;
 	}
 
-	
+	public int getNumberOfCardSetsUsed() {
+		return numberOfCardSetsUsed;
+	}
+
+	public void setNumberOfCardSetsUsed(int numberOfCardSetsUsed) {
+		this.numberOfCardSetsUsed = numberOfCardSetsUsed;
+	}
+
 	/**
 	 * Method used to print the current state of the game.
 	 * Used for console versions only for the purpose of debugging.
 	 * To be deleted in later ones.
 	 */
 	public void print(){
-		System.out.println("\n-----------------------------\n"
+		debug("\n-----------------------------\n"
 				+ "CURRENT STATE:");
-		System.out.println("Num of players: " + playerQueue.getNumberOfCurrentPlayers());
+		debug("Num of players: " + playerQueue.getNumberOfCurrentPlayers());
 		
 		Player p;
 		for(Territory t : TerritoryUtils.getAllTerritories(this)){
-			System.out.println(t.getId());
+			debug(t.getId());
 			if(PlayerUtils.getTerritoryOwner(this, t) != null){
 				p = PlayerUtils.getTerritoryOwner(this, t);
-				System.out.println("\t" + p.getId() + " terrs: " + PlayerUtils.getNumberOfTerritoriesOwned(p)
+				debug("\t" + p.getId() + " terrs: " + PlayerUtils.getNumberOfTerritoriesOwned(p)
 						+ "  undep: " + ArmyUtils.getUndeployedArmies(p));
-				System.out.println("\tarmies: " + ArmyUtils.getNumberOfArmiesOnTerritory(p, t));
-				System.out.print("\tneighbours: ");
+				debug("\tarmies: " + ArmyUtils.getNumberOfArmiesOnTerritory(p, t));
+				debug("\tneighbours: ");
 				for(Territory n : TerritoryUtils.getNeighbours(this, t)){
-					System.out.print(" " + n.getId());
+					debug(" " + n.getId());
 				}
-				System.out.println();
 			}
 		}
 		

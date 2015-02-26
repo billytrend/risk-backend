@@ -5,18 +5,34 @@ package GameState;
  * a specific type and refers to a specific territory.
  *
  */
+
 public class Card {
 
-	enum Types { SOLDIER, HORSE, CANNON}
 
-	private final Types type;
+	private final CardType type;
 	private final Territory territory;
-
-	public Card(Types type, Territory territory) {
-		this.type = type;
-		this.territory = territory;
+	private Player owner;
+	
+	public Card(Territory terr, CardType cardType) {
+		this.territory = terr;
+		this.type = cardType;
+		owner = null;
 	}
 
-	Player owner;
+	public void setOwner(Player owner) {
+		this.owner = owner;
+	}
+
+	public Player getOwner() {
+		return owner;
+	}
+
+	public CardType getType() {
+		return type;
+	}
+
+	public Territory getTerritory() {
+		return territory;
+	}
 	
 }
