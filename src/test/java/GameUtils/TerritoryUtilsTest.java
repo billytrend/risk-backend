@@ -29,7 +29,7 @@ public class TerritoryUtilsTest {
 	@Before
 	public void stateSetUp(){
 		interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
-		gameState = DemoGameBuilder.buildGame(2, 10, interfaces);
+		gameState = DemoGameBuilder.buildGame(10, interfaces);
 		territories = new Territory[gameState.getTerritories().vertexSet().size()];
 		gameState.getTerritories().vertexSet().toArray(territories);
 	}

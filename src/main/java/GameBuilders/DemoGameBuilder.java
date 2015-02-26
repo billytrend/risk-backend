@@ -2,8 +2,9 @@ package GameBuilders;
 
 import GameState.Player;
 import GameState.State;
-import GameUtils.TerritoryUtils;
 import GameState.Territory;
+import GameUtils.ContinentUtils;
+import GameUtils.TerritoryUtils;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
 
@@ -19,21 +20,16 @@ public class DemoGameBuilder {
 	 * Builds a very basic game with four AIs playing against each other
 	 * and four territories.
 	 */
-    public static State buildGame(int numOfPlayers, int armiesAtTheStart, PlayerInterface[] interfaces) {
+    public static State buildGame(int armiesAtTheStart, PlayerInterface[] interfaces) {
 
-    	if(interfaces.length != numOfPlayers)
-			try {
-				throw new Exception();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    	
         // creating players
         ArrayList<Player> ps = new ArrayList<Player>();
-        for(int i = 0; i < numOfPlayers; i++){
+        
+        for(int i = 0; i < interfaces.length; i++){
             ps.add(new Player(interfaces[i], armiesAtTheStart, i + 1));
+
         }
+        
         State state = new State(ps);
 
         // creating territories
@@ -53,6 +49,11 @@ public class DemoGameBuilder {
         TerritoryUtils.addBorder(state, demoLandB, demoLandC);
         TerritoryUtils.addBorder(state, demoLandC, demoLandD);
         TerritoryUtils.addBorder(state, demoLandD, demoLandB);
+        
+        Territory[] contAB = {demoLandA, demoLandB};
+        Territory[] contCD = {demoLandC, demoLandD};
+        ContinentUtils.addContinent(state, contAB, 4, "demoContAB");
+        ContinentUtils.addContinent(state, contCD, 3, "demoContCD");
 
         return state;
 

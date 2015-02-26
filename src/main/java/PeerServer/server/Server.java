@@ -15,6 +15,8 @@ import static com.esotericsoftware.minlog.Log.debug;
  */
 public class Server {
 
+	private ServerThread thread;
+	
 	/**
 	 * @param args
 	 */
@@ -31,13 +33,23 @@ public class Server {
 			ServerSocket serverSocket = new ServerSocket(port);
 			debug("PeerServer up and ready for connections on port: " + port);
 			//enables multithreading via blocking and waiting for clients
-			while(true){
-				Socket client = serverSocket.accept();
-				new ServerThread(client).start();
-			}
+			thread = new ServerThread(serverSocket);
+			thread.start();
 		} catch (IOException e) {
 			debug("Could not create PeerServer Socket");
 			e.printStackTrace();
 		}
 	}
+	
+	public void stopServer(){
+		try {
+			thread.client.close();
+			thread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 }
