@@ -23,7 +23,6 @@ public class TerritoryUtils {
                 return t;
             }
         }
-        
         return null;
     }
     

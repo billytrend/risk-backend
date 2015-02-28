@@ -1,11 +1,16 @@
 package LobbyServer;
 
+import GameBuilders.DemoGameBuilder;
+import GameEngine.GameEngine;
+import GameState.State;
 import GeneralUtils.Jsonify;
 import LobbyServer.LobbyState.Lobby;
 import LobbyServer.LobbyState.ObjectFromClient.ClientMessage;
 import LobbyServer.LobbyState.ObjectFromClient.GameComms.Response;
 import LobbyServer.LobbyState.PlayerConnection;
 import LobbyServer.LobbyUtils.LobbyUtils;
+import PlayerInput.DumbBotInterface;
+import PlayerInput.PlayerInterface;
 import org.java_websocket.WebSocket;
 import org.java_websocket.WebSocketImpl;
 import org.java_websocket.handshake.ClientHandshake;
@@ -50,8 +55,16 @@ public class GameServer extends WebSocketServer {
     @Override
     public void onOpen( WebSocket conn, ClientHandshake handshake ) {
         debug("hi!");
-        LobbyUtils.addConnection(this.lobby, conn);
+        PlayerConnection player = new PlayerConnection(conn);
+        LobbyUtils.addConnection(this.lobby, conn, player);
         debug(Jsonify.getObjectAsJsonString(new Lobby()));
+        PlayerInterface[] interfaces = new PlayerInterface[]{player, new DumbBotInterface(), new DumbBotInterface(), new DumbBotInterface()};
+        State gameState = DemoGameBuilder.buildGame(10, interfaces);
+        GameEngine game = new GameEngine(gameState);
+        Thread gameThr = new Thread(game);
+        gameThr.start();
+        debug("Hi!");
+
     }
 
     @Override
@@ -72,20 +85,17 @@ public class GameServer extends WebSocketServer {
      */
     @Override
     public void onMessage( WebSocket conn, String message ) {
-        debug(message);
+        debug("RECD :::" + message);
         ClientMessage messageObject = WebServerUtils.getMessageObject(message);
         PlayerConnection player = LobbyUtils.getPlayer(lobby, conn);
         if (messageObject instanceof Response) {
-            player.setLatestResponse((Response) messageObject);
+            LobbyUtils.routeMessage(lobby, conn, messageObject);
         }
     }
 
     @Override
     public void onError( WebSocket conn, Exception ex ) {
-        ex.printStackTrace();
-        if( conn != null ) {
-            // some errors like port binding failed may not be assignable to a specific websocket
-        }
+        conn.send("no, sorry");
     }
     
     public void sendToAll( String text ) {

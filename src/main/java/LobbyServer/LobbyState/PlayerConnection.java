@@ -68,7 +68,13 @@ public class PlayerConnection implements PlayerInterface  {
 			e.printStackTrace();
 		}
 
-		return ((TerritoryResponse) responses.get(responses.size() - 1)).territory;
+        String chosenTerritoryName = ((TerritoryResponse) responses.get(responses.size() - 1)).territory;
+        
+        for (Territory terr : possibles) {
+            if (chosenTerritoryName.equals(terr.getId())) return terr;
+        }
+
+		return null;
 
 	}
 

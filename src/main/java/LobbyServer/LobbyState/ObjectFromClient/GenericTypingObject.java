@@ -6,14 +6,6 @@ package LobbyServer.LobbyState.ObjectFromClient;
  */
 public class GenericTypingObject {
     
-    private String commandType;
-    
-    public Class getClassType() {
-        try {
-            return Class.forName(this.commandType);
-        } catch (ClassNotFoundException e) {
-            return null;
-        }
-    }
-    
+    public String commandType;
+
 }
