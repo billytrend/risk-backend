@@ -84,19 +84,21 @@ public class ArmyUtils {
     }
 
     
+    
     /**
-     *
-     * @param p
-     * @param t
-     * @param n
-     */
-    public static void destroyArmies(Player p, Territory t, int n) {
-        ArrayList<Army> armies = getArmiesOnTerritory(p, t);
-        for (int i = 0; i < n; i++) {
-                p.getArmies().remove(armies.get(i));
-        }
-    }
-
+    *
+    * @param p
+    * @param t
+    * @param n
+    */
+   public static void destroyArmies(Player p, Territory t, int n) {
+       ArrayList<Army> armies = getArmiesOnTerritory(p, t);
+       for (int i = 0; i < n; i++) {
+               p.getArmies().remove(armies.get(i));
+       }
+   }
+    
+    
     
     /**
      * @param target
@@ -121,6 +123,7 @@ public class ArmyUtils {
            toDeploy.get(i).setTerritory(target);
         }
     }
+
     
     /**
      * @param p

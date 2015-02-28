@@ -9,6 +9,7 @@ import GameState.Territory;
 import GameUtils.Results.FightResult;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,7 +21,7 @@ public class RuleUtilsTest{
 	
 	private State gameState;
 	private Territory[] territories;
-
+	
 	@Before
 	public void stateSetUp(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
@@ -73,7 +74,8 @@ public class RuleUtilsTest{
 		fightResult.setAttackDiceRolled(new Integer[]{6, 2});
 		fightResult.setDefendDiceRolled(new Integer[]{3});
 		
-		RuleUtils.applyFightResult(fightResult);
+		fightResult.applyChange();
+		
 		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player1, territories[0]), 1);
 		assertTrue(TerritoryUtils.getPlayersTerritories(player1).contains(territories[1]));
 		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player1, territories[1]), 1);
@@ -101,7 +103,7 @@ public class RuleUtilsTest{
 		fightResult.addAttackLoss();
 		fightResult.addAttackLoss();
 		
-		RuleUtils.applyFightResult(fightResult);
+		fightResult.applyChange();
 		
 		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player1, territories[0]), 1);
 		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player2, territories[1]), 3);

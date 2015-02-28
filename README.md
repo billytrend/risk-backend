@@ -21,6 +21,8 @@ TODO: design a lobby which players can use to join, create games etc.
 TODO: Check the end of game differently - what saleem was talking about - when playing a subset of a game
 TODO: add some tricky 'edge' test cases - wrong inputs from PlayerInterface basically
 TODO: add minimum values - when asking players for number of armies
+TODO: change StateChangesRecord so that it can be used with multiple games played
+TODO: applyChange function
 
 ## Summary
 
