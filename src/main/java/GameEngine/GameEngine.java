@@ -1,9 +1,13 @@
 package GameEngine;
 
 import GameState.*;
-import GameUtils.*;
+import GameUtils.ArmyUtils;
+import GameUtils.CardUtils;
+import GameUtils.PlayerUtils;
 import GameUtils.Results.*;
+import GameUtils.TerritoryUtils;
 import org.javatuples.Triplet;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -58,6 +62,13 @@ public class GameEngine implements Runnable {
 			if(!iterateGame()) return;
 		}
 	}
+    
+    public void applyAndReportChange(Change change) {
+        change.applyChange();
+        for (Player player :  gameState.getPlayers()) {
+            player.getCommunicationMethod().reportStateChange(change);
+        }
+    }
 
 	/**
 	 * This function takes the game forward a step, changing
@@ -162,7 +173,8 @@ public class GameEngine implements Runnable {
 
 		// deploy a single army in this place
 		Change stateChange = new ArmyPlacement(currentPlayer, toFill, 1, FILLING_EMPTY_COUNTRIES);
-		stateChange.applyChange();
+
+		applyAndReportChange(stateChange);
 		changeRecord.addStateChange(stateChange);
 		
 		endGo();
@@ -218,7 +230,7 @@ public class GameEngine implements Runnable {
 
 		// deploy the armies
 		Change stateChange = new ArmyPlacement(currentPlayer, toFill, 1, USING_REMAINING_ARMIES);
-		stateChange.applyChange();
+		applyAndReportChange(stateChange);
 		changeRecord.addStateChange(stateChange);
 		
 		endGo();
@@ -281,7 +293,7 @@ public class GameEngine implements Runnable {
 		
 		// do the deployment!
 		Change stateChange = new ArmyPlacement(currentPlayer, toFill, deployedAmount, PLAYER_PLACING_ARMIES);
-		stateChange.applyChange();
+		applyAndReportChange(stateChange);
 		changeRecord.addStateChange(stateChange);
 		
 		return PLAYER_PLACING_ARMIES;
@@ -351,7 +363,7 @@ public class GameEngine implements Runnable {
 	
 		// decide the results of the fight
 		Arbitration.carryOutFight(result, attackDiceNumber, defendDiceNumber);
-		result.applyChange();
+        applyAndReportChange(result);
 		changeRecord.addStateChange(result);
 		
 		// if the attacking player won and they still have surplus armies,
@@ -365,7 +377,7 @@ public class GameEngine implements Runnable {
 			
 			if(PlayerUtils.playerIsOut(result.getDefender())){
 				Change stateChange= new PlayerRemoval(currentPlayer, result.getDefender(), gameState);
-				stateChange.applyChange();
+				applyAndReportChange(stateChange);
 				changeRecord.addStateChange(stateChange);
 			}
 	
@@ -399,7 +411,7 @@ public class GameEngine implements Runnable {
 			// add a new change to the state
 			Change stateChange = new ArmyMovement(currentPlayer, result.getAttackingTerritory(), result.getDefendingTerritory(), 
 					movedAmount, PLAYER_INVADING_COUNTRY);
-			stateChange.applyChange();
+			applyAndReportChange(stateChange);
 			changeRecord.addStateChange(stateChange);
 		}
 		
@@ -460,7 +472,7 @@ public class GameEngine implements Runnable {
 				.getNumberOfArmies(currentPlayer, numberOfArmiesThatMayBeMoved, RequestReason.REINFORCEMENT_PHASE);
 		
 		Change stateChange = new ArmyMovement(currentPlayer, source, target, movedAmount, PLAYER_MOVING_ARMIES);
-		stateChange.applyChange();
+		applyAndReportChange(stateChange);
 		changeRecord.addStateChange(stateChange);
 		
 		return PLAYER_MOVING_ARMIES;

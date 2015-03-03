@@ -1,7 +1,5 @@
 package GameUtils.Results;
 
-import java.util.ArrayList;
-
 import GameEngine.PlayState;
 import GameState.Player;
 
@@ -9,6 +7,9 @@ public abstract class Change {
 	
 	private Player actingPlayer;
 	private PlayState actionPlayed;
+    
+    // this is for the ui, when it receives the object as json
+    private final boolean change = true;
 
 	public Change(Player actingPlayer, PlayState actionPlayed){
 		this.actingPlayer = actingPlayer;

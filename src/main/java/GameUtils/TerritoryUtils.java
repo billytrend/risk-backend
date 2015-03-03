@@ -201,4 +201,13 @@ public class TerritoryUtils {
         state.getTerritories().addEdge(a, b);
     }
 	
+    public static Territory getTerritoryByName(State state, String name) {
+        HashSet<Territory> allTerritories = getAllTerritories(state);
+        for (Territory territory : allTerritories) {
+            if (territory.getId().equals(name)) {
+                return territory;
+            }
+        }
+        return null;
+    }
 }

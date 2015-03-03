@@ -4,13 +4,13 @@ import GameEngine.RequestReason;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
+import GameUtils.Results.Change;
+import org.javatuples.Triplet;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Scanner;
-
-import org.javatuples.Triplet;
 
 /**
  * Used for a very simple AI acting as a player
@@ -119,6 +119,11 @@ public class CommandLineInterface implements PlayerInterface {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    @Override
+    public void reportStateChange(Change change) {
+
+    }
 
 }
 

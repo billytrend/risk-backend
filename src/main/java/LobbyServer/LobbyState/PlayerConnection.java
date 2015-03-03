@@ -4,6 +4,7 @@ import GameEngine.RequestReason;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
+import GameUtils.Results.Change;
 import GeneralUtils.Jsonify;
 import LobbyServer.LobbyState.ObjectFromClient.GameComms.*;
 import PlayerInput.PlayerInterface;
@@ -100,5 +101,10 @@ public class PlayerConnection implements PlayerInterface  {
 	public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
 		return null;
 	}
+
+    @Override
+    public void reportStateChange(Change change) {
+
+    }
 
 }

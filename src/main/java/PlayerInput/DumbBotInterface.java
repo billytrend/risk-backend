@@ -4,6 +4,7 @@ import GameEngine.RequestReason;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
+import GameUtils.Results.Change;
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -102,6 +103,11 @@ public class DumbBotInterface implements PlayerInterface {
     @Override
     public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
         return null;
+    }
+
+    @Override
+    public void reportStateChange(Change change) {
+
     }
 
 }

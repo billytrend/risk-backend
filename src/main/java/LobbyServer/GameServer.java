@@ -1,6 +1,6 @@
 package LobbyServer;
 
-import GameBuilders.DemoGameBuilder;
+import GameBuilders.RiskMapGameBuilder;
 import GameEngine.GameEngine;
 import GameState.State;
 import GeneralUtils.Jsonify;
@@ -59,7 +59,7 @@ public class GameServer extends WebSocketServer {
         LobbyUtils.addConnection(this.lobby, conn, player);
         debug(Jsonify.getObjectAsJsonString(new Lobby()));
         PlayerInterface[] interfaces = new PlayerInterface[]{player, new DumbBotInterface(), new DumbBotInterface(), new DumbBotInterface()};
-        State gameState = DemoGameBuilder.buildGame(10, interfaces);
+        State gameState = RiskMapGameBuilder.buildGame(10, interfaces);
         GameEngine game = new GameEngine(gameState);
         Thread gameThr = new Thread(game);
         gameThr.start();
