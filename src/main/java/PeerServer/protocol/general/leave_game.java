@@ -12,6 +12,9 @@ package PeerServer.protocol.general;
  */
 public class leave_game {
 	
+	//used for acknowledgements and leave_game
+	int response_codes[][];
+	
 	int response_code; //(4xx) specifying reason for leaving
 	boolean receive_updates; //whether user wishes to continue to recieve updates and viewing the game
 	int player_id; 
