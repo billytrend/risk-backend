@@ -14,6 +14,7 @@ import java.net.Socket;
 public class Server {
 
 	private ServerThread thread;
+	 
 	
 	/**
 	 * @param args

@@ -37,6 +37,10 @@ public class Client {
 			while(true){
 				String readerInput = clientReader.readLine();
 				clientWriter.println(clientName + " :" + readerInput);
+//				while(clientReader.readLine() != null){
+//					String messageFromServer = clientReader.readLine();
+//					System.out.println("From server: " + messageFromServer);
+//				}
 			}
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
