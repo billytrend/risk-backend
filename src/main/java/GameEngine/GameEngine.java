@@ -425,7 +425,6 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	private boolean checkTheEndOfGame(){
-		System.out.println("windc: " + winCondition);
 		if(winCondition != 0){
 			ArrayList<Player> allPlayers = PlayerUtils.getPlayersInGame(gameState);
 			for(Player player : allPlayers){
