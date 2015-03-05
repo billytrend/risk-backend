@@ -25,8 +25,8 @@ import static com.esotericsoftware.minlog.Log.debug;
  */
 public class TestableGameEngine extends GameEngine {
 
-	public TestableGameEngine(State state, int winCondition) {
-		super(state, winCondition);
+	public TestableGameEngine(State state, WinConditions conditions) {
+		super(state, conditions);
 	}
 	
 	public TestableGameEngine(State state) {

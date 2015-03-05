@@ -31,7 +31,8 @@ public class GameSubsetTest {
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
 		State gameState = DemoGameBuilder.buildTestGame(2, 15, 4, interfaces);
 		ArrayList<Player> players = gameState.getPlayers();
-		GameEngine gameEngine = new GameEngine(gameState, 3);
+		WinConditions conditions = new WinConditions(1, 3);
+		GameEngine gameEngine = new GameEngine(gameState, conditions);
 		gameEngine.run();
 		
 		assertEquals(PlayerUtils.countPlayers(gameState), 2);
@@ -61,7 +62,8 @@ public class GameSubsetTest {
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
 		State gameState = DemoGameBuilder.buildTestGame(2, 30, 16, interfaces);
 		ArrayList<Player> players = gameState.getPlayers();
-		GameEngine gameEngine = new GameEngine(gameState, 14);
+		WinConditions conditions = new WinConditions(1, 14);
+		GameEngine gameEngine = new GameEngine(gameState, conditions);
 		gameEngine.run();
 		
 		assertEquals(PlayerUtils.countPlayers(gameState), 2);
@@ -79,7 +81,8 @@ public class GameSubsetTest {
 				new DumbBotInterface(), new DumbBotInterface(), new DumbBotInterface()};
 		State gameState = DemoGameBuilder.buildTestGame(5, 100, 70, interfaces);
 		ArrayList<Player> players = gameState.getPlayers();
-		GameEngine gameEngine = new GameEngine(gameState, 23);
+		WinConditions conditions = new WinConditions(1, 23);
+		GameEngine gameEngine = new GameEngine(gameState, conditions);
 		gameEngine.run();
 		
 		assertEquals(PlayerUtils.countPlayers(gameState), 5);

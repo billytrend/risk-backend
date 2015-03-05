@@ -9,7 +9,6 @@
 
 ## TODO
 
-TODO: Write loadsa tests
 TODO: Develop AIs
 TODO: Finish game implementation: continents etc.
 TODO: let players change their decisions (on our side)
