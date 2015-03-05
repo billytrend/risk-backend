@@ -179,6 +179,7 @@ public class TerritoryUtils {
      */
     public static void addTerritory(State state, Territory territory) {
         state.getTerritories().addVertex(territory);
+        state.addMapping(territory.getId(), territory);
     }
 
 

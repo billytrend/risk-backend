@@ -7,26 +7,24 @@ import GameUtils.PlayerUtils;
 
 public class PlayerRemoval extends Change{
 	
-	private Player removedPlayer;
-	private State state;
+	private String removedPlayerId;
 	
-	public PlayerRemoval(Player actingPlayer, Player removedPlayer, State state) {
-		super(actingPlayer, PlayState.PLAYER_INVADING_COUNTRY);
-		this.removedPlayer = removedPlayer;
-		this.state = state;
+	public PlayerRemoval(String actingPlayerId, String removedPlayerId) {
+		super(actingPlayerId, PlayState.PLAYER_INVADING_COUNTRY);
+		this.removedPlayerId = removedPlayerId;
 	}
 	
-	public Player getRemovedPlayer(){
-		return removedPlayer;
+	public String getRemovedPlayerId(){
+		return removedPlayerId;
 	}
 
-	@Override
-	public void applyChange() {
+	public void applyChange(State state) {
+		Player removedPlayer = state.lookUpPlayer(removedPlayerId);
 		PlayerUtils.removePlayer(state, removedPlayer);
 	}
 	
 	public String toString(){
-		return super.toString() + "\n\tPLAYER REMOVAL\n\t" + removedPlayer.getId();
+		return super.toString() + "\n\tPLAYER REMOVAL\n\t" + removedPlayerId;
 	}
 
 }

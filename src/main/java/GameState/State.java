@@ -8,6 +8,8 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import static com.esotericsoftware.minlog.Log.debug;
@@ -20,25 +22,65 @@ import static com.esotericsoftware.minlog.Log.debug;
  */
 public class State {
 
-	SimpleGraph<Territory, DefaultEdge> territories = 
+	protected SimpleGraph<Territory, DefaultEdge> territories = 
 			new SimpleGraph<Territory, DefaultEdge>(DefaultEdge.class);
+	protected final ArrayList<Player> players;
+	protected HashMap<String, Player> playerMapping;
+	protected HashMap<String, Territory> territoryMapping;
+	protected PlayerQueue playerQueue;
 	
-	private final ArrayList<Player> players;
-	private PlayerQueue playerQueue;
-	ArrayList<Continent> continents = new ArrayList<Continent>();
+	private ArrayList<Continent> continents = new ArrayList<Continent>();
 	private final ArrayList<Card> cards = new ArrayList<Card>();
 	private int numberOfCardSetsUsed;
 	
-	public State(ArrayList<Player> players) {
+	public State(ArrayList<Player> players){
 		this.players = players;
 		this.playerQueue = new PlayerQueue(players);
 		numberOfCardSetsUsed = 0;
+		
+		playerMapping = new HashMap<String, Player>();
+		territoryMapping = new HashMap<String, Territory>();
+		
+		for(Player player : players){
+			playerMapping.put(player.getId(), player);
+		}
+		
 	}
 
+	
+	public Player lookUpPlayer(String id){
+		return playerMapping.get(id);
+	}
+	
+	public Territory lookUpTerritory(String id){
+		return territoryMapping.get(id);
+	}
+	
+	
+	public void addMapping(String id, Object obj){
+		if(obj instanceof Territory){
+			territoryMapping.put(id, (Territory) obj);
+		}
+		else if(obj instanceof Player){
+			playerMapping.put(id, (Player) obj);
+		}
+	}
+	
+	public ArrayList<String> getPlayersIds(){
+		ArrayList<String> ids = new ArrayList<String>();
+		ids.addAll(playerMapping.keySet());
+		return ids;
+	}
+	
+	public ArrayList<String> getTerritoryIds(){
+		ArrayList<String> ids = new ArrayList<String>();
+		ids.addAll(territoryMapping.keySet());
+		return ids;
+	}
+	
 	public SimpleGraph<Territory, DefaultEdge> getTerritories() {
 		return territories;
 	}
-
 	public void setTerritories(SimpleGraph<Territory, DefaultEdge> territories) {
 		this.territories = territories;
 	}
@@ -46,7 +88,6 @@ public class State {
 	public ArrayList<Player> getPlayers() {
 		return players;
 	}
-
 	public PlayerQueue getPlayerQueue() {
 		return playerQueue;
 	}
@@ -54,7 +95,6 @@ public class State {
 	public ArrayList<Continent> getContinents() {
 		return continents;
 	}
-
 	public ArrayList<Card> getCards() {
 		return cards;
 	}
@@ -62,7 +102,6 @@ public class State {
 	public void setContinents(ArrayList<Continent> continents) {
 		this.continents = continents;
 	}
-
 	public int getNumberOfCardSetsUsed() {
 		return numberOfCardSetsUsed;
 	}
