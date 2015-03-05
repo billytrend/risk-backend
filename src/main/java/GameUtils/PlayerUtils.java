@@ -63,6 +63,15 @@ public class PlayerUtils {
      public static int countPlayers(State state) {
         return state.getPlayerQueue().getNumberOfCurrentPlayers();
      }
+     
+     /**
+      * 
+      * @param state
+      * @return
+      */
+     public static ArrayList<Player> getPlayersInGame(State state){
+    	 return state.getPlayerQueue().getCurrentPlayers();
+     }
 
     /**
      * @param p

@@ -23,9 +23,15 @@ public class GameEngine implements Runnable {
 	private PlayState playState = BEGINNING_STATE;
 	private boolean currentPlayerHasTakenCountry = false;
 	private StateChangeRecord changeRecord;
+	int winCondition = 0;
 	
 	public StateChangeRecord getStateChangeRecord(){
 		return changeRecord;
+	}
+	
+	public GameEngine(State state, int winCondition) {
+		this(state);
+		this.winCondition = winCondition;
 	}
 	
 	public GameEngine(State state) {
@@ -369,6 +375,9 @@ public class GameEngine implements Runnable {
 				stateChange.applyChange(gameState);
 				changeRecord.addStateChange(stateChange);
 			}
+			
+			if(checkTheEndOfGame())
+				return END_GAME;
 	
 		}
 
@@ -416,6 +425,14 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	private boolean checkTheEndOfGame(){
+		System.out.println("windc: " + winCondition);
+		if(winCondition != 0){
+			ArrayList<Player> allPlayers = PlayerUtils.getPlayersInGame(gameState);
+			for(Player player : allPlayers){
+				if(TerritoryUtils.getPlayersTerritories(player).size() >= winCondition)
+					return true;
+			}
+		}
 		if(PlayerUtils.countPlayers(gameState) == 1){
 			return true;
 		}
@@ -432,7 +449,7 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	protected PlayState moveArmy() {
-		
+	
 		// get a list of territories a player can deploy from
 		HashSet<Territory> canBeDeployedFrom = TerritoryUtils
 				.getDeployable(gameState, currentPlayer);
@@ -475,15 +492,10 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	private PlayState endGo() {
-		
-		if(checkTheEndOfGame())
-			return END_GAME;
-		
 		if (currentPlayerHasTakenCountry) {
 			CardUtils.givePlayerRandomCard(gameState, currentPlayer);
 			currentPlayerHasTakenCountry = false;
 		}
-		
 		
 		currentPlayer = gameState.getPlayerQueue().next();
 		
