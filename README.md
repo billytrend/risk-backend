@@ -13,16 +13,11 @@ TODO: Write loadsa tests
 TODO: Develop AIs
 TODO: Finish game implementation: continents etc.
 TODO: let players change their decisions (on our side)
-TODO: Add minimum number of armies someone can move
 TODO: Add websocket support
 TODO: Finish front-end (in a separate repository)
 TODO: allow maps to be parsed form JSON
 TODO: design a lobby which players can use to join, create games etc.
-TODO: Check the end of game differently - what saleem was talking about - when playing a subset of a game
 TODO: add some tricky 'edge' test cases - wrong inputs from PlayerInterface basically
-TODO: add minimum values - when asking players for number of armies
-TODO: change StateChangesRecord so that it can be used with multiple games played
-TODO: applyChange function
 
 ## Summary
 
