@@ -23,21 +23,22 @@ public class GameEngine implements Runnable {
 	private PlayState playState = BEGINNING_STATE;
 	private boolean currentPlayerHasTakenCountry = false;
 	private StateChangeRecord changeRecord;
-	int winCondition = 0;
+	private WinConditions winConditions;
 	
 	public StateChangeRecord getStateChangeRecord(){
 		return changeRecord;
 	}
 	
-	public GameEngine(State state, int winCondition) {
+	public GameEngine(State state, WinConditions conditions) {
 		this(state);
-		this.winCondition = winCondition;
+		winConditions = conditions;
 	}
 	
 	public GameEngine(State state) {
 		this.gameState = state;
 		changeRecord = new StateChangeRecord(state.getPlayersIds(), state.getTerritoryIds(),
 				state.getPlayers().get(0).getArmies().size());
+		winConditions = new WinConditions();
 	}
 	
 	public State getState(){
@@ -425,18 +426,10 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	private boolean checkTheEndOfGame(){
-		System.out.println("windc: " + winCondition);
-		if(winCondition != 0){
-			ArrayList<Player> allPlayers = PlayerUtils.getPlayersInGame(gameState);
-			for(Player player : allPlayers){
-				if(TerritoryUtils.getPlayersTerritories(player).size() >= winCondition)
-					return true;
-			}
-		}
-		if(PlayerUtils.countPlayers(gameState) == 1){
+		if(winConditions.checkConditions(gameState))
 			return true;
-		}
-		return false;
+		else
+			return false;
 	}
 	
 
