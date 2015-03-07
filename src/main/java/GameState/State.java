@@ -3,14 +3,11 @@ package GameState;
 import GameUtils.ArmyUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.TerritoryUtils;
-
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 
 import static com.esotericsoftware.minlog.Log.debug;
 
@@ -22,32 +19,35 @@ import static com.esotericsoftware.minlog.Log.debug;
  */
 public class State {
 
-	protected SimpleGraph<Territory, DefaultEdge> territories = 
-			new SimpleGraph<Territory, DefaultEdge>(DefaultEdge.class);
-	protected final ArrayList<Player> players;
+	protected SimpleGraph<Territory, DefaultEdge> territories = new SimpleGraph<Territory, DefaultEdge>(DefaultEdge.class);
 	protected HashMap<String, Player> playerMapping;
 	protected HashMap<String, Territory> territoryMapping;
-	protected PlayerQueue playerQueue;
-	
+	protected ArrayList<Player> players;
+	private PlayerQueue playerQueue;
 	private ArrayList<Continent> continents = new ArrayList<Continent>();
 	private final ArrayList<Card> cards = new ArrayList<Card>();
-	private int numberOfCardSetsUsed;
+	private int numberOfCardSetsUsed = 0;
 	
 	public State(ArrayList<Player> players){
-		this.players = players;
-		this.playerQueue = new PlayerQueue(players);
 		numberOfCardSetsUsed = 0;
-		
 		playerMapping = new HashMap<String, Player>();
 		territoryMapping = new HashMap<String, Territory>();
-		
-		for(Player player : players){
-			playerMapping.put(player.getId(), player);
-		}
-		
-	}
+		setPlayers(players);
+    }
+    
+    public State() {
+        
+    }
 
-	
+    public void setPlayers(ArrayList<Player> players) {
+        this.players = players;
+        this.playerQueue = new PlayerQueue(players);
+
+        for(Player player : players){
+            playerMapping.put(player.getId(), player);
+        }
+    }
+    
 	public Player lookUpPlayer(String id){
 		return playerMapping.get(id);
 	}
@@ -77,8 +77,8 @@ public class State {
 		ids.addAll(territoryMapping.keySet());
 		return ids;
 	}
-	
-	public SimpleGraph<Territory, DefaultEdge> getTerritories() {
+    
+    public SimpleGraph<Territory, DefaultEdge> getTerritories() {
 		return territories;
 	}
 	public void setTerritories(SimpleGraph<Territory, DefaultEdge> territories) {
