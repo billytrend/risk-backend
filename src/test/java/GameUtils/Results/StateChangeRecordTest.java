@@ -39,13 +39,13 @@ public class StateChangeRecordTest {
     @Test
     public void getPlayersTurnsTest(){
     	ArrayList<ArrayList<Change>> playersTurns = changeRecord.getPlayersTurns();
-    	Player player;
+    	String player;
     	for(ArrayList<Change> turnChanges : playersTurns){
     		if(turnChanges.size() <= 0)
     			fail();
-    		player = turnChanges.get(0).getActingPlayer();
+    		player = turnChanges.get(0).getActingPlayerId();
     		for(Change change : turnChanges){
-    			assertEquals(change.getActingPlayer(), player);
+    			assertEquals(change.getActingPlayerId(), player);
     		}
     	}
     }

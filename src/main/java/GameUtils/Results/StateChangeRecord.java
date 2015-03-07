@@ -3,16 +3,32 @@ package GameUtils.Results;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.SimpleGraph;
+
 import GameState.Player;
+import GameState.RecreatedState;
+import GameState.State;
+import GameState.Territory;
 
 
 public class StateChangeRecord {
 	
 	private ArrayList<Change> gameStateChanges;
 	private Change lastChange;
+	private ArrayList<String> playerIds;
+	private ArrayList<String> territoryIds;
+	int startingArmies;
 		
-	public StateChangeRecord(){
+	public StateChangeRecord(ArrayList<String> playersIds, ArrayList<String>  territoryIds, int startingArmies){
+		this.playerIds = playersIds;
+		this.territoryIds = territoryIds;
+		this.startingArmies = startingArmies;
 		gameStateChanges = new ArrayList<Change>();
+	}
+	
+	public RecreatedState recreateStartingState(){
+		return new RecreatedState(playerIds, territoryIds, startingArmies);
 	}
 	
 	/**
@@ -23,6 +39,12 @@ public class StateChangeRecord {
 	public  void addStateChange(Change change){
 		gameStateChanges.add(change);
 		lastChange = change;
+	}
+	
+	public void applyAllChanges(State state){
+		for(Change change : gameStateChanges){
+			change.applyChange(state);
+		}
 	}
 	
 	/**
@@ -87,23 +109,22 @@ public class StateChangeRecord {
 		ArrayList<ArrayList<Change>> allMoves = new ArrayList<ArrayList<Change>>();
 	
 		ArrayList<Change> moveChanges = new ArrayList<Change>();
-		Player player = null;
+		String player = null;
 		Change change;
 		while(it.hasNext()){
 			change = it.next();
 			if(player == null)
-				player = change.getActingPlayer();
-			if(player == change.getActingPlayer()){
+				player = change.getActingPlayerId();
+			if(player == change.getActingPlayerId()){
 				moveChanges.add(change);
 			}
 			else{
 				allMoves.add(moveChanges);
 				moveChanges = new ArrayList<Change>();
-				player = change.getActingPlayer();
+				player = change.getActingPlayerId();
 				moveChanges.add(change);
 			}
 		}
-		
 		return allMoves;
 	}
 	

@@ -1,13 +1,13 @@
 package GameBuilders;
 
-import java.util.ArrayList;
-import java.util.Random;
-
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.TerritoryUtils;
 import PlayerInput.DumbBotInterface;
+
+import java.util.ArrayList;
+import java.util.Random;
 
 public class RiskMapGameBuilder {
 

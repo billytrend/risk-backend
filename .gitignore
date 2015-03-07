@@ -5,3 +5,6 @@ target
 .metadata
 .idea
 bin1
+.classpath
+.project
+risk-backend.iml
