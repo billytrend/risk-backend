@@ -99,7 +99,8 @@ public class CommunistAggressive implements PlayerInterface {
 			return currentTerritoryPlacing;
 
 		case ATTACK_CHOICE_FROM:
-			return territoryArray[attackFromCounter];
+			return territoryArray[attackFromCounter ];
+        
 			
 			
 		case ATTACK_CHOICE_TO:
