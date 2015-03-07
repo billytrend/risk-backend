@@ -2,6 +2,7 @@ package PlayerInput;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 
 import org.javatuples.Triplet;
@@ -24,6 +25,11 @@ public class CommunistAggressive implements PlayerInterface {
 
 	private static final int MIN = 0;
 
+    public CommunistAggressive() {
+        this.initialDeploymentCounter = 0;
+        this.deploymentCounter = 0;
+    }
+
 	public CommunistAggressive(State a) {
 		this.initialDeploymentCounter = 0;
 		this.deploymentCounter = 0;
@@ -40,19 +46,19 @@ public class CommunistAggressive implements PlayerInterface {
 	public Territory getTerritory(Player player, HashSet<Territory> possibles,
 			boolean canResign, RequestReason reason) {
 
-		// NEEDS TO BE FINISHED
-		Territory[] territoryArray = (Territory[]) possibles.toArray();
+        List<Territory> territoryList = new ArrayList<Territory>(possibles);
+
 		Random rand = new Random();
 
 		// TODO: Make into helper method.
-		for (int i = 0; i < territoryArray.length; i++) {
+		for (int i = 0; i < territoryList.size(); i++) {
 			Player self = PlayerUtils.getTerritoryOwner(currentState,
-					territoryArray[i]);
+					territoryList.get(i));
 			int strength = ArmyUtils.getArmiesOnTerritory(self,
-					territoryArray[i]).size();
+					territoryList.get(i)).size();
 
 			if (strength < 3) {
-				this.currentStrongTerritories.add(territoryArray[i]);
+				this.currentStrongTerritories.add(territoryList.get(i));
 			}
 
 		}
@@ -62,9 +68,11 @@ public class CommunistAggressive implements PlayerInterface {
 		case PLACING_ARMIES_SET_UP:
 
 			// Randomly selects a territory from the list of possible choices.
-			int randomNumber = rand.nextInt(territoryArray.length - MIN + 1)
+			int randomNumber = rand.nextInt(territoryList.size() - MIN + 1)
 					+ MIN;
-			return territoryArray[randomNumber];
+
+            //REMEMBER TO CHANGE BACK
+			return territoryList.get(randomNumber);
 
 		case PLACING_REMAINING_ARMIES_PHASE:
 
@@ -72,9 +80,9 @@ public class CommunistAggressive implements PlayerInterface {
 			// If there are still armies reset the counter and start from the
 			// beginning again.
 
-			Territory currentTerritory = territoryArray[this.initialDeploymentCounter];
+			Territory currentTerritory = territoryList.get(this.initialDeploymentCounter);
 
-			if (this.initialDeploymentCounter == territoryArray.length - 1) {
+			if (this.initialDeploymentCounter == territoryList.size() - 1) {
 				this.initialDeploymentCounter = 0;
 			} else {
 				this.initialDeploymentCounter++;
@@ -88,9 +96,9 @@ public class CommunistAggressive implements PlayerInterface {
 			// If there are still armies reset the counter and start from the
 			// beginning again.
 
-			Territory currentTerritoryPlacing = territoryArray[this.deploymentCounter];
+			Territory currentTerritoryPlacing = territoryList.get(this.deploymentCounter);
 
-			if (this.deploymentCounter == territoryArray.length - 1) {
+			if (this.deploymentCounter == territoryList.size() - 1) {
 				this.deploymentCounter = 0;
 			} else {
 				this.deploymentCounter++;
@@ -99,7 +107,7 @@ public class CommunistAggressive implements PlayerInterface {
 			return currentTerritoryPlacing;
 
 		case ATTACK_CHOICE_FROM:
-			return territoryArray[attackFromCounter];
+			return territoryList.get(attackFromCounter);
 
 			
 			
@@ -109,15 +117,15 @@ public class CommunistAggressive implements PlayerInterface {
 			// Chooses a random one of these and returns it.
 			ArrayList<Territory> weakestTerritories = new ArrayList<Territory>();
 
-			for (int i = 0; i < territoryArray.length; i++) {
+			for (int i = 0; i < territoryList.size(); i++) {
 				Player enemyOwner = PlayerUtils.getTerritoryOwner(currentState,
-						territoryArray[i]);
+						territoryList.get(i));
 				int numberOfEnemySoldiers = ArmyUtils
 						.getNumberOfArmiesOnTerritory(enemyOwner,
-								territoryArray[i]);
+								territoryList.get(i));
 
 				if (numberOfEnemySoldiers < 10) {
-					weakestTerritories.add(territoryArray[i]);
+					weakestTerritories.add(territoryList.get(i));
 				}
 			}
 

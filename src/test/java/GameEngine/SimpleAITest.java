@@ -4,6 +4,7 @@ import GameBuilders.DemoGameBuilder;
 import GameState.State;
 import GeneralUtils.Jsonify;
 import LobbyServer.LobbyState.Lobby;
+import PlayerInput.CommunistAggressive;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
 import org.junit.After;
@@ -27,7 +28,7 @@ public class SimpleAITest {
 
     @Test
     public void testDumbBot() {
-	    PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface(),
+	    PlayerInterface[] interfaces = new PlayerInterface[]{new CommunistAggressive(), new CommunistAggressive(),
 	    		new DumbBotInterface(), new DumbBotInterface()};
         State gameState = DemoGameBuilder.buildGame(10, interfaces);
         GameEngine gameThr = new GameEngine(gameState);
