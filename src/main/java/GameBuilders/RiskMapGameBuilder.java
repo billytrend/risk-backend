@@ -22,7 +22,8 @@ public class RiskMapGameBuilder {
 		for (int i = 0; i < numOfPlayers; i++) {
 			ps.add(new Player(new DumbBotInterface(), armiesAtTheStart, i + 1));
 		}
-		State state = new State(ps);
+		State state = new State();
+        state.setPlayers(ps);
 
 		// creating territories
 		//Create territories for North America

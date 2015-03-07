@@ -3,12 +3,10 @@ package GameState;
 import GameUtils.ArmyUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.TerritoryUtils;
-
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import static com.esotericsoftware.minlog.Log.debug;
 
@@ -23,18 +21,25 @@ public class State {
 	SimpleGraph<Territory, DefaultEdge> territories = 
 			new SimpleGraph<Territory, DefaultEdge>(DefaultEdge.class);
 	
-	private final ArrayList<Player> players;
+	private ArrayList<Player> players;
 	private PlayerQueue playerQueue;
 	ArrayList<Continent> continents = new ArrayList<Continent>();
 	private final ArrayList<Card> cards = new ArrayList<Card>();
-	private int numberOfCardSetsUsed;
+	private int numberOfCardSetsUsed = 0;
 	
 	public State(ArrayList<Player> players) {
-		this.players = players;
-		this.playerQueue = new PlayerQueue(players);
-		numberOfCardSetsUsed = 0;
+        setPlayers(players);
 	}
+    
+    public State() {
+        
+    }
 
+    public void setPlayers(ArrayList<Player> players) {
+        this.players = players;
+        this.playerQueue = new PlayerQueue(players);
+    }
+    
 	public SimpleGraph<Territory, DefaultEdge> getTerritories() {
 		return territories;
 	}
