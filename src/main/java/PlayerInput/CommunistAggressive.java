@@ -99,8 +99,8 @@ public class CommunistAggressive implements PlayerInterface {
 			return currentTerritoryPlacing;
 
 		case ATTACK_CHOICE_FROM:
-			return territoryArray[attackFromCounter ];
-        
+			return territoryArray[attackFromCounter];
+
 			
 			
 		case ATTACK_CHOICE_TO:
@@ -116,7 +116,7 @@ public class CommunistAggressive implements PlayerInterface {
 						.getNumberOfArmiesOnTerritory(enemyOwner,
 								territoryArray[i]);
 
-				if (numberOfEnemySoldiers == 1) {
+				if (numberOfEnemySoldiers < 10) {
 					weakestTerritories.add(territoryArray[i]);
 				}
 			}
