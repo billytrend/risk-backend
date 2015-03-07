@@ -50,18 +50,20 @@ public class CommunistAggressive implements PlayerInterface {
 
 		Random rand = new Random();
 
-		// TODO: Make into helper method.
-		for (int i = 0; i < territoryList.size(); i++) {
-			Player self = PlayerUtils.getTerritoryOwner(currentState,
-					territoryList.get(i));
-			int strength = ArmyUtils.getArmiesOnTerritory(self,
-					territoryList.get(i)).size();
+        /**
+         * 	for (int i = 0; i < territoryList.size(); i++) {
+         Player self = PlayerUtils.getTerritoryOwner(currentState,
+         territoryList.get(i));
+         int strength = ArmyUtils.getArmiesOnTerritory(self,
+         territoryList.get(i)).size();
 
-			if (strength < 3) {
-				this.currentStrongTerritories.add(territoryList.get(i));
-			}
+         if (strength < 3) {
+         this.currentStrongTerritories.add(territoryList.get(i));
+         }
 
-		}
+         }
+         */
+
 
 		switch (reason) {
 
@@ -72,7 +74,7 @@ public class CommunistAggressive implements PlayerInterface {
 					+ MIN;
 
             //REMEMBER TO CHANGE BACK
-			return territoryList.get(randomNumber);
+			return territoryList.get(0);
 
 		case PLACING_REMAINING_ARMIES_PHASE:
 
@@ -107,6 +109,10 @@ public class CommunistAggressive implements PlayerInterface {
 			return currentTerritoryPlacing;
 
 		case ATTACK_CHOICE_FROM:
+
+            if (territoryList.size() == 0)
+                return null;
+
 			return territoryList.get(attackFromCounter);
 
 			
@@ -132,7 +138,7 @@ public class CommunistAggressive implements PlayerInterface {
 			int randomWeakest = rand.nextInt(weakestTerritories.size() - MIN
 					+ 1)
 					+ MIN;
-			return weakestTerritories.get(randomWeakest);
+			return weakestTerritories.get(0);
 
 		case REINFORCEMENT_PHASE:
 			return null; // TODO: Figure out average and reinforce depending on
