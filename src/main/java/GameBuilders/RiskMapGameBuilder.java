@@ -1,13 +1,13 @@
 package GameBuilders;
 
-import java.util.ArrayList;
-import java.util.Random;
-
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.TerritoryUtils;
 import PlayerInput.DumbBotInterface;
+
+import java.util.ArrayList;
+import java.util.Random;
 
 public class RiskMapGameBuilder {
 
@@ -22,7 +22,8 @@ public class RiskMapGameBuilder {
 		for (int i = 0; i < numOfPlayers; i++) {
 			ps.add(new Player(new DumbBotInterface(), armiesAtTheStart, i + 1));
 		}
-		State state = new State(ps);
+		State state = new State();
+        state.setPlayers(ps);
 
 		// creating territories
 		//Create territories for North America
