@@ -1,9 +1,7 @@
 package GameUtils.Results;
 
-import GameEngine.GameEngine;
 import GameEngine.PlayState;
 import GameState.Player;
-import GameState.State;
 import GameState.Territory;
 import GameUtils.ArmyUtils;
 
@@ -11,7 +9,7 @@ public class ArmyMovement extends ArmyChange{
 	
 	private Territory source;
 	private Territory target;
-	
+
 	public ArmyMovement(Player player, Territory source, Territory target, int number, PlayState actionPlayed) {
 		super(player, number, actionPlayed);
 		this.source = source;

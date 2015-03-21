@@ -37,7 +37,7 @@ public class GameServer extends WebSocketServer {
     }
 
     private Lobby lobby = new Lobby();
-    
+
     public GameServer(int port) throws UnknownHostException {
         super( new InetSocketAddress( port ) );
     }
@@ -59,9 +59,11 @@ public class GameServer extends WebSocketServer {
         LobbyUtils.addConnection(this.lobby, conn, player);
         debug(Jsonify.getObjectAsJsonString(new Lobby()));
         PlayerInterface[] interfaces = new PlayerInterface[]{player, new DumbBotInterface(), new DumbBotInterface(), new DumbBotInterface()};
-        State gameState = RiskMapGameBuilder.buildGame(10, interfaces);
+        State gameState = RiskMapGameBuilder.buildGame(13, interfaces);
         GameEngine game = new GameEngine(gameState);
         Thread gameThr = new Thread(game);
+        System.out.println(Jsonify.getObjectAsJsonString(gameState));
+        conn.send(Jsonify.getObjectAsJsonString(gameState));
         gameThr.start();
         debug("Hi!");
 

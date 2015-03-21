@@ -55,6 +55,7 @@ public class PlayerConnection implements PlayerInterface  {
 
 	@Override
 	public Territory getTerritory(Player player, HashSet<Territory> possibles, boolean canResign, RequestReason reason) {
+//        return possibles.iterator().next();
 		TerritoryRequest t = new TerritoryRequest();
 		t.possibles = possibles;
 		t.reason = reason;
@@ -70,7 +71,7 @@ public class PlayerConnection implements PlayerInterface  {
 		}
 
         String chosenTerritoryName = ((TerritoryResponse) responses.get(responses.size() - 1)).territory;
-        
+
         for (Territory terr : possibles) {
             if (chosenTerritoryName.equals(terr.getId())) return terr;
         }
@@ -104,7 +105,7 @@ public class PlayerConnection implements PlayerInterface  {
 
     @Override
     public void reportStateChange(Change change) {
-
+        connection.send(Jsonify.getObjectAsJsonString(change));
     }
 
 }

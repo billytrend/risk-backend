@@ -9,8 +9,8 @@ public abstract class Change {
 	private PlayState actionPlayed;
     
     // this is for the ui, when it receives the object as json
-    private final boolean change = true;
-
+    private final String changeType = getClass().getSimpleName();
+    
 	public Change(Player actingPlayer, PlayState actionPlayed){
 		this.actingPlayer = actingPlayer;
 		this.actionPlayed = actionPlayed;

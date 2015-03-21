@@ -8,6 +8,7 @@ import org.javatuples.Pair;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultEdge;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -209,5 +210,26 @@ public class TerritoryUtils {
             }
         }
         return null;
+    }
+
+    public static ArrayList<String> getAllCountryNames(State state) {
+        ArrayList<String> names = new ArrayList<String>();
+        for (Territory t : getAllTerritories(state)) {
+            names.add(t.getId());
+        }
+        return names;
+    }
+
+    public static ArrayList<String[]> getAllBorderPairs(State state) {
+        ArrayList<String[]> pairs = new ArrayList<String[]>();
+        for (Pair<Territory, Territory> p : getAllBorders(state)) {
+            pairs.add(
+                new String[] {
+                        p.getValue0().getId(),
+                        p.getValue1().getId()
+                }
+            );
+        }
+        return pairs;
     }
 }
