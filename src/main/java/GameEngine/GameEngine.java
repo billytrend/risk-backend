@@ -124,9 +124,9 @@ public class GameEngine implements Runnable {
 				break;
 
 			case PLAYER_MOVING_ARMIES:
-				debug("\nMOVING ARMIES");
-				this.playState = moveArmy();
-				gameState.print();
+                debug("\nMOVING ARMIES");
+                this.playState = moveArmy();
+                gameState.print();
 				break;
 
 			case PLAYER_ENDED_GO:
@@ -458,8 +458,15 @@ public class GameEngine implements Runnable {
 	protected PlayState moveArmy() {
 	
 		// get a list of territories a player can deploy from
-		HashSet<Territory> canBeDeployedFrom = TerritoryUtils
+		//
+        HashSet<Territory> canBeDeployedFrom = TerritoryUtils
 				.getDeployable(gameState, currentPlayer);
+
+
+        // if a player has no options
+        if (canBeDeployedFrom.size() == 0) {
+            return endGo();
+        }
 		
 		// find out which one the player wants to move from
 		Territory source = currentPlayer
@@ -469,7 +476,7 @@ public class GameEngine implements Runnable {
 		// HANDLE HERE NOT MOVING RESPONCE? - null country selection?
 		if(source == null){
 			debug("PLAYER DOESNT WANT TO MOVE");
-			return PLAYER_ENDED_GO;
+			return endGo();
 		}
 
 		// get a list of territories a player can deploy too
