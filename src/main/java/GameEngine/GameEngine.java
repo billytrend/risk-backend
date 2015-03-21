@@ -310,7 +310,13 @@ public class GameEngine implements Runnable {
 		
 		// get the territories of the current player
 		HashSet<Territory> possibleAttackingTerritories = TerritoryUtils
-				.getPossibleAttackingTerritories(gameState, currentPlayer);
+                .getPossibleAttackingTerritories(gameState, currentPlayer);
+
+        // if a player has no options
+        if (possibleAttackingTerritories.size() == 0) {
+            return PLAYER_MOVING_ARMIES;
+        }
+
 		// find out which country the player wants to attack from
 		Territory attacking = currentPlayer.getCommunicationMethod()
 				.getTerritory(currentPlayer, possibleAttackingTerritories, true, RequestReason.ATTACK_CHOICE_FROM);
@@ -327,7 +333,6 @@ public class GameEngine implements Runnable {
 			
 		// ask the player which country he wants to attack
 		Territory defending = currentPlayer
-
 				.getCommunicationMethod().getTerritory(currentPlayer, attackable, true, RequestReason.ATTACK_CHOICE_TO);
 		
 		if(defending == null){
