@@ -26,10 +26,13 @@ public class Player {
 	}
 
 	public Player(PlayerInterface communicationMethod, int startingArmies, int index) {
-		this.communicationMethod = communicationMethod;
-		armies = new ArrayList<Army>();
-		ArmyUtils.givePlayerNArmies(this, startingArmies);
+		this(communicationMethod, startingArmies);
 		id = "Player " + index;
+	}
+	
+	public Player(PlayerInterface communicationMethod, int startingArmies, String id) {
+		this(communicationMethod, startingArmies);
+		this.id = id;
 	}
 
 	public String getId() {

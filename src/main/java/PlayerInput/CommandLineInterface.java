@@ -50,6 +50,10 @@ public class CommandLineInterface implements PlayerInterface {
         	emit(player, "You don't have that many dice.");
         	getNumberOfDice(player, max, reason);
         }
+        else if(dice < 1){
+        	emit(player, "You have to throw at least 1 dice.");
+        	getNumberOfDice(player, max, reason);
+        }
         return max;
     }
 
@@ -94,6 +98,10 @@ public class CommandLineInterface implements PlayerInterface {
         int armies = easyIn();
         if(armies > max){
         	emit(player, "You don't have that many armies.");
+        	getNumberOfArmies(player, max, reason);
+        }
+        else if(armies < 0){
+        	emit(player, "Give a positive integer.");
         	getNumberOfArmies(player, max, reason);
         }
         return armies;

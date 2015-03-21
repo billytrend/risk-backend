@@ -6,24 +6,23 @@ import GameState.State;
 import GameState.Territory;
 
 public abstract class ArmyChange extends Change{
-	protected Player armyOwner;
+	protected String armyOwnerId;
 	protected int amount;
 	
-	public ArmyChange(Player player, int amount, PlayState action){
-		super(player, action);
-		armyOwner = player;
+	public ArmyChange(String playerId, int amount, PlayState action){
+		super(playerId, action);
+		armyOwnerId = playerId;
 		this.amount = amount;
 	}
 	
-	public Player gerArmyOwner(){
-		return armyOwner;
+	public String gerArmyOwner(){
+		return armyOwnerId;
 	}
 	
 	public int getAmount(){
 		return amount;
 	}
 	
-	public abstract void applyChange();
+	public abstract void applyChange(State state);
 
-	
 }

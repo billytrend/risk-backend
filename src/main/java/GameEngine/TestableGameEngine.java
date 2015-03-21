@@ -25,9 +25,12 @@ import static com.esotericsoftware.minlog.Log.debug;
  */
 public class TestableGameEngine extends GameEngine {
 
+	public TestableGameEngine(State state, WinConditions conditions) {
+		super(state, conditions);
+	}
+	
 	public TestableGameEngine(State state) {
 		super(state);
-		// TODO Auto-generated constructor stub
 	}
 
 	// for testing purposes

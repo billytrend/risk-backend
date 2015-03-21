@@ -27,14 +27,22 @@ public class GameEngine implements Runnable {
 	private PlayState playState = BEGINNING_STATE;
 	private boolean currentPlayerHasTakenCountry = false;
 	private StateChangeRecord changeRecord;
+	private WinConditions winConditions;
 	
 	public StateChangeRecord getStateChangeRecord(){
 		return changeRecord;
 	}
 	
+	public GameEngine(State state, WinConditions conditions) {
+		this(state);
+		winConditions = conditions;
+	}
+	
 	public GameEngine(State state) {
 		this.gameState = state;
-		changeRecord = new StateChangeRecord();
+		changeRecord = new StateChangeRecord(state.getPlayersIds(), state.getTerritoryIds(),
+				state.getPlayers().get(0).getArmies().size());
+		winConditions = new WinConditions();
 	}
 	
 	public State getState(){
@@ -63,11 +71,12 @@ public class GameEngine implements Runnable {
 		}
 	}
     
-    public void applyAndReportChange(Change change) {
-        change.applyChange();
+    public void applyAndReportChange(State state, Change change) {
+        change.applyChange(state);
         for (Player player :  gameState.getPlayers()) {
             player.getCommunicationMethod().reportStateChange(change);
         }
+        changeRecord.addStateChange(change);
     }
 
 	/**
@@ -172,11 +181,10 @@ public class GameEngine implements Runnable {
 				.getTerritory(currentPlayer, emptyTerritories, false, RequestReason.PLACING_ARMIES_SET_UP);
 
 		// deploy a single army in this place
-		Change stateChange = new ArmyPlacement(currentPlayer, toFill, 1, FILLING_EMPTY_COUNTRIES);
 
-		applyAndReportChange(stateChange);
-		changeRecord.addStateChange(stateChange);
-		
+        Change stateChange = new ArmyPlacement(currentPlayer.getId(), toFill.getId(), 1, FILLING_EMPTY_COUNTRIES);
+        applyAndReportChange(gameState, stateChange);
+
 		endGo();
 		
 		if (!TerritoryUtils.hasEmptyTerritories(gameState)) {
@@ -229,10 +237,9 @@ public class GameEngine implements Runnable {
 				.getTerritory(currentPlayer, usersTerritories, false, RequestReason.PLACING_REMAINING_ARMIES_PHASE);
 
 		// deploy the armies
-		Change stateChange = new ArmyPlacement(currentPlayer, toFill, 1, USING_REMAINING_ARMIES);
-		applyAndReportChange(stateChange);
-		changeRecord.addStateChange(stateChange);
-		
+        Change stateChange = new ArmyPlacement(currentPlayer.getId(), toFill.getId(), 1, USING_REMAINING_ARMIES);
+        applyAndReportChange(gameState, stateChange);
+
 		endGo();
 	
 		return USING_REMAINING_ARMIES;
@@ -292,10 +299,9 @@ public class GameEngine implements Runnable {
 				.getNumberOfArmies(currentPlayer, playersUndeployedArmies.size(), RequestReason.PLACING_ARMIES_PHASE);
 		
 		// do the deployment!
-		Change stateChange = new ArmyPlacement(currentPlayer, toFill, deployedAmount, PLAYER_PLACING_ARMIES);
-		applyAndReportChange(stateChange);
-		changeRecord.addStateChange(stateChange);
-		
+		Change stateChange = new ArmyPlacement(currentPlayer.getId(), toFill.getId(), deployedAmount, PLAYER_PLACING_ARMIES);
+        applyAndReportChange(gameState, stateChange);
+
 		return PLAYER_PLACING_ARMIES;
 	}
 
@@ -363,14 +369,14 @@ public class GameEngine implements Runnable {
 				getCommunicationMethod().getNumberOfDice(defendingPlayer, maxDefendingDice, RequestReason.DEFEND_CHOICE_DICE);
 
 		// create an object to represent the fight
-		FightResult result = new FightResult(currentPlayer, defendingPlayer, 
-				attacking, defending);
+		FightResult result = new FightResult(currentPlayer.getId(), defendingPlayer.getId(), 
+				attacking.getId(), defending.getId());
 	
 		// decide the results of the fight
 		Arbitration.carryOutFight(result, attackDiceNumber, defendDiceNumber);
-        applyAndReportChange(result);
-		changeRecord.addStateChange(result);
-		
+
+        applyAndReportChange(gameState, result);
+
 		// if the attacking player won and they still have surplus armies,
 		// give the option to move them
 		if(result.getDefendersLoss() == defendingArmies){
@@ -379,12 +385,14 @@ public class GameEngine implements Runnable {
 			
 			if((attackingArmies - result.getAttackersLoss() - attackDiceNumber) > 1)
 				moveMoreArmies(result);
-			
-			if(PlayerUtils.playerIsOut(result.getDefender())){
-				Change stateChange= new PlayerRemoval(currentPlayer, result.getDefender(), gameState);
-				applyAndReportChange(stateChange);
-				changeRecord.addStateChange(stateChange);
-			}
+
+            if(PlayerUtils.playerIsOut(defendingPlayer)){
+                Change stateChange = new PlayerRemoval(currentPlayer.getId(), defendingPlayer.getId());
+                applyAndReportChange(gameState, stateChange);
+            }
+
+            if(checkTheEndOfGame())
+				return END_GAME;
 	
 		}
 
@@ -405,19 +413,20 @@ public class GameEngine implements Runnable {
 	 * @param result
 	 */
 	private void moveMoreArmies(FightResult result){
+		Territory attackingTerritory = gameState.lookUpTerritory(result.getAttackingTerritoryId());
 		ArrayList<Army> remainingAttackArmies = ArmyUtils
-				.getArmiesOnTerritory(currentPlayer, result.getAttackingTerritory());
+				.getArmiesOnTerritory(currentPlayer, attackingTerritory);
 		
 		// let the player decide how many armies they want to move
 		int movedAmount = currentPlayer.getCommunicationMethod()
 				.getNumberOfArmies(currentPlayer, remainingAttackArmies.size() - 1, RequestReason.POST_ATTACK_MOVEMENT);
 		
 		if(movedAmount > 0){
-			// add a new change to the state
-			Change stateChange = new ArmyMovement(currentPlayer, result.getAttackingTerritory(), result.getDefendingTerritory(), 
-					movedAmount, PLAYER_INVADING_COUNTRY);
-			applyAndReportChange(stateChange);
-			changeRecord.addStateChange(stateChange);
+
+				// add a new change to the state
+            Change stateChange = new ArmyMovement(currentPlayer.getId(), result.getAttackingTerritoryId(),
+                    result.getDefendingTerritoryId(), movedAmount, PLAYER_INVADING_COUNTRY);
+            applyAndReportChange(gameState, stateChange);
 		}
 		
 		
@@ -431,10 +440,10 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	private boolean checkTheEndOfGame(){
-		if(PlayerUtils.countPlayers(gameState) == 1){
+		if(winConditions.checkConditions(gameState))
 			return true;
-		}
-		return false;
+		else
+			return false;
 	}
 	
 
@@ -447,7 +456,7 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	protected PlayState moveArmy() {
-		
+	
 		// get a list of territories a player can deploy from
 		HashSet<Territory> canBeDeployedFrom = TerritoryUtils
 				.getDeployable(gameState, currentPlayer);
@@ -475,11 +484,10 @@ public class GameEngine implements Runnable {
 		
 		int movedAmount = currentPlayer.getCommunicationMethod()
 				.getNumberOfArmies(currentPlayer, numberOfArmiesThatMayBeMoved, RequestReason.REINFORCEMENT_PHASE);
-		
-		Change stateChange = new ArmyMovement(currentPlayer, source, target, movedAmount, PLAYER_MOVING_ARMIES);
-		applyAndReportChange(stateChange);
-		changeRecord.addStateChange(stateChange);
-		
+
+        Change stateChange = new ArmyMovement(currentPlayer.getId(), source.getId(), target.getId(), movedAmount, PLAYER_MOVING_ARMIES);
+        applyAndReportChange(gameState, stateChange);
+
 		return PLAYER_MOVING_ARMIES;
 	}
 
@@ -490,15 +498,10 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	private PlayState endGo() {
-		
-		if(checkTheEndOfGame())
-			return END_GAME;
-		
 		if (currentPlayerHasTakenCountry) {
 			CardUtils.givePlayerRandomCard(gameState, currentPlayer);
 			currentPlayerHasTakenCountry = false;
 		}
-		
 		
 		currentPlayer = gameState.getPlayerQueue().next();
 		

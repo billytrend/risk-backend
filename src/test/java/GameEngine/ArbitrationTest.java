@@ -52,7 +52,7 @@ public class ArbitrationTest {
 		ArrayList<Player> players = gameState.getPlayers();
 		Player player1 = players.get(0);
 		Player player2 = players.get(1);
-		FightResult fightResult = new FightResult(player1, player2, territories[0], territories[1]);
+		FightResult fightResult = new FightResult(player1.getId(), player2.getId(), territories[0].getId(), territories[1].getId());
 
 		fightResult = Arbitration.carryOutFight(fightResult, 3, 2);
 		Integer[] attackDice = fightResult.getAttackDiceRolled();

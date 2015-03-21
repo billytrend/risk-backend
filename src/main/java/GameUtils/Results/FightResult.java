@@ -19,17 +19,17 @@ public class FightResult extends Change {
     private int attackersLoss;
     private Integer[] attackDiceRolled;
     private Integer[] defendDiceRolled;
-    private final Player attacker;
-    private final Player defender;
-    private final Territory attackingTerritory;
-    private final Territory defendingTerritory;
+    private final String attackerId;
+    private final String defenderId;
+    private final String attackingTerritoryId;
+    private final String defendingTerritoryId;
 
-    public FightResult(Player attacker, Player defender, Territory attackingTerritory, Territory defendingTerritory) {
-    	super(attacker, PlayState.PLAYER_INVADING_COUNTRY);
-    	this.attacker = attacker;
-        this.defender = defender;
-        this.attackingTerritory = attackingTerritory;
-        this.defendingTerritory = defendingTerritory;
+    public FightResult(String attackerId, String defenderId, String attackingTerritoryId, String defendingTerritoryId) {
+    	super(attackerId, PlayState.PLAYER_INVADING_COUNTRY);
+    	this.attackerId = attackerId;
+        this.defenderId = defenderId;
+        this.attackingTerritoryId = attackingTerritoryId;
+        this.defendingTerritoryId = defendingTerritoryId;
     }
 
 
@@ -40,7 +40,12 @@ public class FightResult extends Change {
     * defeated territory.
     * 
     */
-	public void applyChange() {
+	public void applyChange(State state) {
+		Player attacker = state.lookUpPlayer(attackerId);
+		Player defender = state.lookUpPlayer(defenderId);
+		Territory attackingTerritory = state.lookUpTerritory(attackingTerritoryId);
+		Territory defendingTerritory = state.lookUpTerritory(defendingTerritoryId);
+		
 		ArmyUtils.destroyArmies(attacker, attackingTerritory, attackersLoss);
         ArmyUtils.destroyArmies(defender, defendingTerritory, defendersLoss);
         
@@ -52,8 +57,8 @@ public class FightResult extends Change {
 	}
 	
 	public String toString(){
-		return super.toString() + "\n\tFIGHT RESULT:\n\t" + attacker.getId() + " attacks " + defender.getId() +"'s territory " + 
-				defendingTerritory.getId() + " from " + attackingTerritory.getId() + 
+		return super.toString() + "\n\tFIGHT RESULT:\n\t" + attackerId + " attacks " + defenderId +"'s territory " + 
+				defendingTerritoryId + " from " + attackingTerritoryId + 
 				".\n\tAttacker looses " + attackersLoss + " armies. Defender looses " + defendersLoss +  " armies.";
 	}
     
@@ -76,8 +81,8 @@ public class FightResult extends Change {
     public void addAttackLoss() {
         this.attackersLoss++;
     }
-    public Player getDefender() {
-        return defender;
+    public String getDefenderId() {
+        return defenderId;
     }
 
 
@@ -87,12 +92,12 @@ public class FightResult extends Change {
 	public int getAttackersLoss(){
 		return attackersLoss;
 	}
-	public Territory getAttackingTerritory(){
-		return attackingTerritory;
+	public String getAttackingTerritoryId(){
+		return attackingTerritoryId;
 	}
 
-	public Territory getDefendingTerritory(){
-		return defendingTerritory;
+	public String getDefendingTerritoryId(){
+		return defendingTerritoryId;
 	}
 
 

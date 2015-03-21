@@ -34,6 +34,9 @@ public class PlayerQueue implements Iterator {
     	return players.size();
     }
 
+    public ArrayList<Player> getCurrentPlayers(){
+    	return players;
+    }
     
     public Player getCurrent() {
         return this.players.get(this.curPlayer);

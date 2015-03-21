@@ -10,6 +10,9 @@ import PlayerInput.PlayerInterface;
 import java.util.ArrayList;
 import java.util.Random;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 public class RiskMapGameBuilder {
 
 	/*
@@ -28,10 +31,14 @@ public class RiskMapGameBuilder {
             p.setColour(colours[i]);
 			ps.add(p);
 		}
-		State state = new State(ps);
+        State state = new State();
+
+        state.setPlayers(ps);
+
+        //array unused
         String[] countryNames = new String[]{ "eastern_australia","indonesia", "new_guinea", "alaska", "ontario", "northwest_territory", "venezuela", "madagascar", "north_africa", "greenland", "iceland", "great_britain", "scandinavia", "japan", "yakursk", "kamchatka", "siberia", "ural", "afghanistan", "middle_east", "india", "siam", "china", "mongolia", "irkutsk", "ukraine", "southern_europe", "western_europe", "northern_europe", "egypt", "east_africa", "congo", "south_africa", "brazil", "argentina", "eastern_united_states", "western_united_states", "quebec", "central_america", "peru", "western_australia", "alberta"};
 
-		// creating territories
+        // creating territories
 		//Create territories for North America
 		Territory alaska = new Territory("alaska");
 		Territory northwestTerritory = new Territory("northwest_territory");
