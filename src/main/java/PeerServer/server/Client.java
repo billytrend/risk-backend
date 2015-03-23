@@ -33,10 +33,17 @@ public class Client {
 			Socket clientSocket = new Socket("localhost", port);
 			PrintWriter clientWriter = new PrintWriter(clientSocket.getOutputStream(), true);
 			BufferedReader clientReader = new BufferedReader(new InputStreamReader(System.in));
+			BufferedReader inFromServer = new BufferedReader
+					(new InputStreamReader(clientSocket.getInputStream()));
 			//loop to retrieve user data and then send to PeerServer
 			while(true){
+				//outputs to server
 				String readerInput = clientReader.readLine();
 				clientWriter.println(clientName + " :" + readerInput);
+//				while(inFromServer != null){
+//					String MessageFromServer = inFromServer.readLine();
+//					System.out.println(MessageFromServer);
+//				}
 //				while(clientReader.readLine() != null){
 //					String messageFromServer = clientReader.readLine();
 //					System.out.println("From server: " + messageFromServer);

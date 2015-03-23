@@ -14,16 +14,17 @@ import java.net.Socket;
  *
  */
 public class Server_Thread implements Runnable {
+
 	private Socket connectionSocket;
 	private Thread thread;
 	private int connectionNumber;
 	private BufferedReader toServer;
 	private PrintWriter fromServer;
-	
+
 	public Server_Thread(Socket clientSocket, int clientNumber) {
 		this.connectionSocket = clientSocket;
 		this.connectionNumber = clientNumber;
-		
+
 		//Set up I/O and launch new connection thread
 		if (setInputStream() && setOutputStream()) {
 			thread = new Thread(this);
@@ -77,11 +78,22 @@ public class Server_Thread implements Runnable {
 	@Override
 	public void run() {
 		//Output to user the number of the current connection
-				System.out.println("Conection : " + connectionNumber);
-				fromServer.println("Hello your are connected to RISK ");
-				fromServer.flush();
-				
-				
+		System.out.println("Conection : " + connectionNumber);
+		fromServer.println("Hello your are connected to RISK ");
+		String message = "";
+		BufferedReader reader;
+		try {
+			reader = new BufferedReader (new InputStreamReader(connectionSocket.getInputStream()));
+			while((message = reader.readLine()) != null){
+				System.out.println("Incoming client message: " + message);
+			}
+			fromServer.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+
+
 	}
 
 }

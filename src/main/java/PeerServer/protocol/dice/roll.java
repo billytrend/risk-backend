@@ -63,6 +63,26 @@ public class roll {
 
 		return digest;
 	}
+
+	//XOR the byte arrays then convert to int array
+	public static byte[] xor(byte[] a, byte[] b) {
+		byte[] result = new byte[Math.min(a.length, b.length)];
+
+		for (int i = 0; i < result.length; i++) {
+			result[i] = (byte) (((int) a[i]) ^ ((int) b[i]));
+		}
+
+		return result;
+	}
+
+	public void mersenneTwisterGeneration(){
+		int numberOfFaces = 6; // 6 sided dice
+		MersenneTwisterFast mer = new MersenneTwisterFast();
+		//int[] seed = /* XOR byte arrays, then convert to int array */
+		//mer.setSeed(seed);
+		/* necessary because nextInt produces zero as well */
+		//int number = mer.nextInt(numberOfFaces - 1) + 1; 
+	}
 }
 
 

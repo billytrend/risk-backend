@@ -40,6 +40,9 @@ public class Multithreaded_TCP_Server implements Runnable  {
 				try {
 					//begin a connection
 					Socket clientSocket = serverSocket.accept();
+					//output client connection info 
+					System.out.println("Recieved connection from "+ 
+					clientSocket.getInetAddress()+ " on port "+ clientSocket.getPort());
 					//create a server thread for the new connection
 					new Server_Thread(clientSocket,clientNumber);
 					//increment client number
