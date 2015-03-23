@@ -32,7 +32,7 @@ public class Server {
 			ServerSocket serverSocket = new ServerSocket(port);
 			System.out.println("PeerServer up and ready for connections on port: " + port);
 			//enables multithreading via blocking and waiting for clients
-			thread = new ServerThread(serverSocket);
+			//thread = new ServerThread(serverSocket);
 			thread.start();
 		} catch (IOException e) {
 			System.out.println("Could not create PeerServer Socket");
@@ -42,13 +42,13 @@ public class Server {
 	
 	public void stopServer(){
 		try {
-			thread.client.close();
+			//thread.client.close();
 			thread.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		} //catch (IOException e) {
+			//e.printStackTrace();
+		//}
 	}
 	
 }

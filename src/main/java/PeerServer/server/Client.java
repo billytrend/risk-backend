@@ -4,6 +4,8 @@
 package PeerServer.server;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -12,43 +14,36 @@ import java.net.UnknownHostException;
 
 /**
  * @author 120011995
- * @category Class which acts as a client to connect to the multi-threaded PeerServer specified in PeerServer class
+ * @category Class which acts as a client to connect to 
+ * the multi-threaded PeerServer specified in PeerServer class
  */
-public class Client {
-	
-	
+
+public class Client implements Runnable {
+	//socket conencted to server
+	private Socket socket;
+	//streams used to communicate to server come from socket
+	private DataOutputStream dout;
+	private DataInputStream din;
+	private final static int port = 4444;
+
 	public static void main(String[] args) {
 		String clientName = args[0];
-		new Client().clientConnection(clientName); 
+		new Client("localhost", port); 
 	}
 
-	/**
-	 * Method which creates client connections and 
-	 * communicates messages to PeerServer class.
-	 */
-	public void clientConnection(String clientName){
-		int port = 4444;
+	//Constructor
+	public Client(String host, int port){
 		try {
-			//create Client Socket and writer to used to send info to PeerServer
-			Socket clientSocket = new Socket("localhost", port);
-			PrintWriter clientWriter = new PrintWriter(clientSocket.getOutputStream(), true);
-			BufferedReader clientReader = new BufferedReader(new InputStreamReader(System.in));
-			BufferedReader inFromServer = new BufferedReader
-					(new InputStreamReader(clientSocket.getInputStream()));
-			//loop to retrieve user data and then send to PeerServer
-			while(true){
-				//outputs to server
-				String readerInput = clientReader.readLine();
-				clientWriter.println(clientName + " :" + readerInput);
-//				while(inFromServer != null){
-//					String MessageFromServer = inFromServer.readLine();
-//					System.out.println(MessageFromServer);
-//				}
-//				while(clientReader.readLine() != null){
-//					String messageFromServer = clientReader.readLine();
-//					System.out.println("From server: " + messageFromServer);
-//				}
-			}
+			socket = new Socket(host, port);
+			System.out.println("connected to " + socket);
+
+			//Add the sockets streams to data sockets
+			din = new DataInputStream(socket.getInputStream());
+			dout = new DataOutputStream(socket.getOutputStream());
+
+			// Start a background thread for receiving messages
+			new Thread(this).start();
+
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -56,4 +51,27 @@ public class Client {
 		}
 	}
 
+	// Gets called when the user types something
+	private void processMessage(String message) {
+		try {
+			// Send it to the server
+			dout.writeUTF(message);
+		} catch( IOException ie ) { System.out.println( ie ); }
+	}
+
+	@Override
+	public void run() {
+		try {
+			// Receive messages one-by-one, forever
+			BufferedReader fromClient = new BufferedReader(new InputStreamReader(System.in));
+			String messageFromClient = fromClient.readLine();
+			processMessage(messageFromClient);
+			while (true) {
+				// Get the next message
+				String message = din.readUTF();
+				System.out.println(message);
+			}
+		} catch( IOException ie ) { System.out.println( ie ); }
+	}
 }
+

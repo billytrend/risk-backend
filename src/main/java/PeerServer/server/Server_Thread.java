@@ -9,6 +9,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+
 /**
  * @author 12001995
  *
@@ -18,15 +22,18 @@ public class Server_Thread implements Runnable {
 	private Socket connectionSocket;
 	private Thread thread;
 	private int connectionNumber;
-	private BufferedReader toServer;
-	private PrintWriter fromServer;
+	private PrintWriter toClient;
+	private BufferedReader fromClient;
 
-	public Server_Thread(Socket clientSocket, int clientNumber) {
+	public Server_Thread(Socket clientSocket, int clientNumber) throws IOException {
 		this.connectionSocket = clientSocket;
 		this.connectionNumber = clientNumber;
-
+		
+		//toClient = new PrintWriter(connectionSocket.getOutputStream());
+		//toClient.println("FUCKING YOLO");
+		
 		//Set up I/O and launch new connection thread
-		if (setInputStream() && setOutputStream()) {
+		if (setOutputStream() && setInputStream()) {
 			thread = new Thread(this);
 			thread.start();
 		} else {
@@ -46,7 +53,7 @@ public class Server_Thread implements Runnable {
 	 */
 	public boolean setInputStream() {
 		try {
-			toServer = new BufferedReader(new InputStreamReader(
+			fromClient = new BufferedReader(new InputStreamReader(
 					connectionSocket.getInputStream()));
 			return true;
 		} catch (IOException e) {
@@ -66,7 +73,7 @@ public class Server_Thread implements Runnable {
 	 */
 	public boolean setOutputStream() {
 		try {
-			fromServer = new PrintWriter(connectionSocket.getOutputStream());
+			toClient = new PrintWriter(connectionSocket.getOutputStream());
 			return true;
 		} catch (IOException e) {
 			System.err
@@ -79,21 +86,33 @@ public class Server_Thread implements Runnable {
 	public void run() {
 		//Output to user the number of the current connection
 		System.out.println("Conection : " + connectionNumber);
-		fromServer.println("Hello your are connected to RISK ");
+		toClient.println("Hello your are connected to RISK ");
+		System.out.println("SWAG");
 		String message = "";
-		BufferedReader reader;
 		try {
-			reader = new BufferedReader (new InputStreamReader(connectionSocket.getInputStream()));
-			while((message = reader.readLine()) != null){
+			while((message = fromClient.readLine()) != null){
 				System.out.println("Incoming client message: " + message);
 			}
-			fromServer.flush();
+			toClient.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}		
 
-
-
+	}
+	
+	//check the string passed in is actually JSON 
+	public boolean isJSONValid(String test) {
+	    try {
+	        new JsonObject();
+	    } catch (JsonParseException ex) {
+	        //check it is not JSON array
+	        try {
+	            new JsonArray();
+	        } catch (JsonParseException ex1) {
+	            return false;
+	        }
+	    }
+	    return true;
 	}
 
 }

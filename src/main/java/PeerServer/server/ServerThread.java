@@ -3,45 +3,47 @@
  */
 package PeerServer.server;
 
-import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 
 /**
  * @author 120011995
  * @category Class to implement multithreading in TCP PeerServer
  */
 public class ServerThread extends Thread {
-	public ServerSocket client;
-	
-	ServerThread(ServerSocket client){
-		this.client = client;
+	//server to connect to
+	private Multithreaded_TCP_Server server;
+	// The Socket connected to our client
+	private Socket socket;
+
+	// Constructor
+	public ServerThread( Multithreaded_TCP_Server server, Socket socket) {
+		// Save the parameters
+		this.server = server;	
+		this.socket = socket;
+		// Start up the thread
+		start();
 	}
-	
-	public void run(){
-		Socket socket = null;
+
+	public void run() {
 		try {
-			socket = client.accept();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		while(true){
-			try {
-				String message = "";
-				BufferedReader reader = new BufferedReader (new InputStreamReader(socket.getInputStream()));
-				while((message = reader.readLine()) != null){
-					System.out.println("Incoming client message: " + message);
-				}
-				socket.close();	
-			} 
-			catch (IOException e) {
-				e.printStackTrace();
+			//the client is using a DataOutputStream to write to server
+			DataInputStream din = new DataInputStream(socket.getInputStream());
+			while (true) {
+				String message = din.readUTF();
+				System.out.println( "Sending " + message);
+				//server send it to all clients
+				server.sendToAll(message);
 			}
+		} catch( EOFException ie ) {
+		} catch( IOException ie ) {
+			ie.printStackTrace();
+		} finally {
+			// The connection is closed for one reason or another,
+			// so have the server dealing with it
+			server.removeConnection(socket);
 		}
-
 	}
 }
