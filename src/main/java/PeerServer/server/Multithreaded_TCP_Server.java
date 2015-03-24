@@ -13,6 +13,11 @@ import java.util.Hashtable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+
 /**
  * @author 120011995
  *
@@ -35,9 +40,12 @@ public class Multithreaded_TCP_Server {
 	 */
 	public static void main(String[] args) {
 		new Multithreaded_TCP_Server();
-		log.warn("test message");
 	}
  
+	/**
+	 * Sets server up to listen for client conenctions. 
+	 * @param portNumber
+	 */
 	public void listen(int portNumber) {
 		//int clientNumber = 1;
 		if (openServerSocket()) {
@@ -86,14 +94,17 @@ public class Multithreaded_TCP_Server {
 	}
 
 	// Get an enumeration of all the OutputStreams, one for each client connected 
-	Enumeration<DataOutputStream> getOutputStreams() {
+	public Enumeration<DataOutputStream> getOutputStreams() {
 		return outputStreams.elements();
 	}
 
-	void sendToAll( String message ) {
-		// We synchronize on this because another thread might be
-		// calling removeConnection() and this would screw us up
-		// as we tried to walk through the list
+	/**
+	 * We synchronize on this because another thread might be
+	 * calling removeConnection() and this would screw us up
+	 * as we tried to walk through the list
+	 * @param message
+	 */
+	public void sendToAll( String message ) {
 		synchronized( outputStreams ) {
 			// For each client
 			for (Enumeration<DataOutputStream> e = getOutputStreams(); e.hasMoreElements(); ) {
@@ -107,10 +118,14 @@ public class Multithreaded_TCP_Server {
 		}
 	}
 
-	// Remove a socket, and it's corresponding output stream, from our
-	// list. This is usually called by a connection thread that has
-	// discovered that the connection to the client is dead.
-	void removeConnection( Socket s ) {
+
+	/**
+	 * 	Remove a socket, and it's corresponding output stream, from our
+	 *	list. This is usually called by a connection thread that has
+	 *	discovered that the connection to the client is dead.
+	 * @param s
+	 */
+	public void removeConnection( Socket s ) {
 		// Synchronize so we don't mess up sendToAll() while it walks
 		// down the list of all output streams
 		synchronized( outputStreams ) {
@@ -125,5 +140,25 @@ public class Multithreaded_TCP_Server {
 				ie.printStackTrace();
 			}
 		}
-	}	
+	}
+	
+	
+	/**
+	 * @param test
+	 * @return true if string is valid JSON
+	 * 			false otherwise
+	 */
+	public boolean isJsonStringValid(String test) {
+	    try {
+	    	JsonObject o = new JsonParser().parse(test).getAsJsonObject();
+	    } catch (JsonParseException ex) {
+	        try {
+	        	//incase array is valid too
+	        	JsonArray o = new JsonParser().parse(test).getAsJsonArray();
+	        } catch (JsonParseException ex1) {
+	            return false;
+	        }
+	    }
+	    return true;
+	}
 }

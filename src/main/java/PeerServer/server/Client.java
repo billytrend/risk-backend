@@ -31,7 +31,11 @@ public class Client implements Runnable {
 		new Client("localhost", port); 
 	}
 
-	//Constructor
+	/**
+	 * Constructor
+	 * @param host
+	 * @param port
+	 */
 	public Client(String host, int port){
 		try {
 			socket = new Socket(host, port);
@@ -51,12 +55,17 @@ public class Client implements Runnable {
 		}
 	}
 
-	// Gets called when the user types something
+	/**
+	 * Sends message to server
+	 * @param message
+	 */
 	private void processMessage(String message) {
 		try {
 			// Send it to the server
 			dout.writeUTF(message);
-		} catch( IOException ie ) { System.out.println( ie ); }
+		} catch( IOException ie ) { 
+			System.out.println( ie ); 
+		}
 	}
 
 	@Override
@@ -71,7 +80,9 @@ public class Client implements Runnable {
 				String message = din.readUTF();
 				System.out.println(message);
 			}
-		} catch( IOException ie ) { System.out.println( ie ); }
+		} catch( IOException ie ) { 
+			System.out.println( ie ); 
+		}
 	}
 }
 

@@ -18,7 +18,12 @@ public class ServerThread extends Thread {
 	// The Socket connected to our client
 	private Socket socket;
 
-	// Constructor
+
+	/**
+	 * Constructor
+	 * @param server
+	 * @param socket
+	 */
 	public ServerThread( Multithreaded_TCP_Server server, Socket socket) {
 		// Save the parameters
 		this.server = server;	
