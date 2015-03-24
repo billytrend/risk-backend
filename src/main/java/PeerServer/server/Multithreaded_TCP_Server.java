@@ -10,6 +10,9 @@ import java.net.Socket;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * @author 120011995
  *
@@ -20,6 +23,8 @@ public class Multithreaded_TCP_Server {
 	private ServerSocket serverSocket;
 	//to hold all of the sockets connected output streams
 	private Hashtable<Socket, DataOutputStream> outputStreams = new Hashtable<Socket, DataOutputStream>();
+	private static Logger log = LogManager.getLogger(Multithreaded_TCP_Server.class.getName());
+
 
 	public Multithreaded_TCP_Server(){
 		listen(portNumber);
@@ -30,6 +35,7 @@ public class Multithreaded_TCP_Server {
 	 */
 	public static void main(String[] args) {
 		new Multithreaded_TCP_Server();
+		log.warn("test message");
 	}
  
 	public void listen(int portNumber) {
@@ -45,6 +51,9 @@ public class Multithreaded_TCP_Server {
 					outputStreams.put(clientSocket, dout );
 					System.out.println("Recieved connection from "+ 
 							clientSocket.getInetAddress()+ " on port "+ clientSocket.getPort());
+					log.warn("YOLO");
+					log.info("HERRROR");
+					log.error("lol");
 
 					//create a thread for the new connection
 					new ServerThread(this,clientSocket);
