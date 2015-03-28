@@ -25,10 +25,11 @@ public class GameEngine implements Runnable {
 	protected State gameState;
 	protected Player currentPlayer;
 	private PlayState playState = BEGINNING_STATE;
+    private PlayState previousPlayState;
 	private boolean currentPlayerHasTakenCountry = false;
 	private StateChangeRecord changeRecord;
 	private WinConditions winConditions;
-	
+
 	public StateChangeRecord getStateChangeRecord(){
 		return changeRecord;
 	}
@@ -87,6 +88,11 @@ public class GameEngine implements Runnable {
 	 * @throws NullPointerException
 	 */
 	private boolean iterateGame() throws InterruptedException, NullPointerException {
+
+        // if play state changes, let people know
+        if (previousPlayState != playState && currentPlayer != null) {
+            applyAndReportChange(gameState, new PlayStateUpdate(currentPlayer.getId(), playState));
+        }
 
 		switch (this.playState) {
 			case BEGINNING_STATE:
@@ -315,7 +321,7 @@ public class GameEngine implements Runnable {
 	protected PlayState invadeCountry() {
 		
 		// get the territories of the current player
-		HashSet<Territory> possibleAttackingTerritories = TerritoryUtils
+        HashSet<Territory> possibleAttackingTerritories = TerritoryUtils
                 .getPossibleAttackingTerritories(gameState, currentPlayer);
 
         // if a player has no options
@@ -495,7 +501,8 @@ public class GameEngine implements Runnable {
         Change stateChange = new ArmyMovement(currentPlayer.getId(), source.getId(), target.getId(), movedAmount, PLAYER_MOVING_ARMIES);
         applyAndReportChange(gameState, stateChange);
 
-		return PLAYER_MOVING_ARMIES;
+        // TODO: decide whether right
+		return endGo();
 	}
 
 	
