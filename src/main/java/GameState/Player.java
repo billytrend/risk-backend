@@ -17,7 +17,7 @@ public class Player {
 	private String id = "Player " + this.hashCode();
 	private transient PlayerInterface communicationMethod;
 	private transient ArrayList<Army> armies;
-    private String colour;
+    private String colour = "";
 
 	public Player(PlayerInterface communicationMethod, int startingArmies) {
 		this.communicationMethod = communicationMethod;
