@@ -1,10 +1,9 @@
 package GeneralUtils.Serialisers;
 
-import GameState.Card;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
-import GameUtils.CardUtils;
+import GameUtils.ArmyUtils;
 import GameUtils.TerritoryUtils;
 import com.google.gson.*;
 
@@ -42,35 +41,44 @@ public class GameStateSerialiser implements JsonSerializer<State> {
         
     	JsonObject jsonObject = new JsonObject();
     	JsonObject map = new JsonObject();
-//        BoardSerialiser JsonBoard = new BoardSerialiser();
-//        map = (JsonObject) JsonBoard.serializeMap(state);
+        map.add("countries", jsonSerializationContext.serialize(TerritoryUtils.getAllCountryNames(state)));
+        map.add("borders", jsonSerializationContext.serialize(TerritoryUtils.getAllBorderPairs(state)));
         jsonObject.add("map", map);
-        jsonObject.add("players", serializePlayers(state));
-
+        jsonObject.add("ownerships", getOwnerships(state, jsonSerializationContext));
+        jsonObject.add("players", serializePlayers(state, jsonSerializationContext));
+        jsonObject.add("changeType", new JsonPrimitive("State"));
         return jsonObject;
     }
     
     //gets each player and all the territories they own
-    public JsonElement serializePlayers(State state){
+    public JsonElement serializePlayers(State state, JsonSerializationContext jsonSerializationContext){
     	JsonObject players = new JsonObject();
-    	JsonObject playersItems = new JsonObject();
-    	
-        for(Player p : state.getPlayers()){
-        	JsonArray territories = new JsonArray();
-        	for(Territory t : TerritoryUtils.getPlayersTerritories(p)){
-        		territories.add(new JsonPrimitive(t.getId()));
-        	}
-        	JsonArray cards = new JsonArray();
-        	for(Card c : CardUtils.getPlayersCards(state, p)){
-        		cards.add(new JsonPrimitive(c.getType().toString()));
-        	}
-        	playersItems.add("cards", cards);
-        	playersItems.add("territories", territories);
-        	players.add(p.getId(), playersItems);
+
+        for (Player p : state.getPlayers()) {
+            players.add(p.getId(), jsonSerializationContext.serialize(p));
         }
+
         return players;
     }
-    
+
+    public static JsonElement getOwnerships(State state, JsonSerializationContext jsonSerializationContext) {
+        JsonObject ownerships = new JsonObject();
+        for (Territory t : TerritoryUtils.getUnownedTerritories(state)) {
+            JsonObject ownerObj = new JsonObject();
+            ownerObj.add("player", new JsonNull());
+            ownerObj.add("armies", new JsonPrimitive(0));
+            ownerships.add(t.getId(), ownerObj);
+        }
+        for(Player p : state.getPlayers()) {
+            for (Territory t : TerritoryUtils.getPlayersTerritories(p)) {
+                JsonObject ownerObj = new JsonObject();
+                ownerObj.add("player", new JsonPrimitive(p.getId()));
+                ownerObj.add("armies", new JsonPrimitive(ArmyUtils.getNumberOfArmiesOnTerritory(p, t)));
+                ownerships.add(t.getId(), ownerObj);
+            }
+        }
+        return ownerships;
+    }
 
     
 }

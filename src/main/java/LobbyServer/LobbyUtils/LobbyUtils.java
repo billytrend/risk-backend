@@ -2,6 +2,8 @@ package LobbyServer.LobbyUtils;
 
 import GeneralUtils.Jsonify;
 import LobbyServer.LobbyState.Lobby;
+import LobbyServer.LobbyState.ObjectFromClient.ClientMessage;
+import LobbyServer.LobbyState.ObjectFromClient.GameComms.Response;
 import LobbyServer.LobbyState.PlayerConnection;
 import org.java_websocket.WebSocket;
 
@@ -13,8 +15,8 @@ public class LobbyUtils {
         return l.getPlayerConnectionsMap().get(socket);
     }
     
-    public static void addConnection(Lobby l, WebSocket socket) {
-        l.getPlayerConnectionsMap().put(socket, new PlayerConnection(socket));
+    public static void addConnection(Lobby l, WebSocket socket, PlayerConnection player) {
+        l.getPlayerConnectionsMap().put(socket, player);
     }
 
     public static void sendToEveryOne(Lobby l, Object o) {
@@ -24,5 +26,9 @@ public class LobbyUtils {
         }
     }
     
+    public static void routeMessage(Lobby l, WebSocket socket, ClientMessage message) {
+        PlayerConnection player = getPlayer(l, socket);
+        player.setLatestResponse((Response) message);
+    }
     
 }

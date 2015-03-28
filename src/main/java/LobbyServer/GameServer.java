@@ -1,8 +1,16 @@
 package LobbyServer;
 
+import GameBuilders.RiskMapGameBuilder;
+import GameEngine.GameEngine;
+import GameState.State;
 import GeneralUtils.Jsonify;
 import LobbyServer.LobbyState.Lobby;
+import LobbyServer.LobbyState.ObjectFromClient.ClientMessage;
+import LobbyServer.LobbyState.ObjectFromClient.GameComms.Response;
+import LobbyServer.LobbyState.PlayerConnection;
 import LobbyServer.LobbyUtils.LobbyUtils;
+import PlayerInput.DumbBotInterface;
+import PlayerInput.PlayerInterface;
 import org.java_websocket.WebSocket;
 import org.java_websocket.WebSocketImpl;
 import org.java_websocket.handshake.ClientHandshake;
@@ -29,7 +37,7 @@ public class GameServer extends WebSocketServer {
     }
 
     private Lobby lobby = new Lobby();
-    
+
     public GameServer(int port) throws UnknownHostException {
         super( new InetSocketAddress( port ) );
     }
@@ -47,8 +55,18 @@ public class GameServer extends WebSocketServer {
     @Override
     public void onOpen( WebSocket conn, ClientHandshake handshake ) {
         debug("hi!");
-        LobbyUtils.addConnection(this.lobby, conn);
+        PlayerConnection player = new PlayerConnection(conn);
+        LobbyUtils.addConnection(this.lobby, conn, player);
         debug(Jsonify.getObjectAsJsonString(new Lobby()));
+        PlayerInterface[] interfaces = new PlayerInterface[]{player, new DumbBotInterface(), new DumbBotInterface(), new DumbBotInterface()};
+        State gameState = RiskMapGameBuilder.buildGame(13, interfaces);
+        GameEngine game = new GameEngine(gameState);
+        Thread gameThr = new Thread(game);
+        System.out.println(Jsonify.getObjectAsJsonString(gameState));
+        conn.send(Jsonify.getObjectAsJsonString(gameState));
+        gameThr.start();
+        debug("Hi!");
+
     }
 
     @Override
@@ -69,20 +87,17 @@ public class GameServer extends WebSocketServer {
      */
     @Override
     public void onMessage( WebSocket conn, String message ) {
-        debug(message);
-//        ClientMessage messageObject = WebServerUtils.getMessageObject(message);
-//        PlayerConnection player = LobbyUtils.getPlayer(lobby, conn);
-//        if (messageObject instanceof Choice) {
-//            player.setChoice((Choice) messageObject);
-//        }
+        debug("RECD :::" + message);
+        ClientMessage messageObject = WebServerUtils.getMessageObject(message);
+        PlayerConnection player = LobbyUtils.getPlayer(lobby, conn);
+        if (messageObject instanceof Response) {
+            LobbyUtils.routeMessage(lobby, conn, messageObject);
+        }
     }
 
     @Override
     public void onError( WebSocket conn, Exception ex ) {
-        ex.printStackTrace();
-        if( conn != null ) {
-            // some errors like port binding failed may not be assignable to a specific websocket
-        }
+        conn.send("no, sorry");
     }
     
     public void sendToAll( String text ) {

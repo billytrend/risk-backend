@@ -1,13 +1,12 @@
 package GameUtils.Results;
 
-import GameEngine.GameEngine;
 import GameEngine.PlayState;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.ArmyUtils;
 
-public class ArmyMovement extends ArmyChange{
+public class ArmyMovement extends ArmyChange {
 	
 	private String sourceId;
 	private String targetId;
