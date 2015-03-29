@@ -8,6 +8,8 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 
+import static com.esotericsoftware.minlog.Log.debug;
+
 /**
  * @author 120011995
  * @category Class to implement multithreading in TCP PeerServer

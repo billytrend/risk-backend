@@ -34,6 +34,9 @@ public class PlayerQueue implements Iterator {
     	return players.size();
     }
 
+    public ArrayList<Player> getCurrentPlayers(){
+    	return players;
+    }
     
     public Player getCurrent() {
         return this.players.get(this.curPlayer);
@@ -66,16 +69,16 @@ public class PlayerQueue implements Iterator {
 
     @Override
     public Player next() {
-        if (this.curPlayer == -1) {
-            this.curPlayer = this.firstPlayer;
+        if (curPlayer == -1) {
+            curPlayer = firstPlayer;
         }
 
         else {
-            this.curPlayer++;
-            this.curPlayer = this.curPlayer % this.players.size();
+            curPlayer++;
+            curPlayer = curPlayer % players.size();
         }
 
-        return this.players.get(curPlayer);
+        return players.get(curPlayer);
     }
 
 

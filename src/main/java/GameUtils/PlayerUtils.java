@@ -5,6 +5,8 @@ import GameState.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import static com.esotericsoftware.minlog.Log.debug;
+
 /**
  * Holds all the methods that deal with any kind of
  * 'player management' such as providing information about
@@ -61,13 +63,22 @@ public class PlayerUtils {
      public static int countPlayers(State state) {
         return state.getPlayerQueue().getNumberOfCurrentPlayers();
      }
+     
+     /**
+      * 
+      * @param state
+      * @return
+      */
+     public static ArrayList<Player> getPlayersInGame(State state){
+    	 return state.getPlayerQueue().getCurrentPlayers();
+     }
 
     /**
      * @param p
      * @return
      */
     public static boolean playerIsOut(Player p) {
-    	System.out.println("\t\tNumber owned: " + getNumberOfTerritoriesOwned(p));
+    	debug("\t\tNumber owned: " + getNumberOfTerritoriesOwned(p));
         return getNumberOfTerritoriesOwned(p) < 1;
     }
 

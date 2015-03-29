@@ -4,9 +4,11 @@ import GameEngine.RequestReason;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
+import GameUtils.Results.Change;
+import org.javatuples.Triplet;
 
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * An interface allowing for a game to be played
@@ -16,8 +18,6 @@ import java.util.concurrent.CountDownLatch;
  *  
  */
 public interface PlayerInterface {
-
-    CountDownLatch waiter = null;
     
     /**
      * * 
@@ -45,20 +45,13 @@ public interface PlayerInterface {
      * @return
      */
     public int getNumberOfArmies(Player player, int max, RequestReason reason);
-
     
     /**
      *
-     * @param player
-     * @param card
+     * @return a triplet of cards which represents choice
      */
-    public void giveCard(Player player, Card card);
-
+    public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations);
     
-    /**
-     *
-     * * @return
-     */
-    public Card getCardOptions();
-
+    public void reportStateChange(Change change);
+    
 }

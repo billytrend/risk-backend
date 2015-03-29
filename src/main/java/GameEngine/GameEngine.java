@@ -1,18 +1,18 @@
 package GameEngine;
 
-import GameState.Army;
-import GameState.Player;
-import GameState.State;
-import GameState.Territory;
+import GameState.*;
 import GameUtils.ArmyUtils;
-import GameUtils.Results.FightResult;
+import GameUtils.CardUtils;
 import GameUtils.PlayerUtils;
-import GameUtils.RuleUtils;
+import GameUtils.Results.*;
 import GameUtils.TerritoryUtils;
+import org.javatuples.Triplet;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 
 import static GameEngine.PlayState.*;
+import static com.esotericsoftware.minlog.Log.debug;
 
 /**
  * An instance of this class represents a game that
@@ -22,17 +22,33 @@ import static GameEngine.PlayState.*;
  */
 public class GameEngine implements Runnable {
 
-	private State gameState;
-	private Player currentPlayer;
+	protected State gameState;
+	protected Player currentPlayer;
 	private PlayState playState = BEGINNING_STATE;
+	private boolean currentPlayerHasTakenCountry = false;
+	private StateChangeRecord changeRecord;
+	private WinConditions winConditions;
+	
+	public StateChangeRecord getStateChangeRecord(){
+		return changeRecord;
+	}
+	
+	public GameEngine(State state, WinConditions conditions) {
+		this(state);
+		winConditions = conditions;
+	}
 	
 	public GameEngine(State state) {
 		this.gameState = state;
+		changeRecord = new StateChangeRecord(state.getPlayersIds(), state.getTerritoryIds(),
+				state.getPlayers().get(0).getArmies().size());
+		winConditions = new WinConditions();
 	}
 	
 	public State getState(){
 		return gameState;
 	}
+
 	
 	@Override
 	public void run() {
@@ -54,6 +70,14 @@ public class GameEngine implements Runnable {
 			if(!iterateGame()) return;
 		}
 	}
+    
+    public void applyAndReportChange(State state, Change change) {
+        change.applyChange(state);
+        for (Player player :  gameState.getPlayers()) {
+            player.getCommunicationMethod().reportStateChange(change);
+        }
+        changeRecord.addStateChange(change);
+    }
 
 	/**
 	 * This function takes the game forward a step, changing
@@ -66,52 +90,52 @@ public class GameEngine implements Runnable {
 
 		switch (this.playState) {
 			case BEGINNING_STATE:
-			//	System.out.println("\nBEGIN");
+				debug("\nBEGIN");
 				this.playState = begin();
 				gameState.print();
 				break;
 
 			case FILLING_EMPTY_COUNTRIES:
-			//	System.out.println("\nFILLING EMPTY COUNTRIES");
+				debug("\nFILLING EMPTY COUNTRIES");
 				this.playState = fillAnEmptyCountry();
 				break;
 
 			case USING_REMAINING_ARMIES:
-			//	System.out.println("\nUSING REMAINING ARMIES");
+				debug("\nUSING REMAINING ARMIES");
 				this.playState = useARemainingArmy();
 				break;
 
 			case PLAYER_CONVERTING_CARDS:
-			//	System.out.println("\nCARDS");
+				debug("\nCARDS");
 				this.playState = convertCards();
 				// TODO: why is this here?
 				ArmyUtils.givePlayerNArmies(currentPlayer, 1);
 				break;
 
 			case PLAYER_PLACING_ARMIES:
-			//	System.out.println("\nPLAYER PLACING ARMIES");
+				debug("\nPLAYER PLACING ARMIES");
 				this.playState = placeArmy();
 				break;
 
 			case PLAYER_INVADING_COUNTRY:
-			//	System.out.println("\nINVADING");
+				debug("\nINVADING");
 				this.playState = invadeCountry(); 
 				gameState.print();
 				break;
 
 			case PLAYER_MOVING_ARMIES:
-			//	System.out.println("\nMOVING ARMIES");
+				debug("\nMOVING ARMIES");
 				this.playState = moveArmy();
 				gameState.print();
 				break;
 
 			case PLAYER_ENDED_GO:
-			//	System.out.println("\nEND GO");
+				debug("\nEND GO");
 				this.playState = endGo();
 				break;
 				
 			case END_GAME:
-				System.out.println("\nEND GAME!");
+				debug("\nEND GAME!");
 				return false;
 			
 			default:
@@ -147,22 +171,24 @@ public class GameEngine implements Runnable {
 	 *  
 	 * @return
 	 */
-	private PlayState fillAnEmptyCountry() {
+	protected PlayState fillAnEmptyCountry() {
 
 		// get a list of empty territories available
 		HashSet<Territory> emptyTerritories = TerritoryUtils.getUnownedTerritories(gameState);
-
+		
 		// player specifies the country
 		Territory toFill = currentPlayer.getCommunicationMethod()
 				.getTerritory(currentPlayer, emptyTerritories, false, RequestReason.PLACING_ARMIES_SET_UP);
 
 		// deploy a single army in this place
-		ArmyUtils.deployArmies(currentPlayer, toFill, 1);
+
+        Change stateChange = new ArmyPlacement(currentPlayer.getId(), toFill.getId(), 1, FILLING_EMPTY_COUNTRIES);
+        applyAndReportChange(gameState, stateChange);
 
 		endGo();
-
+		
 		if (!TerritoryUtils.hasEmptyTerritories(gameState)) {
-			System.out.println("ALL COUNTRIES TAKEN");
+			debug("ALL COUNTRIES TAKEN");
 			return USING_REMAINING_ARMIES;
 		}
 
@@ -182,7 +208,7 @@ public class GameEngine implements Runnable {
 	 * 
 	 * @return
 	 */
-	private PlayState useARemainingArmy() {
+	protected PlayState useARemainingArmy() {
 
 		// get a list of a players undeployed armies
 		ArrayList<Army> playersUndeployedArmies = ArmyUtils.getUndeployedArmies(currentPlayer);
@@ -211,10 +237,11 @@ public class GameEngine implements Runnable {
 				.getTerritory(currentPlayer, usersTerritories, false, RequestReason.PLACING_REMAINING_ARMIES_PHASE);
 
 		// deploy the armies
-		ArmyUtils.deployArmies(currentPlayer, toFill, 1);
-		
+        Change stateChange = new ArmyPlacement(currentPlayer.getId(), toFill.getId(), 1, USING_REMAINING_ARMIES);
+        applyAndReportChange(gameState, stateChange);
+
 		endGo();
-		
+	
 		return USING_REMAINING_ARMIES;
 
 	}
@@ -224,10 +251,18 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	private PlayState convertCards() {
+
+		ArrayList<Triplet<Card, Card, Card>> possibleCombinations = CardUtils.getPossibleCardCombinations(gameState, currentPlayer);
 		
-		currentPlayer.getCommunicationMethod().getCardOptions();
+		if (possibleCombinations.size() == 0) return PLAYER_PLACING_ARMIES;
+
+		Triplet<Card, Card, Card> choice = currentPlayer.getCommunicationMethod().getCardChoice(currentPlayer, possibleCombinations);
 		
-	//	RuleUtils.doArmyHandout(gameState, currentPlayer);
+		int payout = CardUtils.getCurrentArmyPayout(gameState);
+		
+		ArmyUtils.givePlayerNArmies(currentPlayer, payout);
+		
+		CardUtils.releaseCards(choice);
 
 		return PLAYER_PLACING_ARMIES;
 
@@ -242,7 +277,8 @@ public class GameEngine implements Runnable {
 	 * 
 	 * @return
 	 */
-	private PlayState placeArmy() {
+	protected PlayState placeArmy() {
+		
 		// get a list of players undeployed armies
 		ArrayList<Army> playersUndeployedArmies = ArmyUtils.getUndeployedArmies(currentPlayer);
 
@@ -261,9 +297,10 @@ public class GameEngine implements Runnable {
 		// find out how many armies the player want to deploy there 
 		int deployedAmount = currentPlayer.getCommunicationMethod()
 				.getNumberOfArmies(currentPlayer, playersUndeployedArmies.size(), RequestReason.PLACING_ARMIES_PHASE);
-
+		
 		// do the deployment!
-		ArmyUtils.deployArmies(currentPlayer, toFill, deployedAmount);
+		Change stateChange = new ArmyPlacement(currentPlayer.getId(), toFill.getId(), deployedAmount, PLAYER_PLACING_ARMIES);
+        applyAndReportChange(gameState, stateChange);
 
 		return PLAYER_PLACING_ARMIES;
 	}
@@ -275,17 +312,23 @@ public class GameEngine implements Runnable {
 	 * 
 	 * @return
 	 */
-	private PlayState invadeCountry() {
+	protected PlayState invadeCountry() {
 		
 		// get the territories of the current player
 		HashSet<Territory> possibleAttackingTerritories = TerritoryUtils
-				.getPossibleAttackingTerritories(gameState, currentPlayer);
+                .getPossibleAttackingTerritories(gameState, currentPlayer);
+
+        // if a player has no options
+        if (possibleAttackingTerritories.size() == 0) {
+            return PLAYER_MOVING_ARMIES;
+        }
+
 		// find out which country the player wants to attack from
 		Territory attacking = currentPlayer.getCommunicationMethod()
-				.getTerritory(currentPlayer, possibleAttackingTerritories, true, RequestReason.ATTACK_CHOICE);
+				.getTerritory(currentPlayer, possibleAttackingTerritories, true, RequestReason.ATTACK_CHOICE_FROM);
 		
 		if(attacking == null){
-			// System.out.println("PLAYER DOESNT WANT TO INVADE");
+			debug("PLAYER DOESNT WANT TO INVADE");
 			return PLAYER_MOVING_ARMIES;
 		}
 		
@@ -296,9 +339,13 @@ public class GameEngine implements Runnable {
 			
 		// ask the player which country he wants to attack
 		Territory defending = currentPlayer
-				.getCommunicationMethod().getTerritory(currentPlayer, attackable, false, RequestReason.DEFEND_CHOICE);
+				.getCommunicationMethod().getTerritory(currentPlayer, attackable, true, RequestReason.ATTACK_CHOICE_TO);
 		
+		if(defending == null){
+			return PLAYER_MOVING_ARMIES;
+		}
 
+		
 		// find out who owns this fated land
 		Player defendingPlayer = PlayerUtils.getTerritoryOwner(gameState, defending);
 
@@ -307,7 +354,8 @@ public class GameEngine implements Runnable {
 		// and how many may defend as per rules
 		int attackingArmies = ArmyUtils
 				.getNumberOfArmiesOnTerritory(currentPlayer, attacking);
-		System.out.println("attacking armies: " + attackingArmies);
+		
+		debug("attacking armies: " + attackingArmies);
 		int maxAttackingDice = (attackingArmies > 3) ? 3 : attackingArmies - 1;
 		
 		int defendingArmies = ArmyUtils
@@ -316,33 +364,35 @@ public class GameEngine implements Runnable {
 
 		// ask the players how many they would like to use
 		int attackDiceNumber = currentPlayer.
-				getCommunicationMethod().getNumberOfDice(currentPlayer, maxAttackingDice, RequestReason.ATTACK_CHOICE);
+				getCommunicationMethod().getNumberOfDice(currentPlayer, maxAttackingDice, RequestReason.ATTACK_CHOICE_DICE);
 		int defendDiceNumber = defendingPlayer.
-				getCommunicationMethod().getNumberOfDice(defendingPlayer, maxDefendingDice, RequestReason.DEFEND_CHOICE);
+				getCommunicationMethod().getNumberOfDice(defendingPlayer, maxDefendingDice, RequestReason.DEFEND_CHOICE_DICE);
 
 		// create an object to represent the fight
-		FightResult result = new FightResult(currentPlayer, defendingPlayer, 
-				attacking, defending);
+		FightResult result = new FightResult(currentPlayer.getId(), defendingPlayer.getId(), 
+				attacking.getId(), defending.getId());
 	
 		// decide the results of the fight
 		Arbitration.carryOutFight(result, attackDiceNumber, defendDiceNumber);
-		
-		// apply the results of the fight
-		RuleUtils.applyFightResult(result);
+
+        applyAndReportChange(gameState, result);
 
 		// if the attacking player won and they still have surplus armies,
 		// give the option to move them
 		if(result.getDefendersLoss() == defendingArmies){
-			//	&& (attackingArmies - result.getAttackersLoss() - attackDice.getNumberOfDice()) > 1) {
-	
+			
+			currentPlayerHasTakenCountry = true;
+			
 			if((attackingArmies - result.getAttackersLoss() - attackDiceNumber) > 1)
 				moveMoreArmies(result);
-			
-			if(PlayerUtils.playerIsOut(result.getDefender())){
-				PlayerUtils.removePlayer(gameState, result.getDefender());
-				if(checkTheEndOfGame())
-					return END_GAME;
-			}
+
+            if(PlayerUtils.playerIsOut(defendingPlayer)){
+                Change stateChange = new PlayerRemoval(currentPlayer.getId(), defendingPlayer.getId());
+                applyAndReportChange(gameState, stateChange);
+            }
+
+            if(checkTheEndOfGame())
+				return END_GAME;
 	
 		}
 
@@ -363,15 +413,23 @@ public class GameEngine implements Runnable {
 	 * @param result
 	 */
 	private void moveMoreArmies(FightResult result){
+		Territory attackingTerritory = gameState.lookUpTerritory(result.getAttackingTerritoryId());
 		ArrayList<Army> remainingAttackArmies = ArmyUtils
-				.getArmiesOnTerritory(currentPlayer, result.getAttackingTerritory());
+				.getArmiesOnTerritory(currentPlayer, attackingTerritory);
 		
 		// let the player decide how many armies they want to move
 		int movedAmount = currentPlayer.getCommunicationMethod()
 				.getNumberOfArmies(currentPlayer, remainingAttackArmies.size() - 1, RequestReason.POST_ATTACK_MOVEMENT);
 		
-		ArmyUtils.moveArmies(result.getAttacker(), result.getAttackingTerritory(), 
-				result.getDefendingTerritory(), movedAmount);
+		if(movedAmount > 0){
+
+				// add a new change to the state
+            Change stateChange = new ArmyMovement(currentPlayer.getId(), result.getAttackingTerritoryId(),
+                    result.getDefendingTerritoryId(), movedAmount, PLAYER_INVADING_COUNTRY);
+            applyAndReportChange(gameState, stateChange);
+		}
+		
+		
 	}
 	
 	
@@ -382,10 +440,10 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	private boolean checkTheEndOfGame(){
-		if(PlayerUtils.countPlayers(gameState) == 1){
+		if(winConditions.checkConditions(gameState))
 			return true;
-	}
-		return false;
+		else
+			return false;
 	}
 	
 
@@ -397,8 +455,8 @@ public class GameEngine implements Runnable {
 	 * 
 	 * @return
 	 */
-	private PlayState moveArmy() {
-		
+	protected PlayState moveArmy() {
+	
 		// get a list of territories a player can deploy from
 		HashSet<Territory> canBeDeployedFrom = TerritoryUtils
 				.getDeployable(gameState, currentPlayer);
@@ -410,7 +468,7 @@ public class GameEngine implements Runnable {
 		//------------------------------------
 		// HANDLE HERE NOT MOVING RESPONCE? - null country selection?
 		if(source == null){
-			System.out.println("PLAYER DOESNT WANT TO MOVE");
+			debug("PLAYER DOESNT WANT TO MOVE");
 			return PLAYER_ENDED_GO;
 		}
 
@@ -426,10 +484,10 @@ public class GameEngine implements Runnable {
 		
 		int movedAmount = currentPlayer.getCommunicationMethod()
 				.getNumberOfArmies(currentPlayer, numberOfArmiesThatMayBeMoved, RequestReason.REINFORCEMENT_PHASE);
-		
-		ArmyUtils.moveArmies(currentPlayer, source, target, movedAmount);
-		
-		
+
+        Change stateChange = new ArmyMovement(currentPlayer.getId(), source.getId(), target.getId(), movedAmount, PLAYER_MOVING_ARMIES);
+        applyAndReportChange(gameState, stateChange);
+
 		return PLAYER_MOVING_ARMIES;
 	}
 
@@ -440,7 +498,13 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	private PlayState endGo() {
+		if (currentPlayerHasTakenCountry) {
+			CardUtils.givePlayerRandomCard(gameState, currentPlayer);
+			currentPlayerHasTakenCountry = false;
+		}
+		
 		currentPlayer = gameState.getPlayerQueue().next();
+		
 		return PLAYER_CONVERTING_CARDS;
 	}
 

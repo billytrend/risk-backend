@@ -1,27 +1,31 @@
 
 package GameUtils;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-
-import org.junit.Before;
-import org.junit.Test;
 
 import GameBuilders.DemoGameBuilder;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.Results.FightResult;
+import PlayerInput.DumbBotInterface;
+import PlayerInput.PlayerInterface;
 
-public class RuleUtilsTest {
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.ArrayList;
+
+import static org.junit.Assert.*;
+
+public class RuleUtilsTest{
 	
 	private State gameState;
 	private Territory[] territories;
-
+	
 	@Before
 	public void stateSetUp(){
-		gameState = DemoGameBuilder.buildTestGame(2, 15, 15);
+		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
+		gameState = DemoGameBuilder.buildTestGame(2, 15, 15, interfaces);
 		territories = new Territory[TerritoryUtils.getAllTerritories(gameState).size()];
 		TerritoryUtils.getAllTerritories(gameState).toArray(territories);
 	}
@@ -63,14 +67,16 @@ public class RuleUtilsTest {
 		assertEquals(TerritoryUtils.getPlayersTerritories(player1).size(), 1);
 		assertEquals(TerritoryUtils.getPlayersTerritories(player2).size(), 1);
 	
-		FightResult fightResult = new FightResult(player1, player2, territories[0], territories[1]);
+		FightResult fightResult = new FightResult(player1.getId(), player2.getId(), 
+				territories[0].getId(), territories[1].getId());
 		
 		fightResult.addAttackLoss();
 		fightResult.addDefendLoss();
 		fightResult.setAttackDiceRolled(new Integer[]{6, 2});
 		fightResult.setDefendDiceRolled(new Integer[]{3});
 		
-		RuleUtils.applyFightResult(fightResult);
+		fightResult.applyChange(gameState);
+		
 		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player1, territories[0]), 1);
 		assertTrue(TerritoryUtils.getPlayersTerritories(player1).contains(territories[1]));
 		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player1, territories[1]), 1);
@@ -91,14 +97,14 @@ public class RuleUtilsTest {
 		assertEquals(TerritoryUtils.getPlayersTerritories(player1).size(), 1);
 		assertEquals(TerritoryUtils.getPlayersTerritories(player2).size(), 1);
 		
-		FightResult fightResult = new FightResult(player1, player2, territories[0], territories[1]);
+		FightResult fightResult = new FightResult(player1.getId(), player2.getId(), territories[0].getId(), territories[1].getId());
 
 		fightResult.setAttackDiceRolled(new Integer[]{3, 2});
 		fightResult.setDefendDiceRolled(new Integer[]{3, 3, 3});
 		fightResult.addAttackLoss();
 		fightResult.addAttackLoss();
 		
-		RuleUtils.applyFightResult(fightResult);
+		fightResult.applyChange(gameState);
 		
 		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player1, territories[0]), 1);
 		assertEquals(ArmyUtils.getNumberOfArmiesOnTerritory(player2, territories[1]), 3);

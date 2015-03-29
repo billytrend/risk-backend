@@ -1,14 +1,21 @@
 package GameUtils;
 
-import static org.junit.Assert.*;
+import GameBuilders.DemoGameBuilder;
+import GameState.Army;
+import GameState.Player;
+import GameState.State;
+import GameState.Territory;
+import PlayerInput.DumbBotInterface;
+import PlayerInput.PlayerInterface;
 
-import java.util.ArrayList;
+import com.esotericsoftware.minlog.Log;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import GameBuilders.DemoGameBuilder;
-import GameState.*;
+import java.util.ArrayList;
+
+import static org.junit.Assert.*;
 
 public class ArmyUtilsTest {
 	
@@ -17,7 +24,9 @@ public class ArmyUtilsTest {
 
 	@Before
 	public void stateSetUp(){
-		gameState = DemoGameBuilder.buildTestGame(2, 5, 2);
+		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
+		Log.NONE();
+		gameState = DemoGameBuilder.buildTestGame(2, 5, 2, interfaces);
 		territories = new Territory[TerritoryUtils.getAllTerritories(gameState).size()];
 		TerritoryUtils.getAllTerritories(gameState).toArray(territories);
 	}
@@ -51,6 +60,7 @@ public class ArmyUtilsTest {
 		
 		assertTrue(ArmyUtils.somePlayerHasUndeployedArmies(gameState));
 		
+
 		ArmyUtils.deployArmies(players.get(0), territories[0], 5);
 		assertTrue(ArmyUtils.somePlayerHasUndeployedArmies(gameState));
 		

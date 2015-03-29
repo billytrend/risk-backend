@@ -8,6 +8,7 @@ import org.javatuples.Pair;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultEdge;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -17,6 +18,15 @@ import java.util.HashSet;
  */
 public class TerritoryUtils {
 
+    public static Territory getTerritoryWithName(State state, String name) {
+        for (Territory t : getAllTerritories(state)) {
+            if (t.getId().equals(name)) {
+                return t;
+            }
+        }
+        return null;
+    }
+    
     /**
      * @param state
      * @return
@@ -179,6 +189,7 @@ public class TerritoryUtils {
      */
     public static void addTerritory(State state, Territory territory) {
         state.getTerritories().addVertex(territory);
+        state.addMapping(territory.getId(), territory);
     }
 
 
@@ -192,4 +203,34 @@ public class TerritoryUtils {
         state.getTerritories().addEdge(a, b);
     }
 	
+    public static Territory getTerritoryByName(State state, String name) {
+        HashSet<Territory> allTerritories = getAllTerritories(state);
+        for (Territory territory : allTerritories) {
+            if (territory.getId().equals(name)) {
+                return territory;
+            }
+        }
+        return null;
+    }
+
+    public static ArrayList<String> getAllCountryNames(State state) {
+        ArrayList<String> names = new ArrayList<String>();
+        for (Territory t : getAllTerritories(state)) {
+            names.add(t.getId());
+        }
+        return names;
+    }
+
+    public static ArrayList<String[]> getAllBorderPairs(State state) {
+        ArrayList<String[]> pairs = new ArrayList<String[]>();
+        for (Pair<Territory, Territory> p : getAllBorders(state)) {
+            pairs.add(
+                new String[] {
+                        p.getValue0().getId(),
+                        p.getValue1().getId()
+                }
+            );
+        }
+        return pairs;
+    }
 }

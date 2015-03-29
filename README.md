@@ -1,3 +1,4 @@
+
 !! have rearranged package paths since this was written so some of it is out of date.
 
 # Risk Backend
@@ -8,15 +9,14 @@
 
 ## TODO
 
-TODO: Write loadsa tests
 TODO: Develop AIs
 TODO: Finish game implementation: continents etc.
+TODO: let players change their decisions (on our side)
 TODO: Add websocket support
 TODO: Finish front-end (in a separate repository)
 TODO: allow maps to be parsed form JSON
 TODO: design a lobby which players can use to join, create games etc.
-TODO: Add more todos
-TODO:
+TODO: add some tricky 'edge' test cases - wrong inputs from PlayerInterface basically
 
 ## Summary
 
