@@ -18,6 +18,15 @@ public class Protocol {
 
 	private ProtocolState protocolState = JOIN_GAME;
 	private boolean gameInProgress = false;
+	private boolean isHost = true;
+	private int ack_timeout;
+	private int move_timeout;
+	private int maxNoOfPlayers = 6;		//min is 3	
+	private int currentNoOfPlayers;
+	private int [] playerID;
+	private boolean apiSupported;
+
+
 	
 	
 	/**
@@ -25,6 +34,14 @@ public class Protocol {
 	 * Ensures the game runs.
 	 */
 	private void play() throws InterruptedException {
+		
+		if(isHost){
+			//set the ack timeout to 30 seconds move to 60
+			ack_timeout = 30;
+			move_timeout = 60;
+		}
+	
+		//game loop
 		while (true) {
 			//if(!iterateGame()) return;
 		}
@@ -122,8 +139,8 @@ public class Protocol {
 			this.protocolState = leave_game(command);
 			break;
 		default:
+			System.out.println("IN DEFAULT not good");
 			break;
-
 		}
 		return false;
 	}
@@ -132,14 +149,15 @@ public class Protocol {
 	 * Sent by a client to a host attempting to join a game. 
 	 * First command sent upon opening a socket connection to a host.
 	 * @param command 
-	 * @return
+	 * @return ACCEPT_JOIN_GAME if request successful otherwise REJECT_JOIN_GAME
 	 */
 	private ProtocolState join_game(String command) {
 		//Checks if the JSON is valid
 		if(!isJsonStringValid(command)) return REJECT_JOIN_GAME;
 		//create a Java Object matching to the string
-		Object join_game = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.setup.join_game.class);
-		//pass the results of the objects back to game engine 
+		Object join_game = Jsonify.getJsonStringAsObject(command, 
+				PeerServer.protocol.setup.join_game.class);
+		//pass the results of the objects back to game engine  !!ASK BILLY!!
 		
 		//if all is good with GE go to ACCEPT state
 		return ACCEPT_JOIN_GAME;
@@ -153,20 +171,34 @@ public class Protocol {
 	 */
 	private ProtocolState accept_join_game(String command) {
 		//Create an accept_join_game object to be sent to client who connected 
-		Object accept_join_game = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.setup.accept_join_game.class);
-		//move to next state
+		Object accept_join_game = Jsonify.getJsonStringAsObject(command, 
+				PeerServer.protocol.setup.accept_join_game.class);
+		//send this to client
+		System.out.println("You have been accepted to the game \n");
+		System.out.println("Ack Timeout" + ack_timeout + "\n");
+		System.out.println("Move Timeout" + move_timeout + "\n");
+		System.out.println("Your PlayerID is: " + currentNoOfPlayers + "\n");
+		playerID[currentNoOfPlayers] = currentNoOfPlayers;
+		currentNoOfPlayers++;
+		
+		//tell the GE we have a new player !ASK BILLY! 
+		
+		//if they had a name move to players joined
 		return PLAYERS_JOINED;
 	}
 
 	/**
 	 * Sent by a host to a client on receipt of a “join_game” command, as rejection.
 	 * @param command
-	 * @return
+	 * @return END_GAME as the player wont take part in the game
 	 */
 	private ProtocolState reject_join_game(String command) {
-		//send cute rejection message
+		//send rejection 
 		System.out.println("Sorry you cannot join the game \n");
-		if(gameInProgress == true) System.out.println("Reason: Game in Progress");
+		if(gameInProgress) System.out.println("Reason: Game in Progress!");
+		if(currentNoOfPlayers == maxNoOfPlayers) System.out.println("Reason: Game is Full!");
+		if(!apiSupported) System.out.println("Reason: Your feature set is not supported!");
+		
 		//end the game for this thread / player
 		return END_GAME;
 	}
@@ -179,19 +211,54 @@ public class Protocol {
 	 * @return state change 
 	 */
 	private ProtocolState players_joined(String command){
-		Object players_joined = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.setup.players_joined.class);
+		//whenever a player joins this should be broadcast to all players
+		Object players_joined = Jsonify.getJsonStringAsObject(command, 
+				PeerServer.protocol.setup.players_joined.class);
+		
+		for(int i =0; i< playerID.length; i++){
+			System.out.println("Player " + i );
+			//TODO: Add name and Player ID mapping
+			System.out.println("Name: " + i);
+		}
+		
 		return JOIN_GAME;
 	}
 	
 	
+	//from now on all messages must be broadcast to all clients
 	private ProtocolState ping(String command){
 		Object ping = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.setup.ping.class);
+		System.out.println("Number of players in game: " + currentNoOfPlayers);
+		
+		boolean recievedPing = false;
+		//should receive a ping command from all clients *******
+		//forward that ping to all clients 
+		for(int i=0; i < currentNoOfPlayers; i++){
+			if(!recievedPing){
+				//remove player from the game
+				System.out.println("You did not respond within the timeout: You have been kicked!");
+				return LEAVE_GAME;
+			}
+		}
+		
+		if(currentNoOfPlayers < 3){
+			//terminate game
+			System.out.println("End of Game: Sending Leave_Game to all clients");
+			return LEAVE_GAME;
+		}
+		
+		//if all clients respond 
 		return READY;
 	}
 	
 	private ProtocolState ready(String command){
-		Object ping = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.setup.ready.class);
-		return READY;
+		Object ready = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.setup.ready.class);
+		//send ready command to all connected clients
+		
+		//block for ack
+		
+		//once all acks recieved move to init game
+		return INIT_GAME;
 	}
 
 	private ProtocolState init_game(String command){
