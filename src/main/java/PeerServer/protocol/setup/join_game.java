@@ -28,5 +28,6 @@ public class join_game {
 	
 	float supported_versions [];
 	String supported_features [];
+	String name; 
 	
 }
