@@ -85,6 +85,42 @@ public class Protocol {
 			debug("\n ATTACK");
 			this.protocolState = attack(command);
 			break;
+		case DEFEND:
+			debug("\n DEFEND");
+			this.protocolState = defend(command);
+			break;
+		case ATTACK_CAPTURE:
+			debug("\n ATTACK_CAPTURE");
+			this.protocolState = attack_capture(command);
+			break;
+		case FORTIFY:
+			debug("\n FORTIFY");
+			this.protocolState = fortify(command);
+			break;
+		case ACK:
+			debug("\n ACK");
+			this.protocolState = ack(command);
+			break;
+		case ROLL:
+			debug("\n ROLL");
+			this.protocolState = roll(command);
+			break;
+		case ROLL_HASH:
+			debug("\n ROLL_HASH");
+			this.protocolState = roll_hash(command);
+			break;
+		case ROLL_NUMBER:
+			debug("\n ROLL_NUMBER");
+			this.protocolState = roll_number(command);
+			break;
+		case TIMEOUT:
+			debug("\n TIMEOUT");
+			this.protocolState = timeout(command);
+			break;
+		case LEAVE_GAME:
+			debug("\n LEAVE_GAME");
+			this.protocolState = leave_game(command);
+			break;
 		default:
 			break;
 

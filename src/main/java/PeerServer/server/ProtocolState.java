@@ -31,8 +31,8 @@ public enum ProtocolState {
 	ATTACK_CAPTURE,
 	TRADING_IN_CARDS,
 	DRAWING_CARDS,
-	FORTIFYING, 		//unsure if necessary due to reinforcing terrs 
 	LEAVE_GAME,
 	TIMEOUT,
-	END_GAME,	
+	END_GAME, 
+	FORTIFY, ROLL, ROLL_HASH, ROLL_NUMBER,	
 }
