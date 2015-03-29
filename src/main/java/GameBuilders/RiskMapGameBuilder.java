@@ -10,9 +10,6 @@ import PlayerInput.PlayerInterface;
 import java.util.ArrayList;
 import java.util.Random;
 
-import java.util.ArrayList;
-import java.util.Random;
-
 public class RiskMapGameBuilder {
 
 	/*
@@ -24,6 +21,8 @@ public class RiskMapGameBuilder {
         String[] colours = new String[] {
             "A6922E", "BFA065", "D96F32", "D95A2B", "A6453C"
         };
+
+
 		// creating players
 		ArrayList<Player> ps = new ArrayList<Player>();
 		for (int i = 0; i < interfaces.length; i++) {
