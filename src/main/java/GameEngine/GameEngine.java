@@ -285,7 +285,7 @@ public class GameEngine implements Runnable {
 
 		// find out how many armies the player want to deploy there 
 		int deployedAmount = currentPlayer.getCommunicationMethod()
-				.getNumberOfArmies(currentPlayer, playersUndeployedArmies.size(), RequestReason.PLACING_ARMIES_PHASE);
+				.getNumberOfArmies(currentPlayer, playersUndeployedArmies.size(), RequestReason.PLACING_ARMIES_PHASE, null, null);
 		
 		// do the deployment!
 		Change stateChange = new ArmyPlacement(currentPlayer.getId(), toFill.getId(), deployedAmount, PLAYER_PLACING_ARMIES);
@@ -405,7 +405,7 @@ public class GameEngine implements Runnable {
 		
 		// let the player decide how many armies they want to move
 		int movedAmount = currentPlayer.getCommunicationMethod()
-				.getNumberOfArmies(currentPlayer, remainingAttackArmies.size() - 1, RequestReason.POST_ATTACK_MOVEMENT);
+				.getNumberOfArmies(currentPlayer, remainingAttackArmies.size() - 1, RequestReason.POST_ATTACK_MOVEMENT, null, null);
 		
 		if(movedAmount > 0){
 			// add a new change to the state
@@ -469,7 +469,7 @@ public class GameEngine implements Runnable {
 				.getNumberOfMoveableArmies(currentPlayer, source);
 		
 		int movedAmount = currentPlayer.getCommunicationMethod()
-				.getNumberOfArmies(currentPlayer, numberOfArmiesThatMayBeMoved, RequestReason.REINFORCEMENT_PHASE);
+				.getNumberOfArmies(currentPlayer, numberOfArmiesThatMayBeMoved, RequestReason.REINFORCEMENT_PHASE, null, null);
 		
 		Change stateChange = new ArmyMovement(currentPlayer.getId(), source.getId(), target.getId(), movedAmount, PLAYER_MOVING_ARMIES);
 		stateChange.applyChange(gameState);

@@ -43,7 +43,7 @@ public interface PlayerInterface {
      * @param max
      * @return
      */
-    public int getNumberOfArmies(Player player, int max, RequestReason reason);
+    public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from);
     
     /**
      *

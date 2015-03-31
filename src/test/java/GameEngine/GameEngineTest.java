@@ -307,7 +307,7 @@ public class GameEngineTest{
 		int predictedMaxNumOfArmies = 200;
 		for(int i = 0; i < predictedMaxNumOfArmies; i++){
 			when(player1Interface.getNumberOfArmies((Player) anyObject(), eq(i),
-					(RequestReason) anyObject())).thenReturn(i);
+					(RequestReason) anyObject(), null, null)).thenReturn(i);
 		}
 
 	}
@@ -343,10 +343,10 @@ public class GameEngineTest{
 		for(int i = 0; i < predictedMaxNumOfArmies; i++){
 			if(i == 0){
 				when(player2Interface.getNumberOfArmies((Player) anyObject(), eq(i),
-						eq(RequestReason.REINFORCEMENT_PHASE))).thenReturn(0);
+						eq(RequestReason.REINFORCEMENT_PHASE), null, null)).thenReturn(0);
 			}else{
 				when(player2Interface.getNumberOfArmies((Player) anyObject(), eq(i),
-						eq(RequestReason.PLACING_ARMIES_PHASE))).thenReturn(1);
+						eq(RequestReason.PLACING_ARMIES_PHASE), null, null)).thenReturn(1);
 			}
 		}
 	}

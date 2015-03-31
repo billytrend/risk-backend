@@ -93,16 +93,16 @@ public class CommandLineInterface implements PlayerInterface {
     /**
      * 
      */
-    public int getNumberOfArmies(Player player, int max, RequestReason reason) {
+    public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
         emit(player, "How many armies would you like to move? Max " + max);
         int armies = easyIn();
         if(armies > max){
         	emit(player, "You don't have that many armies.");
-        	getNumberOfArmies(player, max, reason);
+        	getNumberOfArmies(player, max, reason, null,null);
         }
         else if(armies < 0){
         	emit(player, "Give a positive integer.");
-        	getNumberOfArmies(player, max, reason);
+        	getNumberOfArmies(player, max, reason, null, null);
         }
         return armies;
     }

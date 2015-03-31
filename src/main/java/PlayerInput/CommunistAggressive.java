@@ -151,7 +151,7 @@ public class CommunistAggressive implements PlayerInterface {
 	}
 
 	@Override
-	public int getNumberOfArmies(Player player, int max, RequestReason reason) {
+	public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
 
 		switch (reason) {
 		case PLACING_ARMIES_SET_UP:

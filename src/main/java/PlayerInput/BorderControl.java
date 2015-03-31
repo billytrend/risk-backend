@@ -130,19 +130,20 @@ public class BorderControl implements PlayerInterface {
 
 		case REINFORCEMENT_PHASE:
 			// move armies outwards - look for weakest, unprotected territories
-		case POST_ATTACK_MOVEMENT:
-			// if all neighbours are friendly move all but 1
-			// else move half - or look at difference in threats and decide
-			// accordingly
-			// HashSet<Territory> neighbours =
-			// TerritoryUtils.getNeighbours(state, territory);
+		
 		}
 
 		return null;
 
 	}
-
-	public int getNumberOfArmies(Player player, int max, RequestReason reason) {
+	//need to and from
+	public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
+	//case POST_ATTACK_MOVEMENT:
+		// if all neighbours are friendly move all but 1
+		// else move half - or look at difference in threats and decide
+		// accordingly
+		// HashSet<Territory> neighbours =
+		// TerritoryUtils.getNeighbours(state, territory);
 		return max;
 
 	}
@@ -152,5 +153,12 @@ public class BorderControl implements PlayerInterface {
 		return null;
 
 	}
+
+	@Override
+	public int getNumberOfDice(Player player, int max, RequestReason reason) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 
 }

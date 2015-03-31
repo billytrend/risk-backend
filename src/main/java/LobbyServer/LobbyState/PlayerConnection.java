@@ -36,7 +36,7 @@ public class PlayerConnection implements PlayerInterface  {
 	}
 
 	@Override
-	public int getNumberOfArmies(Player player, int max, RequestReason reason) {
+	public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
