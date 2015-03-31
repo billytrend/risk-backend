@@ -10,6 +10,10 @@ package PeerServer.protocol.setup;
  *
  */
 public class reject_join_game {
-
 	String error_message;		//describing reason for rejection
+
+	public reject_join_game(String error_message) {
+		this.error_message = error_message;
+	}
+	
 }

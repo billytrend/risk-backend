@@ -6,7 +6,7 @@ package PeerServer.server;
  *
  */
 public enum ProtocolState {
-	
+	WAITING_FOR_PLAYERS,
 	JOIN_GAME,
 	REJECT_JOIN_GAME,
 	ACCEPT_JOIN_GAME,

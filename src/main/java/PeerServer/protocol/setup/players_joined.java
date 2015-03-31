@@ -13,6 +13,12 @@ package PeerServer.protocol.setup;
 public class players_joined {
 
 	//2D array of integer player ID/string name pairs.
-	String [][] players;
+	int playerID;
+	String playerName;
+	
+	public players_joined(int playerID, String playerName){
+		this.playerID = playerID;
+		this.playerName = playerName;
+	}
 	
 }

@@ -12,7 +12,6 @@ package PeerServer.protocol.setup;
  */
 public class initalise_game {
 
-	//same as join_game?!
-	float supported_versions [];
-	String supported_features [];
+	public int supported_versions;
+	public String supported_features [];
 }

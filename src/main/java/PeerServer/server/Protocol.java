@@ -2,7 +2,11 @@ package PeerServer.server;
 
 import static PeerServer.server.ProtocolState.*;
 import static com.esotericsoftware.minlog.Log.debug;
+
+import java.util.Arrays;
+
 import GeneralUtils.Jsonify;
+import PeerServer.protocol.setup.*;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -23,37 +27,44 @@ public class Protocol {
 	private int move_timeout;
 	private int maxNoOfPlayers = 6;		//min is 3	
 	private int currentNoOfPlayers;
-	private int [] playerID;
+	private String [] playerID;
+	private String [][] players;		//mapping player ID's to Names
 	private boolean apiSupported;
+	private int gameLaunchTime = 60;
+	private String[] supported_features;
+	private float[] supported_versions;
+	private String errorMessage = "default";
 
-
-	
-	
 	/**
 	 * This is the game loop.
 	 * Ensures the game runs.
 	 */
 	private void play() throws InterruptedException {
-		
+
 		if(isHost){
 			//set the ack timeout to 30 seconds move to 60
 			ack_timeout = 30;
 			move_timeout = 60;
+
 		}
-	
+
 		//game loop
 		while (true) {
 			//if(!iterateGame()) return;
 		}
 	}
-	
+
 	/**
 	 * Manages the different states and associated commands.
 	 * @param command
 	 * @return
 	 */
-	private boolean iterateGame(String command){
+	private boolean handleCommand(String command){
 		switch(this.protocolState){
+		case WAITING_FOR_PLAYERS:
+			debug("\nWAITING_FOR_PLAYERS");
+			this.protocolState = waiting_for_players(command);
+			break;
 		case JOIN_GAME:
 			debug("\nJOIN_GAME");
 			this.protocolState = join_game(command);			
@@ -146,43 +157,112 @@ public class Protocol {
 	}
 
 	/**
+	 * Controls when the game should begin. 
+	 * @param command
+	 * @return PING if game is launched / WAITING_FOR_PLAYERS if not enough players
+	 */
+	private ProtocolState waiting_for_players(String command) {
+		//ensure the join command is allowed
+		try {
+			//create JSON object of command
+			join_game join_game = (join_game) Jsonify.getJsonStringAsObject(command, join_game.class);
+
+			//ensure version set matches game version
+			if(join_game.supported_versions != supported_versions){
+				return REJECT_JOIN_GAME;
+			}
+			//ensure features match each other 
+			if(join_game.supported_features != supported_features){
+				return REJECT_JOIN_GAME;
+			}
+
+			//reject if game in progress 
+			if(gameInProgress) {
+				System.out.println("Cant join Reason: Game in Progress!");
+				errorMessage = "Reason: Game in Progress!";
+				return REJECT_JOIN_GAME;
+			}
+			
+			//reject if no more space in game
+			if(currentNoOfPlayers == maxNoOfPlayers) {
+				System.out.println("Cant join Reason: Game is Full!");
+				errorMessage = "Reason: Game is Full!";
+				return REJECT_JOIN_GAME;
+			}
+
+		}
+		catch(Exception error) {
+			//if command string does not create a join_game object correctly
+			System.out.println("The join_game command was malformed");
+			return REJECT_JOIN_GAME;
+		}
+
+		//if all above is fine, allow them to join game 
+		while(currentNoOfPlayers < 3){
+			//block until enough players join game 
+			System.out.println("STILL WAITING ON MORE PLAYERS");
+			//send an accept join game to client
+			return ACCEPT_JOIN_GAME;
+		}
+
+		//otherwise wait gameLaunch time then launch game
+		try {
+			this.wait(gameLaunchTime);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		//send ping to all clients
+		return PING;
+	}
+
+	/**
 	 * Sent by a client to a host attempting to join a game. 
 	 * First command sent upon opening a socket connection to a host.
 	 * @param command 
 	 * @return ACCEPT_JOIN_GAME if request successful otherwise REJECT_JOIN_GAME
 	 */
 	private ProtocolState join_game(String command) {
-		//Checks if the JSON is valid
-		if(!isJsonStringValid(command)) return REJECT_JOIN_GAME;
-		//create a Java Object matching to the string
-		Object join_game = Jsonify.getJsonStringAsObject(command, 
-				PeerServer.protocol.setup.join_game.class);
-		//pass the results of the objects back to game engine  !!ASK BILLY!!
+		//creating join game object
+		join_game join_game = new join_game(supported_versions,supported_features,"Group B LADS");
 		
-		//if all is good with GE go to ACCEPT state
-		return ACCEPT_JOIN_GAME;
+		//cast it to string
+		Object jg = Jsonify.getObjectAsJsonString(join_game);
+		
+		//send join_game object
+		System.out.println(jg);
+		
+		//await reply from server
+		return protocolState;	
 	}
-	
+
 	/**
-	 *  Sent by a host to a client on receipt of a “join_game” command, 
-	 *  as confirmation of adding them to the game.
+	 * Sent by a host to a client on receipt of a “join_game” command, 
+	 * as confirmation of adding them to the game.
 	 * @param command 
 	 * @return
 	 */
 	private ProtocolState accept_join_game(String command) {
-		//Create an accept_join_game object to be sent to client who connected 
-		Object accept_join_game = Jsonify.getJsonStringAsObject(command, 
-				PeerServer.protocol.setup.accept_join_game.class);
+		//add player's name to players list
+		join_game join_game = (join_game) Jsonify.getJsonStringAsObject(command, join_game.class);
+		playerID[currentNoOfPlayers] = join_game.name;
+		
 		//send this to client
 		System.out.println("You have been accepted to the game \n");
 		System.out.println("Ack Timeout" + ack_timeout + "\n");
 		System.out.println("Move Timeout" + move_timeout + "\n");
 		System.out.println("Your PlayerID is: " + currentNoOfPlayers + "\n");
-		playerID[currentNoOfPlayers] = currentNoOfPlayers;
-		currentNoOfPlayers++;
 		
+		//Create an accept_join_game object
+		accept_join_game acg = new accept_join_game(currentNoOfPlayers, ack_timeout, move_timeout);
+		currentNoOfPlayers ++;
+
+		//turn object into JSON string to be sent over network 
+		Object accept_join_game = Jsonify.getObjectAsJsonString(acg);
+
 		//tell the GE we have a new player !ASK BILLY! 
-		
+		System.out.println("TELL GAME ENGINE ABOUT NEW PLAYA");
+
 		//if they had a name move to players joined
 		return PLAYERS_JOINED;
 	}
@@ -192,18 +272,21 @@ public class Protocol {
 	 * @param command
 	 * @return END_GAME as the player wont take part in the game
 	 */
-	private ProtocolState reject_join_game(String command) {
+	private ProtocolState reject_join_game(String reason) {
+		
+		reject_join_game reject_join_game = new reject_join_game(errorMessage);
+		
+		Object rj = Jsonify.getObjectAsJsonString(reject_join_game);
+		
 		//send rejection 
 		System.out.println("Sorry you cannot join the game \n");
-		if(gameInProgress) System.out.println("Reason: Game in Progress!");
-		if(currentNoOfPlayers == maxNoOfPlayers) System.out.println("Reason: Game is Full!");
-		if(!apiSupported) System.out.println("Reason: Your feature set is not supported!");
-		
+		System.out.println(rj);
+
 		//end the game for this thread / player
 		return END_GAME;
 	}
-	
-	
+
+
 	/**
 	 * Sent by a host to each player after connection as players join the game. 
 	 * Maps player IDs to real names. Optional command, 
@@ -211,27 +294,47 @@ public class Protocol {
 	 * @return state change 
 	 */
 	private ProtocolState players_joined(String command){
-		//whenever a player joins this should be broadcast to all players
-		Object players_joined = Jsonify.getJsonStringAsObject(command, 
-				PeerServer.protocol.setup.players_joined.class);
-		
-		for(int i =0; i< playerID.length; i++){
-			System.out.println("Player " + i );
-			//TODO: Add name and Player ID mapping
-			System.out.println("Name: " + i);
+		//send to new player containing current players
+		for(int i =0; i<playerID.length; i++)
+		{
+			players_joined new_player_joined = new players_joined(i, playerID[i]);
+			Object npj = Jsonify.getObjectAsJsonString(new_player_joined);
+			System.out.println(npj);
 		}
 		
-		return JOIN_GAME;
+		
+		//send to current players including only new player
+		players_joined current_player_joined = 
+				new players_joined(currentNoOfPlayers, playerID[currentNoOfPlayers]);
+
+		Object cpj = Jsonify.getObjectAsJsonString(current_player_joined);
+
+		//network.send npj	& cpj
+		
+		//forward to all players
+		System.out.println(Arrays.deepToString(players));
+
+		return WAITING_FOR_PLAYERS;
 	}
-	
-	
+
+
 	//from now on all messages must be broadcast to all clients
 	private ProtocolState ping(String command){
-		Object ping = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.setup.ping.class);
 		System.out.println("Number of players in game: " + currentNoOfPlayers);
-		
+
+		//could potentially start at one if host is not playing
+		if(isHost){
+			for(int i = 0; i < players.length; i++){
+				//create a command with player ID and no of players
+				ping ping = new ping(players.length, i);
+				Object p = Jsonify.getObjectAsJsonString(ping);
+				//send ping to each client
+				System.out.println(p);
+			}
+		}
+	
+		//need to loop this for each player 
 		boolean recievedPing = false;
-		//should receive a ping command from all clients *******
 		//forward that ping to all clients 
 		for(int i=0; i < currentNoOfPlayers; i++){
 			if(!recievedPing){
@@ -240,31 +343,35 @@ public class Protocol {
 				return LEAVE_GAME;
 			}
 		}
-		
+
+		//if not enough players left terminate game
 		if(currentNoOfPlayers < 3){
-			//terminate game
 			System.out.println("End of Game: Sending Leave_Game to all clients");
 			return LEAVE_GAME;
 		}
-		
+
 		//if all clients respond 
 		return READY;
 	}
-	
+
 	private ProtocolState ready(String command){
-		Object ready = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.setup.ready.class);
-		//send ready command to all connected clients
+		//send ready command to all connected clients ACK required
+		ready ready = new ready();
 		
 		//block for ack
-		
+
 		//once all acks recieved move to init game
 		return INIT_GAME;
 	}
 
 	private ProtocolState init_game(String command){
-		Object init_game = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.setup.initalise_game.class);
+		initalise_game init_game = new initalise_game();
 		return READY;
 	}
+
+	
+	
+	
 	
 	/**
 	 * Sent by each player in turn at the start of the game to 
@@ -276,11 +383,11 @@ public class Protocol {
 		Object setup = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.setup.setup.class);
 		return protocolState;	
 	}
-	
-	
-	
+
+
+
 	//***************************** CARDS ***********************************
-	
+
 	/**
 	 * Sent by each player at the start of their turn, specifying group(s) of 
 	 * cards to trade in for armies, and the number of armies they are expecting to receive. 
@@ -292,41 +399,41 @@ public class Protocol {
 		Object play_cards = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.cards.play_cards.class);
 		return protocolState;	
 	}
-	
-	
+
+
 	private ProtocolState draw_card(String command){
 		Object draw_card = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.cards.draw_card.class);
 		return protocolState;	
 	}
-	
+
 	private ProtocolState deploy(String command){
 		Object deploy = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.cards.deploy.class);
 		return protocolState;	
 	}
-	
-	
+
+
 	//*********************** ATTACK / DEFEND ******************************
 
 	private ProtocolState attack(String command) {
 		return null;
 	}
-	
+
 	private ProtocolState defend(String command){
 		return protocolState;
-		
+
 	}
 
 	private ProtocolState attack_capture(String command){
 		return protocolState;
-		
+
 	}
-	
-	
+
+
 	private ProtocolState fortify(String command){
 		return protocolState;
-		
+
 	}
-	
+
 	private ProtocolState ack(String command){
 		return protocolState;
 	}
@@ -335,65 +442,65 @@ public class Protocol {
 
 	private ProtocolState roll(String command){
 		return protocolState;
-		
+
 	}
 
 	private ProtocolState roll_hash(String command){
 		return protocolState;
-		
+
 	}
-	
+
 	private ProtocolState roll_number(String command){
 		return protocolState;
-		
+
 	}
-	
+
 	//*********************** ERRORS ******************************
 	private ProtocolState timeout(String command){
 		return protocolState;
-		
+
 	}
-	
+
 	private ProtocolState leave_game(String command){
 		return protocolState;
-		
+
 	}
-	
+
 	/**
 	 * @param string to be tested
 	 * @return true if string is valid JSON
 	 * 			false otherwise
 	 */
 	public boolean isJsonStringValid(String test) {
-	    try {
-	    	JsonObject o = new JsonParser().parse(test).getAsJsonObject();
-	    } catch (JsonParseException ex) {
-	        try {
-	        	//incase array is valid too
-	        	JsonArray o = new JsonParser().parse(test).getAsJsonArray();
-	        } catch (JsonParseException ex1) {
-	            return false;
-	        }
-	    }
-	    return true;
+		try {
+			JsonObject o = new JsonParser().parse(test).getAsJsonObject();
+		} catch (JsonParseException ex) {
+			try {
+				//incase array is valid too
+				JsonArray o = new JsonParser().parse(test).getAsJsonArray();
+			} catch (JsonParseException ex1) {
+				return false;
+			}
+		}
+		return true;
 	}
-	
+
 	public static void main(String[] args) {
 
-    	
-    	
-        // build the game state
-        // accept players according to protocol
-        //      as players connect break off the connections into threads
-        //      create a mapping between 'remote player objects' and the threads
-        //      add remote player objects to the game state
-        //
-        // add players to game state as
-        //
-        // start the game
-        // field all received player actions and send them to appropriate player objects
-        //
-        //
-    }
+
+
+		// build the game state
+		// accept players according to protocol
+		//      as players connect break off the connections into threads
+		//      create a mapping between 'remote player objects' and the threads
+		//      add remote player objects to the game state
+		//
+		// add players to game state as
+		//
+		// start the game
+		// field all received player actions and send them to appropriate player objects
+		//
+		//
+	}
 
 }

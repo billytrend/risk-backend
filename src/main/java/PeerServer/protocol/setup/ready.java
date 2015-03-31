@@ -13,6 +13,9 @@ package PeerServer.protocol.setup;
  */
 public class ready {
 
-	int player_id;
-	int ack_id;
+	public int player_id;
+	public int ack_id;
+	
+	
+	
 }

@@ -11,7 +11,15 @@ package PeerServer.protocol.setup;
  *
  */
 public class accept_join_game {
-	int player_id;
-	int acknowledgement_timeout;
-	int move_timeout;
+	private int player_id;
+	private int acknowledgement_timeout;
+	private int move_timeout;
+	
+	
+	public accept_join_game(int player_id,int acknowledgement_timeout,int move_timeout){
+		this.player_id = player_id;
+		this.acknowledgement_timeout = acknowledgement_timeout;
+		this.move_timeout = move_timeout;
+	}
 }
+
