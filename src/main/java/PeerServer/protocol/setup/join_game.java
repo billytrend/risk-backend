@@ -26,12 +26,12 @@ package PeerServer.protocol.setup;
 
 public class join_game {
 	
-	public float supported_versions [];
-	public String supported_features [];
+	public Integer[] supported_versions;
+	public String[] supported_features;
 	public String name; 
 	public String key;
 
-	public join_game(float [] supported_versions, String [] supported_features, String name, String key) {
+	public join_game(Integer[] supported_versions, String[] supported_features, String name, String key) {
 		this.supported_versions = supported_versions;
 		this.supported_features = supported_features;
 		this.name = name;

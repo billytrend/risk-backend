@@ -4,8 +4,10 @@ import GameState.State;
 import GeneralUtils.Serialisers.GameStateSerialiser;
 import GeneralUtils.Serialisers.LobbySerialiser;
 import LobbyServer.LobbyState.Lobby;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 
 public class Jsonify {
 
@@ -23,8 +25,12 @@ public class Jsonify {
 //        return new Gson().toJson(lobby);
 //    }
 
-    public static Object getJsonStringAsObject(String s, Class c) {
-        return new Gson().fromJson(s, c);
+    public static Object getJsonStringAsObject(String s, Class c) throws JsonParseException {
+        String str =  new Gson().fromJson(s, c);
+        if(str == null)
+        	throw new JsonParseException(str);
+
+        return str;
     }
 
 

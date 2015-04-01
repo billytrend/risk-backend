@@ -5,13 +5,21 @@ import static com.esotericsoftware.minlog.Log.debug;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
+
+import javax.mail.search.SentDateTerm;
+import javax.persistence.Id;
 
 import GameBuilders.RiskMapGameBuilder;
 import GameEngine.GameEngine;
 import GameState.*;
 import GameUtils.PlayerUtils;
 import GeneralUtils.Jsonify;
+import PeerServer.protocol.general.acknowledgement;
+import PeerServer.protocol.general.timeout;
 import PeerServer.protocol.setup.*;
 import PlayerInput.PlayerInterface;
 
@@ -32,16 +40,24 @@ public class Protocol {
 	private int ack_timeout;
 	private int move_timeout;
 	private int maxNoOfPlayers = 6;		//min is 3	
+	
 	private boolean apiSupported;
 	private int gameLaunchTime = 60;
-	private String[] supported_features;
-	private float[] supported_versions;
+	
+	private HashMap<String, Integer> supportedFeatures = new HashMap<String, Integer>();
+	private HashMap<Integer, Integer> supportedVersions = new HashMap<Integer, Integer>();
 	private String errorMessage = "default";
 	
 	private State state;
 	private ArrayList<Player> startingPlayers;
+	private ArrayList<Connection> connections;
 	private GameEngine engine = null;
-	private TreeMap<Client, String> clientMap = new TreeMap<Client, String>();
+	private HashMap<Integer, Connection> idMap = new HashMap<Integer, Connection>();
+	private Connection currentConnection;
+	
+	private ArrayList<Connection> acknowlegements;
+	
+	private long startTime;
 	
 	
 	/**
@@ -84,7 +100,7 @@ public class Protocol {
 			break;
 		case REJECT_JOIN_GAME:
 			debug("\n REJECT_JOIN_GAME");
-			this.protocolState = reject_join_game(command);
+			this.protocolState = reject_join_game(errorMessage);
 			break;
 		case PLAYERS_JOINED:
 			debug("\n PLAYERS_JOINED");
@@ -94,9 +110,17 @@ public class Protocol {
 			debug("\n PING");
 			this.protocolState = ping(command);
 			break;
+		case PING_ACK:
+			debug("\n PING_ACK");
+			this.protocolState = ping_ack(command);
+			break;
 		case READY:
 			debug("\n READY");
 			this.protocolState = ready(command);
+			break;
+		case RECEIVE_ACK:
+			debug("\n RECEIVE_ACK");
+			this.protocolState = receive_ack(command);
 			break;
 		case INIT_GAME:
 			debug("\n INIT_GAME");
@@ -166,73 +190,6 @@ public class Protocol {
 	}
 
 	/**
-	 * Controls when the game should begin. 
-	 * @param command
-	 * @return PING if game is launched / WAITING_FOR_PLAYERS if not enough players
-	 *
-	private ProtocolState waiting_for_players(String command) {
-		//ensure the join command is allowed
-		try {
-			//create JSON object of command
-			join_game join_game = (join_game) Jsonify.getJsonStringAsObject(command, join_game.class);
-
-			//ensure version set matches game version
-			if(join_game.supported_versions != supported_versions){
-				return REJECT_JOIN_GAME;
-			}
-			//ensure features match each other 
-			if(join_game.supported_features != supported_features){
-				return REJECT_JOIN_GAME;
-			}
-
-			
-			//  TODO: check whether game is in progress
-			
-			//reject if game in progress 
-			//if(gameInProgress) {
-			//	System.out.println("Cant join Reason: Game in Progress!");
-			//	errorMessage = "Reason: Game in Progress!";
-			//	return REJECT_JOIN_GAME;
-			//}
-			
-			
-			
-			//reject if no more space in game
-			if(PlayerUtils.getPlayersInGame(state).size() == maxNoOfPlayers) {
-				System.out.println("Cant join Reason: Game is Full!");
-				errorMessage = "Reason: Game is Full!";
-				return REJECT_JOIN_GAME;
-			}
-
-		}
-		catch(Exception error) {
-			//if command string does not create a join_game object correctly
-			System.out.println("The join_game command was malformed");
-			return REJECT_JOIN_GAME;
-		}
-
-		//if all above is fine, allow them to join game 
-		while(PlayerUtils.getPlayersInGame(state).size() < 3){
-			//block until enough players join game 
-			System.out.println("STILL WAITING ON MORE PLAYERS");
-			//send an accept join game to client
-			return ACCEPT_JOIN_GAME;
-		}
-
-		//otherwise wait gameLaunch time then launch game
-		try {
-			this.wait(gameLaunchTime);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
-		//send ping to all clients
-		return PING;
-	}
-	*/
-
-	
-	/**
 	 * Sent by a client to a host attempting to join a game. 
 	 * First command sent upon opening a socket connection to a host.
 	 * @param command 
@@ -245,7 +202,7 @@ public class Protocol {
 			join_game join_game = (join_game) Jsonify.getJsonStringAsObject(command, join_game.class);
 			
 			//reject if game in progress 
-			if(engine == null) {
+			if(engine != null) {
 				System.out.println("Cant join Reason: Game in Progress!");
 				errorMessage = "Reason: Game in Progress!";
 				return REJECT_JOIN_GAME;
@@ -253,14 +210,15 @@ public class Protocol {
 			
 			//reject if no more space in game
 			if(PlayerUtils.getPlayersInGame(state).size() >= maxNoOfPlayers) {
-				System.out.println("Cant join Reason: Game is Full!");
+				System.out.println("Cant join Reason: Game is currentConnection.idFull!");
 				// TODO: send over network
 				errorMessage = "Reason: Game is Full!";
 				return REJECT_JOIN_GAME;
 			}
 			
-			//send join_game object
-			System.out.println("sending... " + join_game);
+			update(join_game.supported_features, supportedFeatures);
+			update(join_game.supported_versions, supportedVersions);
+			
 		}
 		catch(Exception error) {
 			//if command string does not create a join_game object correctly
@@ -281,6 +239,22 @@ public class Protocol {
 	}
 
 	
+	
+	
+	private void update(Object[] input,	HashMap toUpdate) {
+		Arrays.sort(input);
+		Integer count;
+		for(Object a : input){
+			if(toUpdate.containsKey(a)){
+				count = (Integer) toUpdate.get(a);
+				toUpdate.put(a, count + 1);
+			}
+			else{
+				toUpdate.put(toUpdate, 1);
+			}
+		}
+	}
+
 	/**
 	 * Sent by a host to a client on receipt of a “join_game” command, 
 	 * as confirmation of adding them to the game.
@@ -289,52 +263,49 @@ public class Protocol {
 	 */
 	private ProtocolState accept_join_game(String command) {
 		//add player's name to players list
-		accept_join_game accept_join_game = new accept_join_game(player_id, acknowledgement_timeout, move_timeout)
+		accept_join_game accept_join_game =
+				new accept_join_game(currentConnection.id, ack_timeout, move_timeout);
 		
-		int id = startingPlayers.size() + 1;
+		int id = startingPlayers.size();
 		
 		// TODO: starting armies fix
 		// TODO: add logic between host being a player
 		startingPlayers.add(new Player(new RemotePlayer(), 0, id));
 		
-		//send this to client
-		System.out.println("You have been accepted to the game \n");
-		System.out.println("Ack Timeout" + ack_timeout + "\n");
-		System.out.println("Move Timeout" + move_timeout + "\n");
-		System.out.println("Your PlayerID is: " + id + "\n");
+		idMap.put(id, currentConnection);
 		
-		//Create an accept_join_game object
-		accept_join_game acg = new accept_join_game(id, ack_timeout, move_timeout);
-
-
 		//turn object into JSON string to be sent over network 
-		String accept_join_game = Jsonify.getObjectAsJsonString(acg);
+		String ajg = Jsonify.getObjectAsJsonString(accept_join_game);
 
-		//tell the GE we have a new player !ASK BILLY! 
-		System.out.println("TELL GAME ENGINE ABOUT NEW PLAYA");
-		System.out.println("Sending... " + accept_join_game);
+		//sending to connection
+		currentConnection.sendCommand(ajg);
+		System.out.println("Sending... " + ajg);
 
 		//if they had a name move to players joined
 		return PLAYERS_JOINED;
 	}
 
+	
 	/**
 	 * Sent by a host to a client on receipt of a “join_game” command, as rejection.
 	 * @param command
 	 * @return END_GAME as the player wont take part in the game
 	 */
 	private ProtocolState reject_join_game(String reason) {
-		
-		reject_join_game reject_join_game = new reject_join_game(errorMessage);
-		
-		Object rj = Jsonify.getObjectAsJsonString(reject_join_game);
+		//create json string 
+		reject_join_game reject_join_game = new reject_join_game(errorMessage);		
+		String rj = Jsonify.getObjectAsJsonString(reject_join_game);
 		
 		//send rejection 
-		System.out.println("Sorry you cannot join the game \n");
+		currentConnection.sendCommand(rj);
+	
 		System.out.println(rj);
 
 		//end the game for this thread / player
-		return END_GAME;
+		// TODO: think about it
+		if(engine != null) return END_GAME;
+		//otherwise return to join game
+		return JOIN_GAME;
 	}
 
 
@@ -345,85 +316,141 @@ public class Protocol {
 	 * @return state change 
 	 */
 	private ProtocolState players_joined(String command){
+	
+		players_joined players_joined = new players_joined(startingPlayers);
+		String npj = Jsonify.getObjectAsJsonString(players_joined);
+		System.out.println(npj);
+		
 		//send to new player containing current players
-		for(int i = 0; i < startingPlayers.size(); i++)
-		{
-			players_joined new_player_joined = new players_joined(i, playerID[i]);
-			Object npj = Jsonify.getObjectAsJsonString(new_player_joined);
-			System.out.println(npj);
-		}
+		sendToAll(npj);		
 		
-		
-		//send to current players including only new player
-		players_joined current_player_joined = 
-				new players_joined(currentNoOfPlayers, playerID[currentNoOfPlayers]);
-
-		Object cpj = Jsonify.getObjectAsJsonString(current_player_joined);
-
-		//network.send npj	& cpj
-		
-		//forward to all players
-		System.out.println(Arrays.deepToString(players));
-
-		return WAITING_FOR_PLAYERS;
+		return JOIN_GAME;
 	}
 
 
 	//from now on all messages must be broadcast to all clients
 	private ProtocolState ping(String command){
-		System.out.println("Number of players in game: " + currentNoOfPlayers);
+		System.out.println("Number of players in game: " + startingPlayers.size());
 
-		//could potentially start at one if host is not playing
-		if(isHost){
-			for(int i = 0; i < players.length; i++){
-				//create a command with player ID and no of players
-				ping ping = new ping(players.length, i);
-				Object p = Jsonify.getObjectAsJsonString(ping);
-				//send ping to each client
-				System.out.println(p);
-			}
-		}
+		ping ping = new ping(startingPlayers.size(), 0);
+		String p = Jsonify.getObjectAsJsonString(ping);
+		//send ping to each client
+		System.out.println(p);
+		sendToAll(p);
+		
+		startTime = System.currentTimeMillis();
+		return RECEIVE_ACK;
+	}
 	
-		//need to loop this for each player 
-		boolean recievedPing = false;
-		//forward that ping to all clients 
-		for(int i=0; i < currentNoOfPlayers; i++){
-			if(!recievedPing){
-				//remove player from the game
-				System.out.println("You did not respond within the timeout: You have been kicked!");
+	
+	private ProtocolState ping_ack(String command) {
+		return acknowledge(command, true);
+	}
+	private ProtocolState receive_ack(String command){
+		return acknowledge(command, false);
+	}
+	
+	
+	private ProtocolState acknowledge(String command, boolean isPing) {
+		long time = System.currentTimeMillis();
+		
+		// if the time is not out receive the acknowledgement
+		if((startTime - time)/1000 < ack_timeout){
+			try{
+				Object result;
+				if(isPing)
+					result = (PeerServer.protocol.setup.ping) Jsonify.getJsonStringAsObject(command, ping.class);
+				else
+					result = Jsonify.getJsonStringAsObject(command, acknowledgement.class);
+				
+				// if(result != null) ??
+				acknowlegements.add(currentConnection);
+			}
+			catch(Exception error) {
+				System.out.println("Wrong ping acknowledgement");
+			}
+			
+			if(isPing)
+				return PING_ACK;
+			else
+				return RECEIVE_ACK;
+		}	
+		
+		
+		else{
+			for(Connection c : connections){
+				if(!acknowlegements.contains(c)){
+					// removing players that have not sent acknowledgement
+					if(!isPing){
+						// message about timeout needs to be sent to all players
+						timeout timeout = new timeout(0, 1, c.id);
+						sendToAll(Jsonify.getObjectAsJsonString(timeout));
+					}
+					remove_player(c);
+				}
+			}
+			
+			if(startingPlayers.size() < 3){
+				System.out.println("End of Game: Sending Leave_Game to all clients");
 				return LEAVE_GAME;
 			}
-		}
 
-		//if not enough players left terminate game
-		if(currentNoOfPlayers < 3){
-			System.out.println("End of Game: Sending Leave_Game to all clients");
-			return LEAVE_GAME;
+			//if all clients respond 
+			if(isPing)
+				return READY;
+			else
+				return INIT_GAME;
 		}
-
-		//if all clients respond 
-		return READY;
 	}
+	
+	
+	
 
 	private ProtocolState ready(String command){
 		//send ready command to all connected clients ACK required
-		ready ready = new ready();
-		
-		//block for ack
+		ready ready = new ready(null, 0, 1);
+		sendToAll(Jsonify.getObjectAsJsonString(ready));
 
-		//once all acks recieved move to init game
-		return INIT_GAME;
+		return RECEIVE_ACK;
 	}
 
+	
 	private ProtocolState init_game(String command){
-		initalise_game init_game = new initalise_game();
+		// finding the highest version supported by all
+		int version = findVersionSupportedByAll(supportedVersions);
+		
+		// get features that are supported by all
+		ArrayList<String> features = findFeaturesSupportedByAll(supportedFeatures);
+		
+		initalise_game init_game = new initalise_game(version, (String[]) features.toArray());
+		sendToAll(Jsonify.getObjectAsJsonString(init_game));
+		
+		
 		return READY;
 	}
 
 	
-	
-	
-	
+	private ArrayList<String> findFeaturesSupportedByAll(
+			HashMap<String, Integer> map) {
+		ArrayList<String> features = new ArrayList<String>();
+		
+		for(String a : map.keySet()){
+			if(map.get(a) == connections.size())
+				features.add(a);
+		}	
+		return features;
+	}
+
+	private int findVersionSupportedByAll(HashMap<Integer, Integer> map){
+		int supported = 1;
+		for(Integer a : map.keySet()){
+			if(map.get(a) == connections.size())
+				supported = a;
+		}
+		
+		return supported;
+	}
+
 	/**
 	 * Sent by each player in turn at the start of the game to 
 	 * claim a territory or reinforce an owned territory (once all have been claimed).
@@ -484,7 +511,7 @@ public class Protocol {
 		return protocolState;
 
 	}
-
+	
 	private ProtocolState ack(String command){
 		return protocolState;
 	}
@@ -516,6 +543,32 @@ public class Protocol {
 		return protocolState;
 
 	}
+	
+	
+	private void remove_player(Connection connection){
+		int id = connection.id;
+		Player player = state.lookUpPlayer(id);
+		
+		// TODO: make sure its ok with game engine
+		PlayerUtils.removePlayer(state, player);
+		
+		// remove that player from connections etc
+		connections.remove(connection);
+		idMap.remove(id);
+		
+		// if a game hasnt started and a player needs to be removed
+		// then the starting array should be altered
+		if(engine == null){
+			startingPlayers.remove(state.lookUpPlayer(id));
+		}
+	}
+	
+	
+	private void sendToAll(String command){
+		for (Connection c : connections) {
+			c.sendCommand(command);
+		}
+	}
 
 	/**
 	 * @param string to be tested
@@ -541,6 +594,17 @@ public class Protocol {
 		
 		protocol.state = new State();
 		RiskMapGameBuilder.addRiskTerritoriesToState(protocol.state);
+		
+		// null means that its a local player
+		protocol.idMap.put(0, null);
+		
+		for (Connection c : protocol.connections) {
+			String playersLatestCommand = c.receiveCommand();
+			if (!playersLatestCommand.equals("")) {
+				protocol.currentConnection = c;
+				protocol.handleCommand(playersLatestCommand);
+			}		
+		}
 
 		// build the game state
 		// accept players according to protocol

@@ -12,6 +12,13 @@ package PeerServer.protocol.setup;
  */
 public class initalise_game {
 
-	public int supported_versions;
-	public String supported_features [];
+	public initalise_game(Integer version, String[] supportedFeatures){
+		this.version = version;
+		this.supported_features = supportedFeatures;
+	}
+	
+	public String command = "initialize_game";
+	public Integer version;
+	public String[] supported_features;
+
 }
