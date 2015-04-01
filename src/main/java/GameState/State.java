@@ -21,6 +21,7 @@ public class State {
 
 	protected SimpleGraph<Territory, DefaultEdge> territories = new SimpleGraph<Territory, DefaultEdge>(DefaultEdge.class);
 	protected HashMap<String, Player> playerMapping;
+	protected HashMap<String, Player> playerNumberIdMapping;
 	protected HashMap<String, Territory> territoryMapping;
 	protected ArrayList<Player> players;
 	private PlayerQueue playerQueue;
@@ -31,6 +32,7 @@ public class State {
 	public State(ArrayList<Player> players){
 		numberOfCardSetsUsed = 0;
 		playerMapping = new HashMap<String, Player>();
+		playerNumberIdMapping = new HashMap<String, Player>();
 		territoryMapping = new HashMap<String, Territory>();
 		setPlayers(players);
     }
@@ -64,6 +66,10 @@ public class State {
 		else if(obj instanceof Player){
 			playerMapping.put(id, (Player) obj);
 		}
+	}
+	
+	public void addIntegerMapping(Integer id, Object obj){
+		playerNumberIdMapping.put(id, (Player) obj);
 	}
 	
 	public ArrayList<String> getPlayersIds(){

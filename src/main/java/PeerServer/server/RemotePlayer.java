@@ -32,12 +32,8 @@ public class RemotePlayer implements PlayerInterface  {
 	@Override
 	public int getNumberOfDice(Player player, int max, RequestReason reason) {
 		
-		DiceNumberRequest d = new DiceNumberRequest();
-		d.max = max;
-		d.reason = reason;
-
-		connection.send(Jsonify.getObjectAsJsonString(d));
-		
+		// send the request to the protocol
+		// wait on a response
 		playerResponse = new CountDownLatch(1);
 		try {
 			playerResponse.await();
@@ -45,6 +41,7 @@ public class RemotePlayer implements PlayerInterface  {
 			e.printStackTrace();
 		}
 		
+		// get response from the list and return it to the game engine
 		return ((DiceNumberResponse) responses.get(responses.size() - 1)).n;
 	}
 
@@ -93,6 +90,7 @@ public class RemotePlayer implements PlayerInterface  {
 		return ((ArmyResponse) responses.get(responses.size() - 1)).n;
 	}
 
+	
 	@Override
 	public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
 		return null;

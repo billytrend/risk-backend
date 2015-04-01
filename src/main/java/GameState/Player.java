@@ -15,6 +15,7 @@ import java.util.ArrayList;
 public class Player {
 
 	private String id = "Player " + this.hashCode();
+	private int numberId;
 	private transient PlayerInterface communicationMethod;
 	private transient ArrayList<Army> armies;
     private String colour;
@@ -28,6 +29,7 @@ public class Player {
 	public Player(PlayerInterface communicationMethod, int startingArmies, int index) {
 		this(communicationMethod, startingArmies);
 		id = "Player " + index;
+		numberId = index;
 	}
 	
 	public Player(PlayerInterface communicationMethod, int startingArmies, String id) {
@@ -38,6 +40,11 @@ public class Player {
 	public String getId() {
 		return id;
 	}
+	
+	public int getNumberId() {
+		return numberId;
+	}
+	
 	public void setId(String id) {
 		this.id = id;
 	}
