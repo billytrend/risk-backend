@@ -17,8 +17,8 @@ public class timeout {
 		this.payload = payload;
 	}
 	
-	String command = "timeout";
-	int player_id;
-	int ack_id;
-	int payload;
+	public String command = "timeout";
+	public int player_id;
+	public int ack_id;
+	public int payload;
 }

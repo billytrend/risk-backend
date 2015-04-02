@@ -36,6 +36,12 @@ public class Player {
 		this(communicationMethod, startingArmies);
 		this.id = id;
 	}
+	
+	public Player(PlayerInterface communicationMethod, int startingArmies, Integer id, String name) {
+		this(communicationMethod, startingArmies);
+		this.numberId = id;
+		this.id = name;
+	}
 
 	public String getId() {
 		return id;

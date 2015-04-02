@@ -17,7 +17,7 @@ import GameState.Player;
 public class players_joined {
 
 	//2D array of integer player ID/string name pairs.
-	String[][] players;
+	public String[][] players;
 
 	public players_joined(ArrayList<Player> allPlayers){
 		players = new String[allPlayers.size()][3];

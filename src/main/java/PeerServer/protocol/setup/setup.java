@@ -12,6 +12,6 @@ package PeerServer.protocol.setup;
  */
 public class setup {
 	
-	int territory_id;
+	public int territory_id;
 
 }

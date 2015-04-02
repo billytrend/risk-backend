@@ -12,8 +12,8 @@ package PeerServer.protocol.setup;
  */
 public class ping {
 
-	int player_id;
-	int no_of_players;		//can be null if sent by client 
+	public int player_id;
+	public int no_of_players;		//can be null if sent by client 
 	
 	public ping(int no_of_players, int player_id){
 		this.player_id = player_id;
