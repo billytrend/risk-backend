@@ -21,6 +21,7 @@ public class State {
 
 	protected SimpleGraph<Territory, DefaultEdge> territories = new SimpleGraph<Territory, DefaultEdge>(DefaultEdge.class);
 	protected HashMap<String, Player> playerMapping;
+	protected HashMap<Integer, Player> playerNumberIdMapping;
 	protected HashMap<String, Territory> territoryMapping;
 	protected ArrayList<Player> players;
 	private PlayerQueue playerQueue;
@@ -31,6 +32,7 @@ public class State {
 	public State(ArrayList<Player> players){
 		numberOfCardSetsUsed = 0;
 		playerMapping = new HashMap<String, Player>();
+		playerNumberIdMapping = new HashMap<Integer, Player>();
 		territoryMapping = new HashMap<String, Territory>();
 		setPlayers(players);
     }
@@ -42,7 +44,9 @@ public class State {
     public void setPlayers(ArrayList<Player> players) {
         this.players = players;
         this.playerQueue = new PlayerQueue(players);
-
+		playerMapping = new HashMap<String, Player>();
+		playerNumberIdMapping = new HashMap<Integer, Player>();
+		
         for(Player player : players){
             playerMapping.put(player.getId(), player);
         }
@@ -50,6 +54,10 @@ public class State {
     
 	public Player lookUpPlayer(String id){
 		return playerMapping.get(id);
+	}
+	
+	public Player lookUpPlayer(Integer id){
+		return playerNumberIdMapping.get(id);
 	}
 	
 	public Territory lookUpTerritory(String id){
@@ -64,6 +72,10 @@ public class State {
 		else if(obj instanceof Player){
 			playerMapping.put(id, (Player) obj);
 		}
+	}
+	
+	public void addIntegerMapping(Integer id, Object obj){
+		playerNumberIdMapping.put(id, (Player) obj);
 	}
 	
 	public ArrayList<String> getPlayersIds(){

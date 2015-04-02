@@ -13,7 +13,9 @@ public enum ProtocolState {
 	PLAYERS_JOINED,
 	ACK,
 	PING,
+	PING_ACK, 
 	READY,
+	RECEIVE_ACK, 
 	INIT_GAME,
 	SETUP_GAME,	
 	PLAY_CARDS,
@@ -30,5 +32,5 @@ public enum ProtocolState {
 	FORTIFY,
 	LEAVE_GAME,
 	TIMEOUT,
-	END_GAME, 	
+	END_GAME, 
 }
