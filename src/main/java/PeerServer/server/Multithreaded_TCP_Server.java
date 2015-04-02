@@ -49,8 +49,7 @@ public class Multithreaded_TCP_Server {
 	public void listen(int portNumber) {
 		//int clientNumber = 1;
 		if (openServerSocket()) {
-			System.out
-			.println("Server up and listening on Port: " + portNumber);
+			System.out.println("Server up and listening on Port: " + portNumber);
 			while (true) {
 				try {
 					//begin a connection
