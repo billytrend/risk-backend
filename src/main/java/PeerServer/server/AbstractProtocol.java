@@ -187,6 +187,17 @@ public abstract class AbstractProtocol {
 	}
 	*/
 	
+	
+	/**
+	 * Method used to contact the PlayerInterface (RemotePlayer) and notify it
+	 * about its new response
+	 * @param resonse
+	 * @param player
+	 */
+	protected void notifyPlayerInterface(String resonse, PlayerInterface player){
+		// TODO:
+	}
+	
 	/**Jsonify
 	 * Sent by a client to a host attempting to join a game. 
 	 * First command sent upon opening a socket connection to a host.

@@ -46,6 +46,7 @@ public class ClientProtocol extends AbstractProtocol{
 
 	@Override
 	protected ProtocolState join_game(String command) {
+		System.out.println("JOIN");
 		
 		// empty string meand there was no command and we are joining the game
 		if(command == ""){
@@ -80,6 +81,8 @@ public class ClientProtocol extends AbstractProtocol{
 	
 	@Override
 	protected ProtocolState accept_join_game(String command) {
+		System.out.println("ACCEPT");
+		
 		accept_join_game join = (accept_join_game) Jsonify.getJsonStringAsObject(command, accept_join_game.class);
 		if(join == null){
 			leaveCode = "200";
@@ -98,6 +101,8 @@ public class ClientProtocol extends AbstractProtocol{
 
 	@Override
 	protected ProtocolState reject_join_game(String reason) {
+		System.out.println("REJECT");
+		
 		reject_join_game reject = (reject_join_game) Jsonify.getJsonStringAsObject(reason, reject_join_game.class);
 		if(reject == null){
 			leaveCode = "200";
@@ -116,6 +121,7 @@ public class ClientProtocol extends AbstractProtocol{
 
 	@Override
 	protected ProtocolState players_joined(String command){	
+		System.out.println("PLAYERS_JOINED");
 		
 		// got it from host to be informed about players
 		players_joined players = (players_joined) Jsonify.getJsonStringAsObject(command, players_joined.class);	
@@ -161,6 +167,8 @@ public class ClientProtocol extends AbstractProtocol{
 
 	@Override
 	protected ProtocolState ping(String command){
+		System.out.println("PING");
+		
 		if(command.contains("ready"))
 			return ready(command);
 		
@@ -195,6 +203,7 @@ public class ClientProtocol extends AbstractProtocol{
 	
 	@Override
 	protected ProtocolState timeout(String command){
+		System.out.println("TIMEOUT");
 		// game should be ended here..
 	
 		timeout timeout = (timeout) Jsonify.getJsonStringAsObject(command, timeout.class);
@@ -217,6 +226,8 @@ public class ClientProtocol extends AbstractProtocol{
 
 	@Override
 	protected ProtocolState leave_game(String command){
+		System.out.println("LEAVE");
+		
 		// if command is not empty the host sent us a leave request
 		if(command != ""){
 			leave_game leave = (leave_game) Jsonify.getJsonStringAsObject(command, leave_game.class);
@@ -252,6 +263,7 @@ public class ClientProtocol extends AbstractProtocol{
 	
 	@Override
 	protected ProtocolState ready(String command){
+		System.out.println("READY");
 		ready ready = (ready) Jsonify.getJsonStringAsObject(command, ready.class);
 		if(ready == null){
 			leaveCode = "200";
@@ -275,6 +287,7 @@ public class ClientProtocol extends AbstractProtocol{
 	
 	@Override
 	protected ProtocolState init_game(String command){
+		System.out.println("INIT_GAME");
 		if(command.contains("timeout"))
 			return timeout(command);
 		

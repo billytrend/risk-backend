@@ -1,8 +1,16 @@
 package PeerServer.server;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+
+import org.apache.logging.log4j.core.appender.db.jdbc.ConnectionSource;
 
 import PeerServer.protocol.setup.*;
 import PeerServer.protocol.general.*;
@@ -29,7 +37,6 @@ import com.google.gson.JsonParser;
 public class HostProtocol extends AbstractProtocol {
 	
 	private int maxNoOfPlayers = 6;		//min is 3	
-	private int gameLaunchTime = 60; // TODO: what is this?
 
 	// mappings of features / versions to the count of how many clients support these
 	private HashMap<String, Integer> supportedFeatures = new HashMap<String, Integer>();
@@ -46,45 +53,44 @@ public class HostProtocol extends AbstractProtocol {
 	private long startTime;
 	private ArrayList<PeerConnection> acknowlegements; // IDs
 	
+	private Socket newSocket;
+	private BufferedReader inFromClient; 
+    private DataOutputStream outToClient;
+	
 	@Override
 	protected ProtocolState join_game(String command) {
-		try {
-			//create JSON object of command
-			join_game join_game = (join_game) Jsonify.getJsonStringAsObject(command, join_game.class);
-			
-			//reject if game in progress 
-			if(engine != null) {
-				System.out.println("Cant join Reason: Game in Progress!");
-				errorMessage = "Reason: Game in Progress!";
-				return ProtocolState.REJECT_JOIN_GAME;
-			}
-			
-			//reject if no more space in game
-			if(PlayerUtils.getPlayersInGame(state).size() >= maxNoOfPlayers) {
-				System.out.println("Cant join Reason: Game is currentConnection.idFull!");
-				// TODO: send over network
-				errorMessage = "Reason: Game is Full!";
-				return ProtocolState.REJECT_JOIN_GAME;
-			}
-			
-			update(join_game.supported_features, supportedFeatures);
-			update(join_game.supported_versions, supportedVersions);
-			
-		}
-		catch(Exception error) {
+		//create JSON object of command
+		join_game join_game = (join_game) Jsonify.getJsonStringAsObject(command, join_game.class);
+		if(join_game == null){
 			//if command string does not create a join_game object correctly
 			System.out.println("The join_game command was malformed");
-			return ProtocolState.REJECT_JOIN_GAME;
+			return reject_join_game("");
 		}
-		
+		//reject if game in progress 
+		if(engine != null) {
+			System.out.println("Cant join Reason: Game in Progress!");
+			errorMessage = "Reason: Game in Progress!";
+			return reject_join_game("");
+		}
+			
+		//reject if no more space in game
+		if(PlayerUtils.getPlayersInGame(state).size() >= maxNoOfPlayers) {
+			System.out.println("Cant join Reason: Game is currentConnection.idFull!");
+			// TODO: send over network
+			errorMessage = "Reason: Game is Full!";
+			return reject_join_game("");
+		}
+			
+		update(join_game.supported_features, supportedFeatures);
+		update(join_game.supported_versions, supportedVersions);
 		
 		if(startingPlayers.size() < 3){
 			System.out.println("STILL WAITING ON MORE PLAYERS");
 			//send an accept join game to client
-			return ProtocolState.ACCEPT_JOIN_GAME;
+			return accept_join_game("");
 		}
 		
-		// TODO: change this -- wait for other people
+		// TODO: change this -- wait for other people +3
 		// WAIT HERE
 		return ProtocolState.PING;	
 	}
@@ -278,6 +284,14 @@ public class HostProtocol extends AbstractProtocol {
 	}
 
 	
+
+	@Override
+	protected ProtocolState leave_game(String command) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
 	/**
 	 * Removes the given connection from the list of supported connections
 	 * and a player associated with it from the game state
@@ -366,40 +380,41 @@ public class HostProtocol extends AbstractProtocol {
 	public static void main(String[] args) {
 		HostProtocol protocol = new HostProtocol();
 		
-		protocol.state = new State();
-		RiskMapGameBuilder.addRiskTerritoriesToState(protocol.state);
+		protocol.run();
+	}
+
+	private void run() {
+		state = new State();
+		RiskMapGameBuilder.addRiskTerritoriesToState(state);
 		
 		// null means that its a local player
-		protocol.idMap.put(0, null);
+		idMap.put(0, null);
 		
-		for (PeerConnection c : protocol.connections) {
-			String playersLatestCommand = c.receiveCommand();
-			if (!playersLatestCommand.equals("")) {
-				protocol.currentConnection = c;
-				protocol.handleCommand(playersLatestCommand);
-			}		
+		try {
+			ServerSocket socket = new ServerSocket(4444);
+			
+			while(protocolState == ProtocolState.JOIN_GAME){
+				newSocket = socket.accept();
+				inFromClient = new BufferedReader(new InputStreamReader(newSocket.getInputStream()));
+				outToClient = new DataOutputStream(newSocket.getOutputStream());
+				handleCommand(inFromClient.readLine()); // TODO: check if it works for JSON
+			}
+			
+			for (PeerConnection c : connections) {
+				String playersLatestCommand = c.receiveCommand();
+				if (!playersLatestCommand.equals("")) {
+					currentConnection = c;
+					handleCommand(playersLatestCommand);
+				}		
+			}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
-		// build the game state
-		// accept players according to protocol
-		//      as players connect break off the connections into threads
-		//      create a mapping between 'remote player objects' and the threads
-		//      add remote player objects to the game state
-		//
-		// add players to game state as
-		//
-		// start the game
-		// field all received player actions and send them to appropriate player objects
-		//
-		//
 	}
 
 
 
 
-	@Override
-	protected ProtocolState leave_game(String command) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
