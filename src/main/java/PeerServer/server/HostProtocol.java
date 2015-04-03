@@ -26,49 +26,27 @@ import com.google.gson.JsonParser;
  * is currently being played over the network.
  * 
  */
-public class HostProtocol extends ClientProtocol {
+public class HostProtocol extends AbstractProtocol {
 	
 	private int maxNoOfPlayers = 6;		//min is 3	
-	private int gameLaunchTime = 60;
-	private boolean apiSupported;
+	private int gameLaunchTime = 60; // TODO: what is this?
 
+	// mappings of features / versions to the count of how many clients support these
 	private HashMap<String, Integer> supportedFeatures = new HashMap<String, Integer>();
 	private HashMap<Integer, Integer> supportedVersions = new HashMap<Integer, Integer>();
-	private ArrayList<PeerConnection> connections;
+	
+	private ArrayList<PeerConnection> connections; 	// players connections
+	
+	// maps players IDs with a connection associated with them
+	// for local the connection is null
 	private HashMap<Integer, PeerConnection> idMap = new HashMap<Integer, PeerConnection>();
+	
+	// connection which is currently served
 	private PeerConnection currentConnection;
 	private long startTime;
-	
 	private ArrayList<PeerConnection> acknowlegements; // IDs
 	
-	
-/*	/**
-	 * This is the game loop.
-	 * Ensures the game runs.
-	 *
-	private void play() throws InterruptedException {
-
-		if(isHost){
-			//set the ack timeout to 30 seconds move to 60
-			ack_timeout = 30;
-			move_timeout = 60;
-
-		}
-
-		//game loop
-		while (true) {
-			//if(!iterateGame()) return;
-		}
-	}
-
-	*/
-
-	/**
-	 * Sent by a client to a host attempting to join a game. 
-	 * First command sent upon opening a socket connection to a host.
-	 * @param command 
-	 * @return ACCEPT_JOIN_GAME if request successful otherwise REJECT_JOIN_GAME
-	 */
+	@Override
 	protected ProtocolState join_game(String command) {
 		try {
 			//create JSON object of command
@@ -110,31 +88,12 @@ public class HostProtocol extends ClientProtocol {
 		// WAIT HERE
 		return ProtocolState.PING;	
 	}
+	
 
-	
-	
-	
-	private void update(Object[] input,	HashMap toUpdate) {
-		Arrays.sort(input);
-		Integer count;
-		for(Object a : input){
-			if(toUpdate.containsKey(a)){
-				count = (Integer) toUpdate.get(a);
-				toUpdate.put(a, count + 1);
-			}
-			else{
-				toUpdate.put(toUpdate, 1);
-			}
-		}
-	}
 
-	/**
-	 * Sent by a host to a client on receipt of a “join_game” command, 
-	 * as confirmation of adding them to the game.
-	 * @param command 
-	 * @return
-	 */
-	private ProtocolState accept_join_game(String command) {
+
+	@Override
+	protected ProtocolState accept_join_game(String command) {
 		//add player's name to players list
 		accept_join_game accept_join_game =
 				new accept_join_game(currentConnection.id, ack_timeout, move_timeout);
@@ -159,12 +118,8 @@ public class HostProtocol extends ClientProtocol {
 	}
 
 	
-	/**
-	 * Sent by a host to a client on receipt of a “join_game” command, as rejection.
-	 * @param command
-	 * @return END_GAME as the player wont take part in the game
-	 */
-	private ProtocolState reject_join_game(String reason) {
+	@Override
+	protected ProtocolState reject_join_game(String reason) {
 		//create json string 
 		reject_join_game reject_join_game = new reject_join_game(errorMessage);		
 		String rj = Jsonify.getObjectAsJsonString(reject_join_game);
@@ -182,13 +137,8 @@ public class HostProtocol extends ClientProtocol {
 	}
 
 
-	/**
-	 * Sent by a host to each player after connection as players join the game. 
-	 * Maps player IDs to real names. Optional command, 
-	 * will only be sent if the player specified a real name itself.
-	 * @return state change 
-	 */
-	private ProtocolState players_joined(String command){
+	@Override
+	protected ProtocolState players_joined(String command){
 	
 		players_joined players_joined = new players_joined(startingPlayers);
 		String npj = Jsonify.getObjectAsJsonString(players_joined);
@@ -201,8 +151,8 @@ public class HostProtocol extends ClientProtocol {
 	}
 
 
-	//from now on all messages must be broadcast to all clients
-	private ProtocolState ping(String command){
+	@Override
+	protected ProtocolState ping(String command){
 		
 		// add all players to the state - will be deleted later if needed
 		state.setPlayers(startingPlayers);
@@ -219,15 +169,25 @@ public class HostProtocol extends ClientProtocol {
 		return ProtocolState.PING_ACK;
 	}
 	
-	
-	private ProtocolState ping_ack(String command) {
+	@Override
+	protected ProtocolState ping_ack(String command) {
 		return acknowledge(command, true);
 	}
-	private ProtocolState receive_ack(String command){
+	
+	@Override
+	protected ProtocolState receive_ack(String command){
 		return acknowledge(command, false);
 	}
 	
-	
+
+	/**
+	 * Receives acknowledgements (either ping or acknowledgement)
+	 * it keeps receiving these until the timeout passes.
+	 * 
+	 * @param command
+	 * @param isPing
+	 * @return
+	 */
 	private ProtocolState acknowledge(String command, boolean isPing) {
 		long time = System.currentTimeMillis();
 		
@@ -281,9 +241,14 @@ public class HostProtocol extends ClientProtocol {
 	}
 	
 	
-	
+	@Override
+	protected ProtocolState timeout(String command){
+		return protocolState;
 
-	private ProtocolState ready(String command){
+	}
+	
+	@Override
+	protected ProtocolState ready(String command){
 		//send ready command to all connected clients ACK required
 		ready ready = new ready(null, 0, 1);
 		sendToAll(Jsonify.getObjectAsJsonString(ready));
@@ -291,10 +256,10 @@ public class HostProtocol extends ClientProtocol {
 		return ProtocolState.RECEIVE_ACK;
 	}
 
-	
-	private ProtocolState init_game(String command){
+	@Override
+	protected ProtocolState init_game(String command){
 		// finding the highest version supported by all
-		int version = findVersionSupportedByAll(supportedVersions);
+		int version = findHighestVersionSupportedByAll(supportedVersions);
 		
 		// get features that are supported by all
 		ArrayList<String> features = findFeaturesSupportedByAll(supportedFeatures);
@@ -306,7 +271,51 @@ public class HostProtocol extends ClientProtocol {
 		return ProtocolState.READY;
 	}
 
+	@Override
+	protected ProtocolState setup_game(String command){
+		Object setup = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.setup.setup.class);
+		return protocolState;	
+	}
+
 	
+	/**
+	 * Removes the given connection from the list of supported connections
+	 * and a player associated with it from the game state
+	 * @param connection
+	 */
+	protected void remove_player(PeerConnection connection){
+		int ID = -1;
+		for(int id : idMap.keySet()){
+			if(idMap.get(id) == connection)
+				ID = id;
+		}
+		
+		// remove that player from connections
+		connections.remove(connection);
+		
+		if(ID != -1){
+			idMap.remove(ID);
+			// remove that player from the game state
+			remove_player(ID);
+		}
+	}
+	
+	
+	/**
+	 * Sends a given command to all supported connections (all clients)
+	 * @param command
+	 */
+	private void sendToAll(String command){
+		for (PeerConnection c : connections) {
+			c.sendCommand(command);
+		}
+	}
+
+	/**
+	 * 
+	 * @param map
+	 * @return
+	 */
 	private ArrayList<String> findFeaturesSupportedByAll(
 			HashMap<String, Integer> map) {
 		ArrayList<String> features = new ArrayList<String>();
@@ -317,8 +326,13 @@ public class HostProtocol extends ClientProtocol {
 		}	
 		return features;
 	}
-
-	private int findVersionSupportedByAll(HashMap<Integer, Integer> map){
+	
+	/**
+	 * 
+	 * @param map
+	 * @return
+	 */
+	private int findHighestVersionSupportedByAll(HashMap<Integer, Integer> map){
 		int supported = 1;
 		for(Integer a : map.keySet()){
 			if(map.get(a) == connections.size())
@@ -329,141 +343,24 @@ public class HostProtocol extends ClientProtocol {
 	}
 
 	/**
-	 * Sent by each player in turn at the start of the game to 
-	 * claim a territory or reinforce an owned territory (once all have been claimed).
-	 * @param command
-	 * @return
+	 * Updates a given mapping based on the input array.
+	 * Increases count of features / versions specified in the array.
+	 * 
+	 * @param input
+	 * @param toUpdate
 	 */
-	private ProtocolState setup_game(String command){
-		Object setup = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.setup.setup.class);
-		return protocolState;	
-	}
-
-
-
-	//***************************** CARDS ***********************************
-
-	/**
-	 * Sent by each player at the start of their turn, specifying group(s) of 
-	 * cards to trade in for armies, and the number of armies they are expecting to receive. 
-	 * This command must always be sent at the start of a turn, even if no cards are being traded.
-	 * @param command
-	 * @return
-	 */
-	private ProtocolState play_cards(String command){
-		Object play_cards = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.cards.play_cards.class);
-		return protocolState;	
-	}
-
-
-	private ProtocolState draw_card(String command){
-		Object draw_card = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.cards.draw_card.class);
-		return protocolState;	
-	}
-
-	private ProtocolState deploy(String command){
-		Object deploy = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.cards.deploy.class);
-		return protocolState;	
-	}
-
-
-	//*********************** ATTACK / DEFEND ******************************
-
-	private ProtocolState attack(String command) {
-		return null;
-	}
-
-	private ProtocolState defend(String command){
-		return protocolState;
-
-	}
-
-	private ProtocolState attack_capture(String command){
-		return protocolState;
-
-	}
-
-
-	private ProtocolState fortify(String command){
-		return protocolState;
-
-	}
-	
-	private ProtocolState ack(String command){
-		return protocolState;
-	}
-
-	//*********************** DICE ROLLS ******************************
-
-	private ProtocolState roll(String command){
-		return protocolState;
-
-	}
-
-	private ProtocolState roll_hash(String command){
-		return protocolState;
-
-	}
-
-	private ProtocolState roll_number(String command){
-		return protocolState;
-
-	}
-
-	//*********************** ERRORS ******************************
-	private ProtocolState timeout(String command){
-		return protocolState;
-
-	}
-
-	private ProtocolState leave_game(String command){
-		return protocolState;
-
-	}
-	
-	
-	protected void remove_player(PeerConnection connection){
-		int id = connection.id;
-		Player player = state.lookUpPlayer(id);
-		
-		// remove that player from connections etc
-		connections.remove(connection);
-		idMap.remove(id);
-		
-		// if a game hasnt started and a player needs to be removed
-		// then the starting array should be altered
-		if(engine == null){
-			startingPlayers.remove(state.lookUpPlayer(id));
-		}
-		
-		// TODO: make sure its ok with game engine
-		PlayerUtils.removePlayer(state, player);
-	}
-	
-	
-	private void sendToAll(String command){
-		for (PeerConnection c : connections) {
-			c.sendCommand(command);
-		}
-	}
-
-	/**
-	 * @param string to be tested
-	 * @return true if string is valid JSON
-	 * 			false otherwise
-	 */
-	public boolean isJsonStringValid(String test) {
-		try {
-			JsonObject o = new JsonParser().parse(test).getAsJsonObject();
-		} catch (JsonParseException ex) {
-			try {
-				//incase array is valid too
-				JsonArray o = new JsonParser().parse(test).getAsJsonArray();
-			} catch (JsonParseException ex1) {
-				return false;
+	private void update(Object[] input,	HashMap toUpdate) {
+		Arrays.sort(input);
+		Integer count;
+		for(Object a : input){
+			if(toUpdate.containsKey(a)){
+				count = (Integer) toUpdate.get(a);
+				toUpdate.put(a, count + 1);
+			}
+			else{
+				toUpdate.put(toUpdate, 1);
 			}
 		}
-		return true;
 	}
 
 	public static void main(String[] args) {
