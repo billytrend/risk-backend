@@ -87,7 +87,7 @@ public class HostProtocol extends AbstractProtocol {
 		if(startingPlayers.size() < 3){
 			System.out.println("STILL WAITING ON MORE PLAYERS");
 			//send an accept join game to client
-			return accept_join_game("");
+			return accept_join_game(command);
 		}
 		
 		// TODO: change this -- wait for other people +3
@@ -397,6 +397,7 @@ public class HostProtocol extends AbstractProtocol {
 				newSocket = socket.accept();
 				inFromClient = new BufferedReader(new InputStreamReader(newSocket.getInputStream()));
 				outToClient = new DataOutputStream(newSocket.getOutputStream());
+				
 				handleCommand(inFromClient.readLine()); // TODO: check if it works for JSON
 			}
 			
