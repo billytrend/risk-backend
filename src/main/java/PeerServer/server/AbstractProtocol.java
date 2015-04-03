@@ -30,6 +30,7 @@ public abstract class AbstractProtocol {
 	protected State state;
 	protected ArrayList<Player> startingPlayers = new ArrayList<Player>();
 	protected HashMap<Integer, PlayerInterface> interfaceMapping = new HashMap<Integer, PlayerInterface>();
+	protected ArrayList<String> names = new ArrayList<String>();
 	
 	protected GameEngine engine = null;
 	
@@ -231,6 +232,8 @@ public abstract class AbstractProtocol {
 	
 	protected abstract ProtocolState init_game(String command);
 
+	protected abstract ProtocolState leave_game(String command);
+
 	/**
 	 * Sent by each player in turn at the start of the game to 
 	 * claim a territory or reinforce an owned territory (once all have been claimed).
@@ -316,13 +319,6 @@ public abstract class AbstractProtocol {
 
 
 	
-	//*********************** ERRORS ******************************
-
-
-	protected ProtocolState leave_game(String command){
-		return protocolState;
-
-	}
 	
 	
 }

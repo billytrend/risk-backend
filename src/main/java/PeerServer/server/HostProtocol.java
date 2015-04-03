@@ -393,4 +393,13 @@ public class HostProtocol extends AbstractProtocol {
 		//
 		//
 	}
+
+
+
+
+	@Override
+	protected ProtocolState leave_game(String command) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
