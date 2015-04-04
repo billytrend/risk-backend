@@ -31,6 +31,7 @@ public abstract class AbstractProtocol {
 	protected ArrayList<Player> startingPlayers = new ArrayList<Player>();
 	protected HashMap<Integer, PlayerInterface> interfaceMapping = new HashMap<Integer, PlayerInterface>();
 	protected ArrayList<String> names = new ArrayList<String>();
+	protected ArrayList<String> funNames = new ArrayList<String>();
 	
 	protected GameEngine engine = null;
 	
@@ -49,14 +50,6 @@ public abstract class AbstractProtocol {
 			debug("\nJOIN_GAME");
 			this.protocolState = join_game(command);			
 			break;		
-		case ACCEPT_JOIN_GAME:
-			debug("\n ACCEPT_JOIN_GAME");
-			this.protocolState = accept_join_game(command);
-			break;
-		case REJECT_JOIN_GAME:
-			debug("\n REJPlayerInterfaceECT_JOIN_GAME");
-			this.protocolState = reject_join_game(errorMessage);
-			break;
 		case PLAYERS_JOINED:
 			debug("\n PLAYERS_JOINED");
 			this.protocolState = players_joined(command);
@@ -158,11 +151,18 @@ public abstract class AbstractProtocol {
 			startingPlayers.remove(state.lookUpPlayer(id));
 		}
 		
+		// remove them from interface mapping
+		interfaceMapping.remove(id);
+		
 		// TODO: make sure its ok with game engine
 		PlayerUtils.removePlayer(state, player);
 	}
 	
 	
+	protected String getRandomName(){
+		Random ran = new Random();
+		return funNames.get(ran.nextInt(funNames.size()));
+	}
 	
 
 	/**

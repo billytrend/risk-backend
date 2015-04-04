@@ -1,6 +1,7 @@
 package PeerServer.server;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import javax.validation.Payload;
+
 import org.apache.logging.log4j.core.appender.db.jdbc.ConnectionSource;
 
 import PeerServer.protocol.setup.*;
@@ -17,6 +20,8 @@ import PeerServer.protocol.general.*;
 import PeerServer.protocol.dice.*;
 import PeerServer.protocol.cards.*;
 import PeerServer.protocol.gameplay.*;
+import PlayerInput.DumbBotInterface;
+import PlayerInput.PlayerInterface;
 import GameBuilders.RiskMapGameBuilder;
 import GameState.Player;
 import GameState.State;
@@ -41,21 +46,19 @@ public class HostProtocol extends AbstractProtocol {
 	// mappings of features / versions to the count of how many clients support these
 	private HashMap<String, Integer> supportedFeatures = new HashMap<String, Integer>();
 	private HashMap<Integer, Integer> supportedVersions = new HashMap<Integer, Integer>();
-	
 	private ArrayList<PeerConnection> connections; 	// players connections
 	
-	// maps players IDs with a connection associated with them
-	// for local the connection is null
-	private HashMap<Integer, PeerConnection> idMap = new HashMap<Integer, PeerConnection>();
+	// maps players IDs with a connection associated with them (null for local)
+	private HashMap<Integer, PeerConnection> connectionMapping = new HashMap<Integer, PeerConnection>();
 	
 	// connection which is currently served
 	private PeerConnection currentConnection;
 	private long startTime;
 	private ArrayList<PeerConnection> acknowlegements; // IDs
-	
 	private Socket newSocket;
-	private BufferedReader inFromClient; 
-    private DataOutputStream outToClient;
+	
+	// AI playing on Server side
+	private PlayerInterface localPlayer;
 	
 	@Override
 	protected ProtocolState join_game(String command) {
@@ -100,26 +103,27 @@ public class HostProtocol extends AbstractProtocol {
 
 	@Override
 	protected ProtocolState accept_join_game(String command) {
-		//add player's name to players list
-		accept_join_game accept_join_game =
-				new accept_join_game(currentConnection.id, ack_timeout, move_timeout);
-		
+		// new id generated
 		int id = startingPlayers.size();
+		
+		// new connection is created for a new accepted player
+		PeerConnection newConnection = new PeerConnection(newSocket, id);
+		connections.add(newConnection);
+		connectionMapping.put(id, newConnection);
 		
 		// TODO: starting armies fix
 		// TODO: add logic between host being a player
-		startingPlayers.add(new Player(new RemotePlayer(), 0, id));
 		
-		idMap.put(id, currentConnection);
+		// creating player and mapping its id to its interface
+		PlayerInterface playerInterface = new RemotePlayer();
+		startingPlayers.add(new Player(playerInterface, 0, id));
+		interfaceMapping.put(0, playerInterface);
 		
-		//turn object into JSON string to be sent over network 
-		String ajg = Jsonify.getObjectAsJsonString(accept_join_game);
-
-		//sending to connection
-		currentConnection.sendCommand(ajg);
-		System.out.println("Sending... " + ajg);
-
-		//if they had a name move to players joined
+		//sending response - about being accepted
+		accept_join_game accept_join_game =
+				new accept_join_game(id, ack_timeout, move_timeout);
+		newConnection.sendCommand(Jsonify.getObjectAsJsonString(accept_join_game));
+		
 		return ProtocolState.PLAYERS_JOINED;
 	}
 
@@ -226,7 +230,7 @@ public class HostProtocol extends AbstractProtocol {
 					// removing players that have not sent acknowledgement
 					if(!isPing){
 						// message about timeout needs to be sent to all players
-						timeout timeout = new timeout(0, 1, c.id);
+						timeout timeout = new timeout(0, 1, c.getId());
 						sendToAll(Jsonify.getObjectAsJsonString(timeout));
 					}
 					remove_player(c);
@@ -299,8 +303,8 @@ public class HostProtocol extends AbstractProtocol {
 	 */
 	protected void remove_player(PeerConnection connection){
 		int ID = -1;
-		for(int id : idMap.keySet()){
-			if(idMap.get(id) == connection)
+		for(int id : connectionMapping.keySet()){
+			if(connectionMapping.get(id) == connection)
 				ID = id;
 		}
 		
@@ -308,7 +312,7 @@ public class HostProtocol extends AbstractProtocol {
 		connections.remove(connection);
 		
 		if(ID != -1){
-			idMap.remove(ID);
+			connectionMapping.remove(ID);
 			// remove that player from the game state
 			remove_player(ID);
 		}
@@ -387,18 +391,19 @@ public class HostProtocol extends AbstractProtocol {
 		state = new State();
 		RiskMapGameBuilder.addRiskTerritoriesToState(state);
 		
-		// null means that its a local player
-		idMap.put(0, null);
+		// creating our player
+		localPlayer = new DumbBotInterface();
+		startingPlayers.add(new Player(localPlayer, 0, 0, getRandomName()));
+		connectionMapping.put(0, null);
 		
 		try {
 			ServerSocket socket = new ServerSocket(4444);
+			DataInputStream inFromClient; 
 			
 			while(protocolState == ProtocolState.JOIN_GAME){
 				newSocket = socket.accept();
-				inFromClient = new BufferedReader(new InputStreamReader(newSocket.getInputStream()));
-				outToClient = new DataOutputStream(newSocket.getOutputStream());
-				
-				handleCommand(inFromClient.readLine()); // TODO: check if it works for JSON
+				inFromClient = new DataInputStream(newSocket.getInputStream());
+				handleCommand(inFromClient.readUTF()); 
 			}
 			
 			for (PeerConnection c : connections) {

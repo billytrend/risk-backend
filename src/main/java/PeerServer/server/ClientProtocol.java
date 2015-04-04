@@ -29,17 +29,15 @@ import PlayerInput.PlayerInterface;
 public class ClientProtocol extends AbstractProtocol{
 
 	private Client client;
-	private Random ran = new Random();
 	private int myID;
 	private int versionPlayed;
 	private String[] featuresUsed;
-	private ArrayList<String> funNames = new ArrayList<String>();
 
 	// ids of users who sent their pings
 	private Set<Integer> acknowledgements = new HashSet<Integer>();
 	String leaveReason;
 	String leaveCode;
-	PlayerInterface AItoPlay;
+	PlayerInterface localPlayer;
 	
 	
 	//*********************** GAME SETUP ******************************
@@ -51,7 +49,7 @@ public class ClientProtocol extends AbstractProtocol{
 		// empty string meand there was no command and we are joining the game
 		if(command == ""){
 			// send request to join the game
-			String name = funNames.get(ran.nextInt(funNames.size()));
+			String name = getRandomName();
 			join_game join = new join_game(new Integer[]{1}, new String[]{}, name, "key");
 			client.send(Jsonify.getObjectAsJsonString(join));
 			
@@ -134,7 +132,7 @@ public class ClientProtocol extends AbstractProtocol{
 			
 			for(String[] details : playersDetails){
 				if(Integer.parseInt(details[0]) == myID)
-					playersInt = AItoPlay;
+					playersInt = localPlayer;
 				else
 					playersInt = new RemotePlayer();
 				
@@ -337,7 +335,8 @@ public class ClientProtocol extends AbstractProtocol{
 		protocol.state = new State();
 		RiskMapGameBuilder.addRiskTerritoriesToState(protocol.state);
 		
-		protocol.AItoPlay = new DumbBotInterface();
+		// choosing who playes on local side
+		protocol.localPlayer = new DumbBotInterface();
 		
 		// to send receive messages etc
 		// localhost should be replaced with an argument args[0], port args[1]
