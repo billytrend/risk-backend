@@ -12,38 +12,28 @@ package PeerServer.protocol.general;
  */
 public class leave_game {
 	
-	//used for acknowledgements and leave_game
-//	int response_codes[][];
-//0 OK
-//
-//100-199 Logic Error
-//200-299 Protocol Error
-//300-399 Network Error
-//400-499 Reasons for leaving game
-//
-//100 - Undefined logic error
-//101 - Invalid card combination
-//102 - Invalid move
-//
-//200 - Undefined protocol error
-//300 - Undefined network error
-//
-//400 - Undefined reason
-//401 - Removed from board
-//402 - State mismatch
-//403 - Client error
-//404 - Too few players
-//405 - Cheat detected
+	/**
+	 * 	
+		{
+		"command": "leave_game",
+		"payload": {
+					"response": 401,
+					"message": "Defeated by player 2",
+					"receive_updates": true
+		},
+		"player_id": 0
+		}
+	 */
+
+	
+	public String command = "leave_game";
+	public String[][] payload; //this must be deleted 
+	public int player_id; 
 
 	
 	public leave_game(String[][] payload, int id){
 		this.payload = payload;
 		this.player_id = id;
 	}
-	
-	// array of length three of arraysd of length 2
-	public String command = "leave_game";
-	public String[][] payload; // contains response, message and receive updated boolean
-	public int player_id; 
 
 }
