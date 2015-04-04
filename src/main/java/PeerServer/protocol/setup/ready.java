@@ -9,7 +9,12 @@ package PeerServer.protocol.setup;
  * has been reached. "player_id" may be null 
  * in the case of a non-player host.
  * @author 120011995
- *
+ *{
+    "command": "ready",
+    "payload": null,
+    "player_id": 0,
+    "ack_id": 1
+}
  */
 public class ready {
 
@@ -20,7 +25,7 @@ public class ready {
 	}
 	
 	public String command = "ready";
-	public String payload = null;
+	public String payload;
 	public int player_id;
 	public int ack_id;
 	

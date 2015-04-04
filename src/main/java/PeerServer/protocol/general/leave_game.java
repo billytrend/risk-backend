@@ -3,17 +3,9 @@
  */
 package PeerServer.protocol.general;
 
-/**
- * Sent by any player who wishes to leave the game. May be sent at any time during the game. 
- * The payload should specify a reason for leaving (from the list of valid codes below) 
- * and a flag indicating whether the player wishes to continue receiving updates (view the game).
- * @author 120011995
- *
- */
-public class leave_game {
-	
-	//used for acknowledgements and leave_game
-//	int response_codes[][];
+
+//used for acknowledgements and leave_game
+//int response_codes[][];
 //0 OK
 //
 //100-199 Logic Error
@@ -35,15 +27,44 @@ public class leave_game {
 //404 - Too few players
 //405 - Cheat detected
 
-	
-	public leave_game(String[][] payload, int id){
-		this.payload = payload;
-		this.player_id = id;
-	}
+
+/**
+ * Sent by any player who wishes to leave the game. May be sent at any time during the game. 
+ * The payload should specify a reason for leaving (from the list of valid codes below) 
+ * and a flag indicating whether the player wishes to continue receiving updates (view the game).
+ * @author 120011995
+ *
+ *
+{
+    "command": "leave_game",
+    "payload": {
+        "response": 401,
+        "message": "Defeated by player 2",
+        "receive_updates": true
+    },
+    "player_id": 0
+}
+
+ */
+public class leave_game {
 	
 	// array of length three of arraysd of length 2
 	public String command = "leave_game";
-	public String[][] payload; // contains response, message and receive updated boolean
+	public payload payload; // contains response, message and receive updated boolean
 	public int player_id; 
+	
+	
+	public leave_game(int responseCode, String msg, boolean updates, int id){
+		this.payload = new payload();
+		payload.response = responseCode;
+		payload.message = msg;
+		payload.receive_updates = updates;
+		this.player_id = id;
+	}
 
+	public class payload{
+		public int response;
+	    public String message;
+	    public boolean receive_updates; 
+	}
 }

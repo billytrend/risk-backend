@@ -35,7 +35,7 @@ public abstract class AbstractProtocol {
 	protected ArrayList<String> funNames = new ArrayList<String>();
 	
 	protected String leaveReason;
-	protected String leaveCode;
+	protected int leaveCode;
 	protected PlayerInterface localPlayer;
 	
 	protected GameEngine engine = null;

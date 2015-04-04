@@ -35,7 +35,6 @@ public class ClientProtocol extends AbstractProtocol{
 	private int versionPlayed;
 	private String[] featuresUsed;
 
-
 	// ids of users who sent their pings
 	private Set<Integer> acknowledgements = new HashSet<Integer>();
 	
@@ -109,7 +108,7 @@ public class ClientProtocol extends AbstractProtocol{
 			
 			// something went wrong...
 			else{
-				leaveCode = "200";
+				leaveCode = 200;
 				leaveReason = "Expected accept_join_game or reject_join_game command";
 				return ProtocolState.LEAVE_GAME;
 			}
@@ -121,7 +120,7 @@ public class ClientProtocol extends AbstractProtocol{
 	protected ProtocolState accept_join_game(String command) {
 		accept_join_game join = (accept_join_game) Jsonify.getJsonStringAsObject(command, accept_join_game.class);
 		if(join == null){
-			leaveCode = "200";
+			leaveCode = 200;
 			leaveReason = "Expected accept_join_game command";
 			return ProtocolState.LEAVE_GAME;
 		}
@@ -129,9 +128,9 @@ public class ClientProtocol extends AbstractProtocol{
 		System.out.println("\nGOT: " + Jsonify.getObjectAsJsonString(join));
 		
 		// retrieve all details from host response
-		myID = join.player_id;
-		ack_timeout = join.acknowledgement_timeout;
-		move_timeout = join.move_timeout;
+		myID = join.payload.player_id;
+		ack_timeout = join.payload.acknowledgement_timeout;
+		move_timeout = join.payload.move_timeout;
 		
 		return ProtocolState.PLAYERS_JOINED;
 	}
@@ -141,7 +140,7 @@ public class ClientProtocol extends AbstractProtocol{
 	protected ProtocolState reject_join_game(String reason) {
 		reject_join_game reject = (reject_join_game) Jsonify.getJsonStringAsObject(reason, reject_join_game.class);
 		if(reject == null){
-			leaveCode = "200";
+			leaveCode = 200;
 			leaveReason = "Expected reject_join_game command";
 			return ProtocolState.LEAVE_GAME;
 		}
@@ -151,7 +150,7 @@ public class ClientProtocol extends AbstractProtocol{
 		System.out.println("\nGOT: " + Jsonify.getObjectAsJsonString(reject));
 		
 		// just leave the game
-		leaveCode = "400";
+		leaveCode = 400;
 		leaveReason = "Rejected";
 		return ProtocolState.LEAVE_GAME;
 	}
@@ -165,7 +164,7 @@ public class ClientProtocol extends AbstractProtocol{
 		// got it from host to be informed about players
 		players_joined players = (players_joined) Jsonify.getJsonStringAsObject(command, players_joined.class);	
 		if(players == null){
-			leaveCode = "200";
+			leaveCode = 200;
 			leaveReason = "Expected players_joined command";
 			return ProtocolState.LEAVE_GAME;
 		}
@@ -173,7 +172,7 @@ public class ClientProtocol extends AbstractProtocol{
 		System.out.println("\nGOT: " + Jsonify.getObjectAsJsonString(players));
 		
 		// creating all players specified by the protocol
-		String[][] playersDetails = players.players;
+		String[][] playersDetails = players.payload;
 		PlayerInterface playersInt;
 			
 		Player player;
@@ -212,7 +211,7 @@ public class ClientProtocol extends AbstractProtocol{
 		
 		ping ping = (ping) Jsonify.getJsonStringAsObject(command, ping.class);
 		if(ping == null){
-			leaveCode = "200";
+			leaveCode = 200;
 			leaveReason = "Expected ping command";
 			return ProtocolState.LEAVE_GAME;
 		}
@@ -248,7 +247,7 @@ public class ClientProtocol extends AbstractProtocol{
 	protected ProtocolState ready(String command){
 		ready ready = (ready) Jsonify.getJsonStringAsObject(command, ready.class);
 		if(ready == null){
-			leaveCode = "200";
+			leaveCode = 200;
 			leaveReason = "Expected ready command";
 			return ProtocolState.LEAVE_GAME;
 		}
@@ -282,14 +281,14 @@ public class ClientProtocol extends AbstractProtocol{
 		
 		initalise_game init = (initalise_game) Jsonify.getJsonStringAsObject(command, initalise_game.class);
 		if(init == null){
-			leaveCode = "200";
+			leaveCode = 200;
 			leaveReason = "Expected init game command";
 			return ProtocolState.LEAVE_GAME;
 		}
 		
 		System.out.println("\nGOT: " + Jsonify.getObjectAsJsonString(init));
-		versionPlayed = init.version;
-		featuresUsed = init.supported_features;
+		versionPlayed = init.payload.version;
+		featuresUsed = init.payload.supported_features;
 		
 		return ProtocolState.SETUP_GAME;
 	}
@@ -301,7 +300,7 @@ public class ClientProtocol extends AbstractProtocol{
 	
 		timeout timeout = (timeout) Jsonify.getJsonStringAsObject(command, timeout.class);
 		if(timeout == null){
-			leaveCode = "200";
+			leaveCode = 200;
 			leaveReason = "Expected timeout command";
 			return ProtocolState.LEAVE_GAME;
 		}
@@ -328,16 +327,15 @@ public class ClientProtocol extends AbstractProtocol{
 		if(command != ""){
 			leave_game leave = (leave_game) Jsonify.getJsonStringAsObject(command, leave_game.class);
 			if(leave == null){
-				leaveCode = "400";
+				leaveCode = 400;
 				leaveReason = "Host left...";
 				return ProtocolState.LEAVE_GAME;
 			}
 			
 			System.out.println("\nGOT: " + Jsonify.getObjectAsJsonString(leave));
-			String[][] payload = leave.payload;
 			int id = leave.player_id;
-			int responseCode = Integer.parseInt(payload[0][1]);
-			String message = payload[1][1];
+			int responseCode = leave.payload.response;
+			String message = leave.payload.message;
 			
 			// if host is leaving
 			if(id == 0){
@@ -351,12 +349,7 @@ public class ClientProtocol extends AbstractProtocol{
 		}
 		// if command is empty it is us that want to leave
 		else{
-			String[][] payload = new String[3][2];
-			payload[0] = new String[]{"response", leaveCode};
-			payload[1] = new String[]{"message", leaveReason};
-			// we dont want to receive updates
-			payload[2] = new String[]{"receive_updates", "false"};
-			leave_game leave = new leave_game(payload, myID);
+			leave_game leave = new leave_game(leaveCode, leaveReason, false, myID);
 			
 			System.out.println("\nSEND: " + Jsonify.getObjectAsJsonString(leave));
 			client.send(Jsonify.getObjectAsJsonString(leave));
@@ -370,8 +363,6 @@ public class ClientProtocol extends AbstractProtocol{
 	protected ProtocolState setup_game(String command){
 		if(command.contains("timeout"))
 			return timeout(command);
-		
-		
 		Object setup = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.setup.setup.class);
 		return protocolState;	
 	}
