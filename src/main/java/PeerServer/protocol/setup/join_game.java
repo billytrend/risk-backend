@@ -38,6 +38,12 @@ public class join_game {
 		this.payload.public_key = key;
 	}
 	
+	public join_game(Integer[] supported_versions, String[] supported_features, String name) {
+		this.payload = new payload();
+		this.payload.supported_versions = supported_versions;
+		this.payload.supported_features = supported_features;
+		this.payload.name = name;
+	}
 	public class payload{
 		public Integer[] supported_versions;
 		public String[] supported_features;

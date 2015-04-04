@@ -16,9 +16,14 @@ package PeerServer.protocol.setup;
 public class reject_join_game {
 	public String command = "reject_join_game";
 	public String payload;		//describing reason for rejection
+	
 
 	public reject_join_game(String error_message) {
 		this.payload = error_message;
+	}
+	
+	public reject_join_game(){
+		
 	}
 	
 }
