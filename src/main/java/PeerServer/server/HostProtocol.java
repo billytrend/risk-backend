@@ -50,6 +50,7 @@ import com.google.gson.JsonParser;
 public class HostProtocol extends AbstractProtocol {
 	
 	private int maxNoOfPlayers = 6;		//min is 3	
+	private int minNoOfPlayers = 2;
 	private int waitTimeInSeconds = 180; // host waits 180 seconds for remaining players to connect
 
 	// mappings of features / versions to the count of how many clients support these
@@ -111,6 +112,8 @@ public class HostProtocol extends AbstractProtocol {
 	
 	@Override
 	protected ProtocolState join_game(String command) {
+		System.out.println("\nGOT: " + command);
+		
 		//create JSON object of command
 		join_game join_game = (join_game) Jsonify.getJsonStringAsObject(command, join_game.class);
 		if(join_game == null){
@@ -122,7 +125,7 @@ public class HostProtocol extends AbstractProtocol {
 		update(join_game.supported_features, supportedFeatures);
 		update(join_game.supported_versions, supportedVersions);
 		
-		if(startingPlayers.size() < 3){
+		if(startingPlayers.size() < minNoOfPlayers){
 			return accept_join_game(command);
 		}
 		
@@ -135,7 +138,7 @@ public class HostProtocol extends AbstractProtocol {
 
 
 	@Override
-	protected ProtocolState accept_join_game(String command) {
+	protected ProtocolState accept_join_game(String command) {		
 		// new id generated
 		int id = startingPlayers.size();
 		
@@ -157,6 +160,8 @@ public class HostProtocol extends AbstractProtocol {
 				new accept_join_game(id, ack_timeout, move_timeout);
 		newConnection.sendCommand(Jsonify.getObjectAsJsonString(accept_join_game));
 		
+		System.out.println("\nSEND: " + Jsonify.getObjectAsJsonString(accept_join_game));
+		
 		return players_joined("");
 	}
 
@@ -167,9 +172,18 @@ public class HostProtocol extends AbstractProtocol {
 		reject_join_game reject_join_game = new reject_join_game(errorMessage);		
 		String rj = Jsonify.getObjectAsJsonString(reject_join_game);
 		
-		//send rejection 
-		currentConnection.sendCommand(rj);
-	
+		
+		DataOutputStream out;
+		try {
+			out = new DataOutputStream(newSocket.getOutputStream());
+			//send rejection 
+			out.writeUTF(rj);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		System.out.println("\nSEND: " + rj);
 		System.out.println(rj);
 
 		return ProtocolState.JOIN_GAME;
@@ -180,7 +194,9 @@ public class HostProtocol extends AbstractProtocol {
 	protected ProtocolState players_joined(String command){
 		players_joined players_joined = new players_joined(startingPlayers);
 		String npj = Jsonify.getObjectAsJsonString(players_joined);
-		System.out.println(npj);
+		
+		System.out.println("\nSEND: " + npj);
+		currentConnection.sendCommand(npj);
 		
 		// sending only new player to the rest
 		int id = currentConnection.getId();
@@ -188,6 +204,8 @@ public class HostProtocol extends AbstractProtocol {
 		
 		players_joined toRest = new players_joined(new String[]{Integer.toString(id), name, "key"});
 		sendToAllExcept(Jsonify.getObjectAsJsonString(toRest), currentConnection);		
+		
+		System.out.println("\nSEND TO ALMOST ALL: " + Jsonify.getObjectAsJsonString(toRest));
 		
 		if(startingPlayers.size() == maxNoOfPlayers)
 			return ready("");
@@ -209,8 +227,8 @@ public class HostProtocol extends AbstractProtocol {
 			ping ping = new ping(startingPlayers.size(), 0);
 			String p = Jsonify.getObjectAsJsonString(ping);
 			//send ping to each client
-			System.out.println(p);
 			sendToAll(p);
+			System.out.println("\nSEND TO ALL: " + p);
 			
 			timer.schedule(new ChangeState(), ack_timeout * 1000);
 		}
@@ -221,9 +239,12 @@ public class HostProtocol extends AbstractProtocol {
 				leaveReason = "Wrong command: expected ping";
 				return ProtocolState.LEAVE_GAME;
 			}
+			System.out.println("\nGOT: " + command);
 			
 			// forward ping to everyone
 			sendToAllExcept(command, currentConnection);
+			System.out.println("\nSEND TO AMOST ALL: " + command);
+			
 			acknowledgements.add(currentConnection);
 		}
 		
@@ -250,7 +271,8 @@ public class HostProtocol extends AbstractProtocol {
 		//send ready command to all connected clients ACK required
 		ready ready = new ready(null, 0, 1);
 		sendToAll(Jsonify.getObjectAsJsonString(ready));
-
+		System.out.println("\nSEND TO ALL: " + Jsonify.getObjectAsJsonString(ready));
+		
 		timer.schedule(new ChangeState(), ack_timeout);
 		
 		acknowledgements.clear();
@@ -273,6 +295,7 @@ public class HostProtocol extends AbstractProtocol {
 			leaveReason = "Wrong command: expected acknowledge";
 			return ProtocolState.LEAVE_GAME;
 		}
+		System.out.println("\nGOT: " + command);
 		
 		acknowledgements.add(currentConnection);
 		return ProtocolState.ACK;
@@ -287,6 +310,8 @@ public class HostProtocol extends AbstractProtocol {
 				// message about timeout needs to be sent to all players
 				timeout timeout = new timeout(0, 1, c.getId());
 				removePlayer(c);
+				
+				System.out.println("\nSEND TO ALL: " + Jsonify.getObjectAsJsonString(timeout));
 				sendToAll(Jsonify.getObjectAsJsonString(timeout));
 			}
 		}
@@ -310,6 +335,7 @@ public class HostProtocol extends AbstractProtocol {
 		initalise_game init_game = new initalise_game(version, (String[]) features.toArray());
 		sendToAll(Jsonify.getObjectAsJsonString(init_game));
 		
+		System.out.println("\nSEND TO ALL: " + Jsonify.getObjectAsJsonString(init_game));
 		return leave_game(""); // TODO: JUST FOR NOW - TO STOP - CHANGE IT LATER.
 	}
 
@@ -330,7 +356,7 @@ public class HostProtocol extends AbstractProtocol {
 			String message = payload[1][1];
 			
 			sendToAllExcept(command, currentConnection);
-			
+			System.out.println("\nSEND ALMOST ALL: " + Jsonify.getObjectAsJsonString(command));
 			return protocolState;
 		}
 		// if command is empty it is us that want to leave
@@ -342,6 +368,7 @@ public class HostProtocol extends AbstractProtocol {
 			payload[2] = new String[]{"receive_updates", "false"};
 			leave_game leave = new leave_game(payload, 0);
 			
+			System.out.println("\nSEND TO ALL: " + Jsonify.getObjectAsJsonString(leave));
 			sendToAll(Jsonify.getObjectAsJsonString(leave));
 			return null;
 		}
@@ -378,8 +405,6 @@ public class HostProtocol extends AbstractProtocol {
 		}
 	}
 	
-
-
 	
 	/**
 	 * Sends a given command to all supported connections (all clients)
@@ -496,8 +521,6 @@ public class HostProtocol extends AbstractProtocol {
 			e.printStackTrace();
 		}
 	}
-
-
 
 
 	class ChangeState extends TimerTask{
