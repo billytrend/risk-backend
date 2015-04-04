@@ -4,13 +4,12 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import PeerServer.server.Protocol;
-
 public class ProtocolTest {
 
 	@Test
 	public void test() {
-		Protocol p = new Protocol();
+	//	Protocol p = new Protocol();
+	//	p.handleCommand("{'commandType':'lol'}");
 	}
 
 }

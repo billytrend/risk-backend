@@ -13,7 +13,7 @@ package PeerServer.protocol.general;
 public class leave_game {
 	
 	//used for acknowledgements and leave_game
-	int response_codes[][];
+//	int response_codes[][];
 //0 OK
 //
 //100-199 Logic Error
@@ -36,8 +36,14 @@ public class leave_game {
 //405 - Cheat detected
 
 	
-	int response_code; //(4xx) specifying reason for leaving
-	boolean receive_updates; //whether user wishes to continue to recieve updates and viewing the game
-	int player_id; 
+	public leave_game(String[][] payload, int id){
+		this.payload = payload;
+		this.player_id = id;
+	}
+	
+	// array of length three of arraysd of length 2
+	public String command = "leave_game";
+	public String[][] payload; // contains response, message and receive updated boolean
+	public int player_id; 
 
 }

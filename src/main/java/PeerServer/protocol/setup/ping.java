@@ -12,12 +12,12 @@ package PeerServer.protocol.setup;
  */
 public class ping {
 
-	int player_id;
-	int no_of_players;		//can be null if sent by client 
+	public Integer player_id;
+	public Integer payload;		//can be null if sent by client 
 	
-	public ping(int player_id, int no_of_players){
+	public ping(int no_of_players, int player_id){
 		this.player_id = player_id;
-		this.no_of_players = no_of_players;
+		this.payload = no_of_players;
 	}
 	
 }

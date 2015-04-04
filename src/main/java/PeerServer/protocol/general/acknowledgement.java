@@ -11,8 +11,13 @@ package PeerServer.protocol.general;
  */
 public class acknowledgement {
 
-	int ack_id;
+	public acknowledgement(int ack_id, int player_id){
+		this.ack_id = ack_id;
+		this.player_id = player_id;
+	}
+	
+	public int ack_id;
 	//response code specifying either agreement or an 
 	//error with the recieved command. Deafult is 0 (no error)
-	int response; 
+	public int player_id;
 }

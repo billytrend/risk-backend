@@ -18,12 +18,12 @@ import java.net.UnknownHostException;
  * the multi-threaded PeerServer specified in PeerServer class
  */
 
-public class Client implements Runnable {
+public class Client{
 	//socket conencted to server
 	private Socket socket;
 	//streams used to communicate to server come from socket
-	private DataOutputStream dout;
-	private DataInputStream din;
+	private DataOutputStream out;
+	private DataInputStream in;
 	private final static int port = 4444;
 
 	public static void main(String[] args) {
@@ -40,13 +40,10 @@ public class Client implements Runnable {
 		try {
 			socket = new Socket(host, port);
 			System.out.println("connected to " + socket);
-
+			
 			//Add the sockets streams to data sockets
-			din = new DataInputStream(socket.getInputStream());
-			dout = new DataOutputStream(socket.getOutputStream());
-
-			// Start a background thread for receiving messages
-			new Thread(this).start();
+			in = new DataInputStream(socket.getInputStream());
+			out = new DataOutputStream(socket.getOutputStream());
 
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
@@ -59,29 +56,33 @@ public class Client implements Runnable {
 	 * Sends message to server
 	 * @param message
 	 */
-	private void processMessage(String message) {
+	public void send(String message) {
 		try {
 			// Send it to the server
-			dout.writeUTF(message);
+			out.writeUTF(message);
 		} catch( IOException ie ) { 
 			System.out.println( ie ); 
 		}
 	}
-
-	@Override
-	public void run() {
+	
+	
+	public String receive(){
+		String message = "";
 		try {
-			// Receive messages one-by-one, forever
-			BufferedReader fromClient = new BufferedReader(new InputStreamReader(System.in));
-			String messageFromClient = fromClient.readLine();
-			processMessage(messageFromClient);
-			while (true) {
-				// Get the next message
-				String message = din.readUTF();
-				System.out.println(message);
-			}
-		} catch( IOException ie ) { 
-			System.out.println( ie ); 
+			message = in.readUTF();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return message;
+	}
+	
+	public void close(){
+		try {
+			socket.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

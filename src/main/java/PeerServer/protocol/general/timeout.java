@@ -10,7 +10,15 @@ package PeerServer.protocol.general;
  *
  */
 public class timeout {
-
-	int player_id;
-	int ack_id;
+	
+	public timeout(int player_id, int ack_id, int payload){
+		this.player_id = player_id;
+		this.ack_id = ack_id;
+		this.payload = payload;
+	}
+	
+	public String command = "timeout";
+	public int player_id;
+	public int ack_id;
+	public int payload;
 }
