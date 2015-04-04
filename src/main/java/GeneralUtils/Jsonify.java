@@ -1,5 +1,7 @@
 package GeneralUtils;
 
+import java.util.Arrays;
+
 import GameState.State;
 import GeneralUtils.Serialisers.GameStateSerialiser;
 import GeneralUtils.Serialisers.LobbySerialiser;
@@ -25,13 +27,27 @@ public class Jsonify {
 //        return new Gson().toJson(lobby);
 //    }
 
-    public static Object getJsonStringAsObject(String s, Class c) throws JsonParseException {
-        String str =  new Gson().fromJson(s, c);
-        if(str == null)
-        	throw new JsonParseException(str);
-
-        return str;
+    public static Object getJsonStringAsObject(String s, Class c) {
+        Object ob =  new Gson().fromJson(s, c);
+        return ob;
+    }
+    
+    public static Object getJsonFromCommand(String command, Class c){
+    	message msg = (message) getJsonStringAsObject(command, message.class);
+    	Object ob = getJsonStringAsObject(msg.jsonContent, c);
+    	return ob;
+    }
+    
+    public static String getObjectAsCommand(Object ob){
+    	String str = getObjectAsJsonString(ob);
+    	message msg = new message();
+    	msg.jsonContent = str;
+    	String result = getObjectAsJsonString(msg);
+    	return result;
     }
 
-
+ 
+    public static class message{
+    	public String jsonContent;
+    }
 }
