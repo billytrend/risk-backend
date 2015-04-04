@@ -38,9 +38,6 @@ public class ClientProtocol extends AbstractProtocol{
 
 	// ids of users who sent their pings
 	private Set<Integer> acknowledgements = new HashSet<Integer>();
-	String leaveReason;
-	String leaveCode;
-	PlayerInterface localPlayer;
 	
 	
 	// only commands protocol receives over network
@@ -89,15 +86,13 @@ public class ClientProtocol extends AbstractProtocol{
 
 	@Override
 	protected ProtocolState join_game(String command) {
-		System.out.println("JOIN");
-		
 		// empty string means there was no command and we are joining the game
 		if(command == ""){
 			// send request to join the game
 			String name = getRandomName();
 			join_game join = new join_game(new Integer[]{1}, new String[]{}, name, "key");
 			client.send(Jsonify.getObjectAsJsonString(join));
-			
+			System.out.println("\nSEND: " + Jsonify.getObjectAsJsonString(join));
 			// host did not respond correctly
 			return ProtocolState.JOIN_GAME;
 		}
@@ -124,14 +119,14 @@ public class ClientProtocol extends AbstractProtocol{
 	
 	@Override
 	protected ProtocolState accept_join_game(String command) {
-		System.out.println("ACCEPT");
-		
 		accept_join_game join = (accept_join_game) Jsonify.getJsonStringAsObject(command, accept_join_game.class);
 		if(join == null){
 			leaveCode = "200";
 			leaveReason = "Expected accept_join_game command";
 			return ProtocolState.LEAVE_GAME;
 		}
+		
+		System.out.println("\nGOT: " + Jsonify.getObjectAsJsonString(join));
 		
 		// retrieve all details from host response
 		myID = join.player_id;
@@ -144,16 +139,16 @@ public class ClientProtocol extends AbstractProtocol{
 
 	@Override
 	protected ProtocolState reject_join_game(String reason) {
-		System.out.println("REJECT");
-		
 		reject_join_game reject = (reject_join_game) Jsonify.getJsonStringAsObject(reason, reject_join_game.class);
 		if(reject == null){
 			leaveCode = "200";
 			leaveReason = "Expected reject_join_game command";
 			return ProtocolState.LEAVE_GAME;
 		}
+		
 		// TODO: present in UI preferably
 		System.out.println(reject.payload);
+		System.out.println("\nGOT: " + Jsonify.getObjectAsJsonString(reject));
 		
 		// just leave the game
 		leaveCode = "400";
@@ -164,8 +159,6 @@ public class ClientProtocol extends AbstractProtocol{
 
 	@Override
 	protected ProtocolState players_joined(String command){	
-		System.out.println("PLAYERS_JOINED");
-		
 		if(command.contains("ping"))
 			return ping(command);
 		
@@ -176,6 +169,8 @@ public class ClientProtocol extends AbstractProtocol{
 			leaveReason = "Expected players_joined command";
 			return ProtocolState.LEAVE_GAME;
 		}
+		
+		System.out.println("\nGOT: " + Jsonify.getObjectAsJsonString(players));
 		
 		// creating all players specified by the protocol
 		String[][] playersDetails = players.players;
@@ -209,8 +204,6 @@ public class ClientProtocol extends AbstractProtocol{
 
 	@Override
 	protected ProtocolState ping(String command){
-		System.out.println("PING");
-		
 		if(command.contains("ready"))
 			return ready(command);
 		
@@ -223,6 +216,8 @@ public class ClientProtocol extends AbstractProtocol{
 			leaveReason = "Expected ping command";
 			return ProtocolState.LEAVE_GAME;
 		}
+		
+		System.out.println("\nGOT: " + Jsonify.getObjectAsJsonString(ping));
 		
 		// sent by client
 		if(ping.payload == null){
@@ -242,6 +237,7 @@ public class ClientProtocol extends AbstractProtocol{
 			//	TODO: ask in UI: do you still want to play?
 			ping response = new ping(ping.payload, myID);
 			
+			System.out.println("\nSEND: " + Jsonify.getObjectAsJsonString(response));
 			client.send(Jsonify.getObjectAsJsonString(response));
 		}
 		return ProtocolState.PING;
@@ -250,13 +246,14 @@ public class ClientProtocol extends AbstractProtocol{
 	
 	@Override
 	protected ProtocolState ready(String command){
-		System.out.println("READY");
 		ready ready = (ready) Jsonify.getJsonStringAsObject(command, ready.class);
 		if(ready == null){
 			leaveCode = "200";
 			leaveReason = "Expected ready command";
 			return ProtocolState.LEAVE_GAME;
 		}
+		
+		System.out.println("\nGOT: " + Jsonify.getObjectAsJsonString(ready));
 		
 		// remove all players who have not acknowledged
 		if (acknowledgements.size() != startingPlayers.size()){
@@ -268,6 +265,7 @@ public class ClientProtocol extends AbstractProtocol{
 		}
 		
 		acknowledgement ack = new acknowledgement(ready.ack_id, myID);
+		System.out.println("\nSEND: " + Jsonify.getObjectAsJsonString(ack));
 		client.send(Jsonify.getObjectAsJsonString(ack));
 		
 		return ProtocolState.INIT_GAME;
@@ -276,8 +274,6 @@ public class ClientProtocol extends AbstractProtocol{
 	
 	@Override
 	protected ProtocolState init_game(String command){
-		System.out.println("INIT_GAME");
-		
 		if(command.contains("timeout"))
 			return timeout(command);
 		
@@ -291,6 +287,7 @@ public class ClientProtocol extends AbstractProtocol{
 			return ProtocolState.LEAVE_GAME;
 		}
 		
+		System.out.println("\nGOT: " + Jsonify.getObjectAsJsonString(init));
 		versionPlayed = init.version;
 		featuresUsed = init.supported_features;
 		
@@ -309,12 +306,14 @@ public class ClientProtocol extends AbstractProtocol{
 			return ProtocolState.LEAVE_GAME;
 		}
 		
+		System.out.println("\nGOT: " + Jsonify.getObjectAsJsonString(timeout));
 		// remove player that has timeout out
 		int playerOut = timeout.payload;
 		removePlayer(playerOut);
 		
 		// send the acknowledgement
 		acknowledgement ack = new acknowledgement(timeout.ack_id, myID);
+		System.out.println("\nSEND: " + Jsonify.getObjectAsJsonString(ack));
 		client.send(Jsonify.getObjectAsJsonString(ack));
 
 		return protocolState;		
@@ -334,12 +333,21 @@ public class ClientProtocol extends AbstractProtocol{
 				return ProtocolState.LEAVE_GAME;
 			}
 			
+			System.out.println("\nGOT: " + Jsonify.getObjectAsJsonString(leave));
 			String[][] payload = leave.payload;
+			int id = leave.player_id;
 			int responseCode = Integer.parseInt(payload[0][1]);
 			String message = payload[1][1];
 			
-			// TODO: write sth here? Why server finished the game
-			return null;
+			// if host is leaving
+			if(id == 0){
+				return leave_game("");
+			}
+			
+			// removing player thats leaving
+			removePlayer(id);
+			
+			return protocolState;
 		}
 		// if command is empty it is us that want to leave
 		else{
@@ -350,6 +358,7 @@ public class ClientProtocol extends AbstractProtocol{
 			payload[2] = new String[]{"receive_updates", "false"};
 			leave_game leave = new leave_game(payload, myID);
 			
+			System.out.println("\nSEND: " + Jsonify.getObjectAsJsonString(leave));
 			client.send(Jsonify.getObjectAsJsonString(leave));
 			
 			return null;
