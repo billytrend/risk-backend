@@ -11,7 +11,6 @@ public class ProtocolTest {
 	@Test
 	public void test() {
 		Protocol p = new Protocol();
-		p.handleCommand("{'commandType':'lol'}");
 	}
 
 }
