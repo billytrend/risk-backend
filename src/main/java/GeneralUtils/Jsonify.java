@@ -25,11 +25,8 @@ public class Jsonify {
 //        return new Gson().toJson(lobby);
 //    }
 
-    public static Object getJsonStringAsObject(String s, Class c) throws JsonParseException {
+    public static Object getJsonStringAsObject(String s, Class c) {
         String str =  new Gson().fromJson(s, c);
-        if(str == null)
-        	throw new JsonParseException(str);
-
         return str;
     }
 
