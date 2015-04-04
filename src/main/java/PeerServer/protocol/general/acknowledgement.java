@@ -8,18 +8,12 @@ package PeerServer.protocol.general;
  *  specifying an “ack_id” being received.
  * @author 12001995
  *
+ *{
+    "command": "acknowledgement",
+    "payload": 1,
+    "player_id": 0
+}
  */
-
-
-/**
- * {
-	"command": "acknowledgement",
-	"payload": 1,
-	"player_id": 0
-	}
- *
- */
-
 
 public class acknowledgement {
 	public String command = "acknowledgement";
@@ -31,5 +25,6 @@ public class acknowledgement {
 		this.player_id = player_id;
 	}
 	
+
 
 }

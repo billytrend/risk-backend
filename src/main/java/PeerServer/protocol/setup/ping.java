@@ -9,10 +9,16 @@ package PeerServer.protocol.setup;
  * null in the case of a non-player host.
  * @author 12001995
  *
+ *{
+    "command": "ping",
+    "payload": 5,
+    "player_id": 0
+}
  */
 public class ping {
 
-	public Integer player_id;
+	public String command = "ping";
+	public int player_id;
 	public Integer payload;		//can be null if sent by client 
 	
 	public ping(int no_of_players, int player_id){

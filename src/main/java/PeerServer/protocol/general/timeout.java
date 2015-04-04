@@ -8,6 +8,12 @@ package PeerServer.protocol.general;
  * Can be received at any time.
  * @author 12001995
  *
+ *{
+    "command": "timeout",
+    "payload": 2,
+    "player_id": 0,
+    "ack_id": 1
+}
  */
 
 

@@ -13,24 +13,34 @@ import GameState.Player;
  * Sent by a host to each player after connection as players join the game.
  * Maps player IDs to real names. Optional command, will only be sent 
  * if the player specified a real name itself.
+ * 
+ * {
+    "command": "players_joined",
+    "payload": [
+        [0, "Player A", ""],
+        [1, "Player B", ""]
+    ]
+}
+ * 
  */
 public class players_joined {
 
+	public String command = "players_joined";
 	//2D array of integer player ID/string name pairs.
-	public String[][] players;
+	public String[][] payload;
 
 	public players_joined(ArrayList<Player> allPlayers){
-		players = new String[allPlayers.size()][3];
+		payload = new String[allPlayers.size()][3];
 		Player current;
 		for(int i = 0; i < allPlayers.size(); i++){
 			current = allPlayers.get(i);
-			players[i] = new String[]{Integer.toString(current.getNumberId()), current.getId(), "this is key"};
+			payload[i] = new String[]{Integer.toString(current.getNumberId()), current.getId(), "this is key"};
 		}
 	}
 
 	public players_joined(String[] strings) {
-		players = new String[0][3];
-		players[0] = strings;
+		payload = new String[0][3];
+		payload[0] = strings;
 	}
 	
 }

@@ -122,8 +122,8 @@ public class HostProtocol extends AbstractProtocol {
 		}
 		
 		// game will be accepted so update versions and features counts
-		update(join_game.supported_features, supportedFeatures);
-		update(join_game.supported_versions, supportedVersions);
+		update(join_game.payload.supported_features, supportedFeatures);
+		update(join_game.payload.supported_versions, supportedVersions);
 		
 		if(startingPlayers.size() < minNoOfPlayers){
 			return accept_join_game(command);
@@ -235,7 +235,7 @@ public class HostProtocol extends AbstractProtocol {
 		else{
 			ping ping = (ping) Jsonify.getJsonStringAsObject(command, ping.class);
 			if(ping == null){
-				leaveCode = "200";
+				leaveCode = 200;
 				leaveReason = "Wrong command: expected ping";
 				return ProtocolState.LEAVE_GAME;
 			}
@@ -291,7 +291,7 @@ public class HostProtocol extends AbstractProtocol {
 	private ProtocolState acknowledge(String command) {
 		acknowledgement ack = (acknowledgement) Jsonify.getJsonStringAsObject(command, acknowledgement.class);
 		if(ack == null){
-			leaveCode = "200";
+			leaveCode = 200;
 			leaveReason = "Wrong command: expected acknowledge";
 			return ProtocolState.LEAVE_GAME;
 		}
@@ -346,14 +346,13 @@ public class HostProtocol extends AbstractProtocol {
 		if(command != ""){
 			leave_game leave = (leave_game) Jsonify.getJsonStringAsObject(command, leave_game.class);
 			if(leave == null){
-				leaveCode = "200";
+				leaveCode = 200;
 				leaveReason = "Wrong command";
 				return leave_game("");
 			}
 			
-			String[][] payload = leave.payload;
-			int responseCode = Integer.parseInt(payload[0][1]);
-			String message = payload[1][1];
+			int responseCode = leave.payload.response;
+			String message = leave.payload.message;
 			
 			sendToAllExcept(command, currentConnection);
 			System.out.println("\nSEND ALMOST ALL: " + Jsonify.getObjectAsJsonString(command));
@@ -361,12 +360,7 @@ public class HostProtocol extends AbstractProtocol {
 		}
 		// if command is empty it is us that want to leave
 		else{
-			String[][] payload = new String[3][2];
-			payload[0] = new String[]{"response", leaveCode};
-			payload[1] = new String[]{"message", leaveReason};
-			// we dont want to receive updates
-			payload[2] = new String[]{"receive_updates", "false"};
-			leave_game leave = new leave_game(payload, 0);
+			leave_game leave = new leave_game(leaveCode, leaveReason, false, 0);
 			
 			System.out.println("\nSEND TO ALL: " + Jsonify.getObjectAsJsonString(leave));
 			sendToAll(Jsonify.getObjectAsJsonString(leave));

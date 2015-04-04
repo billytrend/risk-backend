@@ -11,31 +11,38 @@ package PeerServer.protocol.setup;
  *
  */
 
+
 /**
  * 
- * {
-	"command": "join_game",
-	"payload": {
-		"supported_versions": [1],			//array of floats
-		"supported_features": ["custom_map"]
-	}
+ *{
+    "command": "join_game",
+    "payload": {
+        "supported_versions": [1],
+        "supported_features": ["custom_map"],
+        "name": "Player 1",
+        "public_key": "...",
+    }
 }
  *
  */
 
-
 public class join_game {
-	
-	public Integer[] supported_versions;
-	public String[] supported_features;
-	public String name; 
-	public String key;
+	public String command = "join_game";
+	public payload payload;
 
 	public join_game(Integer[] supported_versions, String[] supported_features, String name, String key) {
-		this.supported_versions = supported_versions;
-		this.supported_features = supported_features;
-		this.name = name;
-		this.key = key;
+		this.payload = new payload();
+		this.payload.supported_versions = supported_versions;
+		this.payload.supported_features = supported_features;
+		this.payload.name = name;
+		this.payload.public_key = key;
+	}
+	
+	public class payload{
+		public Integer[] supported_versions;
+		public String[] supported_features;
+		public String name; 
+		public String public_key;
 	}
 	
 }
