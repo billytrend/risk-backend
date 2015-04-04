@@ -37,5 +37,7 @@ public class accept_join_game {
 		public int acknowledgement_timeout;
 		public int move_timeout;
 	}
+	
+	
 }
 

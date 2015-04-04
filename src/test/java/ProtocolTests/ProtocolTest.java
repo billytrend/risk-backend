@@ -10,6 +10,7 @@ import org.junit.Test;
 import com.google.gson.Gson;
 
 import GeneralUtils.Jsonify;
+import PeerServer.protocol.setup.accept_join_game;
 import PeerServer.protocol.setup.join_game;
 import PeerServer.protocol.setup.reject_join_game;
 
@@ -55,8 +56,6 @@ public class ProtocolTest {
 		assertEquals(jg.payload.supported_features[0].toString(), "custom_map");
 		assertEquals(jg.payload.name, "Player 1");
 		
-		
-		
 		Integer [] supported_versions = {1};
 		String[] supported_features = {"custom_map"};
 		String name = "Player 1";
@@ -68,4 +67,36 @@ public class ProtocolTest {
 		assertEquals(command, rjgString);	
 		
 	}
+	
+	@Test
+	public void acceptJoinGameTest() {
+		//create valid command
+		String command = "{\"command\":\"accept_join_game\",\"payload\":"
+				+ "{\"player_id\":1,\"acknowledgement_timeout\":2,\"move_timeout\":30}}";
+		//crate object from the JSON string
+		accept_join_game ajg = new Gson().fromJson(command, accept_join_game.class);
+		//check it is not null
+		assertNotNull(ajg);
+		
+		//check each field is valid
+		assertEquals(ajg.command, "accept_join_game");
+		System.out.println(ajg.command);
+		assertEquals(ajg.payload.player_id, 1);
+		assertEquals(ajg.payload.acknowledgement_timeout, 2);
+		assertEquals(ajg.payload.move_timeout, 30);
+		
+		int player_id = 1;
+		int acknowledgement_timeout = 2;
+		int move_timeout = 30;
+		
+		//create a new object 
+		accept_join_game ajgToString = new accept_join_game(player_id, acknowledgement_timeout, move_timeout);
+		String ajgString = new Gson().toJson(ajgToString);
+		System.out.println(ajgString);
+		assertEquals(command, ajgString);
+		
+		
+		
+	}
+	
 }
