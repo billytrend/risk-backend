@@ -24,8 +24,13 @@ public class players_joined {
 		Player current;
 		for(int i = 0; i < allPlayers.size(); i++){
 			current = allPlayers.get(i);
-			players[i] = new String[]{Integer.toString(current.getNumberId()), current.getId(), "this is key :)"};
+			players[i] = new String[]{Integer.toString(current.getNumberId()), current.getId(), "this is key"};
 		}
+	}
+
+	public players_joined(String[] strings) {
+		players = new String[0][3];
+		players[0] = strings;
 	}
 	
 }

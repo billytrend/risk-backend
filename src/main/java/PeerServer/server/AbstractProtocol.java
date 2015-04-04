@@ -1,5 +1,7 @@
 package PeerServer.server;
 
+import static com.esotericsoftware.minlog.Log.debug;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,7 +12,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
-import static com.esotericsoftware.minlog.Log.debug;
 import PlayerInput.PlayerInterface;
 import GameBuilders.RiskMapGameBuilder;
 import GameEngine.*;
@@ -33,6 +34,10 @@ public abstract class AbstractProtocol {
 	protected ArrayList<String> names = new ArrayList<String>();
 	protected ArrayList<String> funNames = new ArrayList<String>();
 	
+	protected String leaveReason;
+	protected String leaveCode;
+	protected PlayerInterface localPlayer;
+	
 	protected GameEngine engine = null;
 	
 	/**
@@ -40,101 +45,69 @@ public abstract class AbstractProtocol {
 	 * @param command
 	 * @return
 	 */
-	public boolean handleCommand(String command){
+	protected abstract void handleSetupCommand(String command);
+	
+	//protected abstract void sendCommand();
+	
+	/**
+	 * Manages the different states and associated commands.
+	 * @param command
+	 * @return
+	 */
+	protected void handleGameCommand(String command){
 		switch(this.protocolState){
-		//case WAITING_FOR_PLAYERS:
-		///	debug("\nWAITING_FOR_PLAYERS");
-		//	this.protocolState = waiting_for_players(command);
-		//	break;
-		case JOIN_GAME:
-			debug("\nJOIN_GAME");
-			this.protocolState = join_game(command);			
-			break;		
-		case PLAYERS_JOINED:
-			debug("\n PLAYERS_JOINED");
-			this.protocolState = players_joined(command);
-			break;
-		case PING:
-			debug("\n PING");
-			this.protocolState = ping(command);
-			break;
-		case PING_ACK:
-			debug("\n PING_ACK");
-			this.protocolState = ping_ack(command);
-			break;
-		case READY:
-			debug("\n READY");
-			this.protocolState = ready(command);
-			break;
-		case RECEIVE_ACK:
-			debug("\n RECEIVE_ACK");
-			this.protocolState = receive_ack(command);
-			break;
-		case INIT_GAME:
-			debug("\n INIT_GAME");
-			this.protocolState = init_game(command);
-			break;
-		case SETUP_GAME:
-			debug("\n SETUP_GAME");
-			this.protocolState = setup_game(command);
-			break;
-		case PLAY_CARDS:
-			debug("\n PLAY_CARDS");
-			this.protocolState = play_cards(command);
-			break;
-		case DRAW_CARD:
-			debug("\n DRAW_CARD");
-			this.protocolState = draw_card(command);
-			break;
-		case DEPLOY:
-			debug("\n DEPLOY");
-			this.protocolState = deploy(command);
-			break;
-		case ATTACK:
-			debug("\n ATTACK");
-			this.protocolState = attack(command);
-			break;
-		case DEFEND:
-			debug("\n DEFEND");
-			this.protocolState = defend(command);
-			break;
-		case ATTACK_CAPTURE:
-			debug("\n ATTACK_CAPTURE");
-			this.protocolState = attack_capture(command);
-			break;
-		case FORTIFY:
-			debug("\n FORTIFY");
-			this.protocolState = fortify(command);
-			break;
-		case ACK:
-			debug("\n ACK");
-			this.protocolState = ack(command);
-			break;
-		case ROLL:
-			debug("\n ROLL");
-			this.protocolState = roll(command);
-			break;
-		case ROLL_HASH:
-			debug("\n ROLL_HASH");
-			this.protocolState = roll_hash(command);
-			break;
-		case ROLL_NUMBER:
-			debug("\n ROLL_NUMBER");
-			this.protocolState = roll_number(command);
-			break;
-		case TIMEOUT:
-			debug("\n TIMEOUT");
-			this.protocolState = timeout(command);
-			break;
-		case LEAVE_GAME:
-			debug("\n LEAVE_GAME");
-			this.protocolState = leave_game(command);
-			break;
-		default:
-			System.out.println("IN DEFAULT not good");
-			break;
+			case PLAY_CARDS:
+				debug("\n PLAY_CARDS");
+				this.protocolState = play_cards(command);
+				break;
+			case DRAW_CARD:
+				debug("\n DRAW_CARD");
+				this.protocolState = draw_card(command);
+				break;
+			case DEPLOY:
+				debug("\n DEPLOY");
+				this.protocolState = deploy(command);
+				break;
+			case ATTACK:
+				debug("\n ATTACK");
+				this.protocolState = attack(command);
+				break;
+			case DEFEND:
+				debug("\n DEFEND");
+				this.protocolState = defend(command);
+				break;
+			case ATTACK_CAPTURE:
+				debug("\n ATTACK_CAPTURE");
+				this.protocolState = attack_capture(command);
+				break;
+			case FORTIFY:
+				debug("\n FORTIFY");
+				this.protocolState = fortify(command);
+				break;
+			case ACK:
+				debug("\n ACK");
+				this.protocolState = ack(command);
+				break;
+			case ROLL:
+				debug("\n ROLL");
+				this.protocolState = roll(command);
+				break;
+			case ROLL_HASH:
+				debug("\n ROLL_HASH");
+				this.protocolState = roll_hash(command);
+				break;
+			case ROLL_NUMBER:
+				debug("\n ROLL_NUMBER");
+				this.protocolState = roll_number(command);
+				break;
+			case TIMEOUT:
+				debug("\n TIMEOUT");
+				this.protocolState = timeout(command);
+				break;
+			default:
+				System.out.println("IN DEFAULT not good");
+				break;
 		}
-		return false;
 	}
 
 	/**
@@ -142,7 +115,7 @@ public abstract class AbstractProtocol {
 	 * if the game has not started yet
 	 * @param id
 	 */
-	protected void remove_player(int id){
+	protected void removePlayer(int id){
 		Player player = state.lookUpPlayer(id);
 		
 		// if a game hasnt started and a player needs to be removed
@@ -159,11 +132,25 @@ public abstract class AbstractProtocol {
 	}
 	
 	
+	/**
+	 * Choose a name to play with
+	 * @return
+	 */
 	protected String getRandomName(){
 		Random ran = new Random();
+		if(funNames.size() == 0)
+			fillNames();
 		return funNames.get(ran.nextInt(funNames.size()));
 	}
 	
+	protected void fillNames(){
+		// adding all fun names to be randomly picked as players names
+		String[] names = new String[]{"Chappie", "Rex", "Monkey", "XXX",
+				"Gandalf", "Pinguin", "Chocolate", "Billy", "Panda", "Zebra",
+				"Billy the Pinguin", "Mike the Pistacio", "The Machine", "Unknown",
+				"RISK Master"};
+		funNames.addAll(Arrays.asList(names));
+	}
 
 	/**
 	 * @param string to be tested
@@ -233,11 +220,11 @@ public abstract class AbstractProtocol {
 
 	protected abstract ProtocolState ping(String command);
 	
-	protected abstract ProtocolState ping_ack(String command);
+	//protected abstract ProtocolState ping_ack(String command);
 	
 	protected abstract ProtocolState ready(String command);
 	
-	protected abstract ProtocolState receive_ack(String command);
+	//protected abstract ProtocolState receive_ack(String command);
 	
 	protected abstract ProtocolState timeout(String command);
 	
