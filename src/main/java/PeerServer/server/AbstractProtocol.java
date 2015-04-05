@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
+import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
 import GameBuilders.RiskMapGameBuilder;
 import GameEngine.*;
@@ -23,8 +24,9 @@ import PeerServer.server.ProtocolState;
 
 public abstract class AbstractProtocol implements Runnable {
 
-	protected int ack_timeout = 10;
-	protected int move_timeout = 10;
+	// TODO: in seconds for now: should they be?
+	protected int ack_timeout = 3;
+	protected int move_timeout = 3;
 	protected ProtocolState protocolState = ProtocolState.JOIN_GAME;
 	protected String errorMessage = "default";
 	
@@ -39,13 +41,22 @@ public abstract class AbstractProtocol implements Runnable {
 	protected PlayerInterface localPlayer;
 	
 	protected GameEngine engine = null;
+	protected int ack_id = 0;
 	
-	/**
-	 * Manages the different states and associated commands.
-	 * @param command
-	 * @return
-	 */
-	protected abstract void handleSetupCommand(String command);
+	public void run(){
+		state = new State();
+		RiskMapGameBuilder.addRiskTerritoriesToState(state);
+	
+		while(protocolState != null){
+			if(engine == null)
+				takeSetupAction();
+			else 
+				takeGameAction();
+		}
+		System.out.println("end");
+	}
+	
+	protected abstract void takeSetupAction();
 	
 	//protected abstract void sendCommand();
 	
@@ -54,7 +65,8 @@ public abstract class AbstractProtocol implements Runnable {
 	 * @param command
 	 * @return
 	 */
-	protected void handleGameCommand(String command){
+	protected void takeGameAction(){
+		/**
 		switch(this.protocolState){
 			case PLAY_CARDS:
 				debug("\n PLAY_CARDS");
@@ -107,7 +119,7 @@ public abstract class AbstractProtocol implements Runnable {
 			default:
 				System.out.println("IN DEFAULT not good");
 				break;
-		}
+		}*/
 	}
 
 	/**
@@ -197,11 +209,9 @@ public abstract class AbstractProtocol implements Runnable {
 
 	protected abstract ProtocolState ping(String command);
 	
-	//protected abstract ProtocolState ping_ack(String command);
-	
 	protected abstract ProtocolState ready(String command);
 	
-	//protected abstract ProtocolState receive_ack(String command);
+	protected abstract ProtocolState acknowledge(String command);
 	
 	protected abstract ProtocolState timeout(String command);
 	

@@ -37,6 +37,7 @@ import GameState.State;
 import GameUtils.PlayerUtils;
 import GeneralUtils.Jsonify;
 
+import com.esotericsoftware.minlog.Log;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -66,83 +67,130 @@ public class HostProtocol extends AbstractProtocol {
 	private PeerConnection currentConnection;
 	private Set<PeerConnection> acknowledgements = new HashSet<PeerConnection>(); // IDs
 	private Socket newSocket;
+	private ServerSocket serverSocket;
 	private String newName = "";
 	private Timer timer = new Timer();
+	private ChangeState currentTask;
 	private Thread mainThread = Thread.currentThread();
 	
-	// only commands host received over network - not sends
+	
 	@Override
-	protected void handleSetupCommand(String command){
-		switch(this.protocolState){
+	protected void takeSetupAction() {
+		//Log.DEBUG = true;
+		ArrayList<String> allCommands;
+		// check if timer didn't interrupt
+		if(Thread.interrupted()){
+			synchronized(getCurrentTask()){
+				try {
+					// if timer wants to change the current state, don't do anything
+					// let it change it to avoid concurrency problems
+					//timer.wait();
+					currentTask.wait();
+				} catch (Exception e) {}
+			}
+		}
+		
+		switch(protocolState){
 			case JOIN_GAME:
 				debug("\nJOIN_GAME");
-				this.protocolState = join_game(command);			
+				// accept a new client and handle their request
+				try {
+					newSocket = serverSocket.accept();
+					newSocket.setSoTimeout(1000);
+					DataInputStream fromClient = new DataInputStream(newSocket.getInputStream());
+					this.protocolState = join_game(fromClient.readUTF());
+				} catch (IOException e) {}
 				break;		
+			case ACCEPT_JOIN_GAME:
+				debug("\n ACCEPT_JOIN_GAME");
+				protocolState = accept_join_game("");
+				break;
+			case PLAYERS_JOINED:
+				debug("\n PLAYERS_JOINED");
+				protocolState = players_joined("");
+	
+				// if we got min number of players, schedule new task for timer
+				// after a specified time it will transfer the state to the next one (PING)
+				if(startingPlayers.size() == minNoOfPlayers){
+					currentTask = new ChangeState();
+					timer.schedule(currentTask, waitTimeInSeconds * 1000);
+				}
+				break;
+			case REJECT_JOIN_GAME:
+				debug("\n REJECT_JOIN_GAME");
+				protocolState = reject_join_game("");
+				break;
 			case PING:
 				debug("\n PING");
-				this.protocolState = ping(command);
+				protocolState = ping("");
+				currentTask = new ChangeState();
+				timer.schedule(currentTask, ack_timeout * 1000);
 				break;
-			case ACK:
-				debug("\n PING");
-				this.protocolState = acknowledge(command);
-				break;
-			/*case PING_ACK:
+			case PING_ACK:
 				debug("\n PING_ACK");
-				this.protocolState = ping_ack(command);
+				// get command from each connection (if there are any commands)
+				allCommands = getAllPlayersCommands();
+				for(String command : allCommands){
+					ping(command);
+				}
 				break;
 			case READY:
 				debug("\n READY");
-				this.protocolState = ready(command);
+				this.protocolState = ready("");
+				currentTask = new ChangeState();
+				timer.schedule(currentTask, ack_timeout * 1000);
 				break;
 			case ACK:
-				debug("\n ACK");
-				this.protocolState = receive_ack(command);
+				debug("\n ACKNOWLEDGE");
+				allCommands = getAllPlayersCommands();
+				for(String command : allCommands){
+					acknowledge(command);
+				}
 				break;
-			/*case INIT_GAME:
+			case INIT_GAME:
 				debug("\n INIT_GAME");
-				this.protocolState = init_game(command);
+				protocolState = init_game("");
 				break;
 			case SETUP_GAME:
 				debug("\n SETUP_GAME");
-				this.protocolState = setup_game(command);
-				break;*/
+				this.protocolState = setup_game("");
+				break;
+			case LEAVE_GAME:
+				debug("\n LEAVE_GAME");
+				this.protocolState = leave_game("");
+				break;
 			default:
-				System.out.println("IN DEFAULT not good");
 				break;
 		}
 	}
+
 	
-	
+	private Object getCurrentTask() {
+		return currentTask;
+	}
+
+
 	@Override
-	protected ProtocolState join_game(String command) {
-		if(Thread.interrupted()){
-			
-		}
-		
+	protected ProtocolState join_game(String command) {	
 		System.out.println("\nGOT: " + command);
 		
 		//create JSON object of command
 		join_game join_game = (join_game) Jsonify.getJsonStringAsObject(command, join_game.class);
 		if(join_game == null){
 			errorMessage = ("Wrong request");
-			return reject_join_game("");
+			return ProtocolState.REJECT_JOIN_GAME;
 		}
 		
 		if(startingPlayers.size() >= maxNoOfPlayers){
 			errorMessage = ("Full");
-			return reject_join_game("");
+			return ProtocolState.REJECT_JOIN_GAME;
 		}
 		
 		// game will be accepted so update versions and features counts
 		update(join_game.payload.supported_features, supportedFeatures);
 		update(join_game.payload.supported_versions, supportedVersions);
 		newName = join_game.payload.name;
-		
-		if(startingPlayers.size() + 1 == minNoOfPlayers){// state is going to change to ready after that time{
-			timer.schedule(new ChangeState(), waitTimeInSeconds * 1000);
-		}
-		
-		return accept_join_game(command);
+		return ProtocolState.ACCEPT_JOIN_GAME;
 	}
 	
 
@@ -178,10 +226,9 @@ public class HostProtocol extends AbstractProtocol {
 				new accept_join_game(id, ack_timeout, move_timeout);
 		
 		newConnection.sendCommand(Jsonify.getObjectAsJsonString(accept_join_game));
-		
 		System.out.println("\nSEND: " + Jsonify.getObjectAsJsonString(accept_join_game));
 		
-		return players_joined("");
+		return ProtocolState.PLAYERS_JOINED;
 	}
 
 	
@@ -191,7 +238,7 @@ public class HostProtocol extends AbstractProtocol {
 		reject_join_game reject_join_game = new reject_join_game(errorMessage);		
 		String rj = Jsonify.getObjectAsJsonString(reject_join_game);
 		
-		
+		// dont create peer connection for this client, they are rejected
 		DataOutputStream out;
 		try {
 			out = new DataOutputStream(newSocket.getOutputStream());
@@ -204,7 +251,7 @@ public class HostProtocol extends AbstractProtocol {
 
 		System.out.println("\nSEND: " + rj);
 
-		return protocolState;
+		return protocolState.JOIN_GAME;
 	}
 
 
@@ -224,36 +271,24 @@ public class HostProtocol extends AbstractProtocol {
 		
 		System.out.println("\nSEND TO ALMOST ALL: " + Jsonify.getObjectAsJsonString(toRest));
 	
-		return protocolState;
+		return protocolState.JOIN_GAME;
 	}
 
 
 	@Override
 	protected ProtocolState ping(String command){
-		if(Thread.interrupted()){
-			synchronized(this){
-				timer.notify();
-				try {
-					timer.wait();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-		
 		// host is pinging
 		if(command == ""){
 			// add all players to the state - will be deleted later if needed
 			state.setPlayers(startingPlayers);
-				
+			
+			// create and send a ping to all clients
 			ping ping = new ping(startingPlayers.size(), 0);
 			String p = Jsonify.getObjectAsJsonString(ping);
-			//send ping to each client
 			sendToAll(p);
 			System.out.println("\nSEND TO ALL: " + p);
 			
-			timer.schedule(new ChangeState(), ack_timeout * 1000);
+			return ProtocolState.PING_ACK;
 		}
 		else{
 			ping ping = (ping) Jsonify.getJsonStringAsObject(command, ping.class);
@@ -271,7 +306,7 @@ public class HostProtocol extends AbstractProtocol {
 			acknowledgements.add(currentConnection);
 		}
 		
-		return ProtocolState.PING;
+		return ProtocolState.PING_ACK;
 	}
 	
 	
@@ -287,17 +322,18 @@ public class HostProtocol extends AbstractProtocol {
 		}
 		
 		// if less than 3 players remained send leave
-		if(startingPlayers.size() < minNoOfPlayers)
-			return leave_game("");
+		if(startingPlayers.size() < minNoOfPlayers){
+			return ProtocolState.LEAVE_GAME;
+		}
 		
 		//send ready command to all connected clients ACK required
-		ready ready = new ready(null, 0, 1);
+		ready ready = new ready(null, 0, ack_id);
+		ack_id++; // TODO: I guess its supposed to work like this
 		sendToAll(Jsonify.getObjectAsJsonString(ready));
 		System.out.println("\nSEND TO ALL: " + Jsonify.getObjectAsJsonString(ready));
 		
-		timer.schedule(new ChangeState(), ack_timeout * 1000);
+		// clear all ping acknowledgements
 		acknowledgements.clear();
-		
 		return ProtocolState.ACK;
 	}
 
@@ -310,7 +346,7 @@ public class HostProtocol extends AbstractProtocol {
 	 * @param isPing
 	 * @return
 	 */
-	private ProtocolState acknowledge(String command) {
+	protected ProtocolState acknowledge(String command) {
 		if(Thread.interrupted()){
 			synchronized(this){
 				timer.notify();
@@ -371,13 +407,13 @@ public class HostProtocol extends AbstractProtocol {
 		sendToAll(Jsonify.getObjectAsJsonString(init_game));
 		
 		System.out.println("\nSEND TO ALL: " + Jsonify.getObjectAsJsonString(init_game));
-		return leave_game(""); // TODO: JUST FOR NOW - TO STOP - CHANGE IT LATER.
+		return ProtocolState.LEAVE_GAME; // TODO: JUST FOR NOW - TO STOP - CHANGE IT LATER.
 	}
 
 
 	@Override
 	protected ProtocolState leave_game(String command) {
-		// if command is not empty sb sent
+		// if command is not empty sb sent a leave_command
 		if(command != ""){
 			leave_game leave = (leave_game) Jsonify.getJsonStringAsObject(command, leave_game.class);
 			if(leave == null){
@@ -386,11 +422,13 @@ public class HostProtocol extends AbstractProtocol {
 				return leave_game("");
 			}
 			
+			//TODO: print a reason?
 			int responseCode = leave.payload.response;
 			String message = leave.payload.message;
 			
 			sendToAllExcept(command, currentConnection);
 			System.out.println("\nSEND ALMOST ALL: " + Jsonify.getObjectAsJsonString(command));
+			// dont change state
 			return protocolState;
 		}
 		// if command is empty it is us that want to leave
@@ -399,7 +437,15 @@ public class HostProtocol extends AbstractProtocol {
 			
 			System.out.println("\nSEND TO ALL: " + Jsonify.getObjectAsJsonString(leave));
 			sendToAll(Jsonify.getObjectAsJsonString(leave));
-			return ProtocolState.LEAVE_GAME;
+			
+			// wait a bit for everyone to receive hosts leaving message
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return null;
 		}
 	}
 	
@@ -513,98 +559,95 @@ public class HostProtocol extends AbstractProtocol {
 		protocol.run();
 	}
 
-	public void run() {
-		state = new State();
-		RiskMapGameBuilder.addRiskTerritoriesToState(state);
+	
+	/**
+	 * Loops over all connections (one for each player), receive
+	 * their latest commands and return them all in a list
+	 * @return
+	 */
+	private ArrayList<String> getAllPlayersCommands(){
+		ArrayList<String> commands = new ArrayList<String>();
 		
+		for (PeerConnection c : connections) {
+			if(protocolState == ProtocolState.LEAVE_GAME)
+				break;
+			String playersLatestCommand = c.receiveCommand();
+			if (!playersLatestCommand.equals("")) {
+				currentConnection = c;
+				commands.add(playersLatestCommand);
+			}		
+		}
+		return commands;
+	}
+	
+
+
+	@Override
+	public void run(){
 		// creating our player
 		localPlayer = new DumbBotInterface();
 		startingPlayers.add(new Player(localPlayer, 0, 0, getRandomName()));
 		connectionMapping.put(0, null);
 		
 		try {
-			// socket used to accept all incoming connections (at the start)
-			ServerSocket socket = new ServerSocket(4444);
-			socket.setSoTimeout(10000);
-			DataInputStream inFromClient; 
-			
-			// accepting new connections
-			while(protocolState == ProtocolState.JOIN_GAME){
-				try{
-					newSocket = socket.accept();
-					newSocket.setSoTimeout(10000);
-					inFromClient = new DataInputStream(newSocket.getInputStream());
-					handleSetupCommand(inFromClient.readUTF()); 
-				} catch (Exception e){
-					break;
-				}
-			}
-			
-			// everyone has joined, start handling their commands
-			while(protocolState != ProtocolState.LEAVE_GAME){
-				if(Thread.interrupted()){
-					synchronized(timer){
-						try {
-							timer.wait();
-						} catch (Exception e) {
-						}
-					}
-					
-				}
-				for (PeerConnection c : connections) {
-					if(protocolState == ProtocolState.LEAVE_GAME)
-						break;
-					String playersLatestCommand = c.receiveCommand();
-					if (!playersLatestCommand.equals("")) {
-						currentConnection = c;
-						handleSetupCommand(playersLatestCommand); //TODO: change later for non setup
-					}		
-				}
-				
-			}
-			
-			// send command to everyone about leaving game
-			leave_game("");
-			
+			serverSocket = new ServerSocket(4444);
+			serverSocket.setSoTimeout(2000); // socket waits for 2 seconds -- needed for checking interrupts
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		super.run();
+		
+		timer.cancel();
+		
+		// closing all sockets
+		for(PeerConnection con : connections){
+			con.close();
+		}
+		try {
+			serverSocket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-
-
+	
+	/**
+	 * ChangeState represents a thread that is supposed
+	 * to run after a time specified in a timer which uses it
+	 * The thread simply changes the state of the game to the next one
+	 *
+	 */
 	class ChangeState extends TimerTask{
 		@Override
 		public void run() {
-			if(protocolState == ProtocolState.JOIN_GAME){
-				protocolState = ping("");
-			}
-			else if(protocolState == ProtocolState.PING){
-				mainThread.interrupt();
-				synchronized(this){
-					try {
-						wait(10000);
-					} catch (Exception e) {
-					}
-					
-					protocolState = ready("");
-					notify();
-				}
-			}
-			else if(protocolState == ProtocolState.ACK){
-				mainThread.interrupt();
-				synchronized(this){
-					try {
-						wait(10000);
-					} catch (InterruptedException e) {
-					}
-		
-					protocolState = timeout(""); 
-					notify();
-				}
+			ProtocolState newState = protocolState;
+			
+			// interrupt the main thread - for safety, so it doesn't access the protocolState
+			// field we want to change and to make sure its not in the middle of sth that
+			// we can mess up by changing state
+			mainThread.interrupt();
+			synchronized(this){
+				try {
+					// wait for a bit second to let the main thread reach interrupt
+					wait(3000);
+				} catch (Exception e) {}
+				
+				if(protocolState == ProtocolState.JOIN_GAME)
+					protocolState = ProtocolState.PING;
+				else if(protocolState == ProtocolState.PING_ACK)
+					protocolState = ProtocolState.READY;
+				else if(protocolState == ProtocolState.ACK)
+					protocolState = ProtocolState.INIT_GAME;
+				
+				// change state and notify the main thread so it continues running
+				notify();
 			}
 		}		
 	}
+
+
+
 
 
 }
