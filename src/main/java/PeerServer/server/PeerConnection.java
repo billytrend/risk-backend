@@ -23,9 +23,7 @@ public class PeerConnection {
 			e.printStackTrace();
 		}
 	}
-	
-
-	
+		
 	public void sendCommand(String command){
 		try {
 			outToClient.writeUTF(command);
@@ -51,7 +49,6 @@ public class PeerConnection {
 		try {
 			socket.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

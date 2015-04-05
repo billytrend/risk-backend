@@ -151,29 +151,6 @@ public abstract class AbstractProtocol implements Runnable {
 				"RISK Master"};
 		funNames.addAll(Arrays.asList(names));
 	}
-
-	/**
-	 * @param string to be tested
-	 * @return true if string is valid JSON
-	 * 			false otherwise
-	 *
-	 * TODO: Do we need this bit?
-	 */
-/*	public boolean isJsonStringValid(String test) {
-		try {
-			JsonObject o = new JsonParser().parse(test).getAsJsonObject();
-		} catch (JsonParseException ex) {
-			try {
-				//incase array is valid too
-				JsonArray o = new JsonParser().parse(test).getAsJsonArray();
-			} catch (JsonParseException ex1) {
-				return false;
-			}
-		}
-		return true;
-	}
-	*/
-	
 	
 	/**
 	 * Method used to contact the PlayerInterface (RemotePlayer) and notify it

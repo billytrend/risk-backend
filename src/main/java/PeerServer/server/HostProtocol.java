@@ -367,7 +367,7 @@ public class HostProtocol extends AbstractProtocol {
 		String[] feat = new String[features.size()];
 		features.toArray(feat);
 		
-		initalise_game init_game = new initalise_game(version, feat);
+		initialise_game init_game = new initialise_game(version, feat);
 		sendToAll(Jsonify.getObjectAsJsonString(init_game));
 		
 		System.out.println("\nSEND TO ALL: " + Jsonify.getObjectAsJsonString(init_game));

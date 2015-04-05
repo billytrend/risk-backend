@@ -18,9 +18,9 @@ package PeerServer.protocol.setup;
     }
 }
  */
-public class initalise_game {
+public class initialise_game {
 
-	public initalise_game(Integer version, String[] supportedFeatures){
+	public initialise_game(Integer version, String[] supportedFeatures){
 		this.payload = new payload();
 		this.payload.version = version;
 		this.payload.supported_features = supportedFeatures;

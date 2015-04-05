@@ -18,7 +18,7 @@ import PeerServer.protocol.general.acknowledgement;
 import PeerServer.protocol.general.leave_game;
 import PeerServer.protocol.general.timeout;
 import PeerServer.protocol.setup.accept_join_game;
-import PeerServer.protocol.setup.initalise_game;
+import PeerServer.protocol.setup.initialise_game;
 import PeerServer.protocol.setup.join_game;
 import PeerServer.protocol.setup.ping;
 import PeerServer.protocol.setup.players_joined;
@@ -279,7 +279,7 @@ public class ClientProtocol extends AbstractProtocol{
 		if(command.contains("leave"))
 			return leave_game(command);
 		
-		initalise_game init = (initalise_game) Jsonify.getJsonStringAsObject(command, initalise_game.class);
+		initialise_game init = (initialise_game) Jsonify.getJsonStringAsObject(command, initialise_game.class);
 		if(init == null){
 			leaveCode = 200;
 			leaveReason = "Expected init game command";
