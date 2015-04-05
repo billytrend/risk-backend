@@ -70,9 +70,8 @@ public class Client{
 		String message = "";
 		try {
 			message = in.readUTF();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			
 		}
 		return message;
 	}

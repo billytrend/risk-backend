@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -51,12 +52,12 @@ public class HostProtocol extends AbstractProtocol {
 	
 	private int maxNoOfPlayers = 6;		//min is 3	
 	private int minNoOfPlayers = 2;
-	private int waitTimeInSeconds = 180; // host waits 180 seconds for remaining players to connect
+	private int waitTimeInSeconds = 3; // host waits 180 seconds for remaining players to connect
 
 	// mappings of features / versions to the count of how many clients support these
 	private HashMap<String, Integer> supportedFeatures = new HashMap<String, Integer>();
 	private HashMap<Integer, Integer> supportedVersions = new HashMap<Integer, Integer>();
-	private ArrayList<PeerConnection> connections; 	// players connections
+	private ArrayList<PeerConnection> connections = new ArrayList<PeerConnection>(); 	// players connections
 	
 	// maps players IDs with a connection associated with them (null for local)
 	private HashMap<Integer, PeerConnection> connectionMapping = new HashMap<Integer, PeerConnection>();
@@ -65,7 +66,9 @@ public class HostProtocol extends AbstractProtocol {
 	private PeerConnection currentConnection;
 	private Set<PeerConnection> acknowledgements = new HashSet<PeerConnection>(); // IDs
 	private Socket newSocket;
+	private String newName = "";
 	private Timer timer = new Timer();
+	private Thread mainThread = Thread.currentThread();
 	
 	// only commands host received over network - not sends
 	@Override
@@ -112,6 +115,10 @@ public class HostProtocol extends AbstractProtocol {
 	
 	@Override
 	protected ProtocolState join_game(String command) {
+		if(Thread.interrupted()){
+			
+		}
+		
 		System.out.println("\nGOT: " + command);
 		
 		//create JSON object of command
@@ -121,17 +128,21 @@ public class HostProtocol extends AbstractProtocol {
 			return reject_join_game("");
 		}
 		
+		if(startingPlayers.size() >= maxNoOfPlayers){
+			errorMessage = ("Full");
+			return reject_join_game("");
+		}
+		
 		// game will be accepted so update versions and features counts
 		update(join_game.payload.supported_features, supportedFeatures);
 		update(join_game.payload.supported_versions, supportedVersions);
+		newName = join_game.payload.name;
 		
-		if(startingPlayers.size() < minNoOfPlayers){
-			return accept_join_game(command);
+		if(startingPlayers.size() + 1 == minNoOfPlayers){// state is going to change to ready after that time{
+			timer.schedule(new ChangeState(), waitTimeInSeconds * 1000);
 		}
 		
-		// state is going to change to ready after that time
-		timer.schedule(new ChangeState(), waitTimeInSeconds * 1000);
-		return protocolState;
+		return accept_join_game(command);
 	}
 	
 
@@ -146,18 +157,26 @@ public class HostProtocol extends AbstractProtocol {
 		PeerConnection newConnection = new PeerConnection(newSocket, id);
 		connections.add(newConnection);
 		connectionMapping.put(id, newConnection);
+		currentConnection = newConnection;
 		
 		// TODO: starting armies fix
 		// TODO: add logic between host being a player
 		
 		// creating player and mapping its id to its interface
 		PlayerInterface playerInterface = new RemotePlayer();
-		startingPlayers.add(new Player(playerInterface, 0, id));
+		if(newName != "")
+			startingPlayers.add(new Player(playerInterface, 0, id, newName));
+		else
+			startingPlayers.add(new Player(playerInterface, 0, id));
+		
 		interfaceMapping.put(0, playerInterface);
+		state.setPlayers(startingPlayers);
+		
 		
 		//sending response - about being accepted
 		accept_join_game accept_join_game =
 				new accept_join_game(id, ack_timeout, move_timeout);
+		
 		newConnection.sendCommand(Jsonify.getObjectAsJsonString(accept_join_game));
 		
 		System.out.println("\nSEND: " + Jsonify.getObjectAsJsonString(accept_join_game));
@@ -184,9 +203,8 @@ public class HostProtocol extends AbstractProtocol {
 		}
 
 		System.out.println("\nSEND: " + rj);
-		System.out.println(rj);
 
-		return ProtocolState.JOIN_GAME;
+		return protocolState;
 	}
 
 
@@ -200,30 +218,35 @@ public class HostProtocol extends AbstractProtocol {
 		
 		// sending only new player to the rest
 		int id = currentConnection.getId();
-		String name = state.lookUpPlayer(id).getId();
 		
-		players_joined toRest = new players_joined(new String[]{Integer.toString(id), name, "key"});
+		players_joined toRest = new players_joined(new String[]{Integer.toString(id), newName, "key"});
 		sendToAllExcept(Jsonify.getObjectAsJsonString(toRest), currentConnection);		
 		
 		System.out.println("\nSEND TO ALMOST ALL: " + Jsonify.getObjectAsJsonString(toRest));
-		
-		if(startingPlayers.size() == maxNoOfPlayers)
-			return ready("");
-		else
-			return ProtocolState.JOIN_GAME;
+	
+		return protocolState;
 	}
 
 
 	@Override
 	protected ProtocolState ping(String command){
+		if(Thread.interrupted()){
+			synchronized(this){
+				timer.notify();
+				try {
+					timer.wait();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 		
 		// host is pinging
 		if(command == ""){
 			// add all players to the state - will be deleted later if needed
 			state.setPlayers(startingPlayers);
-			
-			System.out.println("Number of players in game: " + startingPlayers.size());
-	
+				
 			ping ping = new ping(startingPlayers.size(), 0);
 			String p = Jsonify.getObjectAsJsonString(ping);
 			//send ping to each client
@@ -254,7 +277,6 @@ public class HostProtocol extends AbstractProtocol {
 	
 	@Override
 	protected ProtocolState ready(String command){
-		
 		// check for any dropouts 
 		for(PeerConnection c : connections){
 			if(!acknowledgements.contains(c)){
@@ -265,7 +287,7 @@ public class HostProtocol extends AbstractProtocol {
 		}
 		
 		// if less than 3 players remained send leave
-		if(startingPlayers.size() < 3)
+		if(startingPlayers.size() < minNoOfPlayers)
 			return leave_game("");
 		
 		//send ready command to all connected clients ACK required
@@ -273,9 +295,9 @@ public class HostProtocol extends AbstractProtocol {
 		sendToAll(Jsonify.getObjectAsJsonString(ready));
 		System.out.println("\nSEND TO ALL: " + Jsonify.getObjectAsJsonString(ready));
 		
-		timer.schedule(new ChangeState(), ack_timeout);
-		
+		timer.schedule(new ChangeState(), ack_timeout * 1000);
 		acknowledgements.clear();
+		
 		return ProtocolState.ACK;
 	}
 
@@ -289,6 +311,17 @@ public class HostProtocol extends AbstractProtocol {
 	 * @return
 	 */
 	private ProtocolState acknowledge(String command) {
+		if(Thread.interrupted()){
+			synchronized(this){
+				timer.notify();
+				try {
+					timer.wait();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 		acknowledgement ack = (acknowledgement) Jsonify.getJsonStringAsObject(command, acknowledgement.class);
 		if(ack == null){
 			leaveCode = 200;
@@ -316,11 +349,11 @@ public class HostProtocol extends AbstractProtocol {
 			}
 		}
 		
-		if(startingPlayers.size() < 3){
+		if(startingPlayers.size() < minNoOfPlayers){
 			return leave_game("");
 		}
 		
-		return ProtocolState.INIT_GAME;
+		return init_game("");
 	}
 	
 
@@ -331,8 +364,10 @@ public class HostProtocol extends AbstractProtocol {
 		
 		// get features that are supported by all
 		ArrayList<String> features = findFeaturesSupportedByAll(supportedFeatures);
+		String[] feat = new String[features.size()];
+		features.toArray(feat);
 		
-		initalise_game init_game = new initalise_game(version, (String[]) features.toArray());
+		initalise_game init_game = new initalise_game(version, feat);
 		sendToAll(Jsonify.getObjectAsJsonString(init_game));
 		
 		System.out.println("\nSEND TO ALL: " + Jsonify.getObjectAsJsonString(init_game));
@@ -364,7 +399,7 @@ public class HostProtocol extends AbstractProtocol {
 			
 			System.out.println("\nSEND TO ALL: " + Jsonify.getObjectAsJsonString(leave));
 			sendToAll(Jsonify.getObjectAsJsonString(leave));
-			return null;
+			return ProtocolState.LEAVE_GAME;
 		}
 	}
 	
@@ -440,9 +475,12 @@ public class HostProtocol extends AbstractProtocol {
 	 */
 	private int findHighestVersionSupportedByAll(HashMap<Integer, Integer> map){
 		int supported = 1;
-		for(Integer a : map.keySet()){
-			if(map.get(a) == connections.size())
-				supported = a;
+	    
+		Iterator<Integer> it = map.keySet().iterator();
+		while(it.hasNext()){
+			Integer current = it.next();
+			if(map.get(current) == connections.size())
+				supported = current;
 		}
 		
 		return supported;
@@ -464,7 +502,7 @@ public class HostProtocol extends AbstractProtocol {
 				toUpdate.put(a, count + 1);
 			}
 			else{
-				toUpdate.put(toUpdate, 1);
+				toUpdate.put(a, 1);
 			}
 		}
 	}
@@ -475,7 +513,7 @@ public class HostProtocol extends AbstractProtocol {
 		protocol.run();
 	}
 
-	private void run() {
+	public void run() {
 		state = new State();
 		RiskMapGameBuilder.addRiskTerritoriesToState(state);
 		
@@ -487,24 +525,42 @@ public class HostProtocol extends AbstractProtocol {
 		try {
 			// socket used to accept all incoming connections (at the start)
 			ServerSocket socket = new ServerSocket(4444);
+			socket.setSoTimeout(10000);
 			DataInputStream inFromClient; 
 			
 			// accepting new connections
 			while(protocolState == ProtocolState.JOIN_GAME){
-				newSocket = socket.accept();
-				inFromClient = new DataInputStream(newSocket.getInputStream());
-				handleSetupCommand(inFromClient.readUTF()); 
+				try{
+					newSocket = socket.accept();
+					newSocket.setSoTimeout(10000);
+					inFromClient = new DataInputStream(newSocket.getInputStream());
+					handleSetupCommand(inFromClient.readUTF()); 
+				} catch (Exception e){
+					break;
+				}
 			}
 			
 			// everyone has joined, start handling their commands
 			while(protocolState != ProtocolState.LEAVE_GAME){
+				if(Thread.interrupted()){
+					synchronized(timer){
+						try {
+							timer.wait();
+						} catch (Exception e) {
+						}
+					}
+					
+				}
 				for (PeerConnection c : connections) {
+					if(protocolState == ProtocolState.LEAVE_GAME)
+						break;
 					String playersLatestCommand = c.receiveCommand();
 					if (!playersLatestCommand.equals("")) {
 						currentConnection = c;
 						handleSetupCommand(playersLatestCommand); //TODO: change later for non setup
 					}		
 				}
+				
 			}
 			
 			// send command to everyone about leaving game
@@ -524,10 +580,28 @@ public class HostProtocol extends AbstractProtocol {
 				protocolState = ping("");
 			}
 			else if(protocolState == ProtocolState.PING){
-				protocolState = ready("");
+				mainThread.interrupt();
+				synchronized(this){
+					try {
+						wait(10000);
+					} catch (Exception e) {
+					}
+					
+					protocolState = ready("");
+					notify();
+				}
 			}
 			else if(protocolState == ProtocolState.ACK){
-				protocolState = timeout(""); 
+				mainThread.interrupt();
+				synchronized(this){
+					try {
+						wait(10000);
+					} catch (InterruptedException e) {
+					}
+		
+					protocolState = timeout(""); 
+					notify();
+				}
 			}
 		}		
 	}

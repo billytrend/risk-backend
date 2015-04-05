@@ -39,7 +39,7 @@ public class players_joined {
 	}
 
 	public players_joined(String[] strings) {
-		payload = new String[0][3];
+		payload = new String[1][3];
 		payload[0] = strings;
 	}
 	

@@ -57,7 +57,7 @@ public class ProtocolTest {
 		
 		
 		
-		Integer [] supported_versions = {1};
+		Integer[] supported_versions = {1};
 		String[] supported_features = {"custom_map"};
 		String name = "Player 1";
 		

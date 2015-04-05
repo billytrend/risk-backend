@@ -40,8 +40,8 @@ public class PeerConnection {
 		
 		try {
 			response = inFromClient.readUTF();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+		
 		}
 		
 		return response;

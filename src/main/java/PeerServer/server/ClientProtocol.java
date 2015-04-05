@@ -43,11 +43,11 @@ public class ClientProtocol extends AbstractProtocol{
 	@Override
 	protected void handleSetupCommand(String command){
 		switch(this.protocolState){
-		/*case JOIN_GAME:
+			case JOIN_GAME:
 				debug("\nJOIN_GAME");
 				this.protocolState = join_game(command);			
 				break;		
-		*/	case PLAYERS_JOINED:
+			case PLAYERS_JOINED:
 				debug("\n PLAYERS_JOINED");
 				this.protocolState = players_joined(command);
 				break;
@@ -290,7 +290,7 @@ public class ClientProtocol extends AbstractProtocol{
 		versionPlayed = init.payload.version;
 		featuresUsed = init.payload.supported_features;
 		
-		return ProtocolState.SETUP_GAME;
+		return ProtocolState.LEAVE_GAME;
 	}
 	
 
@@ -373,7 +373,7 @@ public class ClientProtocol extends AbstractProtocol{
 		protocol.run();
 	}
 
-	private void run() {
+	public void run() {
 		state = new State();
 		RiskMapGameBuilder.addRiskTerritoriesToState(state);
 		

@@ -30,23 +30,22 @@ public class State {
 	private int numberOfCardSetsUsed = 0;
 	
 	public State(ArrayList<Player> players){
-		numberOfCardSetsUsed = 0;
-		playerMapping = new HashMap<String, Player>();
-		playerNumberIdMapping = new HashMap<Integer, Player>();
-		territoryMapping = new HashMap<String, Territory>();
+		super();
 		setPlayers(players);
     }
     
     public State() {
-        
+    	numberOfCardSetsUsed = 0;
+    	playerMapping = new HashMap<String, Player>();
+    	playerNumberIdMapping = new HashMap<Integer, Player>();
+    	territoryMapping = new HashMap<String, Territory>();
+    	players = new ArrayList<Player>();
     }
 
     public void setPlayers(ArrayList<Player> players) {
         this.players = players;
         this.playerQueue = new PlayerQueue(players);
-		playerMapping = new HashMap<String, Player>();
-		playerNumberIdMapping = new HashMap<Integer, Player>();
-		
+
         for(Player player : players){
             playerMapping.put(player.getId(), player);
         }

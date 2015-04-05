@@ -21,10 +21,10 @@ import GeneralUtils.Jsonify;
 import PeerServer.server.ProtocolState;
 
 
-public abstract class AbstractProtocol {
+public abstract class AbstractProtocol implements Runnable {
 
-	protected int ack_timeout;
-	protected int move_timeout;
+	protected int ack_timeout = 10;
+	protected int move_timeout = 10;
 	protected ProtocolState protocolState = ProtocolState.JOIN_GAME;
 	protected String errorMessage = "default";
 	
