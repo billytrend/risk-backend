@@ -15,9 +15,10 @@ public class Jsonify {
 
     public static Gson gson = new GsonBuilder()
             .registerTypeAdapter(Lobby.class, new LobbySerialiser())
+            .serializeNulls()
             .registerTypeAdapter(State.class, new GameStateSerialiser())
             .create();
-            
+    
     // the idea is that this maybe overridden to handle certain objects
     public static String getObjectAsJsonString(Object o) {
         return gson.toJson(o);
@@ -28,7 +29,7 @@ public class Jsonify {
 //    }
 
     public static Object getJsonStringAsObject(String s, Class c) {
-        Object ob =  new Gson().fromJson(s, c);
+        Object ob =  gson.fromJson(s, c);
         return ob;
     }
     

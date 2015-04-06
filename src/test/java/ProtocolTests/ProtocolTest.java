@@ -31,7 +31,7 @@ public class ProtocolTest {
 				+ "{\"supported_versions\":[1],"
 				+ "\"supported_features\":[\"custom_map\"],\"name\":\"Player 1\"}}";
 		//crate object from the JSON string
-		join_game jg = new Gson().fromJson(command, join_game.class);
+		join_game jg = (join_game) Jsonify.getJsonStringAsObject(command, join_game.class);
 		//check it is not null
 		assertNotNull(jg);
 		
@@ -59,7 +59,7 @@ public class ProtocolTest {
 		//create valid command
 		String command = "{\"command\":\"reject_join_game\",\"payload\":\"Game in progress\"}";
 		//crate object from the JSON string
-		reject_join_game rjg = new Gson().fromJson(command, reject_join_game.class);
+		reject_join_game rjg = (reject_join_game) Jsonify.getJsonStringAsObject(command, reject_join_game.class);
 		//check it is not null
 		assertNotNull(rjg);  
 		//check each field is valid
@@ -70,7 +70,7 @@ public class ProtocolTest {
 		
 		//create a new object 
 		reject_join_game rjgToString = new reject_join_game("Game in progress");
-		String rjgString = new Gson().toJson(rjgToString);
+		String rjgString = Jsonify.getObjectAsJsonString(rjgToString);
 		System.out.println(rjgString);
 		assertEquals(command, rjgString);		
 	}
@@ -81,7 +81,7 @@ public class ProtocolTest {
 		String command = "{\"command\":\"accept_join_game\",\"payload\":"
 				+ "{\"player_id\":1,\"acknowledgement_timeout\":2,\"move_timeout\":30}}";
 		//crate object from the JSON string
-		accept_join_game ajg = new Gson().fromJson(command, accept_join_game.class);
+		accept_join_game ajg = (accept_join_game) Jsonify.getJsonStringAsObject(command, accept_join_game.class);
 		//check it is not null
 		assertNotNull(ajg);
 		
@@ -98,7 +98,7 @@ public class ProtocolTest {
 		
 		//create a new object 
 		accept_join_game ajgToString = new accept_join_game(player_id, acknowledgement_timeout, move_timeout);
-		String ajgString = new Gson().toJson(ajgToString);
+		String ajgString = Jsonify.getObjectAsJsonString(ajgToString);
 		System.out.println(ajgString);
 		assertEquals(command, ajgString);	
 	}
@@ -109,7 +109,7 @@ public class ProtocolTest {
 		String command = "{\"command\":\"players_joined\",\"payload\": "
 				+ "[[0, \"Player A\", \"\"],[1, \"Player B\", \"\"]]}";
 		
-		players_joined pj = new Gson().fromJson(command, players_joined.class);
+		players_joined pj = (players_joined) Jsonify.getJsonStringAsObject(command, players_joined.class);
 		assertNotNull(pj);
 		
 		//check each field is valid
@@ -145,7 +145,7 @@ public class ProtocolTest {
 		
 		//create a new object 
 		players_joined pjToString = new players_joined(playersArray);
-		String pjString = new Gson().toJson(pjToString);
+		String pjString = Jsonify.getObjectAsJsonString(pjToString);
 		System.out.println(pjString);
 		command = command.replaceAll(",\\s",",");
 		command = command .replaceAll(":\\s",":");
@@ -156,7 +156,7 @@ public class ProtocolTest {
 	public void pingTest(){
 		String command = "{\"command\":\"ping\",\"payload\":5,\"player_id\":0}";
 		
-		ping ping = new Gson().fromJson(command, ping.class);
+		ping ping = (PeerServer.protocol.setup.ping) Jsonify.getJsonStringAsObject(command, ping.class);
 		assertNotNull(ping);
 		
 		//check each field is valid
@@ -166,7 +166,7 @@ public class ProtocolTest {
 		
 		//create a new object 
 		ping pingToString = new ping(5, 0);
-		String pingString = new Gson().toJson(pingToString);
+		String pingString = Jsonify.getObjectAsJsonString(pingToString);
 		System.out.println(pingString);
 		command = command.replaceAll(",\\s",",");
 		command = command .replaceAll(":\\s",":");
@@ -179,8 +179,7 @@ public class ProtocolTest {
 		String command = "{\"command\": \"ready\","
 				+ "\"payload\": null,\"player_id\": 0,\"ack_id\": 1}";
 		
-		Gson gson = new GsonBuilder().serializeNulls().create();
-		ready ready = gson.fromJson(command, ready.class);
+		ready ready = (PeerServer.protocol.setup.ready) Jsonify.getJsonStringAsObject(command, ready.class);
 		//checks its not null
 		assertNotNull(ready);
 		
@@ -192,7 +191,7 @@ public class ProtocolTest {
 		
 		//create a new object 
 		ready readyToString = new ready(null, 0, 1);
-		String readyString = gson.toJson(readyToString);
+		String readyString = Jsonify.getObjectAsJsonString(readyToString);
 		System.out.println(readyString);
 		command = command.replaceAll(",\\s",",");
 		command = command .replaceAll(":\\s",":");
@@ -204,7 +203,7 @@ public class ProtocolTest {
 		String command = "{\"command\":\"initialise_game\","
 				+ "\"payload\":{\"version\":1,\"supported_features\":[\"custom_map\"]}}";
 		
-		initialise_game ig = new Gson().fromJson(command, initialise_game.class);
+		initialise_game ig = (initialise_game) Jsonify.getJsonStringAsObject(command, initialise_game.class);
 		//checks its not null
 		assertNotNull(ig);
 		
@@ -217,7 +216,7 @@ public class ProtocolTest {
 		
 		//create a new object 
 		initialise_game initGame = new initialise_game(1, supportedFeatures);
-		String initGameString = new Gson().toJson(initGame);
+		String initGameString = Jsonify.getObjectAsJsonString(initGame);
 		System.out.println(initGameString);
 		assertEquals(command, initGameString);	
 	}
@@ -228,7 +227,7 @@ public class ProtocolTest {
 	public void setupTest(){
 		String command = "{\"command\": \"setup\",\"payload\": 5,\"player_id\": 0,\"ack_id\": 1}";
 		
-		setup setup = new Gson().fromJson(command, setup.class);
+		setup setup = (PeerServer.protocol.setup.setup) Jsonify.getJsonStringAsObject(command, setup.class);
 		//check it is not null
 		assertNotNull(setup);
 		
@@ -240,7 +239,7 @@ public class ProtocolTest {
 
 		//create a new object 
 		setup setupToString = new setup("setup", 5, 0, 1);
-		String setupString = new Gson().toJson(setupToString);
+		String setupString = Jsonify.getObjectAsJsonString(setupToString);
 		System.out.println(setupString);
 		command = command.replaceAll(",\\s",",");
 		command = command .replaceAll(":\\s",":");
