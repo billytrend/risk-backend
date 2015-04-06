@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import GameState.Player;
 import GeneralUtils.Jsonify;
@@ -118,21 +119,36 @@ public class ProtocolTest {
 		assertEquals(2, pj.payload.length);
 		
 		//create a copy of inputted rows 
-		String [] row1 = {"0", "Player A", ""};
-		String [] row2 = {"1", "Player B", ""};
+		Object[] row1 = {0, "Player A", ""};
+		Object[] row2 = {1, "Player B", ""};
 		
 		//check the values are right
-		Assert.assertArrayEquals(row1, pj.payload[0]);
-		Assert.assertArrayEquals(row2, pj.payload[1]);
+		assertEquals(row1[0], ((Double)pj.payload[0][0]).intValue());
+		assertEquals(row1[1], pj.payload[0][1]);
+		assertEquals(row1[2], pj.payload[0][2]);
+
+		assertEquals(row2[0], ((Double)pj.payload[1][0]).intValue());
+		assertEquals(row2[1], pj.payload[1][1]);
+		assertEquals(row2[2], pj.payload[1][2]);
+
+		
+		//assertTrue(Arrays.deepEquals(row1, pj.payload[0]));
+		//assertTrue(Arrays.deepEquals(row2, pj.payload[1]));
 		
 		ArrayList<Player> playersArray = new ArrayList<Player>();
-		playersArray.add(new Player(0, "Player A", ""));
-		playersArray.add(new Player(1, "Player B", ""));
+		Player A = new Player(null, 0, 0, "Player A");
+		Player B = new Player(null, 0, 1, "Player B");
+		A.setPublicKey("");
+		B.setPublicKey("");
+		playersArray.add(A);
+		playersArray.add(B);
 		
 		//create a new object 
 		players_joined pjToString = new players_joined(playersArray);
 		String pjString = new Gson().toJson(pjToString);
 		System.out.println(pjString);
+		command = command.replaceAll(",\\s",",");
+		command = command .replaceAll(":\\s",":");
 		assertEquals(command, pjString);	
 	}
 
@@ -152,6 +168,8 @@ public class ProtocolTest {
 		ping pingToString = new ping(5, 0);
 		String pingString = new Gson().toJson(pingToString);
 		System.out.println(pingString);
+		command = command.replaceAll(",\\s",",");
+		command = command .replaceAll(":\\s",":");
 		assertEquals(command, pingString);	
 	}
 
@@ -161,7 +179,8 @@ public class ProtocolTest {
 		String command = "{\"command\": \"ready\","
 				+ "\"payload\": null,\"player_id\": 0,\"ack_id\": 1}";
 		
-		ready ready = new Gson().fromJson(command, ready.class);
+		Gson gson = new GsonBuilder().serializeNulls().create();
+		ready ready = gson.fromJson(command, ready.class);
 		//checks its not null
 		assertNotNull(ready);
 		
@@ -172,9 +191,11 @@ public class ProtocolTest {
 		assertEquals(ready.ack_id, 1);
 		
 		//create a new object 
-		ready readyToString = new ready("null", 0, 1);
-		String readyString = new Gson().toJson(readyToString);
+		ready readyToString = new ready(null, 0, 1);
+		String readyString = gson.toJson(readyToString);
 		System.out.println(readyString);
+		command = command.replaceAll(",\\s",",");
+		command = command .replaceAll(":\\s",":");
 		assertEquals(command, readyString);	
 	}
 	
@@ -221,6 +242,8 @@ public class ProtocolTest {
 		setup setupToString = new setup("setup", 5, 0, 1);
 		String setupString = new Gson().toJson(setupToString);
 		System.out.println(setupString);
+		command = command.replaceAll(",\\s",",");
+		command = command .replaceAll(":\\s",":");
 		assertEquals(command, setupString);
 		
 	}

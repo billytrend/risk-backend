@@ -18,8 +18,8 @@ package PeerServer.protocol.setup;
 public class ping {
 
 	public String command = "ping";
-	public int player_id;
 	public Integer payload;		//can be null if sent by client 
+	public int player_id;
 	
 	public ping(int no_of_players, int player_id){
 		this.payload = no_of_players;

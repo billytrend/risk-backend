@@ -69,6 +69,7 @@ public class HostProtocol extends AbstractProtocol {
 	private Socket newSocket;
 	private ServerSocket serverSocket;
 	private String newName = "";
+	private String newKey = "";
 	private Timer timer = new Timer();
 	private ChangeState currentTask;
 	private Thread mainThread = Thread.currentThread();
@@ -190,6 +191,7 @@ public class HostProtocol extends AbstractProtocol {
 		update(join_game.payload.supported_features, supportedFeatures);
 		update(join_game.payload.supported_versions, supportedVersions);
 		newName = join_game.payload.name;
+		newKey = join_game.payload.public_key;
 		return ProtocolState.ACCEPT_JOIN_GAME;
 	}
 	
@@ -212,14 +214,16 @@ public class HostProtocol extends AbstractProtocol {
 		
 		// creating player and mapping its id to its interface
 		PlayerInterface playerInterface = new RemotePlayer();
+		Player newOne;
 		if(newName != "")
-			startingPlayers.add(new Player(playerInterface, 0, id, newName));
+			newOne = new Player(playerInterface, 0, id, newName);
 		else
-			startingPlayers.add(new Player(playerInterface, 0, id));
+			newOne = new Player(playerInterface, 0, id);
 		
+		newOne.setPublicKey(newKey);
+		startingPlayers.add(newOne);
 		interfaceMapping.put(0, playerInterface);
 		state.setPlayers(startingPlayers);
-		
 		
 		//sending response - about being accepted
 		accept_join_game accept_join_game =
@@ -266,7 +270,7 @@ public class HostProtocol extends AbstractProtocol {
 		// sending only new player to the rest
 		int id = currentConnection.getId();
 		
-		players_joined toRest = new players_joined(new String[]{Integer.toString(id), newName, "key"});
+		players_joined toRest = new players_joined(new String[]{Integer.toString(id), newName, newKey});
 		sendToAllExcept(Jsonify.getObjectAsJsonString(toRest), currentConnection);		
 		
 		System.out.println("\nSEND TO ALMOST ALL: " + Jsonify.getObjectAsJsonString(toRest));

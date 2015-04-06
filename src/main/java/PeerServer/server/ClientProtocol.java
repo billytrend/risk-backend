@@ -6,6 +6,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -39,7 +40,7 @@ public class ClientProtocol extends AbstractProtocol{
 	private int myID;
 	private int versionPlayed;
 	private String[] featuresUsed;
-	
+
 	// ids of users who sent their pings
 	private Set<Integer> acknowledgements = new HashSet<Integer>();
 	
@@ -179,17 +180,17 @@ public class ClientProtocol extends AbstractProtocol{
 		System.out.println("\nGOT: " + Jsonify.getObjectAsJsonString(players));
 		
 		// creating all players specified by the protocol
-		String[][] playersDetails = players.payload;
+		Object[][] playersDetails = players.payload;
 		PlayerInterface playersInt;
 			
 		Player player;
-		for(String[] details : playersDetails){
-			if(Integer.parseInt(details[0]) == myID)
+		for(Object[] details : playersDetails){
+			if(((Double)details[0]).intValue() == myID)
 				playersInt = localPlayer;
 			else
 				playersInt = new RemotePlayer();
 			
-			String name = details[1];
+			String name = (String) details[1];
 		
 			// preventing duplicates
 			int i = 1;
@@ -198,10 +199,11 @@ public class ClientProtocol extends AbstractProtocol{
 				i++;
 			}
 			
-			player = new Player(playersInt, 0, Integer.parseInt(details[0]), name);
+			player = new Player(playersInt, 0, ((Double) details[0]).intValue(), name);
 			names.add(name);
 			interfaceMapping.put(player.getNumberId(), playersInt);
-			startingPlayers.add(player);		
+			startingPlayers.add(player);	
+			player.setPublicKey((String)details[2]);
 		}
 				
 		return ProtocolState.PLAYERS_JOINED;

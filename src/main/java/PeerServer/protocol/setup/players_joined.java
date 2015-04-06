@@ -27,19 +27,19 @@ public class players_joined {
 
 	public String command = "players_joined";
 	//2D array of integer player ID/string name pairs.
-	public String[][] payload;
+	public Object[][] payload;
 
 	public players_joined(ArrayList<Player> allPlayers){
-		payload = new String[allPlayers.size()][3];
+		payload = new Object[allPlayers.size()][3];
 		Player current;
 		for(int i = 0; i < allPlayers.size(); i++){
 			current = allPlayers.get(i);
-			payload[i] = new String[]{Integer.toString(current.getNumberId()), current.getId(), "this is key"};
+			payload[i] = new Object[]{(Integer) current.getNumberId(), current.getId(), current.getPublicKey()};
 		}
 	}
 
-	public players_joined(String[] strings) {
-		payload = new String[1][3];
+	public players_joined(Object[] strings) {
+		payload = new Object[1][3];
 		payload[0] = strings;
 	}
 	

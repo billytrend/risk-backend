@@ -25,7 +25,7 @@ public class ready {
 	}
 	
 	public String command = "ready";
-	public String payload;
+	public Object payload = null;
 	public int player_id;
 	public int ack_id;
 	
