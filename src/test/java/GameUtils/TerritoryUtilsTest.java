@@ -326,7 +326,7 @@ public class TerritoryUtilsTest {
 	@Test
 	public void addTerritoryTest(){
 		assertEquals(TerritoryUtils.getAllTerritories(gameState).size(), 4);
-		TerritoryUtils.addTerritory(gameState, new Territory("nice"));
+		TerritoryUtils.addTerritory(gameState, new Territory("nice", 5));
 		assertEquals(TerritoryUtils.getAllTerritories(gameState).size(), 5);
 	}
 	

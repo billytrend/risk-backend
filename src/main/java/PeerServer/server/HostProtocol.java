@@ -17,7 +17,9 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.management.monitor.CounterMonitor;
 import javax.validation.Payload;
@@ -31,6 +33,7 @@ import PeerServer.protocol.cards.*;
 import PeerServer.protocol.gameplay.*;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
+import PlayerInput.RemotePlayer;
 import GameBuilders.RiskMapGameBuilder;
 import GameState.Player;
 import GameState.State;
@@ -213,7 +216,9 @@ public class HostProtocol extends AbstractProtocol {
 		// TODO: add logic between host being a player
 		
 		// creating player and mapping its id to its interface
-		PlayerInterface playerInterface = new RemotePlayer();
+		BlockingQueue<Object> newSharedQueue = new LinkedBlockingQueue<Object>();
+		queueMapping.put(id, newSharedQueue);
+		PlayerInterface playerInterface = new RemotePlayer(newSharedQueue);
 		Player newOne;
 		if(newName != "")
 			newOne = new Player(playerInterface, 0, id, newName);
@@ -222,7 +227,7 @@ public class HostProtocol extends AbstractProtocol {
 		
 		newOne.setPublicKey(newKey);
 		startingPlayers.add(newOne);
-		interfaceMapping.put(0, playerInterface);
+		//interfaceMapping.put(0, playerInterface);
 		state.setPlayers(startingPlayers);
 		
 		//sending response - about being accepted
@@ -456,7 +461,7 @@ public class HostProtocol extends AbstractProtocol {
 	
 	@Override
 	protected ProtocolState setup_game(String command){
-		Object setup = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.setup.setup.class);
+		Object setup = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.gameplay.setup.class);
 		return protocolState;	
 	}
 

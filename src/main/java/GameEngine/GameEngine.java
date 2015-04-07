@@ -33,6 +33,7 @@ public class GameEngine implements Runnable {
 		return changeRecord;
 	}
 	
+	
 	public GameEngine(State state, WinConditions conditions) {
 		this(state);
 		winConditions = conditions;
@@ -294,6 +295,11 @@ public class GameEngine implements Runnable {
 		Territory toFill = currentPlayer.getCommunicationMethod()
 				.getTerritory(currentPlayer, playersTerritories, false, RequestReason.PLACING_ARMIES_PHASE);
 
+		if(toFill == null){
+			System.out.println("BUG - player need to place more armies!");
+			return null;
+		}
+		
 		// find out how many armies the player want to deploy there 
 		int deployedAmount = currentPlayer.getCommunicationMethod()
 				.getNumberOfArmies(currentPlayer, playersUndeployedArmies.size(), RequestReason.PLACING_ARMIES_PHASE);
@@ -488,7 +494,10 @@ public class GameEngine implements Runnable {
         Change stateChange = new ArmyMovement(currentPlayer.getId(), source.getId(), target.getId(), movedAmount, PLAYER_MOVING_ARMIES);
         applyAndReportChange(gameState, stateChange);
 
-		return PLAYER_MOVING_ARMIES;
+		//return PLAYER_MOVING_ARMIES;
+        
+        // player can fortify only one country
+        return PLAYER_ENDED_GO;
 	}
 
 	

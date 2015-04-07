@@ -43,61 +43,62 @@ public class RiskMapGameBuilder {
 
 	}
 
+
 	public static void addRiskTerritoriesToState(State state){
 		// creating territories
 				//Create territories for North America
-				Territory alaska = new Territory("alaska");
-				Territory northwestTerritory = new Territory("northwest_territory");
-				Territory greenland = new Territory("greenland");
-				Territory alberta = new Territory("alberta");
-				Territory ontario = new Territory("ontario");
-				Territory quebec = new Territory("quebec");
-				Territory westernUS = new Territory("western_united_states");
-				Territory easternUS = new Territory("eastern_united_states");
-				Territory centralAmerica = new Territory("central_america");
+				Territory alaska = new Territory("alaska", 0);
+				Territory northwestTerritory = new Territory("northwest_territory", 1);
+				Territory greenland = new Territory("greenland", 2);
+				Territory alberta = new Territory("alberta", 3);
+				Territory ontario = new Territory("ontario", 4);
+				Territory quebec = new Territory("quebec", 5);
+				Territory westernUS = new Territory("western_united_states", 6);
+				Territory easternUS = new Territory("eastern_united_states", 7);
+				Territory centralAmerica = new Territory("central_america", 8);
 
 				//Create territories for South America
-				Territory venezuela = new Territory("venezuela");
-				Territory peru = new Territory("peru");
-				Territory brazil = new Territory("brazil");
-				Territory argentina = new Territory("argentina");
+				Territory venezuela = new Territory("venezuela", 9);
+				Territory peru = new Territory("peru", 10);
+				Territory brazil = new Territory("brazil", 11);
+				Territory argentina = new Territory("argentina", 12);
 
 				//Create territories for Europe
-				Territory iceland = new Territory("iceland");
-				Territory scandinavia = new Territory("scandinavia");
-				Territory ukraine = new Territory("ukraine");
-				Territory greatBritain = new Territory("great_britain");
-				Territory northernEurope = new Territory("northern_europe");
-				Territory westernEurope = new Territory("western_europe");
-				Territory southernEurope = new Territory("southern_europe");
+				Territory iceland = new Territory("iceland", 13);
+				Territory scandinavia = new Territory("scandinavia", 14);
+				Territory ukraine = new Territory("ukraine", 15);
+				Territory greatBritain = new Territory("great_britain", 16);
+				Territory northernEurope = new Territory("northern_europe", 17);
+				Territory westernEurope = new Territory("western_europe", 18);
+				Territory southernEurope = new Territory("southern_europe", 19);
 
 				//Create territories for Africa
-				Territory northAfrica = new Territory("north_africa");
-				Territory egypt = new Territory("egypt");
-				Territory eastAfrica = new Territory("east_africa");
-				Territory congo = new Territory("congo");
-				Territory southAfrica = new Territory("south_africa");
-				Territory madagascar = new Territory("madagascar");
+				Territory northAfrica = new Territory("north_africa", 20);
+				Territory egypt = new Territory("egypt", 21);
+				Territory congo = new Territory("congo", 22);
+				Territory eastAfrica = new Territory("east_africa", 23);
+				Territory southAfrica = new Territory("south_africa", 24);
+				Territory madagascar = new Territory("madagascar", 25);
 
 				//Create territories for Asia
-				Territory ural = new Territory("ural");
-				Territory siberia = new Territory("siberia");
-				Territory yakutsk = new Territory("yakutsk");
-				Territory kamchatka = new Territory("kamchatka");
-				Territory irkutsk = new Territory("irkutsk");
-				Territory mongolia = new Territory("mongolia");
-				Territory japan = new Territory("japan");
-				Territory afghanistan = new Territory("afghanistan");
-				Territory china = new Territory("china");
-				Territory middleEast = new Territory("middle_east");
-				Territory india = new Territory("india");
-				Territory siam = new Territory("siam");
+				Territory ural = new Territory("ural", 26);
+				Territory siberia = new Territory("siberia", 27);
+				Territory yakutsk = new Territory("yakutsk", 28);
+				Territory kamchatka = new Territory("kamchatka", 29);
+				Territory irkutsk = new Territory("irkutsk", 30);
+				Territory mongolia = new Territory("mongolia", 31);
+				Territory japan = new Territory("japan", 32);
+				Territory afghanistan = new Territory("afghanistan", 33);
+				Territory china = new Territory("china", 34);
+				Territory middleEast = new Territory("middle_east", 35);
+				Territory india = new Territory("india", 36);
+				Territory siam = new Territory("siam", 37);
 
 				//Create territories for Australian Archipelago
-				Territory indonesia = new Territory("indonesia");
-				Territory newGuinea = new Territory("new_guinea");
-				Territory westernAustralia = new Territory("western_australia");
-				Territory easternAustralia = new Territory("eastern_australia");
+				Territory indonesia = new Territory("indonesia", 38);
+				Territory newGuinea = new Territory("new_guinea", 39);
+				Territory westernAustralia = new Territory("western_australia", 40);
+				Territory easternAustralia = new Territory("eastern_australia", 41);
 
 				//Add Territories
 				//Add territories for North America
@@ -291,7 +292,7 @@ public class RiskMapGameBuilder {
 		ArrayList<Territory> territories = new ArrayList<Territory>();
 		// creating the specified number of territories
 		for (int i = 0; i < numOfTerritories; i++) {
-			Territory ter = new Territory("country" + (i + 1));
+			Territory ter = new Territory("country " + (i + 1), i + 1);
 			territories.add(ter);
 			TerritoryUtils.addTerritory(state, ter);
 		}

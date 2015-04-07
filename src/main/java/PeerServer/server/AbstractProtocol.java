@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.concurrent.BlockingQueue;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -14,6 +15,7 @@ import com.google.gson.JsonParser;
 
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
+import PlayerInput.RemotePlayer;
 import GameBuilders.RiskMapGameBuilder;
 import GameEngine.*;
 import GameState.*;
@@ -32,7 +34,8 @@ public abstract class AbstractProtocol implements Runnable {
 	
 	protected State state;
 	protected ArrayList<Player> startingPlayers = new ArrayList<Player>();
-	protected HashMap<Integer, PlayerInterface> interfaceMapping = new HashMap<Integer, PlayerInterface>();
+	//protected HashMap<Integer, PlayerInterface> interfaceMapping = new HashMap<Integer, PlayerInterface>();
+	protected HashMap<Integer, BlockingQueue<Object>> queueMapping = new HashMap<Integer, BlockingQueue<Object>>();
 	protected ArrayList<String> names = new ArrayList<String>();
 	protected ArrayList<String> funNames = new ArrayList<String>();
 	
@@ -137,7 +140,8 @@ public abstract class AbstractProtocol implements Runnable {
 		}
 		
 		// remove them from interface mapping
-		interfaceMapping.remove(id);
+	//	interfaceMapping.remove(id);
+		queueMapping.remove(id);
 		
 		// TODO: make sure its ok with game engine
 		PlayerUtils.removePlayer(state, player);
@@ -170,8 +174,17 @@ public abstract class AbstractProtocol implements Runnable {
 	 * @param resonse
 	 * @param player
 	 */
-	protected void notifyPlayerInterface(String resonse, PlayerInterface player){
-		// TODO:
+	protected void notifyPlayerInterface(Object response, Integer playerId){
+		BlockingQueue<Object> queue = queueMapping.get(playerId);
+		try {
+			queue.put(response);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	protected void getResponseFromLocalPlayer(Object response, PlayerInterface player){
+		
 	}
 	
 	/**Jsonify
@@ -253,7 +266,7 @@ public abstract class AbstractProtocol implements Runnable {
 	}
 		
 	protected ProtocolState deploy(String command){
-		Object deploy = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.cards.deploy.class);
+		Object deploy = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.gameplay.deploy.class);
 		return protocolState;	
 	}
 

@@ -13,6 +13,7 @@ import com.google.gson.GsonBuilder;
 
 import GameState.Player;
 import GeneralUtils.Jsonify;
+import PeerServer.protocol.gameplay.setup;
 import PeerServer.protocol.setup.accept_join_game;
 import PeerServer.protocol.setup.initialise_game;
 import PeerServer.protocol.setup.join_game;
@@ -20,7 +21,6 @@ import PeerServer.protocol.setup.ping;
 import PeerServer.protocol.setup.players_joined;
 import PeerServer.protocol.setup.ready;
 import PeerServer.protocol.setup.reject_join_game;
-import PeerServer.protocol.setup.setup;
 
 public class ProtocolTest {
 	
@@ -227,7 +227,7 @@ public class ProtocolTest {
 	public void setupTest(){
 		String command = "{\"command\": \"setup\",\"payload\": 5,\"player_id\": 0,\"ack_id\": 1}";
 		
-		setup setup = (PeerServer.protocol.setup.setup) Jsonify.getJsonStringAsObject(command, setup.class);
+		setup setup = (PeerServer.protocol.gameplay.setup) Jsonify.getJsonStringAsObject(command, setup.class);
 		//check it is not null
 		assertNotNull(setup);
 		

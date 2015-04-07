@@ -4,18 +4,22 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class PeerConnection {
 
 	private DataInputStream inFromClient; 
     private DataOutputStream outToClient;
 	private Socket socket;
+	
 	private int id;
 	
     
 	public PeerConnection(Socket socket, int id){
 		this.socket = socket;
 		this.id = id;
+		
 		try {
 			inFromClient = new DataInputStream(socket.getInputStream());
 			outToClient = new DataOutputStream(socket.getOutputStream());
