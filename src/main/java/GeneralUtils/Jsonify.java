@@ -46,9 +46,9 @@ public class Jsonify {
     	String result = getObjectAsJsonString(msg);
     	return result;
     }
-
  
     public static class message{
     	public String jsonContent;
     }
+    
 }

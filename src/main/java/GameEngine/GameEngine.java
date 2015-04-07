@@ -1,9 +1,13 @@
 package GameEngine;
 
 import GameState.*;
-import GameUtils.*;
+import GameUtils.ArmyUtils;
+import GameUtils.CardUtils;
+import GameUtils.PlayerUtils;
 import GameUtils.Results.*;
+import GameUtils.TerritoryUtils;
 import org.javatuples.Triplet;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 
