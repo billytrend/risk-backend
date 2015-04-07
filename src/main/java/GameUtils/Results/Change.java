@@ -1,15 +1,15 @@
 package GameUtils.Results;
 
-import java.util.ArrayList;
-
 import GameEngine.PlayState;
-import GameState.Player;
 import GameState.State;
 
 public abstract class Change {
 	
 	private String actingPlayerId;
 	private PlayState actionPlayed;
+
+    // this is for the ui, when it receives the object as json
+    private final String changeType = getClass().getSimpleName();
 
 	public Change(String actingPlayerId, PlayState actionPlayed){
 		this.actingPlayerId = actingPlayerId;

@@ -13,6 +13,7 @@ import GameState.Territory;
 import GameUtils.ArmyUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.TerritoryUtils;
+import GameUtils.Results.Change;
 
 public class BorderControl implements PlayerInterface {
 	public State state;
@@ -142,9 +143,9 @@ public class BorderControl implements PlayerInterface {
 		// if all neighbours are friendly move all but 1
 		// else move half - or look at difference in threats and decide
 		// accordingly
-		// HashSet<Territory> neighbours =
-		// TerritoryUtils.getNeighbours(state, territory);
-		return max;
+		int armiesFrom = ArmyUtils.getArmiesOnTerritory(player, from).size();
+		if(TerritoryUtils.getEnemyNeighbours(state, from, player).size() == 0) return armiesFrom -1;
+		else return armiesFrom/2;
 
 	}
 
@@ -158,6 +159,12 @@ public class BorderControl implements PlayerInterface {
 	public int getNumberOfDice(Player player, int max, RequestReason reason) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public void reportStateChange(Change change) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

@@ -1,12 +1,5 @@
 package PlayerInput;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-
-import org.javatuples.Triplet;
-
 import GameEngine.RequestReason;
 import GameState.Card;
 import GameState.Player;
@@ -14,6 +7,14 @@ import GameState.State;
 import GameState.Territory;
 import GameUtils.ArmyUtils;
 import GameUtils.PlayerUtils;
+import GameUtils.Results.Change;
+
+import org.javatuples.Triplet;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
 
 public class CommunistAggressive implements PlayerInterface {
 
@@ -191,5 +192,10 @@ public class CommunistAggressive implements PlayerInterface {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    @Override
+    public void reportStateChange(Change change) {
+
+    }
 
 }

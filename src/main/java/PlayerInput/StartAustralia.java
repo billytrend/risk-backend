@@ -7,6 +7,8 @@ import GameState.State;
 import GameState.Territory;
 import GameUtils.ArmyUtils;
 import GameUtils.PlayerUtils;
+import GameUtils.Results.Change;
+
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -169,6 +171,13 @@ public class StartAustralia implements PlayerInterface {
     public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
         return null;
     }
+
+
+	@Override
+	public void reportStateChange(Change change) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
 

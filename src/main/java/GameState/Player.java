@@ -15,8 +15,11 @@ import java.util.ArrayList;
 public class Player {
 
 	private String id = "Player " + this.hashCode();
-	private PlayerInterface communicationMethod;
-	private ArrayList<Army> armies;
+	private String publicKey = ""; 	
+	private int numberId;
+	private transient PlayerInterface communicationMethod;
+	private transient ArrayList<Army> armies;
+    private String colour;
 
 	public Player(PlayerInterface communicationMethod, int startingArmies) {
 		this.communicationMethod = communicationMethod;
@@ -27,16 +30,28 @@ public class Player {
 	public Player(PlayerInterface communicationMethod, int startingArmies, int index) {
 		this(communicationMethod, startingArmies);
 		id = "Player " + index;
+		numberId = index;
 	}
 	
 	public Player(PlayerInterface communicationMethod, int startingArmies, String id) {
 		this(communicationMethod, startingArmies);
 		this.id = id;
 	}
+	
+	public Player(PlayerInterface communicationMethod, int startingArmies, Integer id, String name) {
+		this(communicationMethod, startingArmies);
+		this.numberId = id;
+		this.id = name;
+	}
 
 	public String getId() {
 		return id;
 	}
+	
+	public int getNumberId() {
+		return numberId;
+	}
+	
 	public void setId(String id) {
 		this.id = id;
 	}
@@ -53,5 +68,20 @@ public class Player {
 	}
 	public ArrayList<Army> getArmies() {
 		return armies;
+	}
+
+    public String getColour() {
+        return colour;
+    }
+    public void setColour(String colour) {
+        this.colour = colour;
+    }
+
+	public String getPublicKey() {
+		return publicKey;
+	}
+
+	public void setPublicKey(String publicKey) {
+		this.publicKey = publicKey;
 	}
 }

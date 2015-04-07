@@ -30,8 +30,9 @@ public class DemoGameBuilder {
 
         }
         
-        State state = new State(ps);
-
+        State state = new State();
+        state.setPlayers(ps);
+        
         // creating territories
         Territory demoLandA = new Territory("demoland");
         Territory demoLandB = new Territory("egstate");
@@ -102,8 +103,8 @@ public class DemoGameBuilder {
           for(int i = 0; i < numOfPlayers; i++){
         	  ps.add(new Player(interfaces[i], armiesAtTheStart, i + 1));
     	  }
-          State state = new State(ps);
-    	        
+          State state = new State();
+    	  state.setPlayers(ps);
     	        
     	  ArrayList<Territory> territories = new ArrayList<Territory>();
     	  // creating the specified number of territories

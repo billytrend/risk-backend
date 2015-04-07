@@ -26,7 +26,6 @@ public class SerialiseTest {
 	@Test
 	public void test() {
 		GameStateSerialiser s = new GameStateSerialiser();
-		System.out.println(s.serialize(gameState, null, null));
 	}
 
 }
