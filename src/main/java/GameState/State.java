@@ -42,6 +42,7 @@ public class State {
         this.players = players;
         this.playerQueue = new PlayerQueue(players);
 
+        playerMapping = new HashMap<String, Player>();
         for(Player player : players){
             playerMapping.put(player.getId(), player);
         }

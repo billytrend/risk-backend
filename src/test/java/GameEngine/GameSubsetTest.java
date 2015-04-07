@@ -25,6 +25,9 @@ import com.esotericsoftware.minlog.Log;
 
 public class GameSubsetTest {
 	
+	@Before
+	public void setUp() {
+	}
 		
 	@Test
 	public void smallMapTerritoriesConditionTest(){

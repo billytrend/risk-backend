@@ -1,6 +1,7 @@
 package GameEngine;
 
 import GameBuilders.DemoGameBuilder;
+import GameBuilders.RiskMapGameBuilder;
 import GameState.Player;
 import GameState.State;
 import GeneralUtils.Jsonify;
@@ -8,9 +9,12 @@ import LobbyServer.LobbyState.Lobby;
 import PlayerInput.CommunistAggressive;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.esotericsoftware.minlog.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +39,7 @@ public class SimpleAITest {
 	    PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface(),
 	    		new DumbBotInterface(), new DumbBotInterface()};
 
-        State gameState = DemoGameBuilder.buildGame(10, interfaces);
+        State gameState = RiskMapGameBuilder.buildGame(10, interfaces);
 
         Player play1 = new Player(new CommunistAggressive(gameState), 5);
         Player play2 = new Player(new CommunistAggressive(gameState), 5);
@@ -49,11 +53,16 @@ public class SimpleAITest {
         playerList.add(play4);
 
         gameState.setPlayers(playerList);
+        Log.DEBUG = true;
+        
+        gameState.print();
 
         GameEngine gameThr = new GameEngine(gameState);
         Thread gameThread = new Thread(gameThr);
         gameThread.start();
         gameThread.join();
+        gameState.print();
+        // TODO: add assertions about state.
     }
     
     @Test

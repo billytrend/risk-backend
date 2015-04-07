@@ -76,7 +76,6 @@ public class Player {
     public void setColour(String colour) {
         this.colour = colour;
     }
-<<<<<<< HEAD
 
 	public String getPublicKey() {
 		return publicKey;
@@ -85,6 +84,4 @@ public class Player {
 	public void setPublicKey(String publicKey) {
 		this.publicKey = publicKey;
 	}
-=======
->>>>>>> d457c5fb77332cec3ab29af74f9406ae8000e1af
 }
