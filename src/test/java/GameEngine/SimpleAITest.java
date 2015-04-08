@@ -1,12 +1,9 @@
 package GameEngine;
 
-import GameBuilders.DemoGameBuilder;
 import GameBuilders.RiskMapGameBuilder;
-import GameState.Player;
 import GameState.State;
 import GeneralUtils.Jsonify;
 import LobbyServer.LobbyState.Lobby;
-import PlayerInput.CommunistAggressive;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
 
@@ -15,9 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.esotericsoftware.minlog.Log;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.esotericsoftware.minlog.Log.debug;
 

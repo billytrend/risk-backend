@@ -75,7 +75,7 @@ public class CommunistAggressive implements PlayerInterface {
 			// Randomly selects a territory from the list of possible choices.
 			int randomNumber = rand.nextInt(territoryList.size() - MIN )
 					+ MIN;
-			System.out.println("0000) IS THIS THE PROBLEM?? " + randomNumber + " -> " + territoryList.get(randomNumber).getId());
+		
 			System.out.println("Undeployed armies: " + ArmyUtils.getUndeployedArmies(player).size());
             //REMEMBER TO CHANGE BACK
 			return territoryList.get(randomNumber);
@@ -85,9 +85,9 @@ public class CommunistAggressive implements PlayerInterface {
 			// Chooses a territory to add 1 of the remaining armies to.
 			// If there are still armies reset the counter and start from the
 			// beginning again.
-
-			Territory currentTerritory = territoryList.get(this.initialDeploymentCounter);
 			
+			Territory currentTerritory = territoryList.get(this.initialDeploymentCounter);
+			//TODO: fix bug - initialDeploymentCounter
 			if (this.initialDeploymentCounter == territoryList.size() - 1) {
 				this.initialDeploymentCounter = 0;
 			} else {

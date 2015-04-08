@@ -311,7 +311,7 @@ public class GameEngine implements Runnable {
 
 		// find out how many armies the player want to deploy there 
 		int deployedAmount = currentPlayer.getCommunicationMethod()
-				.getNumberOfArmies(currentPlayer, playersUndeployedArmies.size(), RequestReason.PLACING_ARMIES_PHASE, null, null);
+				.getNumberOfArmies(currentPlayer, playersUndeployedArmies.size(), RequestReason.PLACING_ARMIES_PHASE, toFill, null);
 		
 		// do the deployment!
 		Change stateChange = new ArmyPlacement(currentPlayer.getId(), toFill.getId(), deployedAmount, PLAYER_PLACING_ARMIES);
@@ -429,12 +429,13 @@ public class GameEngine implements Runnable {
 	 */
 	private void moveMoreArmies(FightResult result){
 		Territory attackingTerritory = gameState.lookUpTerritory(result.getAttackingTerritoryId());
+		Territory defendingTerritory = gameState.lookUpTerritory(result.getDefendingTerritoryId());
 		ArrayList<Army> remainingAttackArmies = ArmyUtils
 				.getArmiesOnTerritory(currentPlayer, attackingTerritory);
 		
 		// let the player decide how many armies they want to move
 		int movedAmount = currentPlayer.getCommunicationMethod()
-				.getNumberOfArmies(currentPlayer, remainingAttackArmies.size() - 1, RequestReason.POST_ATTACK_MOVEMENT, null, null);
+				.getNumberOfArmies(currentPlayer, remainingAttackArmies.size() - 1, RequestReason.POST_ATTACK_MOVEMENT, defendingTerritory, attackingTerritory);
 		
 		if(movedAmount > 0){
 
