@@ -144,7 +144,11 @@ public class CommunistAggressive implements PlayerInterface {
 			int randomWeakest = rand.nextInt(weakestTerritories.size() - MIN
 					+ 1)
 					+ MIN;
-			
+
+            if(weakestTerritories.size() == 0){
+                return null;
+            }
+
 			return weakestTerritories.get(0);
 
 		case REINFORCEMENT_PHASE:
