@@ -50,7 +50,7 @@ public class ContinentUtilsTest {
 		Player p = players.get(0);
 		Continent northAmerica = gameState.getContinents().get(0);
 		Continent southAmerica = gameState.getContinents().get(1);
-		HashSet<Territory> territoriesNA = northAmerica.getTerritories();
+		ArrayList<Territory> territoriesNA = northAmerica.getTerritories();
 		assertEquals(9, territoriesNA.size());
 		ArmyUtils.givePlayerNArmies(p, 20);
 		assertTrue(ArmyUtils.getUndeployedArmies(p).size() > 0);
@@ -61,7 +61,7 @@ public class ContinentUtilsTest {
 		assertTrue(ContinentUtils.getPlayersContinents(gameState, p).contains(northAmerica));
 		assertFalse(ContinentUtils.checkPlayerOwnsContinent(p, southAmerica));
 		assertFalse(ContinentUtils.getPlayersContinents(gameState, p).contains(southAmerica));
-		HashSet<Territory> territoriesSA = southAmerica.getTerritories();
+		ArrayList<Territory> territoriesSA = southAmerica.getTerritories();
 		for(Territory territory:territoriesSA){
 			ArmyUtils.deployArmies(p, territory, 1);
 		}

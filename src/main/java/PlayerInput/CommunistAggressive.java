@@ -6,6 +6,7 @@ import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.ArmyUtils;
+import GameUtils.CardUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.Results.Change;
 
@@ -85,6 +86,8 @@ public class CommunistAggressive implements PlayerInterface {
 			// Chooses a territory to add 1 of the remaining armies to.
 			// If there are still armies reset the counter and start from the
 			// beginning again.
+			
+			
 			
 			Territory currentTerritory = territoryList.get(this.initialDeploymentCounter);
 			//TODO: fix bug - initialDeploymentCounter
@@ -178,7 +181,7 @@ public class CommunistAggressive implements PlayerInterface {
 		return 0;
 	}
 
-	public void giveCard(Player player, Card card) {
+	public void getCard(Player player, Card card) {
 		// TODO Auto-generated method stub
 
 	}
@@ -191,8 +194,9 @@ public class CommunistAggressive implements PlayerInterface {
 	@Override
 	public Triplet<Card, Card, Card> getCardChoice(Player player,
 			ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
-		// TODO Auto-generated method stub
-		return null;
+		Random rand = new Random();
+		ArrayList<Triplet<Card, Card, Card>> possibles = CardUtils.getPossibleCardCombinations(currentState, player);
+		return possibles.get(rand.nextInt(possibles.size()));
 	}
 
     @Override

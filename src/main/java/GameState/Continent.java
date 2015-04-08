@@ -1,5 +1,6 @@
 package GameState;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -9,17 +10,17 @@ import java.util.HashSet;
  */
 public class Continent {
 
-    private final HashSet<Territory> territories;
+    private final ArrayList<Territory> territories;
     private final int armyReward;
     private final String id;
 
-    public Continent(HashSet<Territory> territories, int armyReward, String id) {
+    public Continent(ArrayList<Territory> territories, int armyReward, String id) {
         this.territories = territories;
         this.armyReward = armyReward;
         this.id = id;
     }
 
-    public HashSet<Territory> getTerritories() {
+    public ArrayList<Territory> getTerritories() {
         return territories;
     }
 

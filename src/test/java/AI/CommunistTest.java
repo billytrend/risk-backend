@@ -1,6 +1,7 @@
-package GameEngine;
+package AI;
 
 import GameBuilders.RiskMapGameBuilder;
+import GameEngine.GameEngine;
 import GameState.Player;
 import GameState.State;
 import GeneralUtils.Jsonify;

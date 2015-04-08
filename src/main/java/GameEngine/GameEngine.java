@@ -31,6 +31,7 @@ public class GameEngine implements Runnable {
 	private boolean currentPlayerHasTakenCountry = false;
 	private StateChangeRecord changeRecord;
 	private WinConditions winConditions;
+	HashSet<Territory> possibleAttackingTerritories;
 	
 	public StateChangeRecord getStateChangeRecord(){
 		return changeRecord;
@@ -90,7 +91,7 @@ public class GameEngine implements Runnable {
 	 * @throws NullPointerException
 	 */
 	private boolean iterateGame() throws InterruptedException, NullPointerException {
-
+		Log.DEBUG = true;
 		switch (this.playState) {
 			case BEGINNING_STATE:
 				debug("\nBEGIN");
@@ -111,8 +112,6 @@ public class GameEngine implements Runnable {
 			case PLAYER_CONVERTING_CARDS:
 				debug("\nCARDS");
 				this.playState = convertCards();
-				// TODO: why is this here?
-				ArmyUtils.givePlayerNArmies(currentPlayer, 1);
 				break;
 
 			case PLAYER_PLACING_ARMIES:
@@ -330,7 +329,7 @@ public class GameEngine implements Runnable {
 	protected PlayState invadeCountry() {
 		
 		// get the territories of the current player
-		HashSet<Territory> possibleAttackingTerritories = TerritoryUtils
+		possibleAttackingTerritories = TerritoryUtils
                 .getPossibleAttackingTerritories(gameState, currentPlayer);
 
         // if a player has no options

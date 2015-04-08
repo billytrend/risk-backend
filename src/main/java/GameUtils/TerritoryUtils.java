@@ -1,7 +1,6 @@
 package GameUtils;
 
 import GameState.Army;
-
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
@@ -171,6 +170,43 @@ public class TerritoryUtils {
 		}
 		return attackers;
 	}
+	
+    public static Territory getStrongestOwned(Player player, ArrayList<Territory> territoryList){
+        Territory strongest;
+        int temp = 0;
+        int index = 0;
+        for(int i = 0; i < territoryList.size(); i++){
+            int numberOfArmies = ArmyUtils.getNumberOfArmiesOnTerritory(player,
+                    territoryList.get(i));
+            if (numberOfArmies > temp) {
+                temp = numberOfArmies;
+                index = i;
+            }
+        }
+
+        return territoryList.get(index);
+    }
+	  public static Territory getStrongestEnemy(State state, ArrayList<Territory> territoryList, String territoryID){
+
+	        int temp = 0;
+	        int index = 0;
+
+	        for (int i = 0; i < territoryList.size(); i++) {
+	            Player enemyOwner = PlayerUtils.getTerritoryOwner(state,
+	                    territoryList.get(i));
+	            int numberOfEnemySoldiers = ArmyUtils
+	                    .getNumberOfArmiesOnTerritory(enemyOwner,
+	                            territoryList.get(i));
+
+
+	            if (numberOfEnemySoldiers > temp && (territoryList.get(i).getId() != territoryID)) {
+	                temp = numberOfEnemySoldiers;
+	                index = i;
+	                }
+	            }
+
+	        return territoryList.get(index);
+	        }
 
 	/**
 	 * 

@@ -265,6 +265,8 @@ public class TerritoryUtilsTest {
 		
 	}
 	
+  
+	
 	@Test
 	public void getPossibleAttackingTerritories(){
 		Territory demoland = null;

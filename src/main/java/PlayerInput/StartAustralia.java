@@ -6,7 +6,9 @@ import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.ArmyUtils;
+import GameUtils.ContinentUtils;
 import GameUtils.PlayerUtils;
+import GameUtils.TerritoryUtils;
 import GameUtils.Results.Change;
 
 import org.javatuples.Triplet;
@@ -54,19 +56,20 @@ public class StartAustralia implements PlayerInterface {
         switch (reason) {
 
             case PLACING_ARMIES_SET_UP:
-                return getAustralianContinentTerritory(territoryList);
+                return getAustralianContinentTerritory(currentState);
 
             case PLACING_REMAINING_ARMIES_PHASE:
-                return getAustralianContinentTerritory(territoryList);
+                return getAustralianContinentTerritory(currentState);
 
             case PLACING_ARMIES_PHASE:
-                return getAustralianContinentTerritory(territoryList);
+                return getAustralianContinentTerritory(currentState);
 
             case ATTACK_CHOICE_FROM:
-               return getStrongestOwned(player, territoryList);
+            	ArrayList<Territory> australia = ContinentUtils.getContinentById(currentState, "australia").getTerritories();
+               return TerritoryUtils.getStrongestOwned(player, territoryList);
 
             case ATTACK_CHOICE_TO:
-                return getStrongestEnemy(territoryList);
+                return TerritoryUtils.getStrongestEnemy(currentState, territoryList, "siam");
 
             case REINFORCEMENT_PHASE:
                 return null;
@@ -77,61 +80,15 @@ public class StartAustralia implements PlayerInterface {
         return null;
     }
 
-    private Territory getStrongestEnemy(ArrayList<Territory> territoryList){
-
-        int temp = 0;
-        int index = 0;
-
-        for (int i = 0; i < territoryList.size(); i++) {
-            Player enemyOwner = PlayerUtils.getTerritoryOwner(currentState,
-                    territoryList.get(i));
-            int numberOfEnemySoldiers = ArmyUtils
-                    .getNumberOfArmiesOnTerritory(enemyOwner,
-                            territoryList.get(i));
 
 
-            if (numberOfEnemySoldiers > temp && (territoryList.get(i).getId() != "Siam")) {
-                temp = numberOfEnemySoldiers;
-                index = i;
-                }
-            }
 
-        return territoryList.get(index);
-        }
 
-    private Territory getStrongestOwned(Player player, ArrayList<Territory> territoryList){
-        Territory strongest;
-        int temp = 0;
-        int index = 0;
-
-        for(int i = 0; i < territoryList.size(); i++){
-
-            int numberOfArmies = ArmyUtils.getNumberOfArmiesOnTerritory(player,
-                    territoryList.get(i));
-
-            if (numberOfArmies > temp) {
-                temp = numberOfArmies;
-                index = i;
-            }
-        }
-
-        return territoryList.get(index);
-
-    }
-
-    private Territory getAustralianContinentTerritory(ArrayList<Territory> territoryList){
+    private Territory getAustralianContinentTerritory(State state){
         Random rand = new Random();
-
-        for(int i = 0; i < territoryList.size(); i++){
-            if(territoryList.get(i).getId() == "Indonesia" || territoryList.get(i).getId() == "New Guinea"
-                    || territoryList.get(i).getId() == "Western Australia"
-                    || territoryList.get(i).getId() == "Eastern Australia"){
-                return territoryList.get(i);
-            }
-        }
+        ArrayList<Territory> territoryList = ContinentUtils.getContinentById(state, "australia").getTerritories();
         int randomNum = rand.nextInt((territoryList.size() - 0) + 1) + 0;
         return territoryList.get(randomNum);
-
     }
 
     /**
