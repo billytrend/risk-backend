@@ -5,26 +5,22 @@ import GameState.Card;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
-import GameUtils.ArmyUtils;
 import GameUtils.ContinentUtils;
-import GameUtils.PlayerUtils;
-import GameUtils.TerritoryUtils;
 import GameUtils.Results.Change;
-
+import GameUtils.TerritoryUtils;
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Random;
 
 /**
- * Created by Peter on 02/04/2015.
+ * Created by root on 08/04/2015.
  */
-public class StartAustralia implements PlayerInterface {
+public class Berserker {
     public State currentState;
 
-    public StartAustralia(State a){
+    public Berserker(State a){
         this.currentState = a;
     }
 
@@ -56,17 +52,17 @@ public class StartAustralia implements PlayerInterface {
         switch (reason) {
 
             case PLACING_ARMIES_SET_UP:
-                return getAustralianContinentTerritory(currentState);
+                return getSouthAmericaContinentTerritory(currentState);
 
             case PLACING_REMAINING_ARMIES_PHASE:
-                return getAustralianContinentTerritory(currentState);
+                return getSouthAmericaContinentTerritory(currentState);
 
             case PLACING_ARMIES_PHASE:
-                return getAustralianContinentTerritory(currentState);
+                return getSouthAmericaContinentTerritory(currentState);
 
             case ATTACK_CHOICE_FROM:
-            	ArrayList<Territory> australia = ContinentUtils.getContinentById(currentState, "australia").getTerritories();
-               return TerritoryUtils.getStrongestOwned(player, territoryList);
+                ArrayList<Territory> australia = ContinentUtils.getContinentById(currentState, "south_america").getTerritories();
+                return TerritoryUtils.getStrongestOwned(player, territoryList);
 
             case ATTACK_CHOICE_TO:
                 return TerritoryUtils.getStrongestEnemy(currentState, territoryList, "siam");
@@ -84,10 +80,10 @@ public class StartAustralia implements PlayerInterface {
 
 
 
-    private Territory getAustralianContinentTerritory(State state){
+    private Territory getSouthAmericaContinentTerritory(State state){
         Random rand = new Random();
         ArrayList<Territory> territoryList = ContinentUtils.getContinentById(state, "australia").getTerritories();
-        int randomNum = rand.nextInt((territoryList.size()) + 1);
+        int randomNum = rand.nextInt((territoryList.size() - 0) + 1) + 0;
         return territoryList.get(randomNum);
     }
 
@@ -130,11 +126,10 @@ public class StartAustralia implements PlayerInterface {
     }
 
 
-	@Override
-	public void reportStateChange(Change change) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void reportStateChange(Change change) {
+        // TODO Auto-generated method stub
+
+    }
 
 }
-
