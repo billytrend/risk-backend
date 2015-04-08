@@ -1,6 +1,5 @@
 package GameEngine;
 
-import GameBuilders.DemoGameBuilder;
 import GameBuilders.RiskMapGameBuilder;
 import GameState.Player;
 import GameState.State;
@@ -17,11 +16,10 @@ import org.junit.Test;
 import com.esotericsoftware.minlog.Log;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.esotericsoftware.minlog.Log.debug;
 
-public class SimpleAITest {
+public class CommunistTest {
 
 
     @Before
@@ -35,14 +33,24 @@ public class SimpleAITest {
     }
 
     @Test
-    public void testDumbBot() throws InterruptedException {
+    public void testCommunist() throws InterruptedException {
 	    PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface(),
 	    		new DumbBotInterface(), new DumbBotInterface()};
 
         State gameState = RiskMapGameBuilder.buildGame(interfaces);
 
+        Player play1 = new Player(new CommunistAggressive(gameState));
+        Player play2 = new Player(new CommunistAggressive(gameState));
+        Player play3 = new Player(new DumbBotInterface());
+        Player play4 = new Player(new DumbBotInterface());
 
-        //gameState.setPlayers(playerList);
+        ArrayList<Player> playerList = new ArrayList<Player>();
+        playerList.add(play1);
+        playerList.add(play2);
+        playerList.add(play3);
+        playerList.add(play4);
+
+        gameState.setPlayers(playerList);
         Log.DEBUG = true;
         
         gameState.print();

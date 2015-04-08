@@ -32,7 +32,7 @@ public class GameSubsetTest {
 	@Test
 	public void smallMapTerritoriesConditionTest(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
-		State gameState = DemoGameBuilder.buildTestGame(2, 15, 4, interfaces);
+		State gameState = DemoGameBuilder.buildTestGame(2, 4, interfaces);
 		ArrayList<Player> players = gameState.getPlayers();
 		WinConditions conditions = new WinConditions(1, 3);
 		GameEngine gameEngine = new GameEngine(gameState, conditions);
@@ -52,7 +52,7 @@ public class GameSubsetTest {
 	public void playersRemainingTest(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface(),
 				new DumbBotInterface(), new DumbBotInterface(), new DumbBotInterface()};
-		State gameState = DemoGameBuilder.buildTestGame(5, 20, 30, interfaces);
+		State gameState = DemoGameBuilder.buildTestGame(5, 30, interfaces);
 		ArrayList<Player> players = gameState.getPlayers();
 		WinConditions conditions = new WinConditions(4, 0);
 		GameEngine gameEngine = new GameEngine(gameState, conditions);
@@ -66,7 +66,7 @@ public class GameSubsetTest {
 	public void twoConditionsTestOne(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface(),
 				new DumbBotInterface(), new DumbBotInterface(), new DumbBotInterface()};
-		State gameState = DemoGameBuilder.buildTestGame(5, 20, 30, interfaces);
+		State gameState = DemoGameBuilder.buildTestGame(5, 30, interfaces);
 		ArrayList<Player> players = gameState.getPlayers();
 		WinConditions conditions = new WinConditions(4, 7);
 		GameEngine gameEngine = new GameEngine(gameState, conditions);
@@ -92,7 +92,7 @@ public class GameSubsetTest {
 	public void twoConditionsTestTwo(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface(),
 				new DumbBotInterface(), new DumbBotInterface(), new DumbBotInterface()};
-		State gameState = DemoGameBuilder.buildTestGame(5, 20, 30, interfaces);
+		State gameState = DemoGameBuilder.buildTestGame(5, 30, interfaces);
 		ArrayList<Player> players = gameState.getPlayers();
 		WinConditions conditions = new WinConditions(4, 20);
 		GameEngine gameEngine = new GameEngine(gameState, conditions);
@@ -112,7 +112,7 @@ public class GameSubsetTest {
 	@Test
 	public void noConditionTest(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
-		State gameState = DemoGameBuilder.buildTestGame(2, 30, 10, interfaces);
+		State gameState = DemoGameBuilder.buildTestGame(2,10, interfaces);
 		ArrayList<Player> players = gameState.getPlayers();
 		GameEngine gameEngine = new GameEngine(gameState);
 		gameEngine.run();
@@ -125,7 +125,7 @@ public class GameSubsetTest {
 	@Test
 	public void mediumMapTerritoriesConditionTest(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
-		State gameState = DemoGameBuilder.buildTestGame(2, 30, 16, interfaces);
+		State gameState = DemoGameBuilder.buildTestGame(2, 16, interfaces);
 		ArrayList<Player> players = gameState.getPlayers();
 		WinConditions conditions = new WinConditions(1, 14);
 		GameEngine gameEngine = new GameEngine(gameState, conditions);
@@ -146,7 +146,7 @@ public class GameSubsetTest {
 	public void morePlayersTerritoriesConditionTest(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface(),
 				new DumbBotInterface(), new DumbBotInterface(), new DumbBotInterface()};
-		State gameState = DemoGameBuilder.buildTestGame(5, 100, 70, interfaces);
+		State gameState = DemoGameBuilder.buildTestGame(5, 70, interfaces);
 		ArrayList<Player> players = gameState.getPlayers();
 		WinConditions conditions = new WinConditions(1, 23);
 		GameEngine gameEngine = new GameEngine(gameState, conditions);

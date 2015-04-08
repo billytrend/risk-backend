@@ -27,11 +27,11 @@ public class State {
 	private PlayerQueue playerQueue;
 	private ArrayList<Continent> continents = new ArrayList<Continent>();
 	private final ArrayList<Card> cards = new ArrayList<Card>();
-	private int numberOfCardSetsUsed = 0;
+//	private int numberOfCardSetsUsed = 0;
 	    
     public State() {
     	super();
-    	numberOfCardSetsUsed = 0;
+  //  	numberOfCardSetsUsed = 0;
     	playerMapping = new HashMap<String, Player>();
     	playerNumberIdMapping = new HashMap<Integer, Player>();
     	territoryMapping = new HashMap<String, Territory>();
@@ -110,13 +110,13 @@ public class State {
 	public void setContinents(ArrayList<Continent> continents) {
 		this.continents = continents;
 	}
-	public int getNumberOfCardSetsUsed() {
-		return numberOfCardSetsUsed;
-	}
-
-	public void setNumberOfCardSetsUsed(int numberOfCardSetsUsed) {
-		this.numberOfCardSetsUsed = numberOfCardSetsUsed;
-	}
+//	public int getNumberOfCardSetsUsed() {
+//		return numberOfCardSetsUsed;
+//	}
+//
+//	public void setNumberOfCardSetsUsed(int numberOfCardSetsUsed) {
+//		this.numberOfCardSetsUsed = numberOfCardSetsUsed;
+//	}
 
 	/**
 	 * Method used to print the current state of the game.

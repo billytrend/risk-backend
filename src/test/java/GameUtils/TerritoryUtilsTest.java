@@ -29,7 +29,7 @@ public class TerritoryUtilsTest {
 	@Before
 	public void stateSetUp(){
 		interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
-		gameState = DemoGameBuilder.buildGame(10, interfaces);
+		gameState = DemoGameBuilder.buildGame(interfaces);
 		territories = new Territory[gameState.getTerritories().vertexSet().size()];
 		gameState.getTerritories().vertexSet().toArray(territories);
 	}
@@ -39,7 +39,7 @@ public class TerritoryUtilsTest {
 		assertEquals(TerritoryUtils.getAllTerritories(gameState).size(), 4);
 		assertTrue(TerritoryUtils.getAllTerritories(gameState).containsAll(Arrays.asList(territories)));
 		
-		gameState = DemoGameBuilder.buildTestGame(2, 5, 7, interfaces);
+		gameState = DemoGameBuilder.buildTestGame(2, 7, interfaces);
 		assertEquals(TerritoryUtils.getAllTerritories(gameState).size(), 7);
 	}
 	
@@ -75,7 +75,8 @@ public class TerritoryUtilsTest {
 		ArrayList<Player> players = gameState.getPlayers();
 		Player player1 = players.get(0);
 		Player player2 = players.get(1);
-		
+		ArmyUtils.givePlayerNArmies(player1, 5);
+		ArmyUtils.givePlayerNArmies(player2, 5);
 		ArmyUtils.deployArmies(player1, territories[0], 1);
 		ArmyUtils.deployArmies(player1, territories[1], 1);
 		
@@ -100,6 +101,9 @@ public class TerritoryUtilsTest {
 		Player player1 = players.get(0);
 		Player player2 = players.get(1);
 		
+		ArmyUtils.givePlayerNArmies(player1, 5);
+		ArmyUtils.givePlayerNArmies(player2, 5);
+		
 		ArmyUtils.deployArmies(player1, territories[0], 1);
 		ArmyUtils.deployArmies(player1, territories[1], 1);
 		ArmyUtils.deployArmies(player2, territories[2], 1);
@@ -119,6 +123,8 @@ public class TerritoryUtilsTest {
 		ArrayList<Player> players = gameState.getPlayers();
 		Player player1 = players.get(0);
 		Player player2 = players.get(1);
+		ArmyUtils.givePlayerNArmies(player1, 5);
+		ArmyUtils.givePlayerNArmies(player2, 5);
 		
 		ArmyUtils.deployArmies(player1, territories[0], 1);
 		ArmyUtils.deployArmies(player1, territories[1], 1);
@@ -186,6 +192,9 @@ public class TerritoryUtilsTest {
 		Player player1 = players.get(0);
 		Player player2 = players.get(1);
 		
+		ArmyUtils.givePlayerNArmies(player1, 5);
+		ArmyUtils.givePlayerNArmies(player2, 5);
+		
 		ArmyUtils.deployArmies(player1, egstate, 1);
 		ArmyUtils.deployArmies(player1, someplace, 1);
 		ArmyUtils.deployArmies(player2, demoland, 1);
@@ -221,6 +230,9 @@ public class TerritoryUtilsTest {
 		Player player1 = players.get(0);
 		Player player2 = players.get(1);
 		
+		ArmyUtils.givePlayerNArmies(player1, 5);
+		ArmyUtils.givePlayerNArmies(player2, 5);
+		
 		ArmyUtils.deployArmies(player1, egstate, 1);
 		ArmyUtils.deployArmies(player1, someplace, 1);
 		ArmyUtils.deployArmies(player2, demoland, 1);
@@ -238,6 +250,8 @@ public class TerritoryUtilsTest {
 	public void getTerritoriesWithMoreThanOneArmyTest(){
 		ArrayList<Player> players = gameState.getPlayers();
 		Player player1 = players.get(0);
+		
+		ArmyUtils.givePlayerNArmies(player1, 15);
 		
 		ArmyUtils.deployArmies(player1, territories[0], 2);
 		ArmyUtils.deployArmies(player1, territories[1], 3);
@@ -274,6 +288,9 @@ public class TerritoryUtilsTest {
 		Player player1 = players.get(0);
 		Player player2 = players.get(1);
 		
+		ArmyUtils.givePlayerNArmies(player1, 15);
+		ArmyUtils.givePlayerNArmies(player2, 15);
+		
 		ArmyUtils.deployArmies(player1, egstate, 1);
 		ArmyUtils.deployArmies(player1, otherplace, 3);
 		ArmyUtils.deployArmies(player1, demoland, 3);
@@ -309,6 +326,8 @@ public class TerritoryUtilsTest {
 		ArrayList<Player> players = gameState.getPlayers();
 		Player player1 = players.get(0);
 		Player player2 = players.get(1);
+		ArmyUtils.givePlayerNArmies(player1, 15);
+		ArmyUtils.givePlayerNArmies(player2, 15);
 		
 		ArmyUtils.deployArmies(player1, egstate, 1);
 		ArmyUtils.deployArmies(player1, otherplace, 3);

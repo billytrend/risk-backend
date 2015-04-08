@@ -136,8 +136,8 @@ public class ProtocolTest {
 		//assertTrue(Arrays.deepEquals(row2, pj.payload[1]));
 		
 		ArrayList<Player> playersArray = new ArrayList<Player>();
-		Player A = new Player(null, 0, 0, "Player A");
-		Player B = new Player(null, 0, 1, "Player B");
+		Player A = new Player(null, 0, "Player A");
+		Player B = new Player(null, 1, "Player B");
 		A.setPublicKey("");
 		B.setPublicKey("");
 		playersArray.add(A);

@@ -25,7 +25,7 @@ public class RuleUtilsTest{
 	@Before
 	public void stateSetUp(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
-		gameState = DemoGameBuilder.buildTestGame(2, 15, 15, interfaces);
+		gameState = DemoGameBuilder.buildTestGame(2, 15, interfaces);
 		territories = new Territory[TerritoryUtils.getAllTerritories(gameState).size()];
 		TerritoryUtils.getAllTerritories(gameState).toArray(territories);
 	}
@@ -37,7 +37,8 @@ public class RuleUtilsTest{
 		ArrayList<Player> players = gameState.getPlayers();
 		Player player1 = players.get(0);
 		Player player2 = players.get(1);
-		
+		ArmyUtils.givePlayerNArmies(player1, 15);
+		ArmyUtils.givePlayerNArmies(player2, 15);
 		for(int i = 0; i < 12; i++){
 			ArmyUtils.deployArmies(player1, territories[i], 1);
 		}
@@ -61,7 +62,8 @@ public class RuleUtilsTest{
 		ArrayList<Player> players = gameState.getPlayers();
 		Player player1 = players.get(0);
 		Player player2 = players.get(1);
-		
+		ArmyUtils.givePlayerNArmies(player1, 5);
+		ArmyUtils.givePlayerNArmies(player2, 5);
 		ArmyUtils.deployArmies(player1, territories[0], 3);
 		ArmyUtils.deployArmies(player2, territories[1], 1);
 		assertEquals(TerritoryUtils.getPlayersTerritories(player1).size(), 1);
@@ -90,7 +92,8 @@ public class RuleUtilsTest{
 		ArrayList<Player> players = gameState.getPlayers();
 		Player player1 = players.get(0);
 		Player player2 = players.get(1);
-		
+		ArmyUtils.givePlayerNArmies(player1, 5);
+		ArmyUtils.givePlayerNArmies(player2, 5);
 		ArmyUtils.deployArmies(player1, territories[0], 3);
 		ArmyUtils.deployArmies(player2, territories[1], 3);
 		

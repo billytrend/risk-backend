@@ -28,7 +28,7 @@ public class GameEngineTest{
 		PlayerInterface[] interfaces = new PlayerInterface[]{player1Interface, player2Interface};
 		
 		// creates a game with 4 territories
-		gameState = DemoGameBuilder.buildGame(15, interfaces);
+		gameState = DemoGameBuilder.buildGame(interfaces);
 		HashSet<Territory> territories = TerritoryUtils.getAllTerritories(gameState);
 	    gameEngine = new TestableGameEngine(gameState);
 	   

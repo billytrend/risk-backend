@@ -8,7 +8,11 @@ import GameState.Territory;
 import GameUtils.ArmyUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.Results.Change;
+
 import org.javatuples.Triplet;
+
+import com.esotericsoftware.minlog.Log;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -69,20 +73,21 @@ public class CommunistAggressive implements PlayerInterface {
 		case PLACING_ARMIES_SET_UP:
 
 			// Randomly selects a territory from the list of possible choices.
-			int randomNumber = rand.nextInt(territoryList.size() - MIN + 1)
+			int randomNumber = rand.nextInt(territoryList.size() - MIN )
 					+ MIN;
-
+			System.out.println("0000) IS THIS THE PROBLEM?? " + randomNumber + " -> " + territoryList.get(randomNumber).getId());
+			System.out.println("Undeployed armies: " + ArmyUtils.getUndeployedArmies(player).size());
             //REMEMBER TO CHANGE BACK
-			return territoryList.get(0);
+			return territoryList.get(randomNumber);
 
 		case PLACING_REMAINING_ARMIES_PHASE:
-
+			System.out.println();
 			// Chooses a territory to add 1 of the remaining armies to.
 			// If there are still armies reset the counter and start from the
 			// beginning again.
 
 			Territory currentTerritory = territoryList.get(this.initialDeploymentCounter);
-
+			
 			if (this.initialDeploymentCounter == territoryList.size() - 1) {
 				this.initialDeploymentCounter = 0;
 			} else {
@@ -98,7 +103,7 @@ public class CommunistAggressive implements PlayerInterface {
 			// beginning again.
 
 			Territory currentTerritoryPlacing = territoryList.get(this.deploymentCounter);
-
+			
 			if (this.deploymentCounter == territoryList.size() - 1) {
 				this.deploymentCounter = 0;
 			} else {
@@ -108,10 +113,9 @@ public class CommunistAggressive implements PlayerInterface {
 			return currentTerritoryPlacing;
 
 		case ATTACK_CHOICE_FROM:
-
-            if (territoryList.size() == 0)
+            if (territoryList.size() == 0){
                 return null;
-
+            }
 			return territoryList.get(attackFromCounter);
 
 			
@@ -137,6 +141,7 @@ public class CommunistAggressive implements PlayerInterface {
 			int randomWeakest = rand.nextInt(weakestTerritories.size() - MIN
 					+ 1)
 					+ MIN;
+			
 			return weakestTerritories.get(0);
 
 		case REINFORCEMENT_PHASE:
@@ -145,7 +150,6 @@ public class CommunistAggressive implements PlayerInterface {
 		default:
 			break;
 		}
-
 		return null;
 	}
 

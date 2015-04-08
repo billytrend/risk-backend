@@ -6,7 +6,10 @@ import GameUtils.CardUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.Results.*;
 import GameUtils.TerritoryUtils;
+
 import org.javatuples.Triplet;
+
+import com.esotericsoftware.minlog.Log;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -153,9 +156,19 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	private PlayState begin() {
+		//calculate and give players their armies
+		int numberOfPlayers = gameState.getPlayers().size();
+	    int startingArmies = 35;
+	    
+        for(int i = 3; i<numberOfPlayers; i++) startingArmies -= 5;
+        debug("NUMBER OF STARTING ARMIES " + startingArmies + gameState.getPlayers().size());
+        for(Player player:gameState.getPlayers())  
+        	ArmyUtils.givePlayerNArmies(player, startingArmies);
+        Log.DEBUG = false;
 		// set first player
 		Arbitration.setFirstPlayer(this.gameState);
-		// record this in the state
+	
+       // record this in the state
 		this.currentPlayer = gameState.getPlayerQueue().getCurrent();
 		// move to first stage
 		return FILLING_EMPTY_COUNTRIES;
@@ -177,8 +190,10 @@ public class GameEngine implements Runnable {
 		HashSet<Territory> emptyTerritories = TerritoryUtils.getUnownedTerritories(gameState);
 		
 		// player specifies the country
+		debug(currentPlayer.getClass().toString());
 		Territory toFill = currentPlayer.getCommunicationMethod()
 				.getTerritory(currentPlayer, emptyTerritories, false, RequestReason.PLACING_ARMIES_SET_UP);
+		debug(toFill.getId());
 
 		// deploy a single army in this place
 
@@ -258,7 +273,7 @@ public class GameEngine implements Runnable {
 
 		Triplet<Card, Card, Card> choice = currentPlayer.getCommunicationMethod().getCardChoice(currentPlayer, possibleCombinations);
 		
-		int payout = CardUtils.getCurrentArmyPayout(gameState);
+		int payout = CardUtils.getCurrentArmyPayout(currentPlayer);
 		
 		ArmyUtils.givePlayerNArmies(currentPlayer, payout);
 		

@@ -216,9 +216,9 @@ public class HostProtocol extends AbstractProtocol {
 		PlayerInterface playerInterface = new RemotePlayer();
 		Player newOne;
 		if(newName != "")
-			newOne = new Player(playerInterface, 0, id, newName);
+			newOne = new Player(playerInterface, id, newName);
 		else
-			newOne = new Player(playerInterface, 0, id);
+			newOne = new Player(playerInterface, id);
 		
 		newOne.setPublicKey(newKey);
 		startingPlayers.add(newOne);
@@ -590,7 +590,7 @@ public class HostProtocol extends AbstractProtocol {
 	public void run(){
 		// creating our player
 		localPlayer = new DumbBotInterface();
-		startingPlayers.add(new Player(localPlayer, 0, 0, getRandomName()));
+		startingPlayers.add(new Player(localPlayer, 0, getRandomName()));
 		connectionMapping.put(0, null);
 		
 		try {

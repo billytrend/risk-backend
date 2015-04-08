@@ -199,7 +199,7 @@ public class ClientProtocol extends AbstractProtocol{
 				i++;
 			}
 			
-			player = new Player(playersInt, 0, ((Double) details[0]).intValue(), name);
+			player = new Player(playersInt, ((Double) details[0]).intValue(), name);
 			names.add(name);
 			interfaceMapping.put(player.getNumberId(), playersInt);
 			startingPlayers.add(player);	
