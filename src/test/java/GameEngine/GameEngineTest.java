@@ -28,10 +28,10 @@ public class GameEngineTest{
 		PlayerInterface[] interfaces = new PlayerInterface[]{player1Interface, player2Interface};
 		
 		// creates a game with 4 territories
-		gameState = DemoGameBuilder.buildGame(15, interfaces);
+		gameState = DemoGameBuilder.buildGame(interfaces);
 		HashSet<Territory> territories = TerritoryUtils.getAllTerritories(gameState);
 	    gameEngine = new TestableGameEngine(gameState);
-	   
+	    
 		sortedTerritories = new ArrayList<Territory>();
 		sortedTerritories.addAll(territories);
 		Collections.sort(sortedTerritories, comparator);
@@ -91,12 +91,12 @@ public class GameEngineTest{
 		HashSet<Territory> player1Territories = TerritoryUtils.getPlayersTerritories(player1);
 		HashSet<Territory> player2Territories = TerritoryUtils.getPlayersTerritories(player2);
 
-		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 13);
+		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 38);
 		
 		PlayState returnValue = gameEngine.testCall(PlayState.USING_REMAINING_ARMIES);
 		
 		assertEquals(returnValue, PlayState.USING_REMAINING_ARMIES);
-		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 12);
+		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 37);
 		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, sortedTerritories.get(0)).size(), 2);
 		
 		assertEquals(gameEngine.getCurrentPlayer(), player2);
@@ -117,6 +117,7 @@ public class GameEngineTest{
 		Player player2 = gameState.getPlayers().get(1);
 		gameEngine.setFirstPlayer(0);
 		
+		
 		ArmyUtils.deployArmies(player1, sortedTerritories.get(0), 1);
 		ArmyUtils.deployArmies(player1, sortedTerritories.get(1), 1);
 		ArmyUtils.deployArmies(player2, sortedTerritories.get(2), 1);
@@ -130,7 +131,7 @@ public class GameEngineTest{
 		assertEquals(gameEngine.getCurrentPlayer(), player1);
 		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 0);
 		
-		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, sortedTerritories.get(0)).size(), 14);
+		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, sortedTerritories.get(0)).size(), 39);
 		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, sortedTerritories.get(1)).size(), 1);
 		
 		returnValue = gameEngine.testCall(PlayState.PLAYER_PLACING_ARMIES);
@@ -142,7 +143,7 @@ public class GameEngineTest{
 		gameEngine.testCall(PlayState.PLAYER_PLACING_ARMIES);
 
 
-		assertEquals(ArmyUtils.getUndeployedArmies(player2).size(), 12);
+		assertEquals(ArmyUtils.getUndeployedArmies(player2).size(), 37);
 		assertEquals(ArmyUtils.getArmiesOnTerritory(player2, sortedTerritories.get(2)).size(), 2);
 		assertEquals(ArmyUtils.getArmiesOnTerritory(player2, sortedTerritories.get(3)).size(), 1);
 		

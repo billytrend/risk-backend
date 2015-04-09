@@ -16,7 +16,7 @@ public class RecreatedState extends State {
 		}
 		
 		for(String id : territoryIds){
-			territoryMapping.put(id, new Territory(id));
+			territoryMapping.put(id, new Territory(id, territoryMapping.size()));
 		}
 	}
 	
