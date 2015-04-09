@@ -1,12 +1,14 @@
 package GameUtils;
 
 import GameBuilders.DemoGameBuilder;
+import GameEngine.GameEngine;
 import GameState.Continent;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,9 +25,10 @@ public class ContinentUtilsTest {
 	@Before
 	public void stateSetUp(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
-		gameState = DemoGameBuilder.buildGame(4, interfaces);
+		gameState = DemoGameBuilder.buildGame(interfaces);
 		territories = new Territory[gameState.getTerritories().vertexSet().size()];
 		gameState.getTerritories().vertexSet().toArray(territories);
+		GameEngine engine = new GameEngine(gameState);
 	}
 	
 	@Test

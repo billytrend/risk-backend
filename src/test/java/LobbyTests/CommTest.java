@@ -19,7 +19,7 @@ public class CommTest {
         DiceNumberResponse e = new DiceNumberResponse();
         TerritoryRequest h = new TerritoryRequest();
         h.possibles = new HashSet<Territory>();
-        h.possibles.add(new Territory("test"));
+        h.possibles.add(new Territory("test", 1));
         TerritoryResponse i = new TerritoryResponse();
         Log.debug(Jsonify.getObjectAsJsonString(a));
         Log.debug(Jsonify.getObjectAsJsonString(c));

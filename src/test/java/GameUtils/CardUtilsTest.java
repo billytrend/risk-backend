@@ -22,7 +22,7 @@ public class CardUtilsTest {
     public void setUp() throws Exception {
     	PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface(),
     			new DumbBotInterface(), new DumbBotInterface()};
-        this.st = DemoGameBuilder.buildGame(4, interfaces);
+        this.st = DemoGameBuilder.buildGame(interfaces);
         Log.NONE();
     }
 

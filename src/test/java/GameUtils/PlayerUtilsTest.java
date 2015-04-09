@@ -1,10 +1,14 @@
 package GameUtils;
 
 import static org.junit.Assert.*;
+
 import java.util.ArrayList;
+
 import org.junit.Before;
 import org.junit.Test;
+
 import GameBuilders.DemoGameBuilder;
+import GameEngine.GameEngine;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
@@ -19,9 +23,10 @@ public class PlayerUtilsTest {
 	@Before
 	public void stateSetUp(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
-		gameState = DemoGameBuilder.buildTestGame(2, 5, 2, interfaces);
+		gameState = DemoGameBuilder.buildTestGame(2, 2, interfaces);
 		territories = new Territory[TerritoryUtils.getAllTerritories(gameState).size()];
 		TerritoryUtils.getAllTerritories(gameState).toArray(territories);
+		GameEngine engine = new GameEngine(gameState);
 	}
 	
 	@Test
