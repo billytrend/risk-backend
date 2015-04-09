@@ -25,7 +25,6 @@ import com.esotericsoftware.minlog.Log;
 
 public class GameSubsetTest {
 	
-		
 	@Test
 	public void smallMapTerritoriesConditionTest(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};

@@ -6,7 +6,10 @@ import GameUtils.CardUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.Results.*;
 import GameUtils.TerritoryUtils;
+
 import org.javatuples.Triplet;
+
+import com.esotericsoftware.minlog.Log;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,6 +40,7 @@ public class GameEngine implements Runnable {
 	public GameEngine(State state, WinConditions conditions) {
 		this(state);
 		winConditions = conditions;
+		Log.DEBUG = false;
 	}
 	
 	public GameEngine(State state) {

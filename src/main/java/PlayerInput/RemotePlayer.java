@@ -26,6 +26,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import PeerServer.protocol.cards.*;
 import PeerServer.protocol.dice.*;
 import PeerServer.protocol.gameplay.*;
+import PeerServer.protocol.gameplay.deploy;
 
 /**
  * 
