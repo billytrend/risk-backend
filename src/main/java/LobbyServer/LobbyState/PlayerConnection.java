@@ -25,7 +25,7 @@ public class PlayerConnection implements PlayerInterface  {
 	private List<Response> responses = new ArrayList<Response>();
 
     public PlayerConnection(WebSocket connection) {
-        this.playerState = new Player(this, 0, 100); // this last number to be changed
+        this.playerState = new Player(this, 100); // this last number to be changed
         this.connection = connection;
     }
 

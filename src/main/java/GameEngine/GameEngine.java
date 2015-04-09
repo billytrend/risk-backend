@@ -23,7 +23,7 @@ import static com.esotericsoftware.minlog.Log.debug;
 public class GameEngine implements Runnable {
 
 	protected State gameState;
-	protected Player currentPlayer;
+	protected Player currentPlayer = null;
 	private PlayState playState = BEGINNING_STATE;
 	private boolean currentPlayerHasTakenCountry = false;
 	private StateChangeRecord changeRecord;
@@ -44,6 +44,7 @@ public class GameEngine implements Runnable {
 		changeRecord = new StateChangeRecord(state.getPlayersIds(), state.getTerritoryIds(),
 				state.getPlayers().get(0).getArmies().size());
 		winConditions = new WinConditions();
+		ArmyUtils.giveStartingArmies(state);
 	}
 	
 	public State getState(){
@@ -154,10 +155,12 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	private PlayState begin() {
-		// set first player
-		Arbitration.setFirstPlayer(this.gameState);
-		// record this in the state
-		this.currentPlayer = gameState.getPlayerQueue().getCurrent();
+		// set first player if they havent been set from the protocol side
+		if(currentPlayer == null){
+			Arbitration.setFirstPlayer(this.gameState);
+			// record this in the state
+			this.currentPlayer = gameState.getPlayerQueue().getCurrent();
+		}
 		// move to first stage
 		return FILLING_EMPTY_COUNTRIES;
 	}

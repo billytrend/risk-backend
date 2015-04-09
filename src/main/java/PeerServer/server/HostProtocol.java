@@ -35,6 +35,7 @@ import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
 import PlayerInput.RemotePlayer;
 import GameBuilders.RiskMapGameBuilder;
+import GameEngine.GameEngine;
 import GameState.Player;
 import GameState.State;
 import GameUtils.PlayerUtils;
@@ -221,9 +222,9 @@ public class HostProtocol extends AbstractProtocol {
 		PlayerInterface playerInterface = new RemotePlayer(newSharedQueue);
 		Player newOne;
 		if(newName != "")
-			newOne = new Player(playerInterface, 0, id, newName);
+			newOne = new Player(playerInterface, id, newName);
 		else
-			newOne = new Player(playerInterface, 0, id);
+			newOne = new Player(playerInterface, id);
 		
 		newOne.setPublicKey(newKey);
 		startingPlayers.add(newOne);
@@ -415,6 +416,10 @@ public class HostProtocol extends AbstractProtocol {
 		initialise_game init_game = new initialise_game(version, feat);
 		sendToAll(Jsonify.getObjectAsJsonString(init_game));
 		
+		// START THE GAME ENGINE
+		State state = new State(startingPlayers);
+		engine = new GameEngine(state);
+		
 		System.out.println("\nSEND TO ALL: " + Jsonify.getObjectAsJsonString(init_game));
 		return ProtocolState.LEAVE_GAME; // TODO: JUST FOR NOW - TO STOP - CHANGE IT LATER.
 	}
@@ -595,7 +600,7 @@ public class HostProtocol extends AbstractProtocol {
 	public void run(){
 		// creating our player
 		localPlayer = new DumbBotInterface();
-		startingPlayers.add(new Player(localPlayer, 0, 0, getRandomName()));
+		startingPlayers.add(new Player(localPlayer, 0, getRandomName()));
 		connectionMapping.put(0, null);
 		
 		try {

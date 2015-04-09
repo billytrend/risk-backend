@@ -30,7 +30,7 @@ public class State {
 	private int numberOfCardSetsUsed = 0;
 	
 	public State(ArrayList<Player> players){
-		super();
+		this();
 		setPlayers(players);
     }
     

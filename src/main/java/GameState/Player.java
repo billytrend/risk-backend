@@ -21,25 +21,24 @@ public class Player {
 	private transient ArrayList<Army> armies;
     private String colour;
 
-	public Player(PlayerInterface communicationMethod, int startingArmies) {
+	public Player(PlayerInterface communicationMethod) {
 		this.communicationMethod = communicationMethod;
 		armies = new ArrayList<Army>();
-		ArmyUtils.givePlayerNArmies(this, startingArmies);
 	}
 
-	public Player(PlayerInterface communicationMethod, int startingArmies, int index) {
-		this(communicationMethod, startingArmies);
+	public Player(PlayerInterface communicationMethod, int index) {
+		this(communicationMethod);
 		id = "Player " + index;
 		numberId = index;
 	}
 	
-	public Player(PlayerInterface communicationMethod, int startingArmies, String id) {
-		this(communicationMethod, startingArmies);
+	public Player(PlayerInterface communicationMethod, String id) {
+		this(communicationMethod);
 		this.id = id;
 	}
 	
-	public Player(PlayerInterface communicationMethod, int startingArmies, Integer id, String name) {
-		this(communicationMethod, startingArmies);
+	public Player(PlayerInterface communicationMethod, Integer id, String name) {
+		this(communicationMethod);
 		this.numberId = id;
 		this.id = name;
 	}

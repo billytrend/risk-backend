@@ -304,6 +304,34 @@ public abstract class AbstractProtocol implements Runnable {
 
 	}
 
+
+/**
+ * {
+
+"command": "roll_hash",
+
+"payload":
+
+"7b3d979ca8330a94fa7e9e1b466d8b99e0bcdea1ec90596c0dcc8d7ef6b4300c",
+
+"player_id": 0
+
+}
+
+{
+
+"command": "roll_number",
+
+"payload":
+
+"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+
+"player_id": 0
+
+}
+ * @param command
+ * @return
+ */
 	protected ProtocolState roll_hash(String command){
 		return protocolState;
 

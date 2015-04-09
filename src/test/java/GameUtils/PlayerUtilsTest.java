@@ -19,7 +19,7 @@ public class PlayerUtilsTest {
 	@Before
 	public void stateSetUp(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
-		gameState = DemoGameBuilder.buildTestGame(2, 5, 2, interfaces);
+		gameState = DemoGameBuilder.buildTestGame(2, 2, interfaces);
 		territories = new Territory[TerritoryUtils.getAllTerritories(gameState).size()];
 		TerritoryUtils.getAllTerritories(gameState).toArray(territories);
 	}

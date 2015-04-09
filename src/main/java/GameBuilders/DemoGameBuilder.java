@@ -20,18 +20,18 @@ public class DemoGameBuilder {
 	 * Builds a very basic game with four AIs playing against each other
 	 * and four territories.
 	 */
-    public static State buildGame(int armiesAtTheStart, PlayerInterface[] interfaces) {
+    public static State buildGame(PlayerInterface[] interfaces) {
 
         // creating players
         ArrayList<Player> ps = new ArrayList<Player>();
         
         for(int i = 0; i < interfaces.length; i++){
-            ps.add(new Player(interfaces[i], armiesAtTheStart, i + 1));
+            ps.add(new Player(interfaces[i], i + 1));
 
         }
         
         State state = new State(ps);
-
+        
         // creating territories
         Territory demoLandA = new Territory("demoland", 0);
         Territory demoLandB = new Territory("egstate", 1);
@@ -85,7 +85,7 @@ public class DemoGameBuilder {
      * It can create any kind of state, given the number of players and territories.
      * Neighbouring territories are set at random. 
      */
-    public static State buildTestGame(int numOfPlayers, int armiesAtTheStart, int numOfTerritories, PlayerInterface[] interfaces) {
+    public static State buildTestGame(int numOfPlayers, int numOfTerritories, PlayerInterface[] interfaces) {
 
        	if(interfaces.length != numOfPlayers){
     		try {
@@ -100,7 +100,7 @@ public class DemoGameBuilder {
     	  // creating players
     	  ArrayList<Player> ps = new ArrayList<Player>();
           for(int i = 0; i < numOfPlayers; i++){
-        	  ps.add(new Player(interfaces[i], armiesAtTheStart, i + 1));
+        	  ps.add(new Player(interfaces[i], i + 1));
     	  }
           State state = new State(ps);
     	        

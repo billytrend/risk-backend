@@ -23,7 +23,7 @@ public class ContinentUtilsTest {
 	@Before
 	public void stateSetUp(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
-		gameState = DemoGameBuilder.buildGame(4, interfaces);
+		gameState = DemoGameBuilder.buildGame( interfaces);
 		territories = new Territory[gameState.getTerritories().vertexSet().size()];
 		gameState.getTerritories().vertexSet().toArray(territories);
 	}

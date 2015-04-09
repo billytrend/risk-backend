@@ -26,7 +26,7 @@ public class RiskMapGameBuilder {
 		// creating players
 		ArrayList<Player> ps = new ArrayList<Player>();
 		for (int i = 0; i < interfaces.length; i++) {
-            Player p = new Player(interfaces[i], armiesAtTheStart, i + 1);
+            Player p = new Player(interfaces[i], i + 1);
             p.setColour(colours[i]);
 			ps.add(p);
 		}
@@ -285,7 +285,7 @@ public class RiskMapGameBuilder {
 		// creating players
 		ArrayList<Player> ps = new ArrayList<Player>();
 		for (int i = 0; i < numOfPlayers; i++) {
-			ps.add(new Player(new DumbBotInterface(), armiesAtTheStart, i + 1));
+			ps.add(new Player(new DumbBotInterface(), i + 1));
 		}
 		State state = new State(ps);
 

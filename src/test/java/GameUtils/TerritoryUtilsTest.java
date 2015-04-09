@@ -2,6 +2,7 @@ package GameUtils;
 
 
 import GameBuilders.DemoGameBuilder;
+import GameEngine.GameEngine;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
@@ -29,9 +30,10 @@ public class TerritoryUtilsTest {
 	@Before
 	public void stateSetUp(){
 		interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
-		gameState = DemoGameBuilder.buildGame(10, interfaces);
+		gameState = DemoGameBuilder.buildGame(interfaces);
 		territories = new Territory[gameState.getTerritories().vertexSet().size()];
 		gameState.getTerritories().vertexSet().toArray(territories);
+		GameEngine engine = new GameEngine(gameState);
 	}
 	
 	@Test
@@ -39,7 +41,7 @@ public class TerritoryUtilsTest {
 		assertEquals(TerritoryUtils.getAllTerritories(gameState).size(), 4);
 		assertTrue(TerritoryUtils.getAllTerritories(gameState).containsAll(Arrays.asList(territories)));
 		
-		gameState = DemoGameBuilder.buildTestGame(2, 5, 7, interfaces);
+		gameState = DemoGameBuilder.buildTestGame(2, 7, interfaces);
 		assertEquals(TerritoryUtils.getAllTerritories(gameState).size(), 7);
 	}
 	
