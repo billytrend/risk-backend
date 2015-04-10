@@ -6,10 +6,7 @@ import GameUtils.CardUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.Results.*;
 import GameUtils.TerritoryUtils;
-
 import org.javatuples.Triplet;
-
-import com.esotericsoftware.minlog.Log;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -42,7 +39,6 @@ public class GameEngine implements Runnable {
 	public GameEngine(State state, WinConditions conditions) {
 		this(state);
 		winConditions = conditions;
-		Log.DEBUG = false;
 	}
 	
 	public GameEngine(State state) {
@@ -50,7 +46,6 @@ public class GameEngine implements Runnable {
 		changeRecord = new StateChangeRecord(state.getPlayersIds(), state.getTerritoryIds(),
 				state.getPlayers().get(0).getArmies().size());
 		winConditions = new WinConditions();
-		ArmyUtils.giveStartingArmies(state);
 	}
 	
 	public State getState(){
@@ -164,14 +159,8 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	private PlayState begin() {
-		//calculate and give players their armies
-		int numberOfPlayers = gameState.getPlayers().size();
-	    int startingArmies = 35;
-	    
-        for(int i = 3; i<numberOfPlayers; i++) startingArmies -= 5;
-        debug("NUMBER OF STARTING ARMIES " + startingArmies + gameState.getPlayers().size());
-        for(Player player:gameState.getPlayers())  
-        	ArmyUtils.givePlayerNArmies(player, startingArmies);
+
+        ArmyUtils.giveStartingArmies(gameState);
 
 		// set first player if they havent been set from the protocol side
 		if(currentPlayer == null){
@@ -411,7 +400,7 @@ public class GameEngine implements Runnable {
 		if(result.getDefendersLoss() == defendingArmies){
 			
 			currentPlayerHasTakenCountry = true;
-			
+
 			if((attackingArmies - result.getAttackersLoss() - attackDiceNumber) > 1)
 				moveMoreArmies(result);
 
@@ -536,7 +525,8 @@ public class GameEngine implements Runnable {
 	 */
 	private PlayState endGo() {
 		if (currentPlayerHasTakenCountry) {
-			CardUtils.givePlayerRandomCard(gameState, currentPlayer);
+            CardUtils.givePlayerRandomCard(gameState, currentPlayer);
+
 			currentPlayerHasTakenCountry = false;
 		}
 		
