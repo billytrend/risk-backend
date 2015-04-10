@@ -1,10 +1,11 @@
 package GeneralUtils;
 
 import java.util.Arrays;
-
+import GameState.Player;
 import GameState.State;
 import GeneralUtils.Serialisers.GameStateSerialiser;
 import GeneralUtils.Serialisers.LobbySerialiser;
+import GeneralUtils.Serialisers.PlayerSerialiser;
 import LobbyServer.LobbyState.Lobby;
 
 import com.google.gson.Gson;
@@ -17,6 +18,7 @@ public class Jsonify {
             .registerTypeAdapter(Lobby.class, new LobbySerialiser())
             .serializeNulls()
             .registerTypeAdapter(State.class, new GameStateSerialiser())
+            .registerTypeAdapter(Player.class, new PlayerSerialiser())
             .create();
     
     // the idea is that this maybe overridden to handle certain objects

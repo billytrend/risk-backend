@@ -25,6 +25,7 @@ public class GameEngine implements Runnable {
 	protected State gameState;
 	protected Player currentPlayer;
 	private PlayState playState = BEGINNING_STATE;
+    private PlayState previousPlayState;
 	private boolean currentPlayerHasTakenCountry = false;
 	private StateChangeRecord changeRecord;
 	private WinConditions winConditions;
@@ -54,7 +55,7 @@ public class GameEngine implements Runnable {
 	@Override
 	public void run() {
 		try {
-			play();
+ 			play();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -88,6 +89,11 @@ public class GameEngine implements Runnable {
 	 * @throws NullPointerException
 	 */
 	private boolean iterateGame() throws InterruptedException, NullPointerException {
+
+        // if play state changes, let people know
+        if (previousPlayState != playState && currentPlayer != null) {
+            applyAndReportChange(gameState, new PlayStateUpdate(currentPlayer.getId(), playState));
+        }
 
 		switch (this.playState) {
 			case BEGINNING_STATE:
@@ -123,9 +129,9 @@ public class GameEngine implements Runnable {
 				break;
 
 			case PLAYER_MOVING_ARMIES:
-				debug("\nMOVING ARMIES");
-				this.playState = moveArmy();
-				gameState.print();
+                debug("\nMOVING ARMIES");
+                this.playState = moveArmy();
+                gameState.print();
 				break;
 
 			case PLAYER_ENDED_GO:
@@ -470,8 +476,15 @@ public class GameEngine implements Runnable {
 	protected PlayState moveArmy() {
 	
 		// get a list of territories a player can deploy from
-		HashSet<Territory> canBeDeployedFrom = TerritoryUtils
+		//
+        HashSet<Territory> canBeDeployedFrom = TerritoryUtils
 				.getDeployable(gameState, currentPlayer);
+
+
+        // if a player has no options
+        if (canBeDeployedFrom.size() == 0) {
+            return endGo();
+        }
 		
 		// find out which one the player wants to move from
 		Territory source = currentPlayer
@@ -481,7 +494,7 @@ public class GameEngine implements Runnable {
 		// HANDLE HERE NOT MOVING RESPONCE? - null country selection?
 		if(source == null){
 			debug("PLAYER DOESNT WANT TO MOVE");
-			return PLAYER_ENDED_GO;
+			return endGo();
 		}
 
 		// get a list of territories a player can deploy too
@@ -500,7 +513,8 @@ public class GameEngine implements Runnable {
         Change stateChange = new ArmyMovement(currentPlayer.getId(), source.getId(), target.getId(), movedAmount, PLAYER_MOVING_ARMIES);
         applyAndReportChange(gameState, stateChange);
 
-		return PLAYER_MOVING_ARMIES;
+        // TODO: decide whether right
+		return endGo();
 	}
 
 	
