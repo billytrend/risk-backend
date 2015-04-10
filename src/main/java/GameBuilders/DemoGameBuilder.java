@@ -29,8 +29,7 @@ public class DemoGameBuilder {
 
         }
         
-        State state = new State();
-        state.setPlayers(ps);
+        State state = new State(ps);
 
         // creating territories
         Territory demoLandA = new Territory("demoland", 0);

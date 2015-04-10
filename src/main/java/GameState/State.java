@@ -22,7 +22,7 @@ public class State {
 	protected SimpleGraph<Territory, DefaultEdge> territories = new SimpleGraph<Territory, DefaultEdge>(DefaultEdge.class);
     protected HashMap<String, Player> playerMapping = new HashMap<String, Player>();
 	protected HashMap<String, Territory> territoryMapping = new HashMap<String, Territory>();
-    protected HashMap<Integer, Player> playerNumberIdMapping;
+    protected HashMap<Integer, Player> playerNumberIdMapping = new HashMap<Integer, Player>();
 	protected ArrayList<Player> players;
 	private PlayerQueue playerQueue;
 	private ArrayList<Continent> continents = new ArrayList<Continent>();

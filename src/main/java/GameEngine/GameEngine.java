@@ -46,7 +46,9 @@ public class GameEngine implements Runnable {
 		changeRecord = new StateChangeRecord(state.getPlayersIds(), state.getTerritoryIds(),
 				state.getPlayers().get(0).getArmies().size());
 		winConditions = new WinConditions();
-	}
+        ArmyUtils.giveStartingArmies(gameState);
+
+    }
 	
 	public State getState(){
 		return gameState;
@@ -160,7 +162,6 @@ public class GameEngine implements Runnable {
 	 */
 	private PlayState begin() {
 
-        ArmyUtils.giveStartingArmies(gameState);
 
 		// set first player if they havent been set from the protocol side
 		if(currentPlayer == null){
