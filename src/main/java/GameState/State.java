@@ -20,13 +20,15 @@ import static com.esotericsoftware.minlog.Log.debug;
 public class State {
 
 	protected SimpleGraph<Territory, DefaultEdge> territories = new SimpleGraph<Territory, DefaultEdge>(DefaultEdge.class);
-	protected HashMap<String, Player> playerMapping;
-	protected HashMap<Integer, Player> playerNumberIdMapping;
-	protected HashMap<String, Territory> territoryMapping;
+    protected HashMap<String, Player> playerMapping = new HashMap<String, Player>();
+	protected HashMap<String, Territory> territoryMapping = new HashMap<String, Territory>();
+    protected HashMap<Integer, Player> playerNumberIdMapping = new HashMap<Integer, Player>();
 	protected ArrayList<Player> players;
 	private PlayerQueue playerQueue;
 	private ArrayList<Continent> continents = new ArrayList<Continent>();
 	private final ArrayList<Card> cards = new ArrayList<Card>();
+//	private int numberOfCardSetsUsed = 0;
+	    
 	private int numberOfCardSetsUsed = 0;
 	
 	public State(ArrayList<Player> players){
@@ -36,9 +38,6 @@ public class State {
     
     public State() {
     	numberOfCardSetsUsed = 0;
-    	playerMapping = new HashMap<String, Player>();
-    	playerNumberIdMapping = new HashMap<Integer, Player>();
-    	territoryMapping = new HashMap<String, Territory>();
     	players = new ArrayList<Player>();
     }
 
@@ -46,6 +45,7 @@ public class State {
         this.players = players;
         this.playerQueue = new PlayerQueue(players);
 
+        playerMapping = new HashMap<String, Player>();
         for(Player player : players){
             playerMapping.put(player.getId(), player);
         }
@@ -113,13 +113,13 @@ public class State {
 	public void setContinents(ArrayList<Continent> continents) {
 		this.continents = continents;
 	}
-	public int getNumberOfCardSetsUsed() {
-		return numberOfCardSetsUsed;
-	}
-
-	public void setNumberOfCardSetsUsed(int numberOfCardSetsUsed) {
-		this.numberOfCardSetsUsed = numberOfCardSetsUsed;
-	}
+//	public int getNumberOfCardSetsUsed() {
+//		return numberOfCardSetsUsed;
+//	}
+//
+//	public void setNumberOfCardSetsUsed(int numberOfCardSetsUsed) {
+//		this.numberOfCardSetsUsed = numberOfCardSetsUsed;
+//	}
 
 	/**
 	 * Method used to print the current state of the game.

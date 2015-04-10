@@ -5,28 +5,13 @@ import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
 import GameUtils.Results.Change;
-import GeneralUtils.Jsonify;
-import LobbyServer.LobbyState.ObjectFromClient.GameComms.*;
-
+import PeerServer.protocol.gameplay.*;
 import org.hamcrest.internal.ArrayIterator;
-import org.java_websocket.WebSocket;
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import PeerServer.protocol.cards.*;
-import PeerServer.protocol.dice.*;
-import PeerServer.protocol.gameplay.*;
-import PeerServer.protocol.gameplay.deploy;
 
 /**
  * 
@@ -246,9 +231,8 @@ public class RemotePlayer implements PlayerInterface  {
 
 	}
 
-	//TODO: add min
-	@Override
-	public int getNumberOfArmies(Player player, int max, RequestReason reason) {
+    @Override
+    public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
 		if(reason != lastReason){
 			try{
 				response = responses.take(); // blocks if needed

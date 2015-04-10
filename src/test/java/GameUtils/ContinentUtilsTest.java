@@ -1,5 +1,6 @@
 package GameUtils;
 
+import GameBuilders.RiskMapGameBuilder;
 import GameBuilders.DemoGameBuilder;
 import GameEngine.GameEngine;
 import GameState.Continent;
@@ -13,33 +14,35 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class ContinentUtilsTest {
 	
 	private State gameState;
-	private Territory[] territories;
+	private ArrayList<Continent> continents;
 	
 	@Before
 	public void stateSetUp(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
-		gameState = DemoGameBuilder.buildGame(interfaces);
-		territories = new Territory[gameState.getTerritories().vertexSet().size()];
-		gameState.getTerritories().vertexSet().toArray(territories);
-		GameEngine engine = new GameEngine(gameState);
+		gameState = RiskMapGameBuilder.buildGame(interfaces);
+		continents = gameState.getContinents();
 	}
 	
 	@Test
 	public void getContinentsTest() {
-		ArrayList<Continent> continents = gameState.getContinents();
-		assertEquals(continents.size(), 2);
-		Continent contAB = continents.get(0);
-		assertEquals(contAB.getId(), "demoContAB");
-		assertEquals(contAB.getTerritories().size(), 2);
-		assertEquals(contAB.getArmyReward(), 4);
-
+		assertEquals(continents.size(), 6);
+		Continent northAmerica = continents.get(0);
+		assertEquals(northAmerica.getId(), "north_america");
+		assertEquals(northAmerica.getTerritories().size(), 9);
+		assertEquals(northAmerica.getArmyReward(), 5);
+		Continent australia = continents.get(5);
+		assertEquals(australia.getId(), "australia");
+		assertEquals(australia.getTerritories().size(), 4);
+		assertEquals(australia.getArmyReward(), 2);
 	
 	}
 	
@@ -47,19 +50,27 @@ public class ContinentUtilsTest {
 	public void playerOwnsContinentTest(){
 		ArrayList<Player> players = gameState.getPlayers();
 		Player p = players.get(0);
-		Continent contAB = gameState.getContinents().get(0);
-		Continent contCD = gameState.getContinents().get(1);
-		
-		ArmyUtils.deployArmies(p, territories[0], 1);
-		ArmyUtils.deployArmies(p, territories[1], 1);
-		assertTrue(ContinentUtils.checkPlayerOwnsContinent(p, contAB));
-		assertTrue(ContinentUtils.getPlayersContinents(gameState, p).contains(contAB));
-		
-		ArmyUtils.deployArmies(p, territories[2], 1);
-		ArmyUtils.deployArmies(p, territories[3], 1);
-		assertTrue(ContinentUtils.checkPlayerOwnsContinent(p, contCD));
-		assertTrue(ContinentUtils.getPlayersContinents(gameState, p).contains(contAB));
-		assertTrue(ContinentUtils.getPlayersContinents(gameState, p).contains(contCD));
+		Continent northAmerica = gameState.getContinents().get(0);
+		Continent southAmerica = gameState.getContinents().get(1);
+		ArrayList<Territory> territoriesNA = northAmerica.getTerritories();
+		assertEquals(9, territoriesNA.size());
+		ArmyUtils.givePlayerNArmies(p, 20);
+		assertTrue(ArmyUtils.getUndeployedArmies(p).size() > 0);
+		for(Territory territory:territoriesNA){
+			ArmyUtils.deployArmies(p, territory, 1);
+		}
+		assertTrue(ContinentUtils.checkPlayerOwnsContinent(p, northAmerica));
+		assertTrue(ContinentUtils.getPlayersContinents(gameState, p).contains(northAmerica));
+		assertFalse(ContinentUtils.checkPlayerOwnsContinent(p, southAmerica));
+		assertFalse(ContinentUtils.getPlayersContinents(gameState, p).contains(southAmerica));
+		ArrayList<Territory> territoriesSA = southAmerica.getTerritories();
+		for(Territory territory:territoriesSA){
+			ArmyUtils.deployArmies(p, territory, 1);
+		}
+		assertTrue(ContinentUtils.checkPlayerOwnsContinent(p, southAmerica));
+		assertTrue(ContinentUtils.checkPlayerOwnsContinent(p, northAmerica));
+		assertTrue(ContinentUtils.getPlayersContinents(gameState, p).contains(southAmerica));
+		assertTrue(ContinentUtils.getPlayersContinents(gameState, p).contains(northAmerica));
 	}
 	
 

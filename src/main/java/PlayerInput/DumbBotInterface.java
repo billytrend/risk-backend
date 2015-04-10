@@ -24,8 +24,8 @@ public class DumbBotInterface implements PlayerInterface {
 	private static Scanner scanner;
 	
     protected void emit(Player p, String message) {
-        debug("[" + p.getId() + "]" + "\t\t");
-        debug(message);
+//        debug("[" + p.getId() + "]" + "\t\t");
+//        debug(message);
     }
 
     /**
@@ -94,7 +94,7 @@ public class DumbBotInterface implements PlayerInterface {
     /**
      * 
      */
-    public int getNumberOfArmies(Player player, int max, RequestReason reason) {
+    public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
         emit(player, "How many armies would you like to move? Max " + max);
         emit(player, "Chose " + max);
         return ran.nextInt(max + 1);

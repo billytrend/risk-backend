@@ -6,12 +6,17 @@ import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.ArmyUtils;
+import GameUtils.CardUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.Results.Change;
+
 import org.javatuples.Triplet;
+
+import com.esotericsoftware.minlog.Log;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 
 public class CommunistAggressive implements PlayerInterface {
@@ -23,6 +28,11 @@ public class CommunistAggressive implements PlayerInterface {
 	private ArrayList<Territory> currentStrongTerritories = new ArrayList<Territory>();
 
 	private static final int MIN = 0;
+
+    public CommunistAggressive() {
+        this.initialDeploymentCounter = 0;
+        this.deploymentCounter = 0;
+    }
 
 	public CommunistAggressive(State a) {
 		this.initialDeploymentCounter = 0;
@@ -40,41 +50,48 @@ public class CommunistAggressive implements PlayerInterface {
 	public Territory getTerritory(Player player, HashSet<Territory> possibles,
 			boolean canResign, RequestReason reason) {
 
-		// NEEDS TO BE FINISHED
-		Territory[] territoryArray = (Territory[]) possibles.toArray();
+        List<Territory> territoryList = new ArrayList<Territory>(possibles);
+
 		Random rand = new Random();
 
-		// TODO: Make into helper method.
-		for (int i = 0; i < territoryArray.length; i++) {
-			Player self = PlayerUtils.getTerritoryOwner(currentState,
-					territoryArray[i]);
-			int strength = ArmyUtils.getArmiesOnTerritory(self,
-					territoryArray[i]).size();
+        /**
+         * 	for (int i = 0; i < territoryList.size(); i++) {
+         Player self = PlayerUtils.getTerritoryOwner(currentState,
+         territoryList.get(i));
+         int strength = ArmyUtils.getArmiesOnTerritory(self,
+         territoryList.get(i)).size();
 
-			if (strength < 3) {
-				this.currentStrongTerritories.add(territoryArray[i]);
-			}
+         if (strength < 3) {
+         this.currentStrongTerritories.add(territoryList.get(i));
+         }
 
-		}
+         }
+         */
+
 
 		switch (reason) {
 
 		case PLACING_ARMIES_SET_UP:
 
 			// Randomly selects a territory from the list of possible choices.
-			int randomNumber = rand.nextInt(territoryArray.length - MIN + 1)
+			int randomNumber = rand.nextInt(territoryList.size() - MIN )
 					+ MIN;
-			return territoryArray[randomNumber];
+		
+			System.out.println("Undeployed armies: " + ArmyUtils.getUndeployedArmies(player).size());
+            //REMEMBER TO CHANGE BACK
+			return territoryList.get(randomNumber);
 
 		case PLACING_REMAINING_ARMIES_PHASE:
-
+			System.out.println();
 			// Chooses a territory to add 1 of the remaining armies to.
 			// If there are still armies reset the counter and start from the
 			// beginning again.
-
-			Territory currentTerritory = territoryArray[this.initialDeploymentCounter];
-
-			if (this.initialDeploymentCounter == territoryArray.length - 1) {
+			
+			
+			
+			Territory currentTerritory = territoryList.get(this.initialDeploymentCounter);
+			//TODO: fix bug - initialDeploymentCounter
+			if (this.initialDeploymentCounter == territoryList.size() - 1) {
 				this.initialDeploymentCounter = 0;
 			} else {
 				this.initialDeploymentCounter++;
@@ -88,9 +105,9 @@ public class CommunistAggressive implements PlayerInterface {
 			// If there are still armies reset the counter and start from the
 			// beginning again.
 
-			Territory currentTerritoryPlacing = territoryArray[this.deploymentCounter];
-
-			if (this.deploymentCounter == territoryArray.length - 1) {
+			Territory currentTerritoryPlacing = territoryList.get(this.deploymentCounter);
+			
+			if (this.deploymentCounter == territoryList.size() - 1) {
 				this.deploymentCounter = 0;
 			} else {
 				this.deploymentCounter++;
@@ -99,7 +116,11 @@ public class CommunistAggressive implements PlayerInterface {
 			return currentTerritoryPlacing;
 
 		case ATTACK_CHOICE_FROM:
-			return territoryArray[attackFromCounter];
+            if (territoryList.size() == 0){
+                return null;
+            }
+			return territoryList.get(attackFromCounter);
+
 			
 			
 		case ATTACK_CHOICE_TO:
@@ -108,22 +129,27 @@ public class CommunistAggressive implements PlayerInterface {
 			// Chooses a random one of these and returns it.
 			ArrayList<Territory> weakestTerritories = new ArrayList<Territory>();
 
-			for (int i = 0; i < territoryArray.length; i++) {
+			for (int i = 0; i < territoryList.size(); i++) {
 				Player enemyOwner = PlayerUtils.getTerritoryOwner(currentState,
-						territoryArray[i]);
+						territoryList.get(i));
 				int numberOfEnemySoldiers = ArmyUtils
 						.getNumberOfArmiesOnTerritory(enemyOwner,
-								territoryArray[i]);
+								territoryList.get(i));
 
-				if (numberOfEnemySoldiers == 1) {
-					weakestTerritories.add(territoryArray[i]);
+				if (numberOfEnemySoldiers < 10) {
+					weakestTerritories.add(territoryList.get(i));
 				}
 			}
 
 			int randomWeakest = rand.nextInt(weakestTerritories.size() - MIN
 					+ 1)
 					+ MIN;
-			return weakestTerritories.get(randomWeakest);
+
+            if(weakestTerritories.size() == 0){
+                return null;
+            }
+
+			return weakestTerritories.get(0);
 
 		case REINFORCEMENT_PHASE:
 			return null; // TODO: Figure out average and reinforce depending on
@@ -131,12 +157,11 @@ public class CommunistAggressive implements PlayerInterface {
 		default:
 			break;
 		}
-
 		return null;
 	}
 
 	@Override
-	public int getNumberOfArmies(Player player, int max, RequestReason reason) {
+	public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
 
 		switch (reason) {
 		case PLACING_ARMIES_SET_UP:
@@ -160,7 +185,7 @@ public class CommunistAggressive implements PlayerInterface {
 		return 0;
 	}
 
-	public void giveCard(Player player, Card card) {
+	public void getCard(Player player, Card card) {
 		// TODO Auto-generated method stub
 
 	}
@@ -173,8 +198,9 @@ public class CommunistAggressive implements PlayerInterface {
 	@Override
 	public Triplet<Card, Card, Card> getCardChoice(Player player,
 			ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
-		// TODO Auto-generated method stub
-		return null;
+		Random rand = new Random();
+		ArrayList<Triplet<Card, Card, Card>> possibles = CardUtils.getPossibleCardCombinations(currentState, player);
+		return possibles.get(rand.nextInt(possibles.size()));
 	}
 
     @Override
