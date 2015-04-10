@@ -25,7 +25,6 @@ public class Player {
 		this.communicationMethod = communicationMethod;
 		armies = new ArrayList<Army>();
 		cardSetsUsed = 0;
-		
 	}
 
 	public Player(PlayerInterface communicationMethod, int index) {

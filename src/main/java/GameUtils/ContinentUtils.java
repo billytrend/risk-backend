@@ -10,12 +10,12 @@ import GameState.Territory;
 
 public class ContinentUtils {
 	
-	public static void addContinent(State state, Territory[] territories, int reward, String id){
+	public static void addContinent(State state, Territory[] territories, int reward, String id, int numeralId) {
 		ArrayList<Territory> cont = new ArrayList<Territory>();
 		for (Territory t : territories){
 			cont.add(t);
 		}
-		Continent continent = new Continent(cont, reward, id);
+		Continent continent = new Continent(cont, reward, id, numeralId);
 		state.getContinents().add(continent);
 	}
 	

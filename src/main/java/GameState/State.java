@@ -32,11 +32,13 @@ public class State {
 	private int numberOfCardSetsUsed = 0;
 	
 	public State(ArrayList<Player> players){
+		this();
 		setPlayers(players);
     }
     
     public State() {
-
+    	numberOfCardSetsUsed = 0;
+    	players = new ArrayList<Player>();
     }
 
     public void setPlayers(ArrayList<Player> players) {

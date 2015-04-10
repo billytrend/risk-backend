@@ -6,7 +6,10 @@ import GameUtils.CardUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.Results.*;
 import GameUtils.TerritoryUtils;
+
 import org.javatuples.Triplet;
+
+import com.esotericsoftware.minlog.Log;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,7 +26,7 @@ import static com.esotericsoftware.minlog.Log.debug;
 public class GameEngine implements Runnable {
 
 	protected State gameState;
-	protected Player currentPlayer;
+	protected Player currentPlayer = null;
 	private PlayState playState = BEGINNING_STATE;
     private PlayState previousPlayState;
 	private boolean currentPlayerHasTakenCountry = false;
@@ -35,9 +38,11 @@ public class GameEngine implements Runnable {
 		return changeRecord;
 	}
 	
+	
 	public GameEngine(State state, WinConditions conditions) {
 		this(state);
 		winConditions = conditions;
+		Log.DEBUG = false;
 	}
 	
 	public GameEngine(State state) {
@@ -45,6 +50,7 @@ public class GameEngine implements Runnable {
 		changeRecord = new StateChangeRecord(state.getPlayersIds(), state.getTerritoryIds(),
 				state.getPlayers().get(0).getArmies().size());
 		winConditions = new WinConditions();
+		ArmyUtils.giveStartingArmies(state);
 	}
 	
 	public State getState(){
@@ -167,11 +173,12 @@ public class GameEngine implements Runnable {
         for(Player player:gameState.getPlayers())  
         	ArmyUtils.givePlayerNArmies(player, startingArmies);
 
-		// set first player
-		Arbitration.setFirstPlayer(this.gameState);
-	
-       // record this in the state
-		this.currentPlayer = gameState.getPlayerQueue().getCurrent();
+		// set first player if they havent been set from the protocol side
+		if(currentPlayer == null){
+			Arbitration.setFirstPlayer(this.gameState);
+			// record this in the state
+			this.currentPlayer = gameState.getPlayerQueue().getCurrent();
+		}
 		// move to first stage
 		return FILLING_EMPTY_COUNTRIES;
 	}
@@ -311,6 +318,11 @@ public class GameEngine implements Runnable {
 		Territory toFill = currentPlayer.getCommunicationMethod()
 				.getTerritory(currentPlayer, playersTerritories, false, RequestReason.PLACING_ARMIES_PHASE);
 
+		if(toFill == null){
+			System.out.println("BUG - player need to place more armies!");
+			return null;
+		}
+		
 		// find out how many armies the player want to deploy there 
 		int deployedAmount = currentPlayer.getCommunicationMethod()
 				.getNumberOfArmies(currentPlayer, playersUndeployedArmies.size(), RequestReason.PLACING_ARMIES_PHASE, toFill, null);
@@ -513,7 +525,6 @@ public class GameEngine implements Runnable {
         Change stateChange = new ArmyMovement(currentPlayer.getId(), source.getId(), target.getId(), movedAmount, PLAYER_MOVING_ARMIES);
         applyAndReportChange(gameState, stateChange);
 
-        // TODO: decide whether right
 		return endGo();
 	}
 

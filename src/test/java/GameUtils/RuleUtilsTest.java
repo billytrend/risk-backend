@@ -3,6 +3,7 @@ package GameUtils;
 
 
 import GameBuilders.DemoGameBuilder;
+import GameEngine.GameEngine;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
@@ -28,6 +29,7 @@ public class RuleUtilsTest{
 		gameState = DemoGameBuilder.buildTestGame(2, 15, interfaces);
 		territories = new Territory[TerritoryUtils.getAllTerritories(gameState).size()];
 		TerritoryUtils.getAllTerritories(gameState).toArray(territories);
+		GameEngine engine = new GameEngine(gameState);
 	}
 	
 	@Test
@@ -42,18 +44,20 @@ public class RuleUtilsTest{
 		for(int i = 0; i < 12; i++){
 			ArmyUtils.deployArmies(player1, territories[i], 1);
 		}
-		for(int i = 0; i < 3; i++){
+		for(int i = 12; i < 15; i++){
 			ArmyUtils.deployArmies(player2, territories[i], 1);
 		}
 	
-		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 3);
-		assertEquals(ArmyUtils.getUndeployedArmies(player2).size(), 12);
+		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 43);
+		assertEquals(ArmyUtils.getUndeployedArmies(player2).size(), 37);
 		
 		RuleUtils.doArmyHandout(gameState, player1);
 		RuleUtils.doArmyHandout(gameState, player2);
 		
-		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 7);
-		assertEquals(ArmyUtils.getUndeployedArmies(player2).size(), 15);
+		// player 1 should get 4 armies
+		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 32);
+		// player2 shoulld get 3 armies
+		assertEquals(ArmyUtils.getUndeployedArmies(player2).size(), 40);
 		
 	}
 	
