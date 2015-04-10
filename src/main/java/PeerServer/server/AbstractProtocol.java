@@ -91,6 +91,12 @@ public abstract class AbstractProtocol implements Runnable {
 	 * @return
 	 */
 	protected void takeGameAction(){
+		switch(this.protocolState){
+			case ROLL_HASH:
+				//this.protocolState = roll_hash("");
+				
+		}
+		
 		/**
 		switch(this.protocolState){
 			case PLAY_CARDS:
@@ -427,7 +433,9 @@ public abstract class AbstractProtocol implements Runnable {
 				}
 				
 				randGenerator = new RandomNumbers(seed);
-				int dieRoll = dieRollResult; 
+	
+				dieRollResult = randGenerator.getRandomInt();
+				System.out.println("Die roll result: " + dieRollResult);
 				
 			} catch (HashMismatchException e) {
 				e.printStackTrace();
@@ -440,10 +448,5 @@ public abstract class AbstractProtocol implements Runnable {
 		
 		return protocolState;
 	}
-
-
-
-	
-	
 	
 }
