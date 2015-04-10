@@ -25,7 +25,7 @@ public class CommunistTest {
 
     @Before
     public void setUp() throws Exception {
-//        Log.NONE();
+        Log.NONE();
     }
 
     @After
@@ -42,18 +42,13 @@ public class CommunistTest {
 
         Player play1 = new Player(new CommunistAggressive(gameState));
         Player play2 = new Player(new CommunistAggressive(gameState));
-        Player play3 = new Player(new DumbBotInterface());
-        Player play4 = new Player(new DumbBotInterface());
 
         ArrayList<Player> playerList = new ArrayList<Player>();
         playerList.add(play1);
         playerList.add(play2);
-        playerList.add(play3);
-        playerList.add(play4);
 
         gameState.setPlayers(playerList);
-        Log.DEBUG = true;
-        
+
         gameState.print();
 
         GameEngine gameThr = new GameEngine(gameState);

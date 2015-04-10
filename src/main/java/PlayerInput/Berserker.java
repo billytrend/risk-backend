@@ -126,7 +126,6 @@ public class Berserker {
     }
 
 
-    @Override
     public void reportStateChange(Change change) {
         // TODO Auto-generated method stub
 

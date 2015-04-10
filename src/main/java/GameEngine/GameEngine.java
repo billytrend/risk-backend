@@ -6,10 +6,7 @@ import GameUtils.CardUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.Results.*;
 import GameUtils.TerritoryUtils;
-
 import org.javatuples.Triplet;
-
-import com.esotericsoftware.minlog.Log;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -91,7 +88,7 @@ public class GameEngine implements Runnable {
 	 * @throws NullPointerException
 	 */
 	private boolean iterateGame() throws InterruptedException, NullPointerException {
-		Log.DEBUG = true;
+
 		switch (this.playState) {
 			case BEGINNING_STATE:
 				debug("\nBEGIN");
@@ -163,7 +160,7 @@ public class GameEngine implements Runnable {
         debug("NUMBER OF STARTING ARMIES " + startingArmies + gameState.getPlayers().size());
         for(Player player:gameState.getPlayers())  
         	ArmyUtils.givePlayerNArmies(player, startingArmies);
-        Log.DEBUG = false;
+
 		// set first player
 		Arbitration.setFirstPlayer(this.gameState);
 	

@@ -24,8 +24,8 @@ public class DumbBotInterface implements PlayerInterface {
 	private static Scanner scanner;
 	
     protected void emit(Player p, String message) {
-        debug("[" + p.getId() + "]" + "\t\t");
-        debug(message);
+//        debug("[" + p.getId() + "]" + "\t\t");
+//        debug(message);
     }
 
     /**
