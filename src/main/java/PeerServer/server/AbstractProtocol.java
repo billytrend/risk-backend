@@ -25,6 +25,7 @@ import GameUtils.PlayerUtils;
 import GeneralUtils.Jsonify;
 import PeerServer.protocol.dice.*;
 import PeerServer.protocol.dice.Die.HashMismatchException;
+import PeerServer.protocol.dice.Die.OutOfEntropyException;
 import PeerServer.server.ProtocolState;
 
 
@@ -51,8 +52,12 @@ public abstract class AbstractProtocol implements Runnable {
 	protected int ack_id = 0;
 	protected int myID;
 	
+	//TODO: need to change the amount of faces accordingly!
 	protected Die diceRoller;
+	protected RandomNumbers randGenerator;
 	protected byte[] randomNumber;
+	protected int dieRollResult;
+	
 	protected int numOfPlayers;
 	
 	public void run(){
@@ -150,6 +155,7 @@ public abstract class AbstractProtocol implements Runnable {
 	protected void removePlayer(int id){
 		Player player = state.lookUpPlayer(id);
 		
+		numOfPlayers--;
 		// if a game hasnt started and a player needs to be removed
 		// then the starting array should be altered
 		if(engine == null){
@@ -332,22 +338,27 @@ public abstract class AbstractProtocol implements Runnable {
 			randomNumber = diceRoller.generateNumber();
 			try {
 				byte[] hash = diceRoller.hashByteArr(randomNumber);
-				String hashStr = hash.toString();
+				String hashStr = new String(hash);
 				
 				roll_hash rh = new roll_hash(hashStr, myID);
+				diceRoller.addHash(myID, hashStr);
 				
 				// if its a client it will send to host, if its a host it will send to all
 				sendCommand(Jsonify.getObjectAsJsonString(rh), null);
 				
 			} catch (HashMismatchException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				return ProtocolState.LEAVE_GAME;
 			}
 		
 		}
 		// sb sent us command
 		else{
-			roll_hash rh = (PeerServer.protocol.dice.roll_hash) Jsonify.getJsonStringAsObject(command, roll_hash.class);
+			roll_hash rh = (roll_hash) Jsonify.getJsonStringAsObject(command, roll_hash.class);
+			if(rh == null){
+				return ProtocolState.LEAVE_GAME;
+			}
+			
 			String hash = rh.payload;
 			int player_id = rh.player_id;
 	
@@ -355,8 +366,8 @@ public abstract class AbstractProtocol implements Runnable {
 			try {
 				diceRoller.addHash(player_id, hash);
 			} catch (HashMismatchException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				return ProtocolState.LEAVE_GAME;
 			}
 		
 			
@@ -365,8 +376,10 @@ public abstract class AbstractProtocol implements Runnable {
 			sendCommand(command, player_id);
 		}
 		
-		if(diceRoller.getNumberOfReceivedHashes() < )
-		return protocolState;
+		if(diceRoller.getNumberOfReceivedHashes() == numOfPlayers)
+			return ProtocolState.ROLL_NUMBER;
+		
+		return ProtocolState.ROLL_HASH;
 	}
 
 	protected ProtocolState roll_number(String command){
@@ -374,17 +387,58 @@ public abstract class AbstractProtocol implements Runnable {
 		// we are sendin roll_number
 		if(command == ""){
 			System.out.println(randomNumber.toString());
-			roll_number rn = new roll_number(randomNumber.toString(), myID);
+			String ranNumStr = new String(randomNumber);
+			roll_number rn = new roll_number(ranNumStr, myID);
+			
+			try {
+				diceRoller.addNumber(myID, ranNumStr);
+			} catch (HashMismatchException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return ProtocolState.LEAVE_GAME;
+			}
 			
 			String rnStr = Jsonify.getObjectAsJsonString(rn);
 			sendCommand(rnStr, null);
 		}
 		// we got roll number, need to check it
 		else{
+			roll_number rn = (roll_number) Jsonify.getJsonStringAsObject(command, roll_number.class);
+			if(rn == null)
+				return ProtocolState.LEAVE_GAME;
 			
+			String number = rn.payload;
+			int id = rn.player_id;
+			
+			try {
+				diceRoller.addNumber(id, number);
+			} catch (HashMismatchException e) {
+				e.printStackTrace();
+				return ProtocolState.LEAVE_GAME;
+			}
 		}
+		
+		
+		if(diceRoller.getNumberOfReceivedNumbers() == numOfPlayers){
+			try {
+				byte[] seed = new byte[256];
+				for(int i = 0; i < 256; i++){
+					seed[i] = (byte) diceRoller.getByte(); //TODO: check this...
+				}
+				
+				randGenerator = new RandomNumbers(seed);
+				int dieRoll = dieRollResult; 
+				
+			} catch (HashMismatchException e) {
+				e.printStackTrace();
+				return ProtocolState.LEAVE_GAME;
+			} catch (OutOfEntropyException e) {
+				e.printStackTrace();
+				return ProtocolState.LEAVE_GAME;
+			}
+		}
+		
 		return protocolState;
-
 	}
 
 

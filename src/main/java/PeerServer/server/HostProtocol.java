@@ -228,6 +228,7 @@ public class HostProtocol extends AbstractProtocol {
 		
 		newOne.setPublicKey(newKey);
 		startingPlayers.add(newOne);
+		numOfPlayers++;
 		//interfaceMapping.put(0, playerInterface);
 		state.setPlayers(startingPlayers);
 		

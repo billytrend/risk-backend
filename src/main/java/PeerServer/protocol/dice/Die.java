@@ -44,6 +44,7 @@ public class Die {
 	public int getNumberOfReceivedNumbers(){
 		return playernum.size();
 	}
+	
 
 	/**
 	 * Converts a hexadecimal string to a byte array
