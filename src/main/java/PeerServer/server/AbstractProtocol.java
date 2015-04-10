@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 
+import javax.ws.rs.client.Client;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -21,6 +23,8 @@ import GameEngine.*;
 import GameState.*;
 import GameUtils.PlayerUtils;
 import GeneralUtils.Jsonify;
+import PeerServer.protocol.dice.*;
+import PeerServer.protocol.dice.Die.HashMismatchException;
 import PeerServer.server.ProtocolState;
 
 
@@ -45,9 +49,22 @@ public abstract class AbstractProtocol implements Runnable {
 	
 	protected GameEngine engine = null;
 	protected int ack_id = 0;
+	protected int myID;
+	
+	protected Die diceRoller;
+	protected byte[] randomNumber;
+	protected int numOfPlayers;
 	
 	public void run(){
 		state = new State();
+		
+		try {
+			diceRoller = new Die();
+		} catch (HashMismatchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		RiskMapGameBuilder.addRiskTerritoriesToState(state);
 	
 		while(protocolState != null){
@@ -61,7 +78,7 @@ public abstract class AbstractProtocol implements Runnable {
 	
 	protected abstract void takeSetupAction();
 	
-	//protected abstract void sendCommand();
+	protected abstract void sendCommand(String command, Integer exceptId);
 	
 	/**
 	 * Manages the different states and associated commands.
@@ -306,38 +323,66 @@ public abstract class AbstractProtocol implements Runnable {
 
 
 /**
- * {
-
-"command": "roll_hash",
-
-"payload":
-
-"7b3d979ca8330a94fa7e9e1b466d8b99e0bcdea1ec90596c0dcc8d7ef6b4300c",
-
-"player_id": 0
-
-}
-
-{
-
-"command": "roll_number",
-
-"payload":
-
-"9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
-
-"player_id": 0
-
-}
  * @param command
  * @return
  */
 	protected ProtocolState roll_hash(String command){
+		// we are sending command
+		if(command == ""){
+			randomNumber = diceRoller.generateNumber();
+			try {
+				byte[] hash = diceRoller.hashByteArr(randomNumber);
+				String hashStr = hash.toString();
+				
+				roll_hash rh = new roll_hash(hashStr, myID);
+				
+				// if its a client it will send to host, if its a host it will send to all
+				sendCommand(Jsonify.getObjectAsJsonString(rh), null);
+				
+			} catch (HashMismatchException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		}
+		// sb sent us command
+		else{
+			roll_hash rh = (PeerServer.protocol.dice.roll_hash) Jsonify.getJsonStringAsObject(command, roll_hash.class);
+			String hash = rh.payload;
+			int player_id = rh.player_id;
+	
+			// add hash to mapping of hashes and player ids
+			try {
+				diceRoller.addHash(player_id, hash);
+			} catch (HashMismatchException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+			
+			// if its a server it will send to everyone except the person that sent it
+			// if its a client it will ignore it
+			sendCommand(command, player_id);
+		}
+		
+		if(diceRoller.getNumberOfReceivedHashes() < )
 		return protocolState;
-
 	}
 
 	protected ProtocolState roll_number(String command){
+		
+		// we are sendin roll_number
+		if(command == ""){
+			System.out.println(randomNumber.toString());
+			roll_number rn = new roll_number(randomNumber.toString(), myID);
+			
+			String rnStr = Jsonify.getObjectAsJsonString(rn);
+			sendCommand(rnStr, null);
+		}
+		// we got roll number, need to check it
+		else{
+			
+		}
 		return protocolState;
 
 	}

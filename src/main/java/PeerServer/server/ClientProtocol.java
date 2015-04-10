@@ -18,6 +18,7 @@ import javax.swing.JTable.PrintMode;
 import com.esotericsoftware.minlog.Log;
 
 import GameBuilders.RiskMapGameBuilder;
+import GameEngine.GameEngine;
 import GameState.Player;
 import GameState.State;
 import GeneralUtils.Jsonify;
@@ -40,7 +41,6 @@ import PlayerInput.RemotePlayer;
 public class ClientProtocol extends AbstractProtocol{
 
 	private Client client;
-	private int myID;
 	private int versionPlayed;
 	private String[] featuresUsed;
 
@@ -308,6 +308,11 @@ public class ClientProtocol extends AbstractProtocol{
 		versionPlayed = init.payload.version;
 		featuresUsed = init.payload.supported_features;
 		
+		State state = new State(startingPlayers);
+		engine = new GameEngine(state);
+		
+		diceRoller.setFaceValue(startingPlayers.size());
+		
 		return ProtocolState.LEAVE_GAME;
 	}
 	
@@ -397,6 +402,15 @@ public class ClientProtocol extends AbstractProtocol{
 		super.run();
 		
 		client.close();
+	}
+
+
+	@Override
+	protected void sendCommand(String command, Integer exceptId) {
+		if(exceptId != null)
+			return;
+		
+		client.send(command);
 	}
 
 

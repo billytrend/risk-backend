@@ -32,6 +32,18 @@ public class Die {
 			throw new HashMismatchException("Couldn't initialise random number generator");
 		}
 	}
+	
+	public void setFaceValue(int value){
+		faceValue = value;
+	}
+	
+	public int getNumberOfReceivedHashes(){
+		return playerhash.size();
+	}
+	
+	public int getNumberOfReceivedNumbers(){
+		return playernum.size();
+	}
 
 	/**
 	 * Converts a hexadecimal string to a byte array
@@ -77,6 +89,7 @@ public class Die {
 		}
 	}
 
+	
 	/**
 	 * Hash some source data and compare with a hash to see if they match
 	 * @param	src		The source data
@@ -119,7 +132,7 @@ public class Die {
 
 		playerhash.put(playerid, hexToByte(hash));
 	}
-
+	
 	/**
 	 * Adds and verifies a number sent by a player after its corresponding hash was sent
 	 * @param	playerid	The player id sending the number
@@ -189,6 +202,8 @@ public class Die {
 		res = (int)mixednumber[ptr++] & 0xFF; // Bit hack to force remove sign extension of MSB
 		return res;
 	}
+	
+	
 	
 	public class OutOfEntropyException extends Exception {
 

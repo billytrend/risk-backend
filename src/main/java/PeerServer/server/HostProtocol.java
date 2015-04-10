@@ -277,7 +277,7 @@ public class HostProtocol extends AbstractProtocol {
 		int id = currentConnection.getId();
 		
 		players_joined toRest = new players_joined(new String[]{Integer.toString(id), newName, newKey});
-		sendToAllExcept(Jsonify.getObjectAsJsonString(toRest), currentConnection);		
+		sendToAllExcept(Jsonify.getObjectAsJsonString(toRest), id);		
 		
 		System.out.println("\nSEND TO ALMOST ALL: " + Jsonify.getObjectAsJsonString(toRest));
 	
@@ -308,9 +308,10 @@ public class HostProtocol extends AbstractProtocol {
 				return ProtocolState.LEAVE_GAME;
 			}
 			System.out.println("\nGOT: " + command);
+			int id = ping.player_id;
 			
 			// forward ping to everyone
-			sendToAllExcept(command, currentConnection);
+			sendToAllExcept(command, id);
 			System.out.println("\nSEND TO AMOST ALL: " + command);
 			
 			acknowledgements.add(currentConnection);
@@ -419,6 +420,7 @@ public class HostProtocol extends AbstractProtocol {
 		// START THE GAME ENGINE
 		State state = new State(startingPlayers);
 		engine = new GameEngine(state);
+		diceRoller.setFaceValue(startingPlayers.size());
 		
 		System.out.println("\nSEND TO ALL: " + Jsonify.getObjectAsJsonString(init_game));
 		return ProtocolState.LEAVE_GAME; // TODO: JUST FOR NOW - TO STOP - CHANGE IT LATER.
@@ -439,8 +441,9 @@ public class HostProtocol extends AbstractProtocol {
 			//TODO: print a reason?
 			int responseCode = leave.payload.response;
 			String message = leave.payload.message;
+			int id = leave.player_id;
 			
-			sendToAllExcept(command, currentConnection);
+			sendToAllExcept(command, id);
 			System.out.println("\nSEND ALMOST ALL: " + Jsonify.getObjectAsJsonString(command));
 			// dont change state
 			return protocolState;
@@ -505,7 +508,9 @@ public class HostProtocol extends AbstractProtocol {
 		}
 	}
 
-	private void sendToAllExcept(String command, PeerConnection con) {
+	private void sendToAllExcept(String command, int playerId) {
+		PeerConnection con = connectionMapping.get(playerId);
+		
 		for (PeerConnection c : connections) {
 			if(c != con)
 				c.sendCommand(command);
@@ -636,6 +641,7 @@ public class HostProtocol extends AbstractProtocol {
 		@Override
 		public void run() {
 			ProtocolState newState = protocolState;
+			myID = 0;
 			
 			// interrupt the main thread - for safety, so it doesn't access the protocolState
 			// field we want to change and to make sure its not in the middle of sth that
@@ -658,6 +664,14 @@ public class HostProtocol extends AbstractProtocol {
 				notify();
 			}
 		}		
+	}
+
+	@Override
+	protected void sendCommand(String command, Integer exceptId) {
+		if(exceptId != null)
+			sendToAllExcept(command, exceptId);
+		else
+			sendToAll(command);
 	}
 
 
