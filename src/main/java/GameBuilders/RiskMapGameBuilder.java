@@ -19,14 +19,26 @@ import java.util.Scanner;
 
 public class RiskMapGameBuilder {
 
+    private static String[] colours = new String[] {
+            "A6922E", "BFA065", "D96F32", "D95A2B", "A6453C"
+    };
+
+
+    public static ArrayList<Player> colourPlayers(ArrayList<Player> ps) {
+
+        // creating players
+        for (int i = 0; i < ps.size(); i++) {
+            ps.get(i).setColour(colours[i]);
+        }
+        return ps;
+
+    }
+
 	/*
 	 * Builds a very basic game with four AIs playing against each other and
 	 * full risk map.
 	 */
 	public static State buildGame(PlayerInterface[] interfaces) {
-        String[] colours = new String[] {
-            "A6922E", "BFA065", "D96F32", "D95A2B", "A6453C"
-        };
 
 
 		// creating players

@@ -1,13 +1,8 @@
 package LobbyTests;
 
-import GameBuilders.RiskMapGameBuilder;
-import GameState.State;
 import GameState.Territory;
 import GeneralUtils.Jsonify;
 import LobbyServer.LobbyState.ObjectFromClient.GameComms.*;
-import LobbyServer.SingleGameServer;
-import PlayerInput.DumbBotInterface;
-import PlayerInput.PlayerInterface;
 import com.esotericsoftware.minlog.Log;
 import org.junit.Test;
 
@@ -37,8 +32,6 @@ public class CommTest {
 
     @Test
     public void testSingleGameRun() throws UnknownHostException {
-        State gameState = RiskMapGameBuilder.buildGame(new PlayerInterface[] { new DumbBotInterface(), new DumbBotInterface()});
-        SingleGameServer s = new SingleGameServer(8080, gameState, new PlayerInterface[] { new DumbBotInterface(), new DumbBotInterface()});
     }
 
 //    @Test

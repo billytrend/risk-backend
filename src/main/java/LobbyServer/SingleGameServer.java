@@ -1,5 +1,6 @@
 package LobbyServer;
 
+import GameBuilders.RiskMapGameBuilder;
 import GameEngine.GameEngine;
 import GameState.Player;
 import GameState.State;
@@ -7,7 +8,6 @@ import GeneralUtils.Jsonify;
 import LobbyServer.LobbyState.ObjectFromClient.ClientMessage;
 import LobbyServer.LobbyState.ObjectFromClient.GameComms.Response;
 import LobbyServer.LobbyState.PlayerConnection;
-import PlayerInput.PlayerInterface;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
@@ -25,11 +25,12 @@ public class SingleGameServer extends WebSocketServer {
     private Player singlePlayer;
     private State gameState;
 
-    public SingleGameServer(int port, State gameState, PlayerInterface[] interfaces) throws UnknownHostException {
+    public SingleGameServer(int port, State gameState, ArrayList<Player> interfaces) throws UnknownHostException {
         super( new InetSocketAddress( port ) );
-        for (PlayerInterface p : interfaces) {
-            players.add(new Player(p, 30));
+        for (Player p : interfaces) {
+            players.add(p);
         }
+        this.gameState = gameState;
         System.out.println(Jsonify.getObjectAsJsonString(gameState));
         this.start();
     }
@@ -45,6 +46,7 @@ public class SingleGameServer extends WebSocketServer {
         debug("hi!");
         singlePlayer = new Player(new PlayerConnection(conn), 123);
         players.add(singlePlayer);
+        RiskMapGameBuilder.colourPlayers(players);
         gameState.setPlayers(players);
         GameEngine game = new GameEngine(gameState);
         Thread gameThread = new Thread(game);
