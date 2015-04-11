@@ -3,6 +3,7 @@ package GameState;
 import GameUtils.ArmyUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.TerritoryUtils;
+import PlayerInput.PlayerInterface;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
@@ -23,6 +24,7 @@ public class State {
 	protected HashMap<String, Player> playerMapping = new HashMap<String, Player>();
 	protected HashMap<String, Territory> territoryMapping = new HashMap<String, Territory>();
 	protected ArrayList<Player> players;
+    protected ArrayList<PlayerInterface> ghosts = new ArrayList<PlayerInterface>();
 	private PlayerQueue playerQueue;
 	private ArrayList<Continent> continents = new ArrayList<Continent>();
 	private final ArrayList<Card> cards = new ArrayList<Card>();
@@ -106,6 +108,10 @@ public class State {
 		this.numberOfCardSetsUsed = numberOfCardSetsUsed;
 	}
 
+    public void addGhost(PlayerInterface p) {
+        this.ghosts.add(p);
+    }
+    
 	/**
 	 * Method used to print the current state of the game.
 	 * Used for console versions only for the purpose of debugging.
@@ -132,5 +138,8 @@ public class State {
 		}
 		
 	}
-	
+
+    public ArrayList<PlayerInterface> getGhosts() {
+        return ghosts;
+    }
 }

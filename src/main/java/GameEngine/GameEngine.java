@@ -6,6 +6,7 @@ import GameUtils.CardUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.Results.*;
 import GameUtils.TerritoryUtils;
+import PlayerInput.PlayerInterface;
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -76,6 +77,9 @@ public class GameEngine implements Runnable {
         change.applyChange(state);
         for (Player player :  gameState.getPlayers()) {
             player.getCommunicationMethod().reportStateChange(change);
+        }
+        for (PlayerInterface ghost : gameState.getGhosts()) {
+            ghost.reportStateChange(change);
         }
         changeRecord.addStateChange(change);
     }
