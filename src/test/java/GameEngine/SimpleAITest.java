@@ -29,11 +29,15 @@ public class SimpleAITest {
     public void testDumbBot() throws InterruptedException {
 	    PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface(),
 	    		new DumbBotInterface(), new DumbBotInterface()};
-        State gameState = DemoGameBuilder.buildGame(10, interfaces);
+
+        State gameState = DemoGameBuilder.buildGame(interfaces);
+
         GameEngine gameThr = new GameEngine(gameState);
         Thread gameThread = new Thread(gameThr);
         gameThread.start();
         gameThread.join();
+        gameState.print();
+        // TODO: add assertions about state.
     }
     
     @Test

@@ -133,4 +133,18 @@ public class ArmyUtils {
     public static int getNumberOfMoveableArmies(Player p, Territory source) {
         return getNumberOfArmiesOnTerritory(p, source) - 1;
     }
+
+	public static void giveStartingArmies(State state) {
+		int numOfPlayers = PlayerUtils.getPlayersInGame(state).size();
+        int numOfArmies = 40;
+
+        if (numOfPlayers > 2) {
+            numOfArmies -= 5 * (numOfPlayers - 3);
+        }
+
+	    ArrayList<Player> players = state.getPlayers();
+	      for(Player p : players){
+	    	  givePlayerNArmies(p, numOfArmies);
+	      } 
+	}
 }

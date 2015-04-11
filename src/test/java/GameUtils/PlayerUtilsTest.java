@@ -1,10 +1,14 @@
 package GameUtils;
 
 import static org.junit.Assert.*;
+
 import java.util.ArrayList;
+
 import org.junit.Before;
 import org.junit.Test;
+
 import GameBuilders.DemoGameBuilder;
+import GameEngine.GameEngine;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
@@ -19,9 +23,10 @@ public class PlayerUtilsTest {
 	@Before
 	public void stateSetUp(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
-		gameState = DemoGameBuilder.buildTestGame(2, 5, 2, interfaces);
+		gameState = DemoGameBuilder.buildTestGame(2, 2, interfaces);
 		territories = new Territory[TerritoryUtils.getAllTerritories(gameState).size()];
 		TerritoryUtils.getAllTerritories(gameState).toArray(territories);
+		GameEngine engine = new GameEngine(gameState);
 	}
 	
 	@Test
@@ -31,6 +36,8 @@ public class PlayerUtilsTest {
 	@Test
 	public void getNumberOfTerritoriesOwnedTest(){
 		Player player1 = gameState.getPlayers().get(0);
+		ArmyUtils.givePlayerNArmies(player1, 5);
+		
 		Territory territory1 = territories[0];
 		Territory territory2 = territories[1];
 		
@@ -46,6 +53,7 @@ public class PlayerUtilsTest {
 	@Test
 	public void getTerritoryOwnerTest(){
 		Player player1 = gameState.getPlayers().get(0);
+		ArmyUtils.givePlayerNArmies(player1, 5);
 		Territory territory1 = territories[0];
 		
 		assertEquals(PlayerUtils.getTerritoryOwner(gameState, territory1), null);
@@ -64,6 +72,10 @@ public class PlayerUtilsTest {
 	public void playerIsOutTest(){
 		Player player1 = gameState.getPlayers().get(0);
 		Player player2 = gameState.getPlayers().get(1);
+		
+		ArmyUtils.givePlayerNArmies(player1, 5);
+		ArmyUtils.givePlayerNArmies(player2, 5);
+		
 		Territory territory1 = territories[0];
 		
 		ArmyUtils.deployArmies(player1, territory1, 2);

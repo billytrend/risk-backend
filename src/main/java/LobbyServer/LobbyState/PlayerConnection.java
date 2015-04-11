@@ -25,7 +25,7 @@ public class PlayerConnection implements PlayerInterface  {
 	private List<Response> responses = new ArrayList<Response>();
 
     public PlayerConnection(WebSocket connection) {
-        this.playerState = new Player(this, 0, 100); // this last number to be changed
+        this.playerState = new Player(this, 100); // this last number to be changed
         this.connection = connection;
     }
 
@@ -81,7 +81,7 @@ public class PlayerConnection implements PlayerInterface  {
 	}
 
 	@Override
-	public int getNumberOfArmies(Player player, int max, RequestReason reason) {
+	public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
 		ArmyRequest a = new ArmyRequest();
 		a.max = max;
 		a.reason = reason;

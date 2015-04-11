@@ -21,26 +21,33 @@ import static com.esotericsoftware.minlog.Log.debug;
 public class State {
 
 	protected SimpleGraph<Territory, DefaultEdge> territories = new SimpleGraph<Territory, DefaultEdge>(DefaultEdge.class);
-	protected HashMap<String, Player> playerMapping = new HashMap<String, Player>();
+    protected HashMap<String, Player> playerMapping = new HashMap<String, Player>();
 	protected HashMap<String, Territory> territoryMapping = new HashMap<String, Territory>();
+    protected HashMap<Integer, Player> playerNumberIdMapping = new HashMap<Integer, Player>();
 	protected ArrayList<Player> players;
     protected ArrayList<PlayerInterface> ghosts = new ArrayList<PlayerInterface>();
 	private PlayerQueue playerQueue;
 	private ArrayList<Continent> continents = new ArrayList<Continent>();
 	private final ArrayList<Card> cards = new ArrayList<Card>();
+//	private int numberOfCardSetsUsed = 0;
+	    
 	private int numberOfCardSetsUsed = 0;
 	
 	public State(ArrayList<Player> players){
+		this();
 		setPlayers(players);
     }
     
     public State() {
+    	numberOfCardSetsUsed = 0;
+    	players = new ArrayList<Player>();
     }
 
     public void setPlayers(ArrayList<Player> players) {
         this.players = players;
         this.playerQueue = new PlayerQueue(players);
 
+        playerMapping = new HashMap<String, Player>();
         for(Player player : players){
             playerMapping.put(player.getId(), player);
         }
@@ -48,6 +55,10 @@ public class State {
     
 	public Player lookUpPlayer(String id){
 		return playerMapping.get(id);
+	}
+	
+	public Player lookUpPlayer(Integer id){
+		return playerNumberIdMapping.get(id);
 	}
 	
 	public Territory lookUpTerritory(String id){
@@ -62,6 +73,10 @@ public class State {
 		else if(obj instanceof Player){
 			playerMapping.put(id, (Player) obj);
 		}
+	}
+	
+	public void addIntegerMapping(Integer id, Object obj){
+		playerNumberIdMapping.put(id, (Player) obj);
 	}
 	
 	public ArrayList<String> getPlayersIds(){
@@ -100,13 +115,13 @@ public class State {
 	public void setContinents(ArrayList<Continent> continents) {
 		this.continents = continents;
 	}
-	public int getNumberOfCardSetsUsed() {
-		return numberOfCardSetsUsed;
-	}
-
-	public void setNumberOfCardSetsUsed(int numberOfCardSetsUsed) {
-		this.numberOfCardSetsUsed = numberOfCardSetsUsed;
-	}
+//	public int getNumberOfCardSetsUsed() {
+//		return numberOfCardSetsUsed;
+//	}
+//
+//	public void setNumberOfCardSetsUsed(int numberOfCardSetsUsed) {
+//		this.numberOfCardSetsUsed = numberOfCardSetsUsed;
+//	}
 
     public void addGhost(PlayerInterface p) {
         this.ghosts.add(p);
