@@ -44,8 +44,7 @@ public class SingleGameServer extends WebSocketServer {
     @Override
     public void onOpen( WebSocket conn, ClientHandshake handshake ) {
         debug("hi!");
-        singlePlayer = new Player(new PlayerConnection(conn), 123);
-        players.add(singlePlayer);
+        gameState.addGhost(new PlayerConnection(conn));
         RiskMapGameBuilder.colourPlayers(players);
         gameState.setPlayers(players);
         GameEngine game = new GameEngine(gameState);

@@ -82,12 +82,11 @@ public class DumbBotInterface implements PlayerInterface {
         }
         
         // random choice
-        Integer choice = canResign ? ran.nextInt(posList.size() + 1) : 
-        				(ran.nextInt(posList.size()) + 1);
-        
-        emit(player, "Chose " + choice);
-        return  (choice == 0) ? null :
-        				posList.get(choice - 1);
+        if (ran.nextInt(10) == 0 && canResign) {
+            return null;
+        }
+
+        return posList.get(ran.nextInt(posList.size()));
 
     }
     
@@ -102,7 +101,7 @@ public class DumbBotInterface implements PlayerInterface {
 
     @Override
     public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
-        return null;
+        return possibleCombinations.get(0);
     }
 
     @Override

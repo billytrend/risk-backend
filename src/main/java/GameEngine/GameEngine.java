@@ -270,16 +270,17 @@ public class GameEngine implements Runnable {
 	 */
 	private PlayState convertCards() {
 
-		ArrayList<Triplet<Card, Card, Card>> possibleCombinations = CardUtils.getPossibleCardCombinations(gameState, currentPlayer);
+        int payout = CardUtils.getCurrentArmyPayout(currentPlayer);
+
+        ArmyUtils.givePlayerNArmies(currentPlayer, payout);
+
+        ArrayList<Triplet<Card, Card, Card>> possibleCombinations = CardUtils.getPossibleCardCombinations(gameState, currentPlayer);
 		
 		if (possibleCombinations.size() == 0) return PLAYER_PLACING_ARMIES;
 
 		Triplet<Card, Card, Card> choice = currentPlayer.getCommunicationMethod().getCardChoice(currentPlayer, possibleCombinations);
-		
-		int payout = CardUtils.getCurrentArmyPayout(currentPlayer);
-		
-		ArmyUtils.givePlayerNArmies(currentPlayer, payout);
-		
+
+
 		CardUtils.releaseCards(choice);
 
 		return PLAYER_PLACING_ARMIES;
