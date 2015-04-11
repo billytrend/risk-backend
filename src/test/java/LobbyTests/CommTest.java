@@ -1,11 +1,17 @@
 package LobbyTests;
 
+import GameBuilders.RiskMapGameBuilder;
+import GameState.State;
 import GameState.Territory;
 import GeneralUtils.Jsonify;
 import LobbyServer.LobbyState.ObjectFromClient.GameComms.*;
+import LobbyServer.SingleGameServer;
+import PlayerInput.DumbBotInterface;
+import PlayerInput.PlayerInterface;
 import com.esotericsoftware.minlog.Log;
 import org.junit.Test;
 
+import java.net.UnknownHostException;
 import java.util.HashSet;
 
 public class CommTest {
@@ -27,6 +33,12 @@ public class CommTest {
         Log.debug(Jsonify.getObjectAsJsonString(e));
         Log.debug(Jsonify.getObjectAsJsonString(h));
         Log.debug(Jsonify.getObjectAsJsonString(i));
+    }
+
+    @Test
+    public void testSingleGameRun() throws UnknownHostException {
+        State gameState = RiskMapGameBuilder.buildGame(new PlayerInterface[] { new DumbBotInterface(), new DumbBotInterface()});
+        SingleGameServer s = new SingleGameServer(8080, gameState, new PlayerInterface[] { new DumbBotInterface(), new DumbBotInterface()});
     }
 
 //    @Test
