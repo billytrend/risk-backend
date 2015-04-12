@@ -106,7 +106,7 @@ public class PlayerConnection implements PlayerInterface  {
     @Override
     public void reportStateChange(Change change) {
         try {
-            Thread.sleep(20);
+            Thread.sleep(30);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

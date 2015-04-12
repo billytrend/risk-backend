@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Scanner;
 
-import static com.esotericsoftware.minlog.Log.*;
+import static com.esotericsoftware.minlog.Log.debug;
 
 /**
  * Used for a very simple AI acting as a player
@@ -96,6 +96,8 @@ public class DumbBotInterface implements PlayerInterface {
     public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
         emit(player, "How many armies would you like to move? Max " + max);
         emit(player, "Chose " + max);
+
+
         return ran.nextInt(max + 1);
     }
 
