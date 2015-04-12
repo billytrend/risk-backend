@@ -1,5 +1,6 @@
 package GameUtils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import GameState.Continent;
@@ -9,8 +10,8 @@ import GameState.Territory;
 
 public class ContinentUtils {
 	
-	public static void addContinent(State state, Territory[] territories, int reward, String id, int numeralId){
-		HashSet<Territory> cont = new HashSet<Territory>();
+	public static void addContinent(State state, Territory[] territories, int reward, String id, int numeralId) {
+		ArrayList<Territory> cont = new ArrayList<Territory>();
 		for (Territory t : territories){
 			cont.add(t);
 		}
@@ -29,6 +30,16 @@ public class ContinentUtils {
 	public static boolean checkPlayerOwnsContinent(Player player, Continent continent){
 		if (TerritoryUtils.getPlayersTerritories(player).containsAll(continent.getTerritories())) return true;		
 		return false;
+	}
+	
+	public static Continent getContinentById(State state, String id){
+		ArrayList<Continent> continents = state.getContinents();
+		for(Continent c : continents){
+			if(c.getId() == id){
+				return c;
+			}
+		}
+		return null;
 	}
 
 }

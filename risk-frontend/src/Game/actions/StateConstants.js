@@ -1,0 +1,16 @@
+var keyMirror = require('keymirror');
+
+module.exports = keyMirror({
+    AWAITING_GAME_START: null
+,   ROLLING_DICE_TO_START: null
+,   AWAITING_TURN_TO_PLACE_TERRITORY: null
+,   PLACING_TERRITORY: null
+,   TURN_AWAITING: null
+,   TURN_PLACING_TERRITORY: null
+,   TURN_CONVERTING_CARDS: null
+,   TURN_SELECT_INVADING_COUNTRY: null
+,   TURN_SELECT_DEFENDING_COUNTRY: null
+,   TURN_CHOOSING_INVADING_DICE: null
+,   TURN_WAITING_FOR_DEFENDING_DICE: null
+,   TURN_MOVING_COUNTRY: null
+});

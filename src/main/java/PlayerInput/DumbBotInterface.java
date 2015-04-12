@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Scanner;
 
-import static com.esotericsoftware.minlog.Log.*;
+import static com.esotericsoftware.minlog.Log.debug;
 
 /**
  * Used for a very simple AI acting as a player
@@ -24,8 +24,8 @@ public class DumbBotInterface implements PlayerInterface {
 	private static Scanner scanner;
 	
     protected void emit(Player p, String message) {
-        debug("[" + p.getId() + "]" + "\t\t");
-        debug(message);
+//        debug("[" + p.getId() + "]" + "\t\t");
+//        debug(message);
     }
 
     /**
@@ -82,27 +82,28 @@ public class DumbBotInterface implements PlayerInterface {
         }
         
         // random choice
-        Integer choice = canResign ? ran.nextInt(posList.size() + 1) : 
-        				(ran.nextInt(posList.size()) + 1);
-        
-        emit(player, "Chose " + choice);
-        return  (choice == 0) ? null :
-        				posList.get(choice - 1);
+        if (ran.nextInt(10) == 0 && canResign) {
+            return null;
+        }
+
+        return posList.get(ran.nextInt(posList.size()));
 
     }
     
     /**
      * 
      */
-    public int getNumberOfArmies(Player player, int max, RequestReason reason) {
+    public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
         emit(player, "How many armies would you like to move? Max " + max);
         emit(player, "Chose " + max);
+
+
         return ran.nextInt(max + 1);
     }
 
     @Override
     public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
-        return null;
+        return possibleCombinations.get(0);
     }
 
     @Override

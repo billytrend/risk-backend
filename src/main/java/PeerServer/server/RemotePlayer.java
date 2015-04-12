@@ -72,8 +72,8 @@ public class RemotePlayer implements PlayerInterface  {
 
 	}
 
-	@Override
-	public int getNumberOfArmies(Player player, int max, RequestReason reason) {
+    @Override
+    public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
 		ArmyRequest a = new ArmyRequest();
 		a.max = max;
 		a.reason = reason;

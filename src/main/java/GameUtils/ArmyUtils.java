@@ -136,24 +136,12 @@ public class ArmyUtils {
 
 	public static void giveStartingArmies(State state) {
 		int numOfPlayers = PlayerUtils.getPlayersInGame(state).size();
-		int numOfArmies = 0;
-		switch(numOfPlayers){
-			case 2:
-				numOfArmies = 40;
-				break;
-			case 3:
-				numOfArmies = 35;
-				break;
-			case 4:
-				numOfArmies = 30;
-				break;
-			case 5:
-				numOfArmies = 25;
-				break;
-			case 6:
-				numOfArmies = 20;				
-		}
-		
+        int numOfArmies = 40;
+
+        if (numOfPlayers > 2) {
+            numOfArmies -= 5 * (numOfPlayers - 3);
+        }
+
 	    ArrayList<Player> players = state.getPlayers();
 	      for(Player p : players){
 	    	  givePlayerNArmies(p, numOfArmies);

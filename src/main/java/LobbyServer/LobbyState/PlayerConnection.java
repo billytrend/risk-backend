@@ -81,7 +81,7 @@ public class PlayerConnection implements PlayerInterface  {
 	}
 
 	@Override
-	public int getNumberOfArmies(Player player, int max, RequestReason reason) {
+	public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
 		ArmyRequest a = new ArmyRequest();
 		a.max = max;
 		a.reason = reason;
@@ -105,6 +105,11 @@ public class PlayerConnection implements PlayerInterface  {
 
     @Override
     public void reportStateChange(Change change) {
+        try {
+            Thread.sleep(30);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         connection.send(Jsonify.getObjectAsJsonString(change));
     }
 

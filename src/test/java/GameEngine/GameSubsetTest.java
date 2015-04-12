@@ -1,27 +1,18 @@
 package GameEngine;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import GameBuilders.DemoGameBuilder;
-import GameEngine.GameEngineTest.TerritoryIdComparator;
 import GameState.Player;
 import GameState.State;
-import GameState.Territory;
 import GameUtils.PlayerUtils;
 import GameUtils.TerritoryUtils;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
-
 import com.esotericsoftware.minlog.Log;
+import org.junit.Test;
+
+import java.util.ArrayList;
+
+import static org.junit.Assert.*;
 
 public class GameSubsetTest {
 	
@@ -120,7 +111,8 @@ public class GameSubsetTest {
 	
 	@Test
 	public void mediumMapTerritoriesConditionTest(){
-		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
+        Log.DEBUG = false;
+        PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
 		State gameState = DemoGameBuilder.buildTestGame(2, 16, interfaces);
 		ArrayList<Player> players = gameState.getPlayers();
 		WinConditions conditions = new WinConditions(1, 14);
