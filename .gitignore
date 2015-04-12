@@ -8,3 +8,7 @@ bin1
 .classpath
 .project
 risk-backend.iml
+node_modules
+scripts
+node
+bundle.js
