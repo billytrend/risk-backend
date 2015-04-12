@@ -9,7 +9,7 @@ public class WebpackRunner implements Runnable {
     @Override
     public void run() {
         try {
-            Process p = Runtime.getRuntime().exec("npm run develop --prefix ./risk-frontend/");
+            Process p = Runtime.getRuntime().exec("npm run develop --prefix ./ui/");
             p.waitFor();
         }
         catch (Exception err) {

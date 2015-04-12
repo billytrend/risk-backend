@@ -9,10 +9,7 @@ import GameUtils.ArmyUtils;
 import GameUtils.CardUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.Results.Change;
-
 import org.javatuples.Triplet;
-
-import com.esotericsoftware.minlog.Log;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -105,6 +102,9 @@ public class CommunistAggressive implements PlayerInterface {
 			// If there are still armies reset the counter and start from the
 			// beginning again.
 
+            if (this.deploymentCounter < territoryList.size()) {
+                return territoryList.get(0);
+            }
 			Territory currentTerritoryPlacing = territoryList.get(this.deploymentCounter);
 			
 			if (this.deploymentCounter == territoryList.size() - 1) {

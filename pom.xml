@@ -80,7 +80,7 @@
                 <artifactId>frontend-maven-plugin</artifactId>
                 <version>0.0.23</version>
                 <configuration>
-                    <workingDirectory>risk-frontend</workingDirectory>
+                    <workingDirectory>ui</workingDirectory>
                 </configuration>
                 <executions>
                     <execution>

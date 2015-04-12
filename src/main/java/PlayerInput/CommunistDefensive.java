@@ -41,18 +41,19 @@ public class CommunistDefensive implements PlayerInterface {
 			boolean canResign, RequestReason reason) {
 
 		// NEEDS TO BE FINISHED
-		Territory[] territoryArray = (Territory[]) possibles.toArray();
+        ArrayList<Territory> territoryArray = new ArrayList<Territory>(possibles);
 		Random rand = new Random();
 
 		// TODO: Make into helper method.
-		for (int i = 0; i < territoryArray.length; i++) {
-			Player self = PlayerUtils.getTerritoryOwner(currentState,
-					territoryArray[i]);
-			int strength = ArmyUtils.getArmiesOnTerritory(self,
-					territoryArray[i]).size();
+		for (int i = 0; i < territoryArray.size(); i++) {
+			Player self = PlayerUtils.getTerritoryOwner(currentState, territoryArray.get(i));
+            int strength = 0;
+            if (self != null) {
+                strength = ArmyUtils.getArmiesOnTerritory(self, territoryArray.get(i)).size();
+            }
 
 			if (strength < 3) {
-				this.currentStrongTerritories.add(territoryArray[i]);
+				this.currentStrongTerritories.add(territoryArray.get(i));
 			}
 
 		}
@@ -62,9 +63,8 @@ public class CommunistDefensive implements PlayerInterface {
 		case PLACING_ARMIES_SET_UP:
 
 			// Randomly selects a territory from the list of possible choices.
-			int randomNumber = rand.nextInt(territoryArray.length - MIN + 1)
-					+ MIN;
-			return territoryArray[randomNumber];
+			int randomNumber = rand.nextInt(territoryArray.size());
+			return territoryArray.get(randomNumber);
 
 		case PLACING_REMAINING_ARMIES_PHASE:
 
@@ -72,9 +72,9 @@ public class CommunistDefensive implements PlayerInterface {
 			// If there are still armies reset the counter and start from the
 			// beginning again.
 
-			Territory currentTerritory = territoryArray[this.initialDeploymentCounter];
+			Territory currentTerritory = territoryArray.get(this.initialDeploymentCounter);
 
-			if (this.initialDeploymentCounter == territoryArray.length - 1) {
+			if (this.initialDeploymentCounter == territoryArray.size() - 1) {
 				this.initialDeploymentCounter = 0;
 			} else {
 				this.initialDeploymentCounter++;
@@ -88,9 +88,9 @@ public class CommunistDefensive implements PlayerInterface {
 			// If there are still armies reset the counter and start from the
 			// beginning again.
 
-			Territory currentTerritoryPlacing = territoryArray[this.deploymentCounter];
+			Territory currentTerritoryPlacing = territoryArray.get(this.deploymentCounter);
 
-			if (this.deploymentCounter == territoryArray.length - 1) {
+			if (this.deploymentCounter == territoryArray.size() - 1) {
 				this.deploymentCounter = 0;
 			} else {
 				this.deploymentCounter++;
@@ -99,7 +99,7 @@ public class CommunistDefensive implements PlayerInterface {
 			return currentTerritoryPlacing;
 
 		case ATTACK_CHOICE_FROM:
-			return territoryArray[attackFromCounter];
+			return territoryArray.get(attackFromCounter);
 			
 			
 		case ATTACK_CHOICE_TO:
@@ -108,25 +108,26 @@ public class CommunistDefensive implements PlayerInterface {
 			// Chooses a random one of these and returns it.
 			ArrayList<Territory> weakestTerritories = new ArrayList<Territory>();
 
-			for (int i = 0; i < territoryArray.length; i++) {
+            double minArmies = Double.POSITIVE_INFINITY;
+            Territory weakest = null;
+
+			for (int i = 0; i < territoryArray.size(); i++) {
 				Player enemyOwner = PlayerUtils.getTerritoryOwner(currentState,
-						territoryArray[i]);
+						territoryArray.get(i));
 				int numberOfEnemySoldiers = ArmyUtils
 						.getNumberOfArmiesOnTerritory(enemyOwner,
-								territoryArray[i]);
+								territoryArray.get(i));
 
-				if (numberOfEnemySoldiers == 1) {
-					weakestTerritories.add(territoryArray[i]);
-				}
+                if (numberOfEnemySoldiers < minArmies) {
+                    weakest = territoryArray.get(i);
+                    minArmies = numberOfEnemySoldiers;
+                }
 			}
 
-			int randomWeakest = rand.nextInt(weakestTerritories.size() - MIN
-					+ 1)
-					+ MIN;
-			return weakestTerritories.get(randomWeakest);
+			return weakest;
 
 		case REINFORCEMENT_PHASE:
-			return null; // TODO: Figure out average and reinforce depending on
+			return territoryArray.get(0); // TODO: Figure out average and reinforce depending on
 							// links.
 		default:
 			break;

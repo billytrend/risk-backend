@@ -3,7 +3,6 @@ bin
 target
 .settings
 .metadata
-.idea
 bin1
 .classpath
 .project
@@ -12,3 +11,4 @@ node_modules
 scripts
 node
 bundle.js
+npm-debug.log
