@@ -1,0 +1,3 @@
+[submodule "risk-frontend"]
+	path = risk-frontend
+	url = git@github.com:billytrend/risk-frontend.git

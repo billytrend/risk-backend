@@ -4,29 +4,23 @@ import GameBuilders.RiskMapGameBuilder;
 import GameEngine.GameEngine;
 import GameState.Player;
 import GameState.State;
-import GeneralUtils.Jsonify;
 import LobbyServer.LobbyState.Lobby;
 import PlayerInput.BorderControl;
 import PlayerInput.CommunistAggressive;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
-
+import com.esotericsoftware.minlog.Log;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.esotericsoftware.minlog.Log;
-
 import java.util.ArrayList;
-
-import static com.esotericsoftware.minlog.Log.debug;
 
 public class BorderControlTest {
 
 
     @Before
     public void setUp() throws Exception {
-//        Log.NONE();
     }
 
     @After
@@ -36,7 +30,9 @@ public class BorderControlTest {
 
     @Test
     public void testCommunist() throws InterruptedException {
-	    PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface(),
+        Log.NONE();
+
+        PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface(),
 	    		new DumbBotInterface(), new DumbBotInterface()};
 
         State gameState = RiskMapGameBuilder.buildGame(interfaces);
@@ -53,7 +49,7 @@ public class BorderControlTest {
         playerList.add(play4);
 
         gameState.setPlayers(playerList);
-        Log.DEBUG = true;
+//        Log.DEBUG = true;
         
         gameState.print();
 
@@ -69,6 +65,6 @@ public class BorderControlTest {
     public void testJsonify() {
 
         Lobby t = new Lobby();
-        debug(Jsonify.getObjectAsJsonString(t));
+//        debug(Jsonify.getObjectAsJsonString(t));
 //        debug(Jsonify.getObjectAsJsonString(new Territory("lol")));
     }}

@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.swing.JTable.PrintMode;
 
@@ -32,6 +34,7 @@ import PeerServer.protocol.setup.reject_join_game;
 import PeerServer.server.HostProtocol.ChangeState;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
+import PlayerInput.RemotePlayer;
 
 
 public class ClientProtocol extends AbstractProtocol{
@@ -185,10 +188,16 @@ public class ClientProtocol extends AbstractProtocol{
 			
 		Player player;
 		for(Object[] details : playersDetails){
+			
+			int id = ((Double) details[0]).intValue();
+			
 			if(((Double)details[0]).intValue() == myID)
 				playersInt = localPlayer;
-			else
-				playersInt = new RemotePlayer();
+			else{
+				BlockingQueue<Object> newSharedQueue = new LinkedBlockingQueue<Object>();
+				playersInt = new RemotePlayer(newSharedQueue);
+				queueMapping.put(id, newSharedQueue);
+			}
 			
 			String name = (String) details[1];
 		
@@ -199,9 +208,9 @@ public class ClientProtocol extends AbstractProtocol{
 				i++;
 			}
 			
-			player = new Player(playersInt, ((Double) details[0]).intValue(), name);
+			player = new Player(playersInt, id, name);
 			names.add(name);
-			interfaceMapping.put(player.getNumberId(), playersInt);
+		//	interfaceMapping.put(player.getNumberId(), playersInt);
 			startingPlayers.add(player);	
 			player.setPublicKey((String)details[2]);
 		}
@@ -368,7 +377,7 @@ public class ClientProtocol extends AbstractProtocol{
 	protected ProtocolState setup_game(String command){
 		if(command.contains("timeout"))
 			return timeout(command);
-		Object setup = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.setup.setup.class);
+		Object setup = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.gameplay.setup.class);
 		return protocolState;	
 	}
 

@@ -20,21 +20,24 @@ import static com.esotericsoftware.minlog.Log.debug;
 public class State {
 
 	protected SimpleGraph<Territory, DefaultEdge> territories = new SimpleGraph<Territory, DefaultEdge>(DefaultEdge.class);
-	protected HashMap<String, Player> playerMapping;
-	protected HashMap<Integer, Player> playerNumberIdMapping;
-	protected HashMap<String, Territory> territoryMapping;
+    protected HashMap<String, Player> playerMapping = new HashMap<String, Player>();
+	protected HashMap<String, Territory> territoryMapping = new HashMap<String, Territory>();
+    protected HashMap<Integer, Player> playerNumberIdMapping = new HashMap<Integer, Player>();
 	protected ArrayList<Player> players;
 	private PlayerQueue playerQueue;
 	private ArrayList<Continent> continents = new ArrayList<Continent>();
 	private final ArrayList<Card> cards = new ArrayList<Card>();
 //	private int numberOfCardSetsUsed = 0;
 	    
+	private int numberOfCardSetsUsed = 0;
+	
+	public State(ArrayList<Player> players){
+		this();
+		setPlayers(players);
+    }
+    
     public State() {
-    	super();
-  //  	numberOfCardSetsUsed = 0;
-    	playerMapping = new HashMap<String, Player>();
-    	playerNumberIdMapping = new HashMap<Integer, Player>();
-    	territoryMapping = new HashMap<String, Territory>();
+    	numberOfCardSetsUsed = 0;
     	players = new ArrayList<Player>();
     }
 

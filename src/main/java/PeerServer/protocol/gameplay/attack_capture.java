@@ -15,8 +15,15 @@ package PeerServer.protocol.gameplay;
  */
 public class attack_capture {
 
+	public attack_capture(int[] payload, int player_id, int ack_id){
+		this.payload = payload;
+		this.player_id = player_id;
+		this.ack_id = ack_id;
+	}
+	
+	public String command = "attack_capture";
 	//source territory ID/destination territory ID/army count triple 
-	int attack_array [];
-	int player_id;
-	int ack_id;
+	public int[] payload;
+	public int player_id;
+	public int ack_id;
 }

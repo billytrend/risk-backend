@@ -1,17 +1,14 @@
 package GameEngine;
 
-import GameBuilders.RiskMapGameBuilder;
+import GameBuilders.DemoGameBuilder;
 import GameState.State;
 import GeneralUtils.Jsonify;
 import LobbyServer.LobbyState.Lobby;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.esotericsoftware.minlog.Log;
 
 import static com.esotericsoftware.minlog.Log.debug;
 
@@ -33,13 +30,7 @@ public class SimpleAITest {
 	    PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface(),
 	    		new DumbBotInterface(), new DumbBotInterface()};
 
-        State gameState = RiskMapGameBuilder.buildGame(interfaces);
-
-
-        //gameState.setPlayers(playerList);
-        Log.DEBUG = true;
-        
-        gameState.print();
+        State gameState = DemoGameBuilder.buildGame(interfaces);
 
         GameEngine gameThr = new GameEngine(gameState);
         Thread gameThread = new Thread(gameThr);

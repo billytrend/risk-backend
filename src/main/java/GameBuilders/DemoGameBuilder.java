@@ -5,7 +5,6 @@ import GameState.State;
 import GameState.Territory;
 import GameUtils.ContinentUtils;
 import GameUtils.TerritoryUtils;
-import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
 
 import java.util.ArrayList;
@@ -30,14 +29,13 @@ public class DemoGameBuilder {
 
         }
         
-        State state = new State();
-        state.setPlayers(ps);
-        
+        State state = new State(ps);
+
         // creating territories
-        Territory demoLandA = new Territory("demoland");
-        Territory demoLandB = new Territory("egstate");
-        Territory demoLandC = new Territory("someplace");
-        Territory demoLandD = new Territory("otherplace");
+        Territory demoLandA = new Territory("demoland", 0);
+        Territory demoLandB = new Territory("egstate", 1);
+        Territory demoLandC = new Territory("someplace", 2);
+        Territory demoLandD = new Territory("otherplace", 3);
 
         TerritoryUtils.addTerritory(state, demoLandA);
         TerritoryUtils.addTerritory(state, demoLandB);
@@ -53,8 +51,8 @@ public class DemoGameBuilder {
         
         Territory[] contAB = {demoLandA, demoLandB};
         Territory[] contCD = {demoLandC, demoLandD};
-        ContinentUtils.addContinent(state, contAB, 4, "demoContAB");
-        ContinentUtils.addContinent(state, contCD, 3, "demoContCD");
+        ContinentUtils.addContinent(state, contAB, 4, "demoContAB", 0);
+        ContinentUtils.addContinent(state, contCD, 3, "demoContCD", 1);
 
         return state;
 
@@ -109,7 +107,7 @@ public class DemoGameBuilder {
     	  ArrayList<Territory> territories = new ArrayList<Territory>();
     	  // creating the specified number of territories
     	  for(int i = 0; i < numOfTerritories; i++){
-    		  Territory ter = new Territory("country" + (i + 1));
+    		  Territory ter = new Territory("country" + (i + 1), i + 1);
     		  territories.add(ter);
     		  TerritoryUtils.addTerritory(state, ter);
     	  }

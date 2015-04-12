@@ -128,6 +128,7 @@ public class Berserker {
         return null;
     }
 
+
     public void reportStateChange(Change change) {
         // TODO Auto-generated method stub
 

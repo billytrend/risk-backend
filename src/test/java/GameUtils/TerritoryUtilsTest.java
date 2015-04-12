@@ -2,6 +2,7 @@ package GameUtils;
 
 
 import GameBuilders.DemoGameBuilder;
+import GameEngine.GameEngine;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
@@ -32,6 +33,7 @@ public class TerritoryUtilsTest {
 		gameState = DemoGameBuilder.buildGame(interfaces);
 		territories = new Territory[gameState.getTerritories().vertexSet().size()];
 		gameState.getTerritories().vertexSet().toArray(territories);
+		GameEngine engine = new GameEngine(gameState);
 	}
 	
 	@Test
@@ -347,7 +349,7 @@ public class TerritoryUtilsTest {
 	@Test
 	public void addTerritoryTest(){
 		assertEquals(TerritoryUtils.getAllTerritories(gameState).size(), 4);
-		TerritoryUtils.addTerritory(gameState, new Territory("nice"));
+		TerritoryUtils.addTerritory(gameState, new Territory("nice", 5));
 		assertEquals(TerritoryUtils.getAllTerritories(gameState).size(), 5);
 	}
 	

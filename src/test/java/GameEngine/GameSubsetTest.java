@@ -1,34 +1,21 @@
 package GameEngine;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import GameBuilders.DemoGameBuilder;
-import GameEngine.GameEngineTest.TerritoryIdComparator;
 import GameState.Player;
 import GameState.State;
-import GameState.Territory;
 import GameUtils.PlayerUtils;
 import GameUtils.TerritoryUtils;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
-
 import com.esotericsoftware.minlog.Log;
+import org.junit.Test;
+
+import java.util.ArrayList;
+
+import static org.junit.Assert.*;
 
 public class GameSubsetTest {
 	
-	@Before
-	public void setUp() {
-	}
-		
 	@Test
 	public void smallMapTerritoriesConditionTest(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
@@ -112,7 +99,7 @@ public class GameSubsetTest {
 	@Test
 	public void noConditionTest(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
-		State gameState = DemoGameBuilder.buildTestGame(2,10, interfaces);
+		State gameState = DemoGameBuilder.buildTestGame(2, 10, interfaces);
 		ArrayList<Player> players = gameState.getPlayers();
 		GameEngine gameEngine = new GameEngine(gameState);
 		gameEngine.run();
@@ -124,7 +111,8 @@ public class GameSubsetTest {
 	
 	@Test
 	public void mediumMapTerritoriesConditionTest(){
-		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
+        Log.DEBUG = false;
+        PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
 		State gameState = DemoGameBuilder.buildTestGame(2, 16, interfaces);
 		ArrayList<Player> players = gameState.getPlayers();
 		WinConditions conditions = new WinConditions(1, 14);
@@ -146,9 +134,9 @@ public class GameSubsetTest {
 	public void morePlayersTerritoriesConditionTest(){
 		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface(),
 				new DumbBotInterface(), new DumbBotInterface(), new DumbBotInterface()};
-		State gameState = DemoGameBuilder.buildTestGame(5, 70, interfaces);
+		State gameState = DemoGameBuilder.buildTestGame(5, 50, interfaces);
 		ArrayList<Player> players = gameState.getPlayers();
-		WinConditions conditions = new WinConditions(1, 23);
+		WinConditions conditions = new WinConditions(1, 20);
 		GameEngine gameEngine = new GameEngine(gameState, conditions);
 		gameEngine.run();
 		
@@ -156,7 +144,7 @@ public class GameSubsetTest {
 		
 		Player winner = null;
 		for(Player player : players){
-			if(TerritoryUtils.getPlayersTerritories(player).size() == 23){
+			if(TerritoryUtils.getPlayersTerritories(player).size() == 20){
 				winner = player;
 			}
 		}

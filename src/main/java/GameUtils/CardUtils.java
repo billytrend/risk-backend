@@ -4,13 +4,11 @@ import GameState.Card;
 import GameState.CardType;
 import GameState.Player;
 import GameState.State;
-
+import com.esotericsoftware.minlog.Log;
 import org.javatuples.Triplet;
 import org.paukov.combinatorics.Factory;
 import org.paukov.combinatorics.Generator;
 import org.paukov.combinatorics.ICombinatoricsVector;
-
-import com.esotericsoftware.minlog.Log;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -101,6 +99,8 @@ public class CardUtils {
     public static ArrayList<Triplet<Card, Card, Card>> getPossibleCardCombinations(State s, Player p) {
         ArrayList<Card> playersCards = getPlayersCards(s, p);
         ArrayList<Triplet<Card, Card, Card>> combinations = new ArrayList<Triplet<Card, Card, Card>>();
+
+        if (playersCards.size() == 0) return combinations;
 
         ArrayList<Card> horseCards = getCardsOfType(playersCards, CardType.HORSE);
         ArrayList<Card> soldierCards = getCardsOfType(playersCards, CardType.SOLDIER);
