@@ -17,10 +17,10 @@ import java.util.Random;
 /**
  * Created by root on 08/04/2015.
  */
-public class Berserker {
+public class theLooser {
     public State currentState;
 
-    public Berserker(State a){
+    public theLooser(State a){
         this.currentState = a;
     }
 
@@ -50,25 +50,25 @@ public class Berserker {
         ArrayList<Territory> territoryList = new ArrayList<Territory>(possibles);
 
         Random rand = new Random();
+        int randNo = rand.nextInt(territoryList.size() - 0 + 1) + 0;
 
         switch (reason) {
 
             case PLACING_ARMIES_SET_UP:
-                int randNo = rand.nextInt(territoryList.size() - 0 + 1) + 0;
+
                 return territoryList.get(randNo);
 
             case PLACING_REMAINING_ARMIES_PHASE:
-                return getSouthAmericaContinentTerritory(currentState);
+                return territoryList.get(randNo);
 
             case PLACING_ARMIES_PHASE:
-                return getSouthAmericaContinentTerritory(currentState);
+                return territoryList.get(randNo);
 
             case ATTACK_CHOICE_FROM:
-                ArrayList<Territory> australia = ContinentUtils.getContinentById(currentState, "south_america").getTerritories();
-                return TerritoryUtils.getStrongestOwned(player, territoryList);
+                return territoryList.get(randNo);
 
             case ATTACK_CHOICE_TO:
-                return TerritoryUtils.getStrongestEnemy(currentState, territoryList, "siam");
+                return territoryList.get(randNo);
 
             case REINFORCEMENT_PHASE:
                 return null;
@@ -79,16 +79,6 @@ public class Berserker {
         return null;
     }
 
-
-
-
-
-    private Territory getSouthAmericaContinentTerritory(State state){
-        Random rand = new Random();
-        ArrayList<Territory> territoryList = ContinentUtils.getContinentById(state, "australia").getTerritories();
-        int randomNum = rand.nextInt((territoryList.size() - 0) + 1) + 0;
-        return territoryList.get(randomNum);
-    }
 
     /**
      * The choice can only be made up to the specified max value.
@@ -107,9 +97,9 @@ public class Berserker {
             case PLACING_ARMIES_PHASE:
                 return 1;
             case ATTACK_CHOICE_DICE:
-                return max;
+                return 1;
             case DEFEND_CHOICE_DICE:
-                return max;
+                return 1;
             case REINFORCEMENT_PHASE:
                 return 0; // TODO: Figure out average and reinforce depending on
             // links.
@@ -127,7 +117,6 @@ public class Berserker {
     public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
         return null;
     }
-
 
     public void reportStateChange(Change change) {
         // TODO Auto-generated method stub
