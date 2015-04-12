@@ -107,13 +107,13 @@
                         <!-- optional: default phase is "generate-resources" -->
                         <phase>generate-resources</phase>
 
-                        <configuration>
-                            <!-- optional: The default argument is actually
-                            "install", so unless you need to run some other npm command,
-                            you can remove this whole <configuration> section.
-                            -->
-                            <arguments>webpack build</arguments>
-                        </configuration>
+                        <!--<configuration>-->
+                            <!--&lt;!&ndash; optional: The default argument is actually-->
+                            <!--"install", so unless you need to run some other npm command,-->
+                            <!--you can remove this whole <configuration> section.-->
+                            <!--&ndash;&gt;-->
+                            <!--<arguments>install</arguments>-->
+                        <!--</configuration>-->
                     </execution>
                 </executions>
 
