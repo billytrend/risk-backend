@@ -175,7 +175,6 @@ public class ClientProtocol extends AbstractProtocol{
 		}
 	}
 
-
 	//*********************** GAME SETUP ******************************
 
 	@Override
