@@ -20,6 +20,9 @@ public class SingleGameRunner {
 
         players.add(0, new Player(new DumbBotInterface()));
         players.add(1, new Player(new DumbBotInterface()));
+        players.add(2, new Player(new DumbBotInterface()));
+        players.add(3, new Player(new DumbBotInterface()));
+        players.add(4, new Player(new DumbBotInterface()));
 
         SingleGameRunner s = new SingleGameRunner(players, gameState);
         s.start();

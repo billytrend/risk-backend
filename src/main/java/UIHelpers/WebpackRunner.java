@@ -1,6 +1,7 @@
 package UIHelpers;
 
 import java.awt.*;
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -9,7 +10,10 @@ public class WebpackRunner implements Runnable {
     @Override
     public void run() {
         try {
-            Process p = Runtime.getRuntime().exec("npm run develop --prefix ./ui/");
+            Process p = null;
+            ProcessBuilder pb = new ProcessBuilder().command("./node/node", "server.js");
+            pb.directory(new File("ui"));
+            p = pb.start();
             p.waitFor();
         }
         catch (Exception err) {

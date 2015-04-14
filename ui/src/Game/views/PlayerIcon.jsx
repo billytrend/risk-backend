@@ -6,7 +6,6 @@ module.exports = React.createClass({
         var player = StateStore.getPlayerState(this.props.player);
         player.style = {
             backgroundColor: '#' + player.colour,
-            borderStyle: player.inPlay ? 'solid' : 'none'
         };
         return player;
     },
@@ -17,16 +16,13 @@ module.exports = React.createClass({
 
     _refreshState: function() {
         var player = StateStore.getPlayerState(this.props.player);
-        player.style = {
-            backgroundColor: '#' + player.colour,
-            borderStyle: player.isInPlay ? 'solid' : 'none'
-        };
         this.setState(player);
     },
 
     render: function() {
         var player = this.state;
-        return <div style={ this.state.style } className="player_icon">
+        var cx = React.addons.classSet;
+        return <div style={ this.state.style } className={ cx({player_icon: true, in_play: player.isInPlay }) } >
             <div>{ player.id }</div>
             <div>{ player.undeployedArmies }</div>
             <div>{ player.totalArmies }</div>
