@@ -43,17 +43,19 @@ public class CommandLineInterface implements PlayerInterface {
     /**
      * 
      */
-    public int getNumberOfDice(Player player, int max, RequestReason reason) {
+    public int getNumberOfDice(Player player, int max, RequestReason reason, Territory attacking, Territory defending) {
         emit(player, "How many dice would you like to throw? Max " + max);
         int dice = easyIn();
         if(dice > max){
         	emit(player, "You don't have that many dice.");
-        	getNumberOfDice(player, max, reason);
+        	return getNumberOfDice(player, max, reason, attacking, defending);
         }
+
         else if(dice < 1){
         	emit(player, "You have to throw at least 1 dice.");
-        	getNumberOfDice(player, max, reason);
+        	return getNumberOfDice(player, max, reason, attacking, defending);
         }
+
         return max;
     }
 

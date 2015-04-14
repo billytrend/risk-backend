@@ -31,7 +31,7 @@ public class Berserker {
      * @param max
      * @return
      */
-    public int getNumberOfDice(Player player, int max, RequestReason reason) {
+    public int getNumberOfDice(Player player, int max, RequestReason reason, Territory attacking, Territory defending) {
         return max;
     }
 

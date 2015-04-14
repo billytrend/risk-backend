@@ -5,9 +5,7 @@ import GameState.Card;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
-import GameUtils.ContinentUtils;
 import GameUtils.Results.Change;
-import GameUtils.TerritoryUtils;
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -31,7 +29,7 @@ public class theLooser {
      * @param max
      * @return
      */
-    public int getNumberOfDice(Player player, int max, RequestReason reason) {
+    public int getNumberOfDice(Player player, int max, RequestReason reason, Territory attacking, Territory defending) {
         return max;
     }
 

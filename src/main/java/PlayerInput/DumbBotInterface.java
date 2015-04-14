@@ -45,9 +45,9 @@ public class DumbBotInterface implements PlayerInterface {
     /**
      * 
      */
-    public int getNumberOfDice(Player player, int max, RequestReason reason) {
-        emit(player, " how many dice do you want to throw? Max " + max);
-        emit(player, "Chose " + max);
+    public int getNumberOfDice(Player currentPlayer, int max, RequestReason attackChoiceDice, Territory attacking, Territory defending) {
+        emit(currentPlayer, " how many dice do you want to throw? Max " + max);
+        emit(currentPlayer, "Chose " + max);
         return max;
     }
 

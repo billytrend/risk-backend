@@ -91,7 +91,7 @@ public class RemotePlayer implements PlayerInterface  {
     
     
 	@Override
-	public int getNumberOfDice(Player player, int max, RequestReason reason) {
+	public int getNumberOfDice(Player player, int max, RequestReason reason, Territory attacking, Territory defending) {
 		if(reason != lastReason){
 			try{
 				response = responses.take(); // blocks if needed

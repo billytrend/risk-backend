@@ -5,17 +5,13 @@ import GameState.Card;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
-import GameUtils.ArmyUtils;
 import GameUtils.ContinentUtils;
-import GameUtils.PlayerUtils;
-import GameUtils.TerritoryUtils;
 import GameUtils.Results.Change;
-
+import GameUtils.TerritoryUtils;
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -35,7 +31,7 @@ public class StartAustralia implements PlayerInterface {
      * @param max
      * @return
      */
-    public int getNumberOfDice(Player player, int max, RequestReason reason) {
+    public int getNumberOfDice(Player player, int max, RequestReason reason, Territory attacking, Territory defending) {
         return max;
     }
 

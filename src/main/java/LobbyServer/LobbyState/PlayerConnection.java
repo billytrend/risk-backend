@@ -35,11 +35,10 @@ public class PlayerConnection implements PlayerInterface  {
 	}
 	
 	@Override
-	public int getNumberOfDice(Player player, int max, RequestReason reason) {
+	public int getNumberOfDice(Player player, int max, RequestReason reason, Territory attacking, Territory defending) {
 		
-		DiceNumberRequest d = new DiceNumberRequest();
+		DiceNumberRequest d = new DiceNumberRequest(reason);
 		d.max = max;
-		d.reason = reason;
 
 		connection.send(Jsonify.getObjectAsJsonString(d));
 		
@@ -56,9 +55,8 @@ public class PlayerConnection implements PlayerInterface  {
 	@Override
 	public Territory getTerritory(Player player, HashSet<Territory> possibles, boolean canResign, RequestReason reason) {
 //        return possibles.iterator().next();
-		TerritoryRequest t = new TerritoryRequest();
+		TerritoryRequest t = new TerritoryRequest(reason);
 		t.possibles = possibles;
-		t.reason = reason;
 		t.canResign = canResign;
 
 		connection.send(Jsonify.getObjectAsJsonString(t));
@@ -82,9 +80,8 @@ public class PlayerConnection implements PlayerInterface  {
 
 	@Override
 	public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
-		ArmyRequest a = new ArmyRequest();
+		ArmyRequest a = new ArmyRequest(reason, to, from);
 		a.max = max;
-		a.reason = reason;
 
 		connection.send(Jsonify.getObjectAsJsonString(a));
 

@@ -39,7 +39,7 @@ public class CommunistAggressive implements PlayerInterface {
 
 	// Always returns the maximum number of dice.
 	@Override
-	public int getNumberOfDice(Player player, int max, RequestReason reason) {
+    public int getNumberOfDice(Player currentPlayer, int max, RequestReason attackChoiceDice, Territory attacking, Territory defending) {
 		return max;
 	}
 

@@ -166,13 +166,13 @@ public class GameEngine implements Runnable {
 	 */
 	private PlayState begin() {
 
-
 		// set first player if they havent been set from the protocol side
 		if(currentPlayer == null){
 			Arbitration.setFirstPlayer(this.gameState);
 			// record this in the state
 			this.currentPlayer = gameState.getPlayerQueue().getCurrent();
 		}
+
 		// move to first stage
 		return FILLING_EMPTY_COUNTRIES;
 	}
@@ -388,9 +388,9 @@ public class GameEngine implements Runnable {
 
 		// ask the players how many they would like to use
 		int attackDiceNumber = currentPlayer.
-				getCommunicationMethod().getNumberOfDice(currentPlayer, maxAttackingDice, RequestReason.ATTACK_CHOICE_DICE);
+				getCommunicationMethod().getNumberOfDice(currentPlayer, maxAttackingDice, RequestReason.ATTACK_CHOICE_DICE, attacking, defending);
 		int defendDiceNumber = defendingPlayer.
-				getCommunicationMethod().getNumberOfDice(defendingPlayer, maxDefendingDice, RequestReason.DEFEND_CHOICE_DICE);
+				getCommunicationMethod().getNumberOfDice(defendingPlayer, maxDefendingDice, RequestReason.DEFEND_CHOICE_DICE, attacking, defending);
 
 		// create an object to represent the fight
 		FightResult result = new FightResult(currentPlayer.getId(), defendingPlayer.getId(), 
@@ -407,8 +407,9 @@ public class GameEngine implements Runnable {
 			
 			currentPlayerHasTakenCountry = true;
 
-			if((attackingArmies - result.getAttackersLoss() - attackDiceNumber) > 1)
-				moveMoreArmies(result);
+			if((attackingArmies - result.getAttackersLoss() - attackDiceNumber) > 1) {
+                moveMoreArmies(result);
+            }
 
             if(PlayerUtils.playerIsOut(defendingPlayer)){
                 Change stateChange = new PlayerRemoval(currentPlayer.getId(), defendingPlayer.getId());

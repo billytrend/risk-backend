@@ -1,10 +1,5 @@
 package PlayerInput;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-
-import org.javatuples.Triplet;
-
 import GameEngine.RequestReason;
 import GameState.Card;
 import GameState.Player;
@@ -12,8 +7,12 @@ import GameState.State;
 import GameState.Territory;
 import GameUtils.ArmyUtils;
 import GameUtils.PlayerUtils;
-import GameUtils.TerritoryUtils;
 import GameUtils.Results.Change;
+import GameUtils.TerritoryUtils;
+import org.javatuples.Triplet;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 
 public class BorderControl implements PlayerInterface {
 	public State state;
@@ -155,11 +154,6 @@ public class BorderControl implements PlayerInterface {
 
 	}
 
-	@Override
-	public int getNumberOfDice(Player player, int max, RequestReason reason) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 	@Override
 	public void reportStateChange(Change change) {

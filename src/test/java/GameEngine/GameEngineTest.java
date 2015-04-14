@@ -288,7 +288,7 @@ public class GameEngineTest{
 	private void createMockOne(){
 		for(int i = 1; i < 4 ; i++){
 			when(player1Interface.getNumberOfDice((Player) anyObject(), eq(i),
-				(RequestReason) anyObject())).thenReturn(i);
+				(RequestReason) anyObject(), (Territory) anyObject(), (Territory) anyObject())).thenReturn(i);
 		}
 		
 		ArrayList<HashSet<Territory>> subsets = getSubsets(sortedTerritories);
@@ -321,7 +321,7 @@ public class GameEngineTest{
 	private void createMockTwo(){
 		for(int i = 1; i < 4 ; i++){
 			when(player2Interface.getNumberOfDice((Player) anyObject(), eq(i),
-				(RequestReason) anyObject())).thenReturn(i);
+				(RequestReason) anyObject(), (Territory) anyObject(), (Territory) anyObject())).thenReturn(i);
 		}
 		
 		ArrayList<HashSet<Territory>> subsets = getSubsets(sortedTerritories);

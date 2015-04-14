@@ -30,7 +30,7 @@ public class RemotePlayer implements PlayerInterface  {
 	}
 	
 	@Override
-	public int getNumberOfDice(Player player, int max, RequestReason reason) {
+	public int getNumberOfDice(Player player, int max, RequestReason reason, Territory attacking, Territory defending) {
 		
 		// send the request to the protocol
 		// wait on a response
@@ -48,9 +48,8 @@ public class RemotePlayer implements PlayerInterface  {
 	@Override
 	public Territory getTerritory(Player player, HashSet<Territory> possibles, boolean canResign, RequestReason reason) {
 //        return possibles.iterator().next();
-		TerritoryRequest t = new TerritoryRequest();
+		TerritoryRequest t = new TerritoryRequest(reason);
 		t.possibles = possibles;
-		t.reason = reason;
 		t.canResign = canResign;
 
 		connection.send(Jsonify.getObjectAsJsonString(t));
@@ -74,7 +73,7 @@ public class RemotePlayer implements PlayerInterface  {
 
     @Override
     public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
-		ArmyRequest a = new ArmyRequest();
+		ArmyRequest a = new ArmyRequest(reason, to, from);
 		a.max = max;
 		a.reason = reason;
 

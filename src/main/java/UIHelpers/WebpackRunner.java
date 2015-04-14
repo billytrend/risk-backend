@@ -11,7 +11,7 @@ public class WebpackRunner implements Runnable {
     public void run() {
         try {
             Process p = null;
-            ProcessBuilder pb = new ProcessBuilder().command("./node/node", "server.js");
+            ProcessBuilder pb = new ProcessBuilder().inheritIO().command("./node/node", "server.js");
             pb.directory(new File("ui"));
             p = pb.start();
             p.waitFor();
