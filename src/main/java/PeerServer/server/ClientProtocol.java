@@ -417,6 +417,20 @@ public class ClientProtocol extends AbstractProtocol{
 	}
 
 
+	@Override
+	protected String receiveCommand() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	protected void takeGameAction() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
 
 	
 }

@@ -14,10 +14,14 @@ package PeerServer.protocol.cards;
  */
 public class play_cards {
 	
-	//null (if no cards being traded)
-	int cards [][];	//2D array of card IDs grouped into sets of three
-	int armies; 	//number of armies the player expects to recieve for trade
-	int player_id;
-	int ack_id;
+	public payload payload;
+	public int player_id;
+	public int ack_id;
 	
+	//null (if no cards being traded)
+	public class payload{
+		public int cards [][];	//2D array of card IDs grouped into sets of three
+		public int armies; 	//number of armies the player expects to recieve for trade
+	}
 }
+

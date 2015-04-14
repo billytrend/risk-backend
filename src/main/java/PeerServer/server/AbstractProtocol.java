@@ -24,6 +24,9 @@ import GameState.*;
 import GameUtils.PlayerUtils;
 import GeneralUtils.Jsonify;
 import PeerServer.protocol.dice.*;
+import PeerServer.protocol.cards.*;
+import PeerServer.protocol.gameplay.*; 
+import PeerServer.protocol.general.acknowledgement;
 import PeerServer.protocol.dice.Die.HashMismatchException;
 import PeerServer.protocol.dice.Die.OutOfEntropyException;
 import PeerServer.server.ProtocolState;
@@ -36,42 +39,41 @@ public abstract class AbstractProtocol implements Runnable {
 	protected int move_timeout = 3;
 	protected ProtocolState protocolState = ProtocolState.JOIN_GAME;
 	protected String errorMessage = "default";
-	
+
 	protected State state;
 	protected ArrayList<Player> startingPlayers = new ArrayList<Player>();
 	//protected HashMap<Integer, PlayerInterface> interfaceMapping = new HashMap<Integer, PlayerInterface>();
 	protected HashMap<Integer, BlockingQueue<Object>> queueMapping = new HashMap<Integer, BlockingQueue<Object>>();
 	protected ArrayList<String> names = new ArrayList<String>();
 	protected ArrayList<String> funNames = new ArrayList<String>();
-	
+
 	protected String leaveReason;
 	protected int leaveCode;
 	protected PlayerInterface localPlayer;
-	
+
 	protected GameEngine engine = null;
 	protected int ack_id = 0;
 	protected int myID;
-	
+
 	//TODO: need to change the amount of faces accordingly!
 	protected Die diceRoller;
 	protected RandomNumbers randGenerator;
 	protected byte[] randomNumber;
 	protected int dieRollResult;
-	
+
 	protected int numOfPlayers;
-	
+
 	public void run(){
 		state = new State();
-		
+
 		try {
 			diceRoller = new Die();
 		} catch (HashMismatchException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		RiskMapGameBuilder.addRiskTerritoriesToState(state);
-	
+
 		while(protocolState != null){
 			if(engine == null)
 				takeSetupAction();
@@ -80,78 +82,74 @@ public abstract class AbstractProtocol implements Runnable {
 		}
 		System.out.println("end");
 	}
-	
+
 	protected abstract void takeSetupAction();
-	
+
 	protected abstract void sendCommand(String command, Integer exceptId);
-	
+	protected abstract String receiveCommand();
+
 	/**
 	 * Manages the different states and associated commands.
 	 * @param command
 	 * @return
 	 */
-	protected void takeGameAction(){
-		switch(this.protocolState){
-			case ROLL_HASH:
-				//this.protocolState = roll_hash("");
-				
-		}
-		
-		/**
-		switch(this.protocolState){
-			case PLAY_CARDS:
-				debug("\n PLAY_CARDS");
-				this.protocolState = play_cards(command);
-				break;
-			case DRAW_CARD:
-				debug("\n DRAW_CARD");
-				this.protocolState = draw_card(command);
-				break;
-			case DEPLOY:
-				debug("\n DEPLOY");
-				this.protocolState = deploy(command);
-				break;
-			case ATTACK:
-				debug("\n ATTACK");
-				this.protocolState = attack(command);
-				break;
-			case DEFEND:
-				debug("\n DEFEND");
-				this.protocolState = defend(command);
-				break;
-			case ATTACK_CAPTURE:
-				debug("\n ATTACK_CAPTURE");
-				this.protocolState = attack_capture(command);
-				break;
-			case FORTIFY:
-				debug("\n FORTIFY");
-				this.protocolState = fortify(command);
-				break;
-			case ACK:
-				debug("\n ACK");
-				this.protocolState = ack(command);
-				break;
-			case ROLL:
-				debug("\n ROLL");
-				this.protocolState = roll(command);
-				break;
-			case ROLL_HASH:
-				debug("\n ROLL_HASH");
-				this.protocolState = roll_hash(command);
-				break;
-			case ROLL_NUMBER:
-				debug("\n ROLL_NUMBER");
-				this.protocolState = roll_number(command);
-				break;
-			case TIMEOUT:
-				debug("\n TIMEOUT");
-				this.protocolState = timeout(command);
-				break;
-			default:
-				System.out.println("IN DEFAULT not good");
-				break;
-		}*/
-	}
+	protected abstract void takeGameAction();
+	
+//	tch(this.protocolState){
+//	case PLAY_CARDS:
+//		debug("\n PLAY_CARDS");
+//		this.protocolState = play_cards(command);
+//		break;
+//	case DRAW_CARD:
+//		debug("\n DRAW_CARD");
+//		this.protocolState = draw_card(command);
+//		break;
+//	case DEPLOY:
+//		debug("\n DEPLOY");
+//		this.protocolState = deploy(command);
+//		break;
+//	case ATTACK:
+//		debug("\n ATTACK");
+//		this.protocolState = attack(command);
+//		//TODO: remember to check if it is ATTACK CAPTURE/ FORTIFY/ATTACK again
+//		break;
+//	case DEFEND:
+//		debug("\n DEFEND");
+//		this.protocolState = defend(command);
+//		break;
+//	case ATTACK_CAPTURE:
+//		debug("\n ATTACK_CAPTURE");
+//		this.protocolState = attack_capture(command);
+//		break;
+//	case FORTIFY:
+//		debug("\n FORTIFY");
+//		this.protocolState = fortify(command);
+//		break;
+//	case ACK:
+//		debug("\n ACK");
+//		this.protocolState = ack(command);
+//		break;
+//	case ROLL:
+//		debug("\n ROLL");
+//		this.protocolState = roll(command);
+//		break;
+//	case ROLL_HASH:
+//		debug("\n ROLL_HASH");
+//		this.protocolState = roll_hash(command);
+//		break;
+//	case ROLL_NUMBER:
+//		debug("\n ROLL_NUMBER");
+//		this.protocolState = roll_number(command);
+//		break;
+//	case TIMEOUT:
+//		debug("\n TIMEOUT");
+//		this.protocolState = timeout(command);
+//		break;
+//	default:
+//		System.out.println("IN DEFAULT not good");
+//		break;
+//}*/
+	
 
 	/**
 	 * Removes the player from the state and the array of starting players
@@ -160,23 +158,23 @@ public abstract class AbstractProtocol implements Runnable {
 	 */
 	protected void removePlayer(int id){
 		Player player = state.lookUpPlayer(id);
-		
+
 		numOfPlayers--;
 		// if a game hasnt started and a player needs to be removed
 		// then the starting array should be altered
 		if(engine == null){
 			startingPlayers.remove(state.lookUpPlayer(id));
 		}
-		
+
 		// remove them from interface mapping
-	//	interfaceMapping.remove(id);
+		//	interfaceMapping.remove(id);
 		queueMapping.remove(id);
-		
+
 		// TODO: make sure its ok with game engine
 		PlayerUtils.removePlayer(state, player);
 	}
-	
-	
+
+
 	/**
 	 * Choose a name to play with
 	 * @return
@@ -187,16 +185,16 @@ public abstract class AbstractProtocol implements Runnable {
 			fillNames();
 		return funNames.get(ran.nextInt(funNames.size()));
 	}
-	
+
 	protected void fillNames(){
 		// adding all fun names to be randomly picked as players names
 		String[] names = new String[]{"Chappie", "Rex", "Monkey", "XXX",
 				"Gandalf", "Pinguin", "Chocolate", "Billy", "Panda", "Zebra",
 				"Billy the Pinguin", "Mike the Pistacio", "The Machine", "Unknown",
-				"RISK Master"};
+		"RISK Master"};
 		funNames.addAll(Arrays.asList(names));
 	}
-	
+
 	/**
 	 * Method used to contact the PlayerInterface (RemotePlayer) and notify it
 	 * about its new response
@@ -211,11 +209,11 @@ public abstract class AbstractProtocol implements Runnable {
 			e.printStackTrace();
 		}
 	}
-	
-	protected void getResponseFromLocalPlayer(Object response, PlayerInterface player){
-		
+
+	protected Object getResponseFromLocalPlayer(Integer playerId){
+		return null;
 	}
-	
+
 	/**Jsonify
 	 * Sent by a client to a host attempting to join a game. 
 	 * First command sent upon opening a socket connection to a host.
@@ -223,7 +221,7 @@ public abstract class AbstractProtocol implements Runnable {
 	 * @return ACCEPT_JOIN_GAME if request successful otherwise REJECT_JOIN_GAME
 	 */
 	protected abstract ProtocolState join_game(String command);
-	
+
 	/**
 	 * Sent by a host to a client on receipt of a “join_game” command, 
 	 * as confirmation of adding them to the game.
@@ -231,8 +229,8 @@ public abstract class AbstractProtocol implements Runnable {
 	 * @return
 	 */
 	protected abstract ProtocolState accept_join_game(String command);
-	
-	
+
+
 	/**
 	 * Sent by a host to a client on receipt of a “join_game” command, as rejection.
 	 * @param command
@@ -240,7 +238,7 @@ public abstract class AbstractProtocol implements Runnable {
 	 */
 	protected abstract ProtocolState reject_join_game(String errorMessage2);
 
-	
+
 	/**
 	 * Sent by a host to each player after connection as players join the game. 
 	 * Maps player IDs to real names. Optional command, 
@@ -250,13 +248,13 @@ public abstract class AbstractProtocol implements Runnable {
 	protected abstract ProtocolState players_joined(String command);
 
 	protected abstract ProtocolState ping(String command);
-	
+
 	protected abstract ProtocolState ready(String command);
-	
+
 	protected abstract ProtocolState acknowledge(String command);
-	
+
 	protected abstract ProtocolState timeout(String command);
-	
+
 	protected abstract ProtocolState init_game(String command);
 
 	protected abstract ProtocolState leave_game(String command);
@@ -274,7 +272,7 @@ public abstract class AbstractProtocol implements Runnable {
 	// client and host will act very similarly here
 	// host will just override these call super() and perform some additional 
 	// stuff
-	
+
 	//***************************** CARDS ***********************************
 
 	/**
@@ -285,6 +283,18 @@ public abstract class AbstractProtocol implements Runnable {
 	 * @return
 	 */
 	protected ProtocolState play_cards(String command){
+		//we are sending command 
+		if(command == ""){	
+			//TODO: fml 
+			play_cards pc = new play_cards();
+
+		}
+		//someone sent us a command 
+		else {
+
+		}
+
+
 		Object play_cards = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.cards.play_cards.class);
 		return protocolState;	
 	}
@@ -293,70 +303,203 @@ public abstract class AbstractProtocol implements Runnable {
 		Object draw_card = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.cards.draw_card.class);
 		return protocolState;	
 	}
-		
+
 	protected ProtocolState deploy(String command){
-		Object deploy = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.gameplay.deploy.class);
-		return protocolState;	
+		//we are sending command 
+		if(command == ""){
+			//create deploy object based on player choices
+			deploy deploy = (PeerServer.protocol.cards.deploy) getResponseFromLocalPlayer(myID);
+			//transfer object to JSON string
+			String deployString = Jsonify.getObjectAsJsonString(deploy);
+			//send to all clients or just host if you are client 
+			sendCommand(deployString, null);
+		}
+		//someone sent us the command  player id if parsing
+		else{
+			//parse command into deploy object
+			deploy deploy = (deploy) Jsonify.getJsonStringAsObject(command, deploy.class);
+
+			if(deploy == null){
+				return protocolState.LEAVE_GAME;
+			}
+			sendCommand(command, deploy.player_id);
+			//notify interface
+			notifyPlayerInterface(deploy, deploy.player_id);
+		}
+
+		return protocolState.ATTACK;	
 	}
 
-	
+
 	//*********************** ATTACK / DEFEND ******************************
 
 	protected ProtocolState attack(String command) {
-		return null;
+		//we are sending command 
+		if(command == ""){
+			//create deploy object based on player choices
+			attack attack = (attack) getResponseFromLocalPlayer(myID);
+			//transfer object to JSON string
+			String attackString = Jsonify.getObjectAsJsonString(attack);
+			//send to all clients or just host if you are client 
+			sendCommand(attackString, null);
+		}
+		//someone sent us the command  player id if parsing
+		else{
+			//parse command into deploy object
+			attack attack = (attack) Jsonify.getJsonStringAsObject(command, attack.class);
+
+			//check its not null
+			if(attack == null){
+				return protocolState.LEAVE_GAME;
+			}
+
+			sendCommand(command, attack.player_id);
+			//notify interface
+			notifyPlayerInterface(attack, attack.player_id);
+		}
+
+		//might not be to ACK
+		return protocolState.ACK;	
 	}
 
 	protected ProtocolState defend(String command){
-		return protocolState;
+		//we are sending command 
+		if(command == ""){
+			//create deploy object based on player choices
+			defend defend = (defend) getResponseFromLocalPlayer(myID);
+			//transfer object to JSON string
+			String defendString = Jsonify.getObjectAsJsonString(defend);
+			//send to all clients or just host if you are client 
+			sendCommand(defendString, null);
+		}
+		//someone sent us the command  player id if parsing
+		else{
+			//parse command into deploy object
+			defend defend = (defend) Jsonify.getJsonStringAsObject(command, defend.class);
+
+			//check its not null
+			if(defend == null){
+				return protocolState.LEAVE_GAME;
+			}
+
+			sendCommand(command, defend.player_id);
+			//notify interface
+			notifyPlayerInterface(defend, defend.player_id);
+		}
+
+		return protocolState.ACK;
 
 	}
 
 	protected ProtocolState attack_capture(String command){
-		return protocolState;
+		//we are sending command 
+		if(command == ""){
+			//create deploy object based on player choices
+			attack_capture attack_capture = (attack_capture) getResponseFromLocalPlayer(myID);
+			//transfer object to JSON string
+			String attack_captureString = Jsonify.getObjectAsJsonString(attack_capture);
+			//send to all clients or just host if you are client 
+			sendCommand(attack_captureString, null);
+		}
+		//someone sent us the command  player id if parsing
+		else{
+			//parse command into deploy object
+			attack_capture attack_capture = (attack_capture) Jsonify.getJsonStringAsObject(command, 
+					attack_capture.class);
 
+			//check its not null
+			if(attack_capture == null){
+				return protocolState.LEAVE_GAME;
+			}
+
+			sendCommand(command, attack_capture.player_id);
+			//notify interface
+			notifyPlayerInterface(attack_capture, attack_capture.player_id);
+		}
+
+		return protocolState.ACK;
 	}
 
 
 	protected ProtocolState fortify(String command){
-		return protocolState;
+		//we are sending command 
+		if(command == ""){
+			//create deploy object based on player choices
+			fortify fortify = (fortify) getResponseFromLocalPlayer(myID);
+			//transfer object to JSON string
+			String fortifyString = Jsonify.getObjectAsJsonString(fortify);
+			//send to all clients or just host if you are client 
+			sendCommand(fortifyString, null);
+		}
+		//someone sent us the command  player id if parsing
+		else{
+			//parse command into deploy object
+			fortify fortify = (fortify) Jsonify.getJsonStringAsObject(command, 
+					fortify.class);
 
+			//check its not null
+			if(fortify == null){
+				return protocolState.LEAVE_GAME;
+			}
+
+			sendCommand(command, fortify.player_id);
+			//notify interface
+			notifyPlayerInterface(fortify, fortify.player_id);
+		}
+
+		return protocolState.ACK;
 	}
-	
+
 	protected ProtocolState ack(String command){
-		return protocolState;
+		//we are sending command 
+		if(command == ""){
+			//create deploy object based on player choices
+			acknowledgement acknowledgement = (acknowledgement) getResponseFromLocalPlayer(myID);
+			//transfer object to JSON string
+			String acknowledgementString = Jsonify.getObjectAsJsonString(acknowledgement);
+			//send to all clients or just host if you are client 
+			sendCommand(acknowledgementString, null);
+		}
+		//someone sent us the command  player id if parsing
+		else{
+			//parse command into deploy object
+			acknowledgement acknowledgement = (acknowledgement) Jsonify.getJsonStringAsObject(command, 
+					acknowledgement.class);
+
+			//check its not null
+			if(acknowledgement == null){
+				return protocolState.LEAVE_GAME;
+			}
+		}
+
+		return protocolState.ACK;
 	}
 
 	//*********************** DICE ROLLS ******************************
 
-	protected ProtocolState roll(String command){
-		return protocolState;
-
-	}
-
-
-/**
- * @param command
- * @return
- */
+	/**
+	 * @param command
+	 * @return
+	 */
 	protected ProtocolState roll_hash(String command){
 		// we are sending command
-		if(command == ""){
+		if(command == ""){			//empty your sending 
 			randomNumber = diceRoller.generateNumber();
 			try {
 				byte[] hash = diceRoller.hashByteArr(randomNumber);
 				String hashStr = new String(hash);
-				
+
 				roll_hash rh = new roll_hash(hashStr, myID);
 				diceRoller.addHash(myID, hashStr);
-				
+
 				// if its a client it will send to host, if its a host it will send to all
 				sendCommand(Jsonify.getObjectAsJsonString(rh), null);
-				
+
 			} catch (HashMismatchException e) {
 				e.printStackTrace();
 				return ProtocolState.LEAVE_GAME;
 			}
-		
+
 		}
 		// sb sent us command
 		else{
@@ -364,10 +507,10 @@ public abstract class AbstractProtocol implements Runnable {
 			if(rh == null){
 				return ProtocolState.LEAVE_GAME;
 			}
-			
+
 			String hash = rh.payload;
 			int player_id = rh.player_id;
-	
+
 			// add hash to mapping of hashes and player ids
 			try {
 				diceRoller.addHash(player_id, hash);
@@ -375,35 +518,33 @@ public abstract class AbstractProtocol implements Runnable {
 				e.printStackTrace();
 				return ProtocolState.LEAVE_GAME;
 			}
-		
-			
+
 			// if its a server it will send to everyone except the person that sent it
 			// if its a client it will ignore it
 			sendCommand(command, player_id);
 		}
-		
+
 		if(diceRoller.getNumberOfReceivedHashes() == numOfPlayers)
 			return ProtocolState.ROLL_NUMBER;
-		
+
 		return ProtocolState.ROLL_HASH;
 	}
 
 	protected ProtocolState roll_number(String command){
-		
+
 		// we are sendin roll_number
 		if(command == ""){
 			System.out.println(randomNumber.toString());
 			String ranNumStr = new String(randomNumber);
 			roll_number rn = new roll_number(ranNumStr, myID);
-			
+
 			try {
 				diceRoller.addNumber(myID, ranNumStr);
 			} catch (HashMismatchException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				return ProtocolState.LEAVE_GAME;
 			}
-			
+
 			String rnStr = Jsonify.getObjectAsJsonString(rn);
 			sendCommand(rnStr, null);
 		}
@@ -412,10 +553,10 @@ public abstract class AbstractProtocol implements Runnable {
 			roll_number rn = (roll_number) Jsonify.getJsonStringAsObject(command, roll_number.class);
 			if(rn == null)
 				return ProtocolState.LEAVE_GAME;
-			
+
 			String number = rn.payload;
 			int id = rn.player_id;
-			
+
 			try {
 				diceRoller.addNumber(id, number);
 			} catch (HashMismatchException e) {
@@ -423,20 +564,19 @@ public abstract class AbstractProtocol implements Runnable {
 				return ProtocolState.LEAVE_GAME;
 			}
 		}
-		
-		
+
 		if(diceRoller.getNumberOfReceivedNumbers() == numOfPlayers){
 			try {
 				byte[] seed = new byte[256];
 				for(int i = 0; i < 256; i++){
 					seed[i] = (byte) diceRoller.getByte(); //TODO: check this...
 				}
-				
+
 				randGenerator = new RandomNumbers(seed);
-	
+
 				dieRollResult = randGenerator.getRandomInt();
 				System.out.println("Die roll result: " + dieRollResult);
-				
+
 			} catch (HashMismatchException e) {
 				e.printStackTrace();
 				return ProtocolState.LEAVE_GAME;
@@ -445,8 +585,8 @@ public abstract class AbstractProtocol implements Runnable {
 				return ProtocolState.LEAVE_GAME;
 			}
 		}
-		
+
 		return protocolState;
 	}
-	
+
 }

@@ -17,7 +17,7 @@ package PeerServer.protocol.gameplay;
 public class defend {
 	
 	public defend(int armies, int player_id, int ack_id){
-		payload = armies;
+		this.payload = armies;
 		this.player_id = player_id;
 		this.ack_id = ack_id;
 	}
