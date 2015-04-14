@@ -46,76 +46,136 @@ public class ClientProtocol extends AbstractProtocol{
 
 	// ids of users who sent their pings
 	private Set<Integer> acknowledgements = new HashSet<Integer>();
-	
+
 	@Override
 	protected void takeSetupAction() {
 		//Log.DEBUG = true;
 		String command;
 		switch(protocolState){
-			case JOIN_GAME:
-				debug("\nJOIN_GAME");
-				protocolState = join_game("");
-				break;		
-			case JOIN_RESPONSE:
-				debug("\nJOIN_RESPONSE");
-				command = client.receive();
-				if(command.contains("accept"))
-					protocolState = accept_join_game(command);
-				else
-					protocolState = reject_join_game(command);
-				break;	
-			case PLAYERS_JOINED:
-				debug("\nPLAYERS_JOINED");
-				command = client.receive();
-				// while we still wait for players joined the server
-				// might send us ping command
-				if(command.contains("ping"))
-					protocolState = ping(command);
-				else
-					protocolState = players_joined(command);
-				break;	
-			case PING:
-				debug("\n PING");
-				command = client.receive();
-				// server might also say that its ready or that there
-				// are not enough players and we have to disconnect
-				if(command.contains("ready"))
-					protocolState = ready(command);
-				else if(command.contains("leave"))
-					protocolState = leave_game(command);
-				else
-					protocolState = ping(command);
-				break;
-			case ACK:
-				debug("\n ACKNOWLEDGE");
-				protocolState = acknowledge("");
-				break;
-			case INIT_GAME:
-				debug("\n INIT_GAME");
-				command = client.receive();
-				if(command.contains("timeout"))
-					protocolState = timeout(command);
-				if(command.contains("leave"))
-					protocolState = leave_game(command);
-				else
-					protocolState = init_game(command);
-				break;
-			case SETUP_GAME:
-				debug("\n SETUP_GAME");
-				command = client.receive();
-				protocolState = setup_game(command);
-				break;
-			case LEAVE_GAME:
-				debug("\n LEAVE_GAME");
-				protocolState = leave_game("");
-				break;
-			default:
-				System.out.println("IN DEFAULT not good");
-				break;
+		case JOIN_GAME:
+			debug("\nJOIN_GAME");
+			protocolState = join_game("");
+			break;		
+		case JOIN_RESPONSE:
+			debug("\nJOIN_RESPONSE");
+			command = client.receive();
+			if(command.contains("accept"))
+				protocolState = accept_join_game(command);
+			else
+				protocolState = reject_join_game(command);
+			break;	
+		case PLAYERS_JOINED:
+			debug("\nPLAYERS_JOINED");
+			command = client.receive();
+			// while we still wait for players joined the server
+			// might send us ping command
+			if(command.contains("ping"))
+				protocolState = ping(command);
+			else
+				protocolState = players_joined(command);
+			break;	
+		case PING:
+			debug("\n PING");
+			command = client.receive();
+			// server might also say that its ready or that there
+			// are not enough players and we have to disconnect
+			if(command.contains("ready"))
+				protocolState = ready(command);
+			else if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+				protocolState = ping(command);
+			break;
+		case ACK:
+			debug("\n ACKNOWLEDGE");
+			protocolState = acknowledge("");
+			break;
+		case INIT_GAME:
+			debug("\n INIT_GAME");
+			command = client.receive();
+			if(command.contains("timeout"))
+				protocolState = timeout(command);
+			if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+				protocolState = init_game(command);
+			break;
+		case SETUP_GAME:
+			debug("\n SETUP_GAME");
+			command = client.receive();
+			protocolState = setup_game(command);
+			break;
+		case LEAVE_GAME:
+			debug("\n LEAVE_GAME");
+			protocolState = leave_game("");
+			break;
+		default:
+			System.out.println("IN DEFAULT not good");
+			break;
 		}
 	}
 
-	
+
+	@Override
+	protected void takeGameAction() {
+		switch(protocolState){
+		case PLAY_CARDS:
+			debug("\n PLAY_CARDS");
+			protocolState = play_cards("");
+			break;
+		case DRAW_CARD:
+			debug("\n DRAW_CARD");
+			//this.protocolState = draw_card(command);
+			break;
+		case DEPLOY:
+			debug("\n DEPLOY");
+			protocolState = deploy("");			
+			break;
+		case ATTACK:
+			debug("\n ATTACK");
+			protocolState = attack("");
+			//TODO: remember to check if it is ATTACK CAPTURE/ FORTIFY/ATTACK again
+			break;
+		case DEFEND:
+			debug("\n DEFEND");
+			//create a defend command for host
+			protocolState = defend("");
+			break;
+		case ATTACK_CAPTURE:
+			debug("\n ATTACK_CAPTURE");
+			protocolState = attack_capture("");
+			break;
+		case FORTIFY:
+			debug("\n FORTIFY");
+			protocolState = fortify("");
+			break;
+		case ACK:
+			debug("\n ACK");
+			protocolState = acknowledge("");
+			break;
+		case ROLL_HASH:
+			debug("\n ROLL_HASH");
+			protocolState = roll_hash("");
+			break;
+		case ROLL_NUMBER:
+			debug("\n ROLL_NUMBER");
+			protocolState = roll_number("");
+			break;
+		case TIMEOUT:
+			debug("\n TIMEOUT");
+			protocolState = timeout("");
+			break;
+		case LEAVE_GAME:
+			debug("\n LEAVE_GAME");
+			this.protocolState = leave_game("");
+			break;	
+		default:
+			System.out.println("in default not good");
+			break;
+		}
+	}
+
+
 	//*********************** GAME SETUP ******************************
 
 	@Override
@@ -129,7 +189,7 @@ public class ClientProtocol extends AbstractProtocol{
 		return ProtocolState.JOIN_RESPONSE;
 	}
 
-	
+
 	@Override
 	protected ProtocolState accept_join_game(String command) {
 		accept_join_game join = (accept_join_game) Jsonify.getJsonStringAsObject(command, accept_join_game.class);
@@ -138,14 +198,14 @@ public class ClientProtocol extends AbstractProtocol{
 			leaveReason = "Expected accept_join_game command";
 			return ProtocolState.LEAVE_GAME;
 		}
-		
+
 		System.out.println("\nGOT: " + Jsonify.getObjectAsJsonString(join));
-		
+
 		// retrieve all details from host response
 		myID = join.payload.player_id;
 		ack_timeout = join.payload.acknowledgement_timeout;
 		move_timeout = join.payload.move_timeout;
-		
+
 		return ProtocolState.PLAYERS_JOINED;
 	}
 
@@ -158,11 +218,11 @@ public class ClientProtocol extends AbstractProtocol{
 			leaveReason = "Expected reject_join_game command";
 			return ProtocolState.LEAVE_GAME;
 		}
-		
+
 		// TODO: present in UI preferably
 		System.out.println(reject.payload);
 		System.out.println("\nGOT: " + Jsonify.getObjectAsJsonString(reject));
-		
+
 		// just leave the game
 		leaveCode = 400;
 		leaveReason = "Rejected";
@@ -179,18 +239,18 @@ public class ClientProtocol extends AbstractProtocol{
 			leaveReason = "Expected players_joined command";
 			return ProtocolState.LEAVE_GAME;
 		}
-		
+
 		System.out.println("\nGOT: " + Jsonify.getObjectAsJsonString(players));
-		
+
 		// creating all players specified by the protocol
 		Object[][] playersDetails = players.payload;
 		PlayerInterface playersInt;
-			
+
 		Player player;
 		for(Object[] details : playersDetails){
-			
+
 			int id = ((Double) details[0]).intValue();
-			
+
 			if(((Double)details[0]).intValue() == myID)
 				playersInt = localPlayer;
 			else{
@@ -198,26 +258,26 @@ public class ClientProtocol extends AbstractProtocol{
 				playersInt = new RemotePlayer(newSharedQueue);
 				queueMapping.put(id, newSharedQueue);
 			}
-			
+
 			String name = (String) details[1];
-		
+
 			// preventing duplicates
 			int i = 1;
 			while(names.contains(name)){
 				name = details[1] + " " + i;
 				i++;
 			}
-			
+
 			player = new Player(playersInt, id, name);
 			names.add(name);
-			
-		//	interfaceMapping.put(player.getNumberId(), playersInt);
+
+			//	interfaceMapping.put(player.getNumberId(), playersInt);
 			startingPlayers.add(player);	
 			numOfPlayers++;
-			
+
 			player.setPublicKey((String)details[2]);
 		}
-				
+
 		return ProtocolState.PLAYERS_JOINED;
 	}
 
@@ -230,28 +290,28 @@ public class ClientProtocol extends AbstractProtocol{
 			leaveReason = "Expected ping command";
 			return ProtocolState.LEAVE_GAME;
 		}
-		
+
 		System.out.println("\nGOT: " + Jsonify.getObjectAsJsonString(ping));
-		
+
 		// acknowledge the ping
 		acknowledgements.add(ping.player_id);
-		
+
 		// sent from host
 		if(ping.payload != null){
 			state.setPlayers(startingPlayers);
-	
+
 			//	TODO: ask in UI: do you still want to play?
 			ping response = new ping(ping.payload, myID);
-			
+
 			// send your ping 
 			System.out.println("\nSEND: " + Jsonify.getObjectAsJsonString(response));
 			client.send(Jsonify.getObjectAsJsonString(response));
 		}
-		
+
 		return ProtocolState.PING;
 	}
-	
-	
+
+
 	@Override
 	protected ProtocolState ready(String command){
 		ready ready = (ready) Jsonify.getJsonStringAsObject(command, ready.class);
@@ -260,9 +320,9 @@ public class ClientProtocol extends AbstractProtocol{
 			leaveReason = "Expected ready command";
 			return ProtocolState.LEAVE_GAME;
 		}
-		
+
 		System.out.println("\nGOT: " + Jsonify.getObjectAsJsonString(ready));
-		
+
 		// remove all players who have not acknowledged
 		// -2 because we dont consider ourselves here
 		if (acknowledgements.size() != startingPlayers.size() - 1){
@@ -273,9 +333,9 @@ public class ClientProtocol extends AbstractProtocol{
 				}
 			}
 		}
-	
+
 		// TODO: think about it 
-		
+
 
 		if(ack_id == 0)
 			ack_id = ready.ack_id;
@@ -285,7 +345,7 @@ public class ClientProtocol extends AbstractProtocol{
 			}
 			ack_id = ready.ack_id;
 		}
-		
+
 		return ProtocolState.ACK;
 	}
 
@@ -294,10 +354,10 @@ public class ClientProtocol extends AbstractProtocol{
 		acknowledgement ack = new acknowledgement(ack_id, myID);
 		System.out.println("\nSEND: " + Jsonify.getObjectAsJsonString(ack));
 		client.send(Jsonify.getObjectAsJsonString(ack));
-		
+
 		return ProtocolState.INIT_GAME;
 	}
-	
+
 	@Override
 	protected ProtocolState init_game(String command){		
 		initialise_game init = (initialise_game) Jsonify.getJsonStringAsObject(command, initialise_game.class);
@@ -306,19 +366,19 @@ public class ClientProtocol extends AbstractProtocol{
 			leaveReason = "Expected init game command";
 			return ProtocolState.LEAVE_GAME;
 		}
-		
+
 		System.out.println("\nGOT: " + Jsonify.getObjectAsJsonString(init));
 		versionPlayed = init.payload.version;
 		featuresUsed = init.payload.supported_features;
-		
+
 		State state = new State(startingPlayers);
 		engine = new GameEngine(state);
-		
+
 		diceRoller.setFaceValue(startingPlayers.size());
-		
+
 		return ProtocolState.LEAVE_GAME;
 	}
-	
+
 
 	@Override
 	protected ProtocolState timeout(String command){
@@ -328,12 +388,12 @@ public class ClientProtocol extends AbstractProtocol{
 			leaveReason = "Expected timeout command";
 			return ProtocolState.LEAVE_GAME;
 		}
-		
+
 		System.out.println("\nGOT: " + Jsonify.getObjectAsJsonString(timeout));
 		// remove player that has timeout out
 		int playerOut = timeout.payload;
 		removePlayer(playerOut);
-		
+
 		// send the acknowledgement
 		acknowledgement ack = new acknowledgement(timeout.ack_id, myID);
 		System.out.println("\nSEND: " + Jsonify.getObjectAsJsonString(ack));
@@ -341,8 +401,8 @@ public class ClientProtocol extends AbstractProtocol{
 
 		return protocolState;		
 	}
-	
-	
+
+
 	@Override
 	protected ProtocolState leave_game(String command){
 		// if command is not empty the host sent us a leave request
@@ -353,34 +413,34 @@ public class ClientProtocol extends AbstractProtocol{
 				leaveReason = "Host left...";
 				return ProtocolState.LEAVE_GAME;
 			}
-			
+
 			System.out.println("\nGOT: " + Jsonify.getObjectAsJsonString(leave));
 			int id = leave.player_id;
 			int responseCode = leave.payload.response;
 			String message = leave.payload.message;
-			
+
 			// if host is leaving
 			if(id == 0){
 				return leave_game("");
 			}
-			
+
 			// removing player thats leaving
 			removePlayer(id);
-			
+
 			return null;
 		}
 		// if command is empty it is us that want to leave
 		else{
 			leave_game leave = new leave_game(leaveCode, leaveReason, false, myID);
-			
+
 			System.out.println("\nSEND: " + Jsonify.getObjectAsJsonString(leave));
 			client.send(Jsonify.getObjectAsJsonString(leave));
-			
+
 			return null;
 		}
 	}
-	
-	
+
+
 	@Override
 	protected ProtocolState setup_game(String command){
 		if(command.contains("timeout"))
@@ -389,7 +449,7 @@ public class ClientProtocol extends AbstractProtocol{
 		return protocolState;	
 	}
 
-	
+
 	public static void main(String[] args) {
 		ClientProtocol protocol = new ClientProtocol();
 		protocol.run();
@@ -398,12 +458,12 @@ public class ClientProtocol extends AbstractProtocol{
 	public void run() {
 		// choosing who playes on local side
 		localPlayer = new DumbBotInterface();
-		
+
 		// localhost should be replaced with an argument args[0], port args[1]
 		client = new Client("localhost", 4444);
-		
+
 		super.run();
-		
+
 		client.close();
 	}
 
@@ -412,7 +472,7 @@ public class ClientProtocol extends AbstractProtocol{
 	protected void sendCommand(String command, Integer exceptId) {
 		if(exceptId != null)
 			return;
-		
+
 		client.send(command);
 	}
 
@@ -422,15 +482,4 @@ public class ClientProtocol extends AbstractProtocol{
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-
-	@Override
-	protected void takeGameAction() {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-
-	
 }

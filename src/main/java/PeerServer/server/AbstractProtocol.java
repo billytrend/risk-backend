@@ -314,7 +314,7 @@ public abstract class AbstractProtocol implements Runnable {
 			//send to all clients or just host if you are client 
 			sendCommand(deployString, null);
 		}
-		//someone sent us the command  player id if parsing
+		//someone sent us the command
 		else{
 			//parse command into deploy object
 			deploy deploy = (deploy) Jsonify.getJsonStringAsObject(command, deploy.class);
@@ -322,12 +322,14 @@ public abstract class AbstractProtocol implements Runnable {
 			if(deploy == null){
 				return protocolState.LEAVE_GAME;
 			}
+			//send command to all players execpt the one who sent it to us
 			sendCommand(command, deploy.player_id);
-			//notify interface
+			//notify player interface to update game state/engine 
 			notifyPlayerInterface(deploy, deploy.player_id);
 		}
-
-		return protocolState.ATTACK;	
+		
+		//ack required
+		return protocolState.ACK;	
 	}
 
 
