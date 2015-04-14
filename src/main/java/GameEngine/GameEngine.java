@@ -47,7 +47,6 @@ public class GameEngine implements Runnable {
 		changeRecord = new StateChangeRecord(state.getPlayersIds(), state.getTerritoryIds(),
 				state.getPlayers().get(0).getArmies().size());
 		winConditions = new WinConditions();
-        ArmyUtils.giveStartingArmies(gameState);
 
     }
 	
@@ -166,12 +165,28 @@ public class GameEngine implements Runnable {
 	 */
 	private PlayState begin() {
 
-		// set first player if they havent been set from the protocol side
-		if(currentPlayer == null){
-			Arbitration.setFirstPlayer(this.gameState);
-			// record this in the state
-			this.currentPlayer = gameState.getPlayerQueue().getCurrent();
-		}
+        // set first player if they havent been set from the protocol side
+        if(currentPlayer == null){
+            Arbitration.setFirstPlayer(this.gameState);
+            // record this in the state
+            this.currentPlayer = gameState.getPlayerQueue().getCurrent();
+        }
+
+        // do initial army handout
+        int numOfPlayers = PlayerUtils.getPlayersInGame(gameState).size();
+        int numOfArmies = 40;
+
+        if (numOfPlayers > 2) {
+            numOfArmies -= 5 * (numOfPlayers - 3);
+        }
+
+        ArrayList<Player> players = gameState.getPlayers();
+
+        for(Player p : players){
+            ArmyHandout handout = new ArmyHandout(p.getId(), numOfArmies, playState);
+            applyAndReportChange(gameState, handout);
+        }
+
 
 		// move to first stage
 		return FILLING_EMPTY_COUNTRIES;

@@ -35,7 +35,8 @@ public class GameEngineTest{
 		gameState = DemoGameBuilder.buildGame(interfaces);
 		HashSet<Territory> territories = TerritoryUtils.getAllTerritories(gameState);
 	    gameEngine = new TestableGameEngine(gameState);
-	    
+        ArmyUtils.giveStartingArmies(gameState);
+
 		sortedTerritories = new ArrayList<Territory>();
 		sortedTerritories.addAll(territories);
 		Collections.sort(sortedTerritories, comparator);
