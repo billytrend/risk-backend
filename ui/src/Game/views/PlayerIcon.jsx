@@ -12,6 +12,8 @@ module.exports = React.createClass({
 
     componentDidMount: function() {
         StateStore.addChangeListener("go_change", this._refreshState);
+        StateStore.addChangeListener("gained_armies:" + this.state.id, this._refreshState);
+        StateStore.addChangeListener("deployed_armies:" + this.state.id, this._refreshState);
     },
 
     _refreshState: function() {
@@ -24,8 +26,7 @@ module.exports = React.createClass({
         var cx = React.addons.classSet;
         return <div style={ this.state.style } className={ cx({player_icon: true, in_play: player.isInPlay }) } >
             <div>{ player.id }</div>
-            <div>{ player.undeployedArmies }</div>
-            <div>{ player.totalArmies }</div>
+            <div>{ player.armies }</div>
         </div>
     }
 });

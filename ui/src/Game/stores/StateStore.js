@@ -71,8 +71,11 @@ var StateStore = assign({}, EventEmitter.prototype, {
         // add armies
         this._gameState.ownerships[change.targetId].armies += change.amount;
         this._gameState.ownerships[change.targetId].owner = change.actingPlayerId;
+        this._gameState.players[change.actingPlayerId].armies -= change.amount;
+
         // notify parties
         this.emitChange('add_army:' + change.targetId);
+        this.emitChange('deployed_armies:' + change.actingPlayerId);
     },
 
     applyFightResult: function(change) {
@@ -105,6 +108,14 @@ var StateStore = assign({}, EventEmitter.prototype, {
         // "actionPlayed":"PLAYER_INVADING_COUNTRY"
         // "changeType":"PlayerRemoval"
         //this._gameState.ownerships[]
+    },
+
+    applyArmyHandout: function(change) {
+        if (!this._gameState.players[change.actingPlayerId].armies) {
+            this._gameState.players[change.actingPlayerId].armies = 0;
+        }
+        this._gameState.players[change.actingPlayerId].armies += change.amount;
+        this.emitChange('gained_armies:' + change.actingPlayerId);
     },
 
     applyPlayStateUpdate: function(change) {
