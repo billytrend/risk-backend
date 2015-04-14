@@ -5,6 +5,8 @@ var Inspector = require('./views/Inspector.jsx'),
     React = require('react'),
     Controls = require('./views/Controls.jsx'),
     DieBox = require('./views/map_views/DieBox.jsx'),
+    Cards = require('./views/map_views/CardBox.jsx'),
+    EndGo = require('./views/map_views/EndGo.jsx'),
     Prompt = require('./views/Prompt.jsx'),
     ArmySelection = require('./views/map_views/ArmySelection.jsx'),
     ServerRequest = require('./stores/ServerRequest'),
@@ -45,6 +47,11 @@ module.exports = React.createClass({
                         case 'number_of_armies':
                             return <ArmySelection max={ self.state.meta.max } />
                             break;
+                        case 'territory':
+                            if(self.state.meta.canResign) return <EndGo canResign={ self.state.meta.canResign }/>
+                            break;
+                        case 'card':
+                            return <Cards cardMeta={ self.state.meta } />
                         default:
                             break;
                     }

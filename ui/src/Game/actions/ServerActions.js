@@ -24,6 +24,13 @@ module.exports = {
             commandType: "TerritoryResponse",
             territory: territory
         });
+    },
+
+    selectCardCombination: function(index) {
+        Actions.respondToRequest({
+            commandType: "CardResponse",
+            index: index
+        });
     }
 
 };

@@ -14,5 +14,5 @@ public enum PlayState {
     PLAYER_INVADING_COUNTRY,
     PLAYER_MOVING_ARMIES,
     PLAYER_ENDED_GO, 
-    END_GAME,
+    END_GAME
 }

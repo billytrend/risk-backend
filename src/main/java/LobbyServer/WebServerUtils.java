@@ -20,6 +20,8 @@ public class WebServerUtils {
         availableClasses.put("Response", Response.class);
         availableClasses.put("TerritoryRequest", TerritoryRequest.class);
         availableClasses.put("TerritoryResponse", TerritoryResponse.class);
+        availableClasses.put("CardRequest", CardRequest.class);
+        availableClasses.put("CardResponse", CardResponse.class);
     }
     
     public static ClientMessage getMessageObject(String s) {

@@ -105,12 +105,10 @@ module.exports = React.createClass({
             var self = this;
             var newNode = self.refs.armyCount.getDOMNode().cloneNode(true);
             self.getDOMNode().appendChild(newNode);
-            VelocityJS(newNode, {
-                translateY: "-50px",
-                opacity: 0
-            }, 500).then(function() {
-                self.getDOMNode().removeChild(newNode);
+            newNode.addEventListener("transitionend", function() {
+                this.parentElement.removeChild(newNode);
             });
+            newNode.classList.add("fly_up");
             self._refreshState();
         },
 
@@ -182,12 +180,12 @@ module.exports = React.createClass({
         render: function() {
             var self = this;
             var style = this.state.style;
-            //console.log("hi")
+            var cx = React.addons.classSet;
             return (
                 <g onClick={ self._click } transform={ "scale(1,1) translate(" + self.state.offsetX + "," + self.state.offsetY + ")" }>
                     <path style={ style } d={ self.state.path }></path>
-                    <g ref="armyCount">
-                        <circle cx={ self.state.labelX } cy={ self.state.labelY } r="14" opacity={ this.getTweeningValue('labelOpacity') } style={ self.state.labelStyle } />
+                    <g className={ cx({army_count: true}) } ref="armyCount">
+                        <circle cx={ self.state.labelX } cy={ self.state.labelY } r="14" style={ self.state.labelStyle } />
                         <text x={ self.state.labelX - 7 } y={ self.state.labelY + 5 } fill="black">{ self.state.armies }</text>
                     </g>
                 </g>

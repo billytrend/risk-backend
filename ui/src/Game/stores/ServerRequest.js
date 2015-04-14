@@ -39,7 +39,7 @@ var ServerRequest = assign({}, EventEmitter.prototype, {
         this._requestType = type;
         this._requestMeta = meta;
         this._countryStates = {};
-        if (meta.possibles) {
+        if (meta.possibles && type == "territory") {
             this._countryStates = {};
             meta.possibles.forEach(function(country) {
                 self._countryStates[country.id] = {
@@ -81,6 +81,9 @@ AppDispatcher.register(function(payload) {
     var action = payload.action;
 
     if (payload.source === "SERVER_ACTION") {
+        if (payload.action.requestType == "card") {
+            console.log(payload.action);
+        }
         ServerRequest.setRequest(payload.action.requestType, payload.action);
     }
 

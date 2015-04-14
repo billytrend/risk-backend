@@ -36,19 +36,19 @@ public class PlayerConnection implements PlayerInterface  {
 	
 	@Override
 	public int getNumberOfDice(Player player, int max, RequestReason reason, Territory attacking, Territory defending) {
-		
+//		return max;
 		DiceNumberRequest d = new DiceNumberRequest(reason);
 		d.max = max;
 
 		connection.send(Jsonify.getObjectAsJsonString(d));
-		
+
 		playerResponse = new CountDownLatch(1);
 		try {
 			playerResponse.await();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
+
 		return ((DiceNumberResponse) responses.get(responses.size() - 1)).n;
 	}
 
@@ -69,6 +69,8 @@ public class PlayerConnection implements PlayerInterface  {
 		}
 
         String chosenTerritoryName = ((TerritoryResponse) responses.get(responses.size() - 1)).territory;
+
+        if (chosenTerritoryName == null) return null;
 
         for (Territory terr : possibles) {
             if (chosenTerritoryName.equals(terr.getId())) return terr;
@@ -97,13 +99,25 @@ public class PlayerConnection implements PlayerInterface  {
 
 	@Override
 	public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
-		return null;
+        CardRequest c = new CardRequest(null);
+        c.possibles = possibleCombinations;
+
+        connection.send(Jsonify.getObjectAsJsonString(c));
+
+        playerResponse = new CountDownLatch(1);
+        try {
+            playerResponse.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return ( possibleCombinations.get(((CardResponse) responses.get(responses.size() - 1)).index));
 	}
 
     @Override
     public void reportStateChange(Change change) {
         try {
-            Thread.sleep(20);
+            Thread.sleep(0);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

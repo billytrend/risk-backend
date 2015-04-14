@@ -272,7 +272,9 @@ public class GameEngine implements Runnable {
 
         int payout = CardUtils.getCurrentArmyPayout(currentPlayer);
 
-        ArmyUtils.givePlayerNArmies(currentPlayer, payout);
+        ArmyHandout handout = new ArmyHandout(currentPlayer.getId(), payout, playState);
+
+        applyAndReportChange(gameState, handout);
 
         ArrayList<Triplet<Card, Card, Card>> possibleCombinations = CardUtils.getPossibleCardCombinations(gameState, currentPlayer);
 		
@@ -508,15 +510,22 @@ public class GameEngine implements Runnable {
 		// get a list of territories a player can deploy too
 		HashSet<Territory> canBeDeployedTo = TerritoryUtils
 				.getFriendlyNeighbours(gameState, source, currentPlayer);
+
 		// get the choice made
 		Territory target = currentPlayer
-				.getCommunicationMethod().getTerritory(currentPlayer, canBeDeployedTo, false, RequestReason.REINFORCEMENT_PHASE);
+				.getCommunicationMethod().getTerritory(currentPlayer, canBeDeployedTo, true, RequestReason.REINFORCEMENT_PHASE);
 
-		int numberOfArmiesThatMayBeMoved = ArmyUtils
+        if(target == null){
+            debug("PLAYER DOESNT WANT TO MOVE");
+            return endGo();
+        }
+
+        int numberOfArmiesThatMayBeMoved = ArmyUtils
 				.getNumberOfMoveableArmies(currentPlayer, source);
 		
 		int movedAmount = currentPlayer.getCommunicationMethod()
 				.getNumberOfArmies(currentPlayer, numberOfArmiesThatMayBeMoved, RequestReason.REINFORCEMENT_PHASE, target, source);
+        
 
         Change stateChange = new ArmyMovement(currentPlayer.getId(), source.getId(), target.getId(), movedAmount, PLAYER_MOVING_ARMIES);
         applyAndReportChange(gameState, stateChange);
