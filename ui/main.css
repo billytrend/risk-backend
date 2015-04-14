@@ -165,3 +165,20 @@ body {
     align-content: center;
     align-items: center;
 }
+
+
+.die_face {
+    fill: rgb(255, 255, 255);
+}
+
+.attack_die {
+    fill: #FF0000;
+}
+
+.die_pip {
+    fill: rgb(0, 0, 0);
+}
+
+.hidden {
+    display: none;
+}

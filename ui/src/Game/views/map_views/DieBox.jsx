@@ -18,13 +18,13 @@ module.exports = React.createClass({
     },
 
     render: function() {
-
+        var self = this;
         return (
             <div className="view_layer dice_box">
                 <div>
-                    { this.state.meta.max > 0 ? <Die index={ 1 } value={ parseInt(this.props.first) } /> : '' },
-                    { this.state.meta.max > 1 ? <Die index={ 2 } value={ parseInt(this.props.second) } /> : '' },
-                    { this.state.meta.max > 2 ? <Die index={ 3 } value={ parseInt(this.props.third) } /> : '' }
+                    { this.state.meta.max > 0 ? <Die index={ 1 } attackDice={ self.state.meta.reason === "ATTACK_CHOICE_DICE" } value={ parseInt(this.props.first) } /> : '' },
+                    { this.state.meta.max > 1 ? <Die index={ 2 } attackDice={ self.state.meta.reason === "ATTACK_CHOICE_DICE" } value={ parseInt(this.props.second) } /> : '' },
+                    { this.state.meta.max > 2 ? <Die index={ 3 } attackDice={ self.state.meta.reason === "ATTACK_CHOICE_DICE" } value={ parseInt(this.props.third) } /> : '' }
                 </div>
             </div>
         )
