@@ -1,35 +1,31 @@
 package PeerServer.server;
 
-import static com.esotericsoftware.minlog.Log.debug;
+import GameBuilders.RiskMapGameBuilder;
+import GameEngine.GameEngine;
+import GameState.Player;
+import GameState.State;
+import GameUtils.PlayerUtils;
+import GeneralUtils.Jsonify;
+import PeerServer.protocol.cards.deploy;
+import PeerServer.protocol.cards.play_cards;
+import PeerServer.protocol.dice.Die;
+import PeerServer.protocol.dice.Die.HashMismatchException;
+import PeerServer.protocol.dice.Die.OutOfEntropyException;
+import PeerServer.protocol.dice.RandomNumbers;
+import PeerServer.protocol.dice.roll_hash;
+import PeerServer.protocol.dice.roll_number;
+import PeerServer.protocol.gameplay.attack;
+import PeerServer.protocol.gameplay.attack_capture;
+import PeerServer.protocol.gameplay.defend;
+import PeerServer.protocol.gameplay.fortify;
+import PeerServer.protocol.general.acknowledgement;
+import PlayerInput.PlayerInterface;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
-
-import javax.ws.rs.client.Client;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
-
-import PlayerInput.DumbBotInterface;
-import PlayerInput.PlayerInterface;
-import PlayerInput.RemotePlayer;
-import GameBuilders.RiskMapGameBuilder;
-import GameEngine.*;
-import GameState.*;
-import GameUtils.PlayerUtils;
-import GeneralUtils.Jsonify;
-import PeerServer.protocol.dice.*;
-import PeerServer.protocol.cards.*;
-import PeerServer.protocol.gameplay.*; 
-import PeerServer.protocol.general.acknowledgement;
-import PeerServer.protocol.dice.Die.HashMismatchException;
-import PeerServer.protocol.dice.Die.OutOfEntropyException;
-import PeerServer.server.ProtocolState;
 
 
 public abstract class AbstractProtocol implements Runnable {
@@ -198,9 +194,9 @@ public abstract class AbstractProtocol implements Runnable {
 	/**
 	 * Method used to contact the PlayerInterface (RemotePlayer) and notify it
 	 * about its new response
-	 * @param resonse
-	 * @param player
-	 */
+     * @param response
+     * @param playerId
+     */
 	protected void notifyPlayerInterface(Object response, Integer playerId){
 		BlockingQueue<Object> queue = queueMapping.get(playerId);
 		try {
@@ -233,8 +229,8 @@ public abstract class AbstractProtocol implements Runnable {
 
 	/**
 	 * Sent by a host to a client on receipt of a “join_game” command, as rejection.
-	 * @param command
-	 * @return END_GAME as the player wont take part in the game
+     * @param errorMessage2
+     * @return END_GAME as the player wont take part in the game
 	 */
 	protected abstract ProtocolState reject_join_game(String errorMessage2);
 
@@ -355,7 +351,6 @@ public abstract class AbstractProtocol implements Runnable {
 		else{
 			//parse command into deploy object
 			attack attack = (attack) Jsonify.getJsonStringAsObject(command, attack.class);
-
 			//check its not null
 			if(attack == null){
 				return protocolState.LEAVE_GAME;
@@ -364,6 +359,10 @@ public abstract class AbstractProtocol implements Runnable {
 			sendCommand(command, attack.player_id);
 			//notify interface
 			notifyPlayerInterface(attack, attack.player_id);
+
+            //Call dice roll
+
+
 		}
 
 		//might not be to ACK

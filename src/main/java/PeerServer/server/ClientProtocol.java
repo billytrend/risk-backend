@@ -1,23 +1,5 @@
 package PeerServer.server;
 
-import static com.esotericsoftware.minlog.Log.debug;
-
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import javax.swing.JTable.PrintMode;
-
-import com.esotericsoftware.minlog.Log;
-
-import GameBuilders.RiskMapGameBuilder;
 import GameEngine.GameEngine;
 import GameState.Player;
 import GameState.State;
@@ -25,17 +7,17 @@ import GeneralUtils.Jsonify;
 import PeerServer.protocol.general.acknowledgement;
 import PeerServer.protocol.general.leave_game;
 import PeerServer.protocol.general.timeout;
-import PeerServer.protocol.setup.accept_join_game;
-import PeerServer.protocol.setup.initialise_game;
-import PeerServer.protocol.setup.join_game;
-import PeerServer.protocol.setup.ping;
-import PeerServer.protocol.setup.players_joined;
-import PeerServer.protocol.setup.ready;
-import PeerServer.protocol.setup.reject_join_game;
-import PeerServer.server.HostProtocol.ChangeState;
+import PeerServer.protocol.setup.*;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
 import PlayerInput.RemotePlayer;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import static com.esotericsoftware.minlog.Log.debug;
 
 
 public class ClientProtocol extends AbstractProtocol{
@@ -129,17 +111,6 @@ public class ClientProtocol extends AbstractProtocol{
 			else
 				protocolState = play_cards(command);
 			break;
-			//think it can be removed
-/*		case DRAW_CARD:
-			debug("\n DRAW_CARD");
-			command = client.receive();
-			if(command.contains("timeout"))
-				protocolState = timeout(command);
-			if(command.contains("leave"))
-				protocolState = leave_game(command);
-			else
-			protocolState = draw_card(command);
-			break;*/
 		case DEPLOY:
 			debug("\n DEPLOY");
 			command = client.receive();
@@ -347,7 +318,6 @@ public class ClientProtocol extends AbstractProtocol{
 		return ProtocolState.PLAYERS_JOINED;
 	}
 
-
 	@Override
 	protected ProtocolState ping(String command){
 		ping ping = (ping) Jsonify.getJsonStringAsObject(command, ping.class);
@@ -376,7 +346,6 @@ public class ClientProtocol extends AbstractProtocol{
 
 		return ProtocolState.PING;
 	}
-
 
 	@Override
 	protected ProtocolState ready(String command){
