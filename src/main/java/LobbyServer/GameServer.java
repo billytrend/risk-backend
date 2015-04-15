@@ -26,7 +26,7 @@ import static com.esotericsoftware.minlog.Log.debug;
 public class GameServer extends WebSocketServer {
     
     public static void main( String[] args ) throws InterruptedException , IOException {
-        WebSocketImpl.DEBUG = true;
+        WebSocketImpl.DEBUG = false;
         int port = 8887; // 843 flash policy port
         try {
             port = Integer.parseInt( args[ 0 ] );
