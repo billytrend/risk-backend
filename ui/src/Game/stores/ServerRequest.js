@@ -55,8 +55,14 @@ var ServerRequest = assign({}, EventEmitter.prototype, {
         this.emitChange("response");
     },
 
+    _clearRequest: function() {
+        this._requestType = undefined;
+        this._requestMeta = undefined;
+    },
+
     popResponseData: function() {
         var a = this._responseData;
+        this._clearRequest();
         this.emitChange("clear");
         return a;
     },

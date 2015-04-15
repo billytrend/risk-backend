@@ -20,6 +20,7 @@ module.exports = React.createClass({
 
     componentDidMount: function () {
         ServerRequest.addChangeListener('request', this._setViewSetup)
+        ServerRequest.addChangeListener('clear', this._setViewSetup)
     },
 
     _setViewSetup: function() {

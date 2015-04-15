@@ -33,7 +33,7 @@ module.exports = React.createClass({
                     <defs dangerouslySetInnerHTML={{ __html: filter }} />
                     {
                         Object.keys(MapRep.countries).map(function(name) {
-                            return <Country countryName={ name } />
+                            return <Country countryName={ name } onMap={ true }/>
                         })
                     }
                 </g>

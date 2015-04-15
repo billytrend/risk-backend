@@ -23,6 +23,7 @@ public class PlayerConnection implements PlayerInterface  {
     private WebSocket connection;
 	private CountDownLatch playerResponse = new CountDownLatch(0);
 	private List<Response> responses = new ArrayList<Response>();
+    private boolean activations[] = new boolean[] { true, true, true, true };
 
     public PlayerConnection(WebSocket connection) {
         this.playerState = new Player(this, 100); // this last number to be changed
@@ -36,9 +37,11 @@ public class PlayerConnection implements PlayerInterface  {
 	
 	@Override
 	public int getNumberOfDice(Player player, int max, RequestReason reason, Territory attacking, Territory defending) {
-//		return max;
+		if (!activations[0]) return max;
 		DiceNumberRequest d = new DiceNumberRequest(reason);
 		d.max = max;
+		d.defending = defending;
+		d.attacking = attacking;
 
 		connection.send(Jsonify.getObjectAsJsonString(d));
 
@@ -54,7 +57,7 @@ public class PlayerConnection implements PlayerInterface  {
 
 	@Override
 	public Territory getTerritory(Player player, HashSet<Territory> possibles, boolean canResign, RequestReason reason) {
-//        return possibles.iterator().next();
+        if (!activations[1]) return possibles.iterator().next();
 		TerritoryRequest t = new TerritoryRequest(reason);
 		t.possibles = possibles;
 		t.canResign = canResign;
@@ -82,7 +85,8 @@ public class PlayerConnection implements PlayerInterface  {
 
 	@Override
 	public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
-		ArmyRequest a = new ArmyRequest(reason, to, from);
+        if (!activations[2]) return max;
+        ArmyRequest a = new ArmyRequest(reason, to, from);
 		a.max = max;
 
 		connection.send(Jsonify.getObjectAsJsonString(a));
@@ -99,6 +103,7 @@ public class PlayerConnection implements PlayerInterface  {
 
 	@Override
 	public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
+        if (!activations[3]) return possibleCombinations.get(0);
         CardRequest c = new CardRequest(null);
         c.possibles = possibleCombinations;
 
@@ -117,7 +122,7 @@ public class PlayerConnection implements PlayerInterface  {
     @Override
     public void reportStateChange(Change change) {
         try {
-            Thread.sleep(0);
+            Thread.sleep(5);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

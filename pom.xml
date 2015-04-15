@@ -10,8 +10,13 @@
         <maven.compiler.target>1.6</maven.compiler.target>
         <maven.compiler.source>1.6</maven.compiler.source>
     </properties>
-	  <dependencies>
-		<dependency>
+    <dependencies>
+        <dependency>
+            <groupId>com.sparkjava</groupId>
+            <artifactId>spark-core</artifactId>
+            <version>2.1</version>
+        </dependency>
+        <dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
 			<version>2.2</version>
@@ -107,13 +112,23 @@
                         <!-- optional: default phase is "generate-resources" -->
                         <phase>generate-resources</phase>
 
-                        <!--<configuration>-->
-                            <!--&lt;!&ndash; optional: The default argument is actually-->
-                            <!--"install", so unless you need to run some other npm command,-->
-                            <!--you can remove this whole <configuration> section.-->
-                            <!--&ndash;&gt;-->
-                            <!--<arguments>install</arguments>-->
-                        <!--</configuration>-->
+                    </execution>
+                    <execution>
+                        <id>webpack build</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+
+                        <!-- optional: default phase is "generate-resources" -->
+                        <phase>generate-resources</phase>
+
+                        <configuration>
+                            <!-- optional: The default argument is actually
+                            "install", so unless you need to run some other npm command,
+                            you can remove this whole <configuration> section.
+                            -->
+                            <arguments>run production-build</arguments>
+                        </configuration>
                     </execution>
                 </executions>
 

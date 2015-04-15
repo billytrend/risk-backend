@@ -29,21 +29,24 @@ module.exports = React.createClass({
         },
 
         componentDidMount: function() {
-            //ViewStore.addChangeListener(this.props.countryName, this._refreshState);
-            StateStore.addChangeListener("state_change", this._refreshState);
-            StateStore.addChangeListener("add_army:" + this.props.countryName, this._addArmy);
-            StateStore.addChangeListener("remove_army:" + this.props.countryName, this._removeArmy);
-            ServerRequest.addChangeListener("request", this._setOptionality);
-            this.setLabelPos();
+            if (this.props.onMap) {
+                StateStore.addChangeListener("state_change", this._refreshState);
+                StateStore.addChangeListener("add_army:" + this.props.countryName, this._addArmy);
+                StateStore.addChangeListener("remove_army:" + this.props.countryName, this._removeArmy);
+                ServerRequest.addChangeListener("request", this._setOptionality);
+                this.setLabelPos();
+            }
             this._refreshState();
         },
 
         componentWillUnmount: function() {
+            if (this.props.onMap) {
+                StateStore.removeChangeListener("state_change", this._refreshState);
+                StateStore.removeChangeListener("add_army:" + this.props.countryName, this._addArmy);
+                StateStore.removeChangeListener("remove_army:" + this.props.countryName, this._removeArmy);
+                ServerRequest.removeChangeListener("request", this._refreshState);
+            }
             //ViewStore.removeChangeListener(this.props.countryName, this._refreshState);
-            StateStore.removeChangeListener("state_change", this._refreshState);
-            StateStore.removeChangeListener("add_army:" + this.props.countryName, this._addArmy);
-            StateStore.removeChangeListener("remove_army:" + this.props.countryName, this._removeArmy);
-            ServerRequest.removeChangeListener("request", this._refreshState);
         },
 
         setLabelPos: function() {
@@ -51,8 +54,8 @@ module.exports = React.createClass({
                 var bBox = this.getDOMNode().getBBox();
 
                 this.setState({
-                    labelX: bBox.width / 2,
-                    labelY: bBox.height/2
+                    labelX: (bBox.width / 2) - 15,
+                    labelY: (bBox.height/2) - 15
                 });
             }
         },
@@ -79,50 +82,26 @@ module.exports = React.createClass({
 
         _setOptionality: function() {
 
-            var countryRequestState = ServerRequest.getCountryDerivedInformation(this.props.countryName),
-                targetOpacity,
-                lowOp = 0.2,
-                normalOp = 1;
+            var countryRequestState = ServerRequest.getCountryDerivedInformation(this.props.countryName);
 
-            if(countryRequestState.option ) {
-                targetOpacity = normalOp;
-            }
-
-            else if(!countryRequestState.option) {
-                targetOpacity = lowOp;
-            }
-
-            if (targetOpacity !== this.state.labelStyle.opacity) {
-                this.tweenState('labelOpacity', {
-                    easing: tweenState.easingTypes.easeInOutQuad,
-                    duration: 1000,
-                    endValue: targetOpacity
-                });
-            }
+            this.setState({ isOption: countryRequestState.option });
         },
 
         _addArmy: function() {
-            var self = this;
-            var newNode = self.refs.armyCount.getDOMNode().cloneNode(true);
-            self.getDOMNode().appendChild(newNode);
-            newNode.addEventListener("transitionend", function() {
-                this.parentElement.removeChild(newNode);
-            });
-            newNode.classList.add("fly_up");
-            self._refreshState();
+            //var self = this;
+            //var newNode = self.refs.armyCount.getDOMNode().children[0].cloneNode(true);
+            //self.refs.armyCount.getDOMNode().appendChild(newNode);
+            //VelocityJS(newNode, {
+            //    translateY: "-50px",
+            //    opacity: 0
+            //}, 500).then(function() {
+            //    self.refs.armyCount.getDOMNode().removeChild(newNode);
+            //});
+            this._refreshState();
         },
 
         _removeArmy: function() {
-            var self = this;
-            var newNode = self.refs.armyCount.getDOMNode().cloneNode(true);
-            self.getDOMNode().appendChild(newNode);
-            VelocityJS(newNode, {
-                translateY: "50px",
-                opacity: 0
-            }, 500).then(function() {
-                self.getDOMNode().removeChild(newNode);
-            });
-            self._refreshState();
+            this._refreshState();
         },
 
         _toggleFilter: function(filter, state) {
@@ -181,15 +160,20 @@ module.exports = React.createClass({
             var self = this;
             var style = this.state.style;
             var cx = React.addons.classSet;
+            var transform = this.props.onMap ?  "scale(1,1) translate(" + self.state.offsetX + "," + self.state.offsetY + ")" : "";
             return (
-                <g onClick={ self._click } transform={ "scale(1,1) translate(" + self.state.offsetX + "," + self.state.offsetY + ")" }>
+                <g onClick={ self._click } transform={ transform }>
                     <path style={ style } d={ self.state.path }></path>
-                    <g className={ cx({army_count: true}) } ref="armyCount">
-                        <circle cx={ self.state.labelX } cy={ self.state.labelY } r="14" style={ self.state.labelStyle } />
-                        <text x={ self.state.labelX - 7 } y={ self.state.labelY + 5 } fill="black">{ self.state.armies }</text>
-                    </g>
+                    {
+                        this.props.onMap ? <foreignObject ref="armyCount" transform={ "translate(" + self.state.labelX + "," + self.state.labelY + ")" }  width="30" height="30">
+                            <div className={ cx({
+                                country_label_text: true,
+                                can_choose: self.state.isOption
+                            }) }>{ self.state.armies }</div>
+                        </foreignObject> : ''
+                    }
                 </g>
-            )
+            );
         }
     });
 

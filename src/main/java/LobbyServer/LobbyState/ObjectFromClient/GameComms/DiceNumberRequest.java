@@ -1,9 +1,12 @@
 package LobbyServer.LobbyState.ObjectFromClient.GameComms;
 
 import GameEngine.RequestReason;
+import GameState.Territory;
 
 public class DiceNumberRequest extends Request {
     public final String requestType = "number_of_dice";
+    public Territory attacking;
+    public Territory defending;
     public int max;
             
 

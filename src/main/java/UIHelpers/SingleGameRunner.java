@@ -5,6 +5,7 @@ import GameState.Player;
 import GameState.State;
 import LobbyServer.SingleGameServer;
 import PlayerInput.DumbBotInterface;
+import spark.Spark;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,12 +37,11 @@ public class SingleGameRunner {
 
     public void start() throws IOException, InterruptedException {
 
-        Thread t = new Thread(new WebpackRunner());
-        t.start();
+        Spark.port(8003);
+        Spark.staticFileLocation("./ui-build/");
 
         SingleGameServer s = new SingleGameServer(8887, gameState, players);
 
-        t.join();
 
     }
 
