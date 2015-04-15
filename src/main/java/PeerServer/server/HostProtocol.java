@@ -143,7 +143,6 @@ public class HostProtocol extends AbstractProtocol {
 			debug("\n READY");
 			this.protocolState = ready("");
 			currentTask = new ChangeState();
-			
 			// THIS BIT BEFORE WE GO TO ACKNOWLEDGE STATE =============
 			nextStateAfterAck = ProtocolState.INIT_GAME;
 			timer.schedule(currentTask, ack_timeout * 1000);
@@ -164,7 +163,7 @@ public class HostProtocol extends AbstractProtocol {
 			debug("\n SETUP_GAME");
 			this.protocolState = setup_game("");
 			// THIS BIT BEFORE WE GO TO ACKNOWLEDGE STATE =============
-			nextStateAfterAck = ProtocolState.INIT_GAME;
+			nextStateAfterAck = ProtocolState.PLAY_CARDS;
 			timer.schedule(currentTask, ack_timeout * 1000);
 			// =======================================================
 			break;
@@ -182,24 +181,18 @@ public class HostProtocol extends AbstractProtocol {
 		switch(protocolState){
 		case PLAY_CARDS:
 			debug("\n PLAY_CARDS");
+			//if(command.c)
 			protocolState = play_cards("");
-			// THIS BIT BEFORE WE GO TO ACKNOWLEDGE STATE =============
-			nextStateAfterAck = ProtocolState.INIT_GAME;
+			//Waits for ACK then goes to DEPLOY state
+			nextStateAfterAck = ProtocolState.DEPLOY;
 			timer.schedule(currentTask, ack_timeout * 1000);
-			// =======================================================
-			break;
-		case DRAW_CARD:
-			debug("\n DRAW_CARD");
-			//this.protocolState = draw_card(command);
 			break;
 		case DEPLOY:
 			debug("\n DEPLOY");
 			protocolState = deploy("");
-			
-			// THIS BIT BEFORE WE GO TO ACKNOWLEDGE STATE =============
-			nextStateAfterAck = ProtocolState.INIT_GAME;
+			//Waits for ACK then goes to ATTACK state
+			nextStateAfterAck = ProtocolState.ATTACK;
 			timer.schedule(currentTask, ack_timeout * 1000);
-			// =======================================================
 			break;
 		case ATTACK:
 			debug("\n ATTACK");
@@ -214,7 +207,7 @@ public class HostProtocol extends AbstractProtocol {
 			debug("\n DEFEND");
 			//create a defend command for host
 			protocolState = defend("");
-			
+
 			// THIS BIT BEFORE WE GO TO ACKNOWLEDGE STATE =============
 			nextStateAfterAck = ProtocolState.INIT_GAME;
 			timer.schedule(currentTask, ack_timeout * 1000);
@@ -223,7 +216,6 @@ public class HostProtocol extends AbstractProtocol {
 		case ATTACK_CAPTURE:
 			debug("\n ATTACK_CAPTURE");
 			protocolState = attack_capture("");
-
 			// THIS BIT BEFORE WE GO TO ACKNOWLEDGE STATE =============
 			nextStateAfterAck = ProtocolState.INIT_GAME;
 			timer.schedule(currentTask, ack_timeout * 1000);
@@ -269,7 +261,6 @@ public class HostProtocol extends AbstractProtocol {
 
 		}
 	}
-
 
 	private Object getCurrentTask() {
 		return currentTask;
@@ -428,7 +419,7 @@ public class HostProtocol extends AbstractProtocol {
 		// check for any dropouts 
 		for(PeerConnection c : connections){
 			if(!acknowledgements.contains(c)){
-				// removing players that have not sent pong
+				// removing players that have not sent ping
 				timeout timeout = new timeout(0, 1, c.getId());
 				removePlayer(c);
 			}
@@ -561,7 +552,6 @@ public class HostProtocol extends AbstractProtocol {
 			try {
 				Thread.sleep(5000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return null;
@@ -571,7 +561,27 @@ public class HostProtocol extends AbstractProtocol {
 
 	@Override
 	protected ProtocolState setup_game(String command){
-		Object setup = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.gameplay.setup.class);
+		//if command is empty then we have to setup
+		if(command == ""){
+			//create setup command
+			setup setup = (PeerServer.protocol.setup.setup) getResponseFromLocalPlayer(myID);
+			//convert to JSON stirng
+			String setupString = Jsonify.getObjectAsJsonString(setup);
+			//Send to all clients
+			sendCommand(setupString, null);
+		}
+		//someone sent us a command
+		else {
+			setup setup = (PeerServer.protocol.setup.setup) Jsonify.getJsonStringAsObject(command, setup.class);
+
+			if(setup == null){
+				return protocolState.LEAVE_GAME;
+			}
+
+			sendCommand(command,setup.player_id);
+			notifyPlayerInterface(setup, setup.player_id);
+		}
+
 		return protocolState;	
 	}
 

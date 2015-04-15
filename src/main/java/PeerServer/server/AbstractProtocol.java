@@ -94,62 +94,62 @@ public abstract class AbstractProtocol implements Runnable {
 	 * @return
 	 */
 	protected abstract void takeGameAction();
-	
-//	tch(this.protocolState){
-//	case PLAY_CARDS:
-//		debug("\n PLAY_CARDS");
-//		this.protocolState = play_cards(command);
-//		break;
-//	case DRAW_CARD:
-//		debug("\n DRAW_CARD");
-//		this.protocolState = draw_card(command);
-//		break;
-//	case DEPLOY:
-//		debug("\n DEPLOY");
-//		this.protocolState = deploy(command);
-//		break;
-//	case ATTACK:
-//		debug("\n ATTACK");
-//		this.protocolState = attack(command);
-//		//TODO: remember to check if it is ATTACK CAPTURE/ FORTIFY/ATTACK again
-//		break;
-//	case DEFEND:
-//		debug("\n DEFEND");
-//		this.protocolState = defend(command);
-//		break;
-//	case ATTACK_CAPTURE:
-//		debug("\n ATTACK_CAPTURE");
-//		this.protocolState = attack_capture(command);
-//		break;
-//	case FORTIFY:
-//		debug("\n FORTIFY");
-//		this.protocolState = fortify(command);
-//		break;
-//	case ACK:
-//		debug("\n ACK");
-//		this.protocolState = ack(command);
-//		break;
-//	case ROLL:
-//		debug("\n ROLL");
-//		this.protocolState = roll(command);
-//		break;
-//	case ROLL_HASH:
-//		debug("\n ROLL_HASH");
-//		this.protocolState = roll_hash(command);
-//		break;
-//	case ROLL_NUMBER:
-//		debug("\n ROLL_NUMBER");
-//		this.protocolState = roll_number(command);
-//		break;
-//	case TIMEOUT:
-//		debug("\n TIMEOUT");
-//		this.protocolState = timeout(command);
-//		break;
-//	default:
-//		System.out.println("IN DEFAULT not good");
-//		break;
-//}*/
-	
+
+	//	tch(this.protocolState){
+	//	case PLAY_CARDS:
+	//		debug("\n PLAY_CARDS");
+	//		this.protocolState = play_cards(command);
+	//		break;
+	//	case DRAW_CARD:
+	//		debug("\n DRAW_CARD");
+	//		this.protocolState = draw_card(command);
+	//		break;
+	//	case DEPLOY:
+	//		debug("\n DEPLOY");
+	//		this.protocolState = deploy(command);
+	//		break;
+	//	case ATTACK:
+	//		debug("\n ATTACK");
+	//		this.protocolState = attack(command);
+	//		//TODO: remember to check if it is ATTACK CAPTURE/ FORTIFY/ATTACK again
+	//		break;
+	//	case DEFEND:
+	//		debug("\n DEFEND");
+	//		this.protocolState = defend(command);
+	//		break;
+	//	case ATTACK_CAPTURE:
+	//		debug("\n ATTACK_CAPTURE");
+	//		this.protocolState = attack_capture(command);
+	//		break;
+	//	case FORTIFY:
+	//		debug("\n FORTIFY");
+	//		this.protocolState = fortify(command);
+	//		break;
+	//	case ACK:
+	//		debug("\n ACK");
+	//		this.protocolState = ack(command);
+	//		break;
+	//	case ROLL:
+	//		debug("\n ROLL");
+	//		this.protocolState = roll(command);
+	//		break;
+	//	case ROLL_HASH:
+	//		debug("\n ROLL_HASH");
+	//		this.protocolState = roll_hash(command);
+	//		break;
+	//	case ROLL_NUMBER:
+	//		debug("\n ROLL_NUMBER");
+	//		this.protocolState = roll_number(command);
+	//		break;
+	//	case TIMEOUT:
+	//		debug("\n TIMEOUT");
+	//		this.protocolState = timeout(command);
+	//		break;
+	//	default:
+	//		System.out.println("IN DEFAULT not good");
+	//		break;
+	//}*/
+
 
 	/**
 	 * Removes the player from the state and the array of starting players
@@ -284,24 +284,29 @@ public abstract class AbstractProtocol implements Runnable {
 	 */
 	protected ProtocolState play_cards(String command){
 		//we are sending command 
-		if(command == ""){	
-			//TODO: fml 
-			play_cards pc = new play_cards();
-
+		if(command == ""){
+			//create play_cards object 
+			play_cards pc = (PeerServer.protocol.cards.play_cards) getResponseFromLocalPlayer(myID);
+			//convert to JSON string
+			String playCardsString = Jsonify.getObjectAsJsonString(pc);
+			//Send to all clients
+			sendCommand(playCardsString, null);
 		}
 		//someone sent us a command 
 		else {
-
+			//parse comamnd into play_cards object
+			play_cards pc = (PeerServer.protocol.cards.play_cards) Jsonify.getJsonStringAsObject(command, play_cards.class);
+			
+			if(pc == null){
+				return protocolState.LEAVE_GAME;
+			}
+			//send command to all players execpt the one who sent it to us
+			sendCommand(command, pc.player_id);
+			//notify player interface to update game state/engine 
+			notifyPlayerInterface(pc, pc.player_id);
 		}
 
-
-		Object play_cards = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.cards.play_cards.class);
-		return protocolState;	
-	}
-
-	protected ProtocolState draw_card(String command){
-		Object draw_card = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.cards.draw_card.class);
-		return protocolState;	
+		return protocolState.ACK;	
 	}
 
 	protected ProtocolState deploy(String command){
@@ -318,7 +323,8 @@ public abstract class AbstractProtocol implements Runnable {
 		else{
 			//parse command into deploy object
 			deploy deploy = (deploy) Jsonify.getJsonStringAsObject(command, deploy.class);
-
+			
+			//check its not null
 			if(deploy == null){
 				return protocolState.LEAVE_GAME;
 			}
@@ -327,7 +333,7 @@ public abstract class AbstractProtocol implements Runnable {
 			//notify player interface to update game state/engine 
 			notifyPlayerInterface(deploy, deploy.player_id);
 		}
-		
+
 		//ack required
 		return protocolState.ACK;	
 	}

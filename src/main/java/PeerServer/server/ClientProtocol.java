@@ -115,59 +115,126 @@ public class ClientProtocol extends AbstractProtocol{
 		}
 	}
 
-
 	@Override
 	protected void takeGameAction() {
+		String command;
 		switch(protocolState){
 		case PLAY_CARDS:
 			debug("\n PLAY_CARDS");
-			protocolState = play_cards("");
+			command = client.receive();
+			if(command.contains("timeout"))
+				protocolState = timeout(command);
+			if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+				protocolState = play_cards(command);
 			break;
-		case DRAW_CARD:
+			//think it can be removed
+/*		case DRAW_CARD:
 			debug("\n DRAW_CARD");
-			//this.protocolState = draw_card(command);
-			break;
+			command = client.receive();
+			if(command.contains("timeout"))
+				protocolState = timeout(command);
+			if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+			protocolState = draw_card(command);
+			break;*/
 		case DEPLOY:
 			debug("\n DEPLOY");
-			protocolState = deploy("");			
+			command = client.receive();
+			if(command.contains("timeout"))
+				protocolState = timeout(command);
+			if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+			protocolState = deploy(command);			
 			break;
 		case ATTACK:
 			debug("\n ATTACK");
-			protocolState = attack("");
-			//TODO: remember to check if it is ATTACK CAPTURE/ FORTIFY/ATTACK again
+			command = client.receive();
+			if(command.contains("timeout"))
+				protocolState = timeout(command);
+			if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+			protocolState = attack(command);
 			break;
 		case DEFEND:
 			debug("\n DEFEND");
-			//create a defend command for host
-			protocolState = defend("");
+			command = client.receive();
+			if(command.contains("timeout"))
+				protocolState = timeout(command);
+			if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+			protocolState = defend(command);
 			break;
 		case ATTACK_CAPTURE:
 			debug("\n ATTACK_CAPTURE");
-			protocolState = attack_capture("");
+			command = client.receive();
+			if(command.contains("timeout"))
+				protocolState = timeout(command);
+			if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+			protocolState = attack_capture(command);
 			break;
 		case FORTIFY:
 			debug("\n FORTIFY");
-			protocolState = fortify("");
+			command = client.receive();
+			if(command.contains("timeout"))
+				protocolState = timeout(command);
+			if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+			protocolState = fortify(command);
 			break;
 		case ACK:
 			debug("\n ACK");
-			protocolState = acknowledge("");
+			command = client.receive();
+			if(command.contains("timeout"))
+				protocolState = timeout(command);
+			if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+			protocolState = acknowledge(command);
 			break;
 		case ROLL_HASH:
 			debug("\n ROLL_HASH");
-			protocolState = roll_hash("");
+			command = client.receive();
+			if(command.contains("timeout"))
+				protocolState = timeout(command);
+			if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+			protocolState = roll_hash(command);
 			break;
 		case ROLL_NUMBER:
 			debug("\n ROLL_NUMBER");
-			protocolState = roll_number("");
+			command = client.receive();
+			if(command.contains("timeout"))
+				protocolState = timeout(command);
+			if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+			protocolState = roll_number(command);
 			break;
 		case TIMEOUT:
 			debug("\n TIMEOUT");
-			protocolState = timeout("");
+			command = client.receive();
+			if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+			protocolState = timeout(command);
 			break;
 		case LEAVE_GAME:
 			debug("\n LEAVE_GAME");
-			this.protocolState = leave_game("");
+			command = client.receive();
+			if(command.contains("timeout"))
+				protocolState = timeout(command);
+			else
+			this.protocolState = leave_game(command);
 			break;	
 		default:
 			System.out.println("in default not good");
@@ -444,10 +511,9 @@ public class ClientProtocol extends AbstractProtocol{
 	protected ProtocolState setup_game(String command){
 		if(command.contains("timeout"))
 			return timeout(command);
-		Object setup = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.gameplay.setup.class);
+		Object setup = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.setup.setup.class);
 		return protocolState;	
 	}
-
 
 	public static void main(String[] args) {
 		ClientProtocol protocol = new ClientProtocol();
