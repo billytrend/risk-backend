@@ -8,13 +8,11 @@ import PlayerInput.BorderControl;
 import PlayerInput.CommunistAggressive;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
-import UIHelpers.SingleGameRunner;
 import com.esotericsoftware.minlog.Log;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class BorderControlTest {
@@ -53,14 +51,6 @@ public class BorderControlTest {
 //        Log.DEBUG = true;
 
         gameState.print();
-        SingleGameRunner s = new SingleGameRunner(playerList, gameState);
-        try {
-            s.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         // TODO: add assertions about state.
     }
