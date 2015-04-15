@@ -58,6 +58,8 @@ public class BorderControlTest {
             s.start();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         // TODO: add assertions about state.
