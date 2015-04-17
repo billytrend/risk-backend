@@ -39,9 +39,6 @@ public class GameEngineTest{
 		createMockTwo();
 	}
 
-
-	
-	
 	
 	@Test
 	public void fillAnEmptyCountryTest(){

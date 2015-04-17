@@ -102,6 +102,7 @@ public class DemoGameBuilder {
           for(int i = 0; i < numOfPlayers; i++){
         	  ps.add(new Player(interfaces[i], i + 1));
     	  }
+          
           State state = new State(ps);
     	        
     	        
