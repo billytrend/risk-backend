@@ -19,13 +19,16 @@ import PeerServer.protocol.gameplay.attack_capture;
 import PeerServer.protocol.gameplay.defend;
 import PeerServer.protocol.gameplay.fortify;
 import PeerServer.protocol.general.acknowledgement;
+import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
+import PlayerInput.RemotePlayer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 
 public abstract class AbstractProtocol implements Runnable {
@@ -39,6 +42,9 @@ public abstract class AbstractProtocol implements Runnable {
 	protected State state;
 	protected ArrayList<Player> startingPlayers = new ArrayList<Player>();
 	//protected HashMap<Integer, PlayerInterface> interfaceMapping = new HashMap<Integer, PlayerInterface>();
+	
+	// maps a player id with a blocking queue to notify them about their responses
+	// or take response from them (if they are local players)
 	protected HashMap<Integer, BlockingQueue<Object>> queueMapping = new HashMap<Integer, BlockingQueue<Object>>();
 	protected ArrayList<String> names = new ArrayList<String>();
 	protected ArrayList<String> funNames = new ArrayList<String>();
@@ -115,7 +121,38 @@ public abstract class AbstractProtocol implements Runnable {
 		PlayerUtils.removePlayer(state, player);
 	}
 
+	protected Player createNewPlayer(String name, int id, boolean localPlayer){
+		// creating player and mapping its id to its interface
+		BlockingQueue<Object> newSharedQueue = new LinkedBlockingQueue<Object>();
+		queueMapping.put(id, newSharedQueue); // the mappigng stores all interfaces
+												// even local - need for checks!
+		
+		PlayerInterface playerInterface;
+		if(localPlayer){
+			playerInterface = new DumbBotInterface(newSharedQueue, id);
+			this.localPlayer = playerInterface;
+		}
+		else
+			playerInterface = new RemotePlayer(newSharedQueue);
 
+	
+		Player newOne;
+		if(name != "")
+			newOne = new Player(playerInterface, id, name);
+		else
+			newOne = new Player(playerInterface, id);
+
+		startingPlayers.add(newOne);
+		numOfPlayers++;
+		
+		//interfaceMapping.put(0, playerInterface);
+		state.setPlayers(startingPlayers); /// ???? needed?
+		
+		return newOne;
+	}
+
+	
+	
 	/**
 	 * Choose a name to play with
 	 * @return
@@ -127,6 +164,9 @@ public abstract class AbstractProtocol implements Runnable {
 		return funNames.get(ran.nextInt(funNames.size()));
 	}
 
+	/**
+	 * Create fun names to use in the game!
+	 */
 	protected void fillNames(){
 		// adding all fun names to be randomly picked as players names
 		String[] names = new String[]{"Chappie", "Rex", "Monkey", "XXX",
@@ -136,6 +176,7 @@ public abstract class AbstractProtocol implements Runnable {
 		funNames.addAll(Arrays.asList(names));
 	}
 
+	
 	/**
 	 * Method used to contact the PlayerInterface (RemotePlayer) and notify it
 	 * about its new response
@@ -151,10 +192,29 @@ public abstract class AbstractProtocol implements Runnable {
 		}
 	}
 
-	protected Object getResponseFromLocalPlayer(Integer playerId){
-		return null;
+	/**
+	 * Gets a response from the local player (their move, parsed into protocol command
+	 * object)
+	 * @return
+	 */
+	protected Object getResponseFromLocalPlayer(){
+		BlockingQueue<Object> queue = queueMapping.get(myID);
+		localPlayer.createResponse();
+		
+		Object response = null;
+		try {
+			response = queue.take();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return response;
 	}
 
+	
+	
+	
 	/**Jsonify
 	 * Sent by a client to a host attempting to join a game. 
 	 * First command sent upon opening a socket connection to a host.
@@ -227,10 +287,8 @@ public abstract class AbstractProtocol implements Runnable {
 		//we are sending command 
 		if(command == ""){
 			//create play_cards object 
-			play_cards pc = (PeerServer.protocol.cards.play_cards) getResponseFromLocalPlayer(myID);
-			//convert to JSON string
+			play_cards pc = (PeerServer.protocol.cards.play_cards) getResponseFromLocalPlayer();
 			String playCardsString = Jsonify.getObjectAsJsonString(pc);
-			//Send to all clients
 			sendCommand(playCardsString, null);
 		}
 		//someone sent us a command 
@@ -254,9 +312,9 @@ public abstract class AbstractProtocol implements Runnable {
 		//we are sending command 
 		if(command == ""){
 			//create deploy object based on player choices
-			deploy deploy = (PeerServer.protocol.cards.deploy) getResponseFromLocalPlayer(myID);
-			//transfer object to JSON string
+			deploy deploy = (PeerServer.protocol.cards.deploy) getResponseFromLocalPlayer();
 			String deployString = Jsonify.getObjectAsJsonString(deploy);
+			
 			//send to all clients or just host if you are client 
 			sendCommand(deployString, null);
 		}
@@ -286,9 +344,11 @@ public abstract class AbstractProtocol implements Runnable {
 		//we are sending command 
 		if(command == ""){
 			//create deploy object based on player choices
-			attack attack = (attack) getResponseFromLocalPlayer(myID);
+			attack attack = (attack) getResponseFromLocalPlayer();
+			
 			//transfer object to JSON string
 			String attackString = Jsonify.getObjectAsJsonString(attack);
+			
 			//send to all clients or just host if you are client 
 			sendCommand(attackString, null);
 		}
@@ -318,7 +378,7 @@ public abstract class AbstractProtocol implements Runnable {
 		//we are sending command 
 		if(command == ""){
 			//create deploy object based on player choices
-			defend defend = (defend) getResponseFromLocalPlayer(myID);
+			defend defend = (defend) getResponseFromLocalPlayer();
 			//transfer object to JSON string
 			String defendString = Jsonify.getObjectAsJsonString(defend);
 			//send to all clients or just host if you are client 
@@ -347,7 +407,7 @@ public abstract class AbstractProtocol implements Runnable {
 		//we are sending command 
 		if(command == ""){
 			//create deploy object based on player choices
-			attack_capture attack_capture = (attack_capture) getResponseFromLocalPlayer(myID);
+			attack_capture attack_capture = (attack_capture) getResponseFromLocalPlayer();
 			//transfer object to JSON string
 			String attack_captureString = Jsonify.getObjectAsJsonString(attack_capture);
 			//send to all clients or just host if you are client 
@@ -377,7 +437,7 @@ public abstract class AbstractProtocol implements Runnable {
 		//we are sending command 
 		if(command == ""){
 			//create deploy object based on player choices
-			fortify fortify = (fortify) getResponseFromLocalPlayer(myID);
+			fortify fortify = (fortify) getResponseFromLocalPlayer();
 			//transfer object to JSON string
 			String fortifyString = Jsonify.getObjectAsJsonString(fortify);
 			//send to all clients or just host if you are client 
@@ -406,7 +466,7 @@ public abstract class AbstractProtocol implements Runnable {
 		//we are sending command 
 		if(command == ""){
 			//create deploy object based on player choices
-			acknowledgement acknowledgement = (acknowledgement) getResponseFromLocalPlayer(myID);
+			acknowledgement acknowledgement = (acknowledgement) getResponseFromLocalPlayer();
 			//transfer object to JSON string
 			String acknowledgementString = Jsonify.getObjectAsJsonString(acknowledgement);
 			//send to all clients or just host if you are client 

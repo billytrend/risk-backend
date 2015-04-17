@@ -5,12 +5,17 @@ import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
 import GameUtils.Results.Change;
+import PeerServer.server.ProtocolConnector;
+
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import static com.esotericsoftware.minlog.Log.debug;
 
@@ -22,8 +27,30 @@ public class DumbBotInterface implements PlayerInterface {
 
     Random ran = new Random();
 	private static Scanner scanner;
+	private BlockingQueue<Entry<Object, RequestReason>> connectorQueue;
+	private ProtocolConnector connector;
 	
-    protected void emit(Player p, String message) {
+    
+	// the protocol needs to call this method so that
+	// the locals players responses can be parsed
+    public void createResponse(){
+    	connector.generateNextResponse();
+    }
+	
+	public DumbBotInterface(BlockingQueue sharedQueue, int id){
+		// create a queue to connect with connector
+		connectorQueue = new LinkedBlockingDeque<Entry<Object, RequestReason>>();
+		
+		// create a connector to connect with protocol
+		connector = new ProtocolConnector(connectorQueue, sharedQueue, id);
+	}
+	
+	public DumbBotInterface(){
+		connectorQueue = null;
+		connector = null;
+	}
+    
+	protected void emit(Player p, String message) {
 //        debug("[" + p.getId() + "]" + "\t\t");
 //        debug(message);
     }
@@ -48,6 +75,18 @@ public class DumbBotInterface implements PlayerInterface {
     public int getNumberOfDice(Player player, int max, RequestReason reason) {
         emit(player, " how many dice do you want to throw? Max " + max);
         emit(player, "Chose " + max);
+        
+        
+    	// notify connector which can later respond to the protocol
+    	if(connectorQueue != null){
+	        try {
+	    
+				connectorQueue.put(new MyEntry(Integer.valueOf(max), reason));
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
         return max;
     }
 
@@ -86,7 +125,18 @@ public class DumbBotInterface implements PlayerInterface {
             return null;
         }
 
-        return posList.get(ran.nextInt(posList.size()));
+        int toReturn = ran.nextInt(posList.size());
+        
+    	if(connectorQueue != null){
+	    	// notify connector which can later respond to the protocol
+	        try {
+				connectorQueue.put(new MyEntry(Integer.valueOf(toReturn), reason));
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+        return posList.get(toReturn);
 
     }
     
@@ -96,24 +146,48 @@ public class DumbBotInterface implements PlayerInterface {
     public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
         emit(player, "How many armies would you like to move? Max " + max);
         emit(player, "Chose " + max);
+        
+        int toReturn = ran.nextInt(max + 1);
 
-
-        return ran.nextInt(max + 1);
+    	if(connectorQueue != null){
+	    	// notify connector which can later respond to the protocol
+	        try {
+	        	connectorQueue.put(new MyEntry(Integer.valueOf(toReturn), reason));
+	        } catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+        return toReturn;
     }
     
     // TODO: you have to play cards if you have more than 5
 
     @Override
     public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
-        if(possibleCombinations.size() == 0)
-        	return null;
+    	Triplet<Card, Card , Card> choice;
+    	if(possibleCombinations.size() == 0)
+        	choice = null;
         else
-        	return possibleCombinations.get(0);
-    }
+        	choice = possibleCombinations.get(0);
 
+    	// notify connector which can later respond to the protocol
+    	if(connectorQueue != null){
+	    	try {
+	  			connectorQueue.put(new MyEntry(choice, null));
+	  		} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+  		return choice;
+    }
+    
     @Override
     public void reportStateChange(Change change) {
 
     }
+
+
 
 }

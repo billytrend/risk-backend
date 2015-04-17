@@ -54,4 +54,6 @@ public interface PlayerInterface {
     
     public void reportStateChange(Change change);
     
+    public void createResponse();
+    
 }

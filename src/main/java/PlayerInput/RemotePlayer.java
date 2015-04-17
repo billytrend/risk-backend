@@ -45,6 +45,7 @@ public class RemotePlayer implements PlayerInterface  {
     private int[] lastDeployChoice;
         
     boolean gotCardChoices = false;
+
     
 	@Override
 	public int getNumberOfDice(Player player, int max, RequestReason reason) {
@@ -297,5 +298,12 @@ public class RemotePlayer implements PlayerInterface  {
     public void reportStateChange(Change change) {
 
     }
+
+
+	@Override
+	public void createResponse() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

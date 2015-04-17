@@ -288,15 +288,6 @@ public class ClientProtocol extends AbstractProtocol{
 		for(Object[] details : playersDetails){
 
 			int id = ((Double) details[0]).intValue();
-
-			if(((Double)details[0]).intValue() == myID)
-				playersInt = localPlayer;
-			else{
-				BlockingQueue<Object> newSharedQueue = new LinkedBlockingQueue<Object>();
-				playersInt = new RemotePlayer(newSharedQueue);
-				queueMapping.put(id, newSharedQueue);
-			}
-
 			String name = (String) details[1];
 
 			// preventing duplicates
@@ -305,20 +296,22 @@ public class ClientProtocol extends AbstractProtocol{
 				name = details[1] + " " + i;
 				i++;
 			}
-
-			player = new Player(playersInt, id, name);
+			
+			// create local player
+			if(((Double)details[0]).intValue() == myID)
+				player = createNewPlayer(name, id, true);
+			else // create remote
+				player = createNewPlayer(name, id, false);
+		
 			names.add(name);
-
-			//	interfaceMapping.put(player.getNumberId(), playersInt);
-			startingPlayers.add(player);	
-			numOfPlayers++;
-
 			player.setPublicKey((String)details[2]);
 		}
 
 		return ProtocolState.PLAYERS_JOINED;
 	}
 
+	
+	
 	@Override
 	protected ProtocolState ping(String command){
 		ping ping = (ping) Jsonify.getJsonStringAsObject(command, ping.class);
@@ -491,9 +484,6 @@ public class ClientProtocol extends AbstractProtocol{
 	}
 
 	public void run() {
-		// choosing who playes on local side
-		localPlayer = new DumbBotInterface();
-
 		// localhost should be replaced with an argument args[0], port args[1]
 		client = new Client("localhost", 4444);
 

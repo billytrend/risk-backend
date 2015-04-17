@@ -133,5 +133,11 @@ public class CommandLineInterface implements PlayerInterface {
 
     }
 
+	@Override
+	public void createResponse() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
 
