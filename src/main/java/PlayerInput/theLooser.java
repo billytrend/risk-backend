@@ -6,6 +6,7 @@ import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.Results.Change;
+import GameUtils.TerritoryUtils;
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.Random;
 /**
  * Created by root on 08/04/2015.
  */
-public class theLooser {
+public class theLooser implements PlayerInterface {
     public State currentState;
 
     public theLooser(State a){
@@ -30,7 +31,7 @@ public class theLooser {
      * @return
      */
     public int getNumberOfDice(Player player, int max, RequestReason reason, Territory attacking, Territory defending) {
-        return max;
+        return 1;
     }
 
     /**
@@ -47,8 +48,7 @@ public class theLooser {
 
         ArrayList<Territory> territoryList = new ArrayList<Territory>(possibles);
 
-        Random rand = new Random();
-        int randNo = rand.nextInt(territoryList.size() - 0 + 1) + 0;
+        int randNo = TerritoryUtils.randInt(0, territoryList.size() - 1);
 
         switch (reason) {
 
@@ -63,10 +63,10 @@ public class theLooser {
                 return territoryList.get(randNo);
 
             case ATTACK_CHOICE_FROM:
-                return territoryList.get(randNo);
+                return TerritoryUtils.getWeakestOwned(player, territoryList);
 
             case ATTACK_CHOICE_TO:
-                return territoryList.get(randNo);
+                return TerritoryUtils.getStrongestOwned(player, territoryList);
 
             case REINFORCEMENT_PHASE:
                 return null;
@@ -113,7 +113,7 @@ public class theLooser {
      * @return a triplet of cards which represents choice
      */
     public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
-        return null;
+        return possibleCombinations.get(0);
     }
 
     public void reportStateChange(Change change) {

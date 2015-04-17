@@ -194,7 +194,8 @@ public class TerritoryUtils {
         for(int i = 0; i < territoryList.size(); i++){
             int numberOfArmies = ArmyUtils.getNumberOfArmiesOnTerritory(player,
                     territoryList.get(i));
-            if (numberOfArmies > temp) {
+
+            if (numberOfArmies < temp) {
                 temp = numberOfArmies;
                 index = i;
             }
@@ -228,7 +229,7 @@ public class TerritoryUtils {
     public static Territory getWeakestEnemy(State state, ArrayList<Territory> territoryList, String territoryID){
 
         int temp = 0;
-        int index = Integer.MAX_VALUE;
+        int index = 0;
 
         for (int i = 0; i < territoryList.size(); i++) {
             Player enemyOwner = PlayerUtils.getTerritoryOwner(state,
@@ -268,6 +269,19 @@ public class TerritoryUtils {
             flag = false;
 
         return flag;
+    }
+
+    public static int randInt(int min, int max) {
+
+        // NOTE: Usually this should be a field rather than a method
+        // variable so that it is not re-seeded every call.
+        Random rand = new Random();
+
+        // nextInt is normally exclusive of the top value,
+        // so add 1 to make it inclusive
+        int randomNum = rand.nextInt((max - min) + 1) + min;
+
+        return randomNum;
     }
 
 	/**

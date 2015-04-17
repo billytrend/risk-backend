@@ -16,7 +16,7 @@ import java.util.Random;
 /**
  * Created by root on 08/04/2015.
  */
-public class CommunistDefensive {
+public class CommunistDefensive implements PlayerInterface {
     public State currentState;
     public Territory currentTer;
 
@@ -50,7 +50,9 @@ public class CommunistDefensive {
         ArrayList<Territory> territoryList = new ArrayList<Territory>(possibles);
 
         Random rand = new Random();
-        int randNo = rand.nextInt(territoryList.size() - 0 + 1) + 0;
+        int randNo = TerritoryUtils.randInt(0, territoryList.size()-1);
+
+        //System.out.println(TerritoryUtils.getWeakestOwned(player, territoryList).getId());
 
         switch (reason) {
 
@@ -127,7 +129,7 @@ public class CommunistDefensive {
      * @return a triplet of cards which represents choice
      */
     public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
-        return null;
+        return possibleCombinations.get(0);
     }
 
     public void reportStateChange(Change change) {

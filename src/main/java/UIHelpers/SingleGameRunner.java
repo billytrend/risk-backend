@@ -4,9 +4,7 @@ import GameBuilders.RiskMapGameBuilder;
 import GameState.Player;
 import GameState.State;
 import LobbyServer.SingleGameServer;
-import PlayerInput.CommunistAggressive;
-import PlayerInput.DumbBotInterface;
-import PlayerInput.StartAustralia;
+import PlayerInput.*;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.DefaultHandler;
@@ -25,11 +23,10 @@ public class SingleGameRunner {
         ArrayList<Player> players = new ArrayList<Player>();
         State gameState = RiskMapGameBuilder.buildGame(null);
 
-        players.add(0, new Player(new DumbBotInterface()));
-        players.add(1, new Player(new DumbBotInterface()));
-        players.add(2, new Player(new DumbBotInterface()));
-        players.add(3, new Player(new DumbBotInterface()));
-        players.add(4, new Player(new DumbBotInterface()));
+        players.add(0, new Player(new Berserker(gameState)));
+        players.add(1, new Player(new theLooser(gameState)));
+        players.add(2, new Player(new theLooser(gameState)));
+        players.add(3, new Player(new theLooser(gameState)));
 
         SingleGameRunner s = new SingleGameRunner(players, gameState);
         s.start();
