@@ -1,18 +1,24 @@
 package UIHelpers;
 
+
 import GameBuilders.RiskMapGameBuilder;
 import GameState.Player;
 import GameState.State;
 import LobbyServer.SingleGameServer;
-import PlayerInput.*;
+import PlayerInput.BorderControl;
+import PlayerInput.CommunistAggressive;
+import PlayerInput.CommunistDefensive;
+import PlayerInput.DumbBotInterface;
+import PlayerInput.PlayerInterface;
+
+import java.util.ArrayList;
+
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.DefaultHandler;
 import org.mortbay.jetty.handler.HandlerList;
 import org.mortbay.jetty.handler.ResourceHandler;
 import org.mortbay.jetty.nio.SelectChannelConnector;
-
-import java.util.ArrayList;
 
 public class SingleGameRunner {
 
@@ -22,11 +28,16 @@ public class SingleGameRunner {
     public static void main(String[] args) throws Exception {
         ArrayList<Player> players = new ArrayList<Player>();
         State gameState = RiskMapGameBuilder.buildGame(null);
-
-        players.add(0, new Player(new Berserker(gameState)));
-        players.add(1, new Player(new theLooser(gameState)));
-        players.add(2, new Player(new theLooser(gameState)));
-        players.add(3, new Player(new theLooser(gameState)));
+        //pink
+        players.add(0, new Player(new CommunistAggressive(gameState)));
+        //blue
+        players.add(1, new Player(new BorderControl(gameState)));
+        //purple
+        players.add(2, new Player(new CommunistAggressive(gameState)));
+//        //green
+//        players.add(3, new Player(new DumbBotInterface()));
+//        //yellow
+//        players.add(4, new Player(new DumbBotInterface()));
 
         SingleGameRunner s = new SingleGameRunner(players, gameState);
         s.start();

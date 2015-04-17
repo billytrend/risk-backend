@@ -56,7 +56,7 @@ public class PlayerConnection implements PlayerInterface  {
 	}
 
 	@Override
-	public Territory getTerritory(Player player, HashSet<Territory> possibles, boolean canResign, RequestReason reason) {
+	public Territory getTerritory(Player player, HashSet<Territory> possibles,Territory from, boolean canResign, RequestReason reason) {
         if (!activations[1]) return possibles.iterator().next();
 		TerritoryRequest t = new TerritoryRequest(reason);
 		t.possibles = possibles;
@@ -122,7 +122,7 @@ public class PlayerConnection implements PlayerInterface  {
     @Override
     public void reportStateChange(Change change) {
         try {
-            Thread.sleep(5);
+            Thread.sleep(50);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

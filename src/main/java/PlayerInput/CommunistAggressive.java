@@ -44,7 +44,7 @@ public class CommunistAggressive implements PlayerInterface {
 	}
 
 	@Override
-	public Territory getTerritory(Player player, HashSet<Territory> possibles,
+	public Territory getTerritory(Player player, HashSet<Territory> possibles,Territory from,
 			boolean canResign, RequestReason reason) {
 
         List<Territory> territoryList = new ArrayList<Territory>(possibles);

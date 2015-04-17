@@ -187,21 +187,20 @@ public class TerritoryUtils {
         return territoryList.get(index);
     }
 
-    public static Territory getWeakestOwned(Player player, ArrayList<Territory> territoryList){
-        Territory strongest;
+    public static Territory getWeakestOwned(Player player, HashSet<Territory> territoryList){
+        Territory strongest = null;
         int temp = Integer.MAX_VALUE;
-        int index = 0;
-        for(int i = 0; i < territoryList.size(); i++){
+        
+        for(Territory territory: territoryList){
             int numberOfArmies = ArmyUtils.getNumberOfArmiesOnTerritory(player,
-                    territoryList.get(i));
-
+                    territory);
             if (numberOfArmies < temp) {
                 temp = numberOfArmies;
-                index = i;
+                strongest = territory;
             }
         }
 
-        return territoryList.get(index);
+        return strongest;
     }
 
 	  public static Territory getStrongestEnemy(State state, ArrayList<Territory> territoryList, String territoryID){
@@ -337,7 +336,7 @@ public class TerritoryUtils {
 
 	public static HashSet<Territory> findCluster(State state, Player player,
 			Territory territory, HashSet<Territory> cluster, HashSet<Territory> used) {
-		System.out.println("find cluster");
+		System.out.println("find cluster : length = " + cluster.size());
 		HashSet<Territory> neighbours = TerritoryUtils.getFriendlyNeighbours(
 				state, territory, player);
 		for (Territory neighbour : neighbours) {
