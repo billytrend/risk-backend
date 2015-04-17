@@ -1,5 +1,11 @@
 package GameBuilders;
 
+import GameState.State;
+import org.jgrapht.ext.DOTExporter;
+import org.junit.Test;
+
+import java.io.PrintWriter;
+
 public class RiskMapGameBuilderTest {
 
 //    @Test
@@ -14,5 +20,13 @@ public class RiskMapGameBuilderTest {
 //        gameThread.join();
 //    }
 //
+
+    @Test
+    public void testPrintGameMap() {
+        State s = new State();
+        RiskMapGameBuilder.addRiskTerritoriesToState(s);
+        DOTExporter exporter = new DOTExporter();
+        exporter.export(new PrintWriter(System.out), s.getTerritories());
+    }
 
 }

@@ -39,7 +39,8 @@ public class RuleUtilsTest{
 		ArrayList<Player> players = gameState.getPlayers();
 		Player player1 = players.get(0);
 		Player player2 = players.get(1);
-		
+		ArmyUtils.givePlayerNArmies(player1, 15);
+		ArmyUtils.givePlayerNArmies(player2, 15);
 		for(int i = 0; i < 12; i++){
 			ArmyUtils.deployArmies(player1, territories[i], 1);
 		}
@@ -47,16 +48,16 @@ public class RuleUtilsTest{
 			ArmyUtils.deployArmies(player2, territories[i], 1);
 		}
 	
-		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 28);
-		assertEquals(ArmyUtils.getUndeployedArmies(player2).size(), 37);
-		
+		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 43);
+		assertEquals(ArmyUtils.getUndeployedArmies(player2).size(), 52);
+
 		RuleUtils.doArmyHandout(gameState, player1);
 		RuleUtils.doArmyHandout(gameState, player2);
 		
 		// player 1 should get 4 armies
-		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 32);
+		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 47);
 		// player2 shoulld get 3 armies
-		assertEquals(ArmyUtils.getUndeployedArmies(player2).size(), 40);
+		assertEquals(ArmyUtils.getUndeployedArmies(player2).size(), 55);
 		
 	}
 	
@@ -65,7 +66,8 @@ public class RuleUtilsTest{
 		ArrayList<Player> players = gameState.getPlayers();
 		Player player1 = players.get(0);
 		Player player2 = players.get(1);
-		
+		ArmyUtils.givePlayerNArmies(player1, 5);
+		ArmyUtils.givePlayerNArmies(player2, 5);
 		ArmyUtils.deployArmies(player1, territories[0], 3);
 		ArmyUtils.deployArmies(player2, territories[1], 1);
 		assertEquals(TerritoryUtils.getPlayersTerritories(player1).size(), 1);
@@ -94,7 +96,8 @@ public class RuleUtilsTest{
 		ArrayList<Player> players = gameState.getPlayers();
 		Player player1 = players.get(0);
 		Player player2 = players.get(1);
-		
+		ArmyUtils.givePlayerNArmies(player1, 5);
+		ArmyUtils.givePlayerNArmies(player2, 5);
 		ArmyUtils.deployArmies(player1, territories[0], 3);
 		ArmyUtils.deployArmies(player2, territories[1], 3);
 		

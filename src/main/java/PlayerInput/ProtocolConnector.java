@@ -236,7 +236,9 @@ public class ProtocolConnector {
     }
     
     
-    
+    public void createPlayCards(ArrayList<Object> responses){
+    	
+    }
     
     public Integer getId(Object ob){
     	Territory territory = (ob instanceof Territory) ? (Territory) ob : null;

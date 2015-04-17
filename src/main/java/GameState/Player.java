@@ -1,6 +1,5 @@
 package GameState;
 
-import GameUtils.ArmyUtils;
 import PlayerInput.PlayerInterface;
 
 import java.util.ArrayList;
@@ -19,11 +18,13 @@ public class Player {
 	private int numberId;
 	private transient PlayerInterface communicationMethod;
 	private transient ArrayList<Army> armies;
-    private String colour;
+    private int cardSetsUsed;
+    private String colour = "";
 
 	public Player(PlayerInterface communicationMethod) {
 		this.communicationMethod = communicationMethod;
 		armies = new ArrayList<Army>();
+		cardSetsUsed = 0;
 	}
 
 	public Player(PlayerInterface communicationMethod, int index) {
@@ -67,6 +68,14 @@ public class Player {
 	}
 	public ArrayList<Army> getArmies() {
 		return armies;
+	}
+
+	public int getNumberOfCardSetsUsed() {
+		return cardSetsUsed;
+	}
+
+	public void incrementNumberOfCardSetsUsed() {
+		this.cardSetsUsed ++;
 	}
 
     public String getColour() {

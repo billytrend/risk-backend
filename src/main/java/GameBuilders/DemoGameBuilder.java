@@ -5,7 +5,6 @@ import GameState.State;
 import GameState.Territory;
 import GameUtils.ContinentUtils;
 import GameUtils.TerritoryUtils;
-import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
 
 import java.util.ArrayList;
@@ -31,7 +30,7 @@ public class DemoGameBuilder {
         }
         
         State state = new State(ps);
-        
+
         // creating territories
         Territory demoLandA = new Territory("demoland", 0);
         Territory demoLandB = new Territory("egstate", 1);
@@ -102,8 +101,8 @@ public class DemoGameBuilder {
           for(int i = 0; i < numOfPlayers; i++){
         	  ps.add(new Player(interfaces[i], i + 1));
     	  }
-          State state = new State(ps);
-    	        
+          State state = new State();
+    	  state.setPlayers(ps);
     	        
     	  ArrayList<Territory> territories = new ArrayList<Territory>();
     	  // creating the specified number of territories

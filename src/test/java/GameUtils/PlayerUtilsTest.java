@@ -36,6 +36,8 @@ public class PlayerUtilsTest {
 	@Test
 	public void getNumberOfTerritoriesOwnedTest(){
 		Player player1 = gameState.getPlayers().get(0);
+		ArmyUtils.givePlayerNArmies(player1, 5);
+		
 		Territory territory1 = territories[0];
 		Territory territory2 = territories[1];
 		
@@ -51,6 +53,7 @@ public class PlayerUtilsTest {
 	@Test
 	public void getTerritoryOwnerTest(){
 		Player player1 = gameState.getPlayers().get(0);
+		ArmyUtils.givePlayerNArmies(player1, 5);
 		Territory territory1 = territories[0];
 		
 		assertEquals(PlayerUtils.getTerritoryOwner(gameState, territory1), null);
@@ -69,6 +72,10 @@ public class PlayerUtilsTest {
 	public void playerIsOutTest(){
 		Player player1 = gameState.getPlayers().get(0);
 		Player player2 = gameState.getPlayers().get(1);
+		
+		ArmyUtils.givePlayerNArmies(player1, 5);
+		ArmyUtils.givePlayerNArmies(player2, 5);
+		
 		Territory territory1 = territories[0];
 		
 		ArmyUtils.deployArmies(player1, territory1, 2);

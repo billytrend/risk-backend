@@ -63,12 +63,14 @@ public class GameStateSerialiser implements JsonSerializer<State> {
 
     public static JsonElement getOwnerships(State state, JsonSerializationContext jsonSerializationContext) {
         JsonObject ownerships = new JsonObject();
+
         for (Territory t : TerritoryUtils.getUnownedTerritories(state)) {
             JsonObject ownerObj = new JsonObject();
             ownerObj.add("player", new JsonNull());
             ownerObj.add("armies", new JsonPrimitive(0));
             ownerships.add(t.getId(), ownerObj);
         }
+
         for(Player p : state.getPlayers()) {
             for (Territory t : TerritoryUtils.getPlayersTerritories(p)) {
                 JsonObject ownerObj = new JsonObject();
