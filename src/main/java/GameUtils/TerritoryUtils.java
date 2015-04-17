@@ -247,6 +247,29 @@ public class TerritoryUtils {
         return territoryList.get(index);
     }
 
+    public static boolean goodIdea(State state, Territory fromTer, Territory toTer){
+        boolean flag = true;
+
+        Player ownerFrom = PlayerUtils.getTerritoryOwner(state,
+                fromTer);
+        Player ownerTo = PlayerUtils.getTerritoryOwner(state,
+                toTer);
+
+
+        int armiesFrom = ArmyUtils
+                .getNumberOfArmiesOnTerritory(ownerFrom,
+                       fromTer);
+        int armiesTo = ArmyUtils
+                .getNumberOfArmiesOnTerritory(ownerTo,
+                        toTer);
+
+
+        if(armiesTo + (armiesTo / 4) >= armiesFrom)
+            flag = false;
+
+        return flag;
+    }
+
 	/**
 	 * 
 	 * @param state
