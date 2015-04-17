@@ -49,36 +49,38 @@ public class ProtocolConnector {
     private  BlockingQueue<Object> protocolQueue;
     private int myID;
     private Random ran = new Random();
-    
+   
     // queue used to accept all responses from the local
     // player interface
 	private BlockingQueue<Entry<Object, RequestReason>> responsesQueue; 
 
-   // private RequestReason lastReason = null;
-    private Object response = null;
-    private ArrayIterator it = null;
-    private int[] lastDeployChoice;
-//    private Entry<Object, RequestReason> lastResponse;
-   
-    
+	
+	/**
+	 * Generates next protocol command (Response) created from users
+	 * answers stored in responsesQueue. After the response is created
+	 * it is added to the protocolQueue and can be retrieved by the protocol
+	 */
     public void generateNextResponse(){
-    	Entry<Object, RequestReason> next;
     	try {
-    		next = responsesQueue.take();
+    		Entry<Object, RequestReason> next = responsesQueue.take();
 
         	RequestReason servedReason = next.getValue();
         	RequestReason currentReason = servedReason;
         	
-        	// stores all information needed to generate response
+        	// stores all information needed to generate one protocol command
         	ArrayList<Object> responseParts = new ArrayList<Object>();
         
         	// get all information with the same request reason
         	while(true){
         		responseParts.add(next.getKey());
         		
+        		if(responsesQueue.isEmpty()) // this is not the safest if our engine is slow..
+        			break;
+        		
         		next = responsesQueue.peek();
         		currentReason = next.getValue();   		
         		
+        		// stop taking responses
         		if(currentReason != servedReason){
         			if(servedReason == RequestReason.ATTACK_CHOICE_FROM){
         				if((currentReason != RequestReason.ATTACK_CHOICE_TO) &&
@@ -94,39 +96,51 @@ public class ProtocolConnector {
     			}
         	}
     		
-        	if(servedReason == null){
-    			createPlayCards(responseParts);
-        	}
-        	else{
-	        	switch(servedReason){
-	        		case ATTACK_CHOICE_FROM:
-	        			createAttackResponse(responseParts);
-	        			break;
-	        		case PLACING_ARMIES_SET_UP:
-	        			createSetUpResponse(responseParts);
-	        			break;
-	        		case PLACING_REMAINING_ARMIES_PHASE:
-	        			createSetUpResponse(responseParts); // TODO: not 100% sure about this        	
-	        			break;
-	        		case PLACING_ARMIES_PHASE:
-	        			createSetUpResponse(responseParts); // TODO: not sure!!!!
-	        			break;
-	        		case REINFORCEMENT_PHASE:
-	        			createFortifyResponse(responseParts); // TODO: ...
-	        			break;
-	        		case POST_ATTACK_MOVEMENT:
-	        			createAttackCapture(responseParts);
-	        			break;
-        		}
-        	}
-    		
+        	createResponse(servedReason, responseParts);
+   
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
    
     }
     
-    // setup -- territory id to place payload
+    
+    /**
+     * Creates a suitable type of response
+     * @param servedReason
+     * @param responses
+     */
+    private void createResponse(RequestReason servedReason, ArrayList<Object> responses) {
+
+    	if(servedReason == null){
+			createPlayCards(responses);
+    	}
+    	else{
+        	switch(servedReason){
+        		case ATTACK_CHOICE_FROM:
+        			createAttackResponse(responses);
+        			break;
+        		case PLACING_ARMIES_SET_UP:
+        			createSetUpResponse(responses);
+        			break;
+        		case PLACING_REMAINING_ARMIES_PHASE:
+        			createSetUpResponse(responses); // TODO: not 100% sure about this        	
+        			break;
+        		case PLACING_ARMIES_PHASE:
+        			createSetUpResponse(responses); // TODO: not sure!!!!
+        			break;
+        		case REINFORCEMENT_PHASE:
+        			createFortifyResponse(responses); // TODO: ...
+        			break;
+        		case POST_ATTACK_MOVEMENT:
+        			createAttackCapture(responses);
+        			break;
+    		}
+    	}
+	}
+
+    
+
     private void createSetUpResponse(ArrayList<Object> responseParts){
     	
     	if(responseParts.size() != 0)
@@ -149,7 +163,6 @@ public class ProtocolConnector {
     }
     
   
-    // fortify -- payload[] source id - destination id - armies or null
     private void createFortifyResponse(ArrayList<Object> responseParts){
     	// need two territories and armies
     	if(responseParts.size() != 3)
@@ -186,7 +199,6 @@ public class ProtocolConnector {
     }
     
     
-    //defend: payload - amount of armies to defend with - dice
     private void createDefendResponse(ArrayList<Object> responses){
     	if(responses.size() != 0)
     		System.out.println("Wrong size of defend parts");
