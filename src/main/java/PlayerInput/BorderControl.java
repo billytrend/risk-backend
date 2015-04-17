@@ -49,7 +49,7 @@ public class BorderControl implements PlayerInterface {
 	}
 
 	public Territory getTerritory(Player player, HashSet<Territory> possibles,
-			boolean canResign, RequestReason reason) {
+			Territory from, boolean canResign, RequestReason reason) {
 
 		ArrayList<HashSet<Territory>> clusters = TerritoryUtils.getAllClusters(
 				state, player);
@@ -57,7 +57,7 @@ public class BorderControl implements PlayerInterface {
 		case PLACING_ARMIES_SET_UP:
 			// look to place in clusters - choose random territory if can't
 			// (maybe adjust to finding territory close to cluster?)
-			HashSet<Territory> options = new HashSet<Territory>();
+			// HashSet<Territory> options = new HashSet<Territory>();
 			// for each cluster (starting with the largest) looks at surrounding
 			// and checks if possible move
 			for (HashSet<Territory> cluster : clusters) {
@@ -98,10 +98,10 @@ public class BorderControl implements PlayerInterface {
 						}
 					}
 				}
-				if (weakest != null) return weakest;
+				if (weakest != null)
+					return weakest;
 			}
 		case ATTACK_CHOICE_FROM:
-		case ATTACK_CHOICE_TO:
 			// look for largest cluster and choose outer territory that has 2:1
 			// advantage over another
 			for (HashSet<Territory> cluster : clusters) {
@@ -111,40 +111,70 @@ public class BorderControl implements PlayerInterface {
 					HashSet<Territory> enemyNeighbours = TerritoryUtils
 							.getEnemyNeighbours(state, territory, player);
 					for (Territory enemyTerritory : enemyNeighbours) {
+
 						Player enemy = PlayerUtils.getTerritoryOwner(state,
 								enemyTerritory);
 						int armiesOnEnemyTerritory = ArmyUtils
 								.getArmiesOnTerritory(enemy, enemyTerritory)
 								.size();
 						if (armiesOnTerritory >= 2 * armiesOnEnemyTerritory) {
-							if (reason == RequestReason.ATTACK_CHOICE_FROM)
-								return territory;
-							else
-								return enemyTerritory; // should probably find
-														// weakest enemy
-														// neighbour
+							return territory;
+
 						}
 					}
+				}
+			}
+		case ATTACK_CHOICE_TO:
+
+			int armiesOnTerritory = ArmyUtils.getNumberOfArmiesOnTerritory(
+					player, from);
+			HashSet<Territory> enemyNeighbours = TerritoryUtils
+					.getEnemyNeighbours(state, from, player);
+			for (Territory enemyTerritory : enemyNeighbours) {
+
+				Player enemy = PlayerUtils.getTerritoryOwner(state,
+						enemyTerritory);
+				int armiesOnEnemyTerritory = ArmyUtils.getArmiesOnTerritory(
+						enemy, enemyTerritory).size();
+				if (armiesOnTerritory >= 2 * armiesOnEnemyTerritory) {
+					return enemyTerritory;
+
 				}
 			}
 
 		case REINFORCEMENT_PHASE:
 			// move armies outwards - look for weakest, unprotected territories
-		
+			int lowestArmies = 100;
+			int armies=0;
+			//Territory weak
+			for(Territory t:possibles){
+				armies = ArmyUtils.getArmiesOnTerritory(player, t).size();
+				
+			}
+
 		}
 
 		return null;
 
 	}
-	//need to and from
-	public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
-	//case POST_ATTACK_MOVEMENT:
+
+	// need to and from
+	public int getNumberOfArmies(Player player, int max, RequestReason reason,
+			Territory to, Territory from) {
+		switch(reason){
+		case POST_ATTACK_MOVEMENT:
 		// if all neighbours are friendly move all but 1
 		// else move half - or look at difference in threats and decide
 		// accordingly
 		int armiesFrom = ArmyUtils.getArmiesOnTerritory(player, from).size();
-		if(TerritoryUtils.getEnemyNeighbours(state, from, player).size() == 0) return armiesFrom -1;
-		else return armiesFrom/2;
+		if (from == null || to == null)
+			return max;
+		if (TerritoryUtils.getEnemyNeighbours(state, from, player).size() == 0)
+			return armiesFrom - 1;
+		else
+			return armiesFrom / 2;
+		}
+		return max;
 
 	}
 
@@ -154,12 +184,10 @@ public class BorderControl implements PlayerInterface {
 
 	}
 
-
 	@Override
 	public void reportStateChange(Change change) {
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 }

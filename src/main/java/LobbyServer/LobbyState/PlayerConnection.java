@@ -56,7 +56,7 @@ public class PlayerConnection implements PlayerInterface  {
 	}
 
 	@Override
-	public Territory getTerritory(Player player, HashSet<Territory> possibles, boolean canResign, RequestReason reason) {
+	public Territory getTerritory(Player player, HashSet<Territory> possibles,Territory from, boolean canResign, RequestReason reason) {
         if (!activations[1]) return possibles.iterator().next();
 		TerritoryRequest t = new TerritoryRequest(reason);
 		t.possibles = possibles;

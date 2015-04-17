@@ -20,7 +20,7 @@ import java.util.Scanner;
 public class RiskMapGameBuilder {
 
     private static String[] colours = new String[] {
-            "A6922E", "BFA065", "D96F32", "D95A2B", "A6453C"
+            "F5A9EE", "A6EDDE", "C5A6ED", "E6F07A", "BEF788"
     };
 
 

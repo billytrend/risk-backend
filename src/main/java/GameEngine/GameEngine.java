@@ -210,7 +210,7 @@ public class GameEngine implements Runnable {
 		// player specifies the country
 		debug(currentPlayer.getClass().toString());
 		Territory toFill = currentPlayer.getCommunicationMethod()
-				.getTerritory(currentPlayer, emptyTerritories, false, RequestReason.PLACING_ARMIES_SET_UP);
+				.getTerritory(currentPlayer, emptyTerritories, null, false, RequestReason.PLACING_ARMIES_SET_UP);
 		debug(toFill.getId());
 
 		// deploy a single army in this place
@@ -267,7 +267,7 @@ public class GameEngine implements Runnable {
 		
 		// ask a player what country they want to pick
 		Territory toFill = currentPlayer.getCommunicationMethod()
-				.getTerritory(currentPlayer, usersTerritories, false, RequestReason.PLACING_REMAINING_ARMIES_PHASE);
+				.getTerritory(currentPlayer, usersTerritories, null, false, RequestReason.PLACING_REMAINING_ARMIES_PHASE);
 
 		// deploy the armies
         Change stateChange = new ArmyPlacement(currentPlayer.getId(), toFill.getId(), 1, USING_REMAINING_ARMIES);
@@ -328,7 +328,7 @@ public class GameEngine implements Runnable {
 		
 		// find out which country the player wants to place in
 		Territory toFill = currentPlayer.getCommunicationMethod()
-				.getTerritory(currentPlayer, playersTerritories, false, RequestReason.PLACING_ARMIES_PHASE);
+				.getTerritory(currentPlayer, playersTerritories, null, false, RequestReason.PLACING_ARMIES_PHASE);
 
 		if(toFill == null){
 			System.out.println("BUG - player need to place more armies!");
@@ -366,7 +366,7 @@ public class GameEngine implements Runnable {
 
 		// find out which country the player wants to attack from
 		Territory attacking = currentPlayer.getCommunicationMethod()
-				.getTerritory(currentPlayer, possibleAttackingTerritories, true, RequestReason.ATTACK_CHOICE_FROM);
+				.getTerritory(currentPlayer, possibleAttackingTerritories, null, true, RequestReason.ATTACK_CHOICE_FROM);
 		
 		if(attacking == null){
 			debug("PLAYER DOESNT WANT TO INVADE");
@@ -380,7 +380,7 @@ public class GameEngine implements Runnable {
 			
 		// ask the player which country he wants to attack
 		Territory defending = currentPlayer
-				.getCommunicationMethod().getTerritory(currentPlayer, attackable, true, RequestReason.ATTACK_CHOICE_TO);
+				.getCommunicationMethod().getTerritory(currentPlayer, attackable, attacking, true, RequestReason.ATTACK_CHOICE_TO);
 		
 		if(defending == null){
 			return PLAYER_MOVING_ARMIES;
@@ -513,7 +513,7 @@ public class GameEngine implements Runnable {
 		
 		// find out which one the player wants to move from
 		Territory source = currentPlayer
-				.getCommunicationMethod().getTerritory(currentPlayer, canBeDeployedFrom, true, RequestReason.REINFORCEMENT_PHASE);
+				.getCommunicationMethod().getTerritory(currentPlayer, canBeDeployedFrom, null, true, RequestReason.REINFORCEMENT_PHASE);
 		
 		//------------------------------------
 		// HANDLE HERE NOT MOVING RESPONCE? - null country selection?
@@ -528,7 +528,7 @@ public class GameEngine implements Runnable {
 
 		// get the choice made
 		Territory target = currentPlayer
-				.getCommunicationMethod().getTerritory(currentPlayer, canBeDeployedTo, true, RequestReason.REINFORCEMENT_PHASE);
+				.getCommunicationMethod().getTerritory(currentPlayer, canBeDeployedTo, source, true, RequestReason.REINFORCEMENT_PHASE);
 
         if(target == null){
             debug("PLAYER DOESNT WANT TO MOVE");

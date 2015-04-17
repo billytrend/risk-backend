@@ -261,7 +261,7 @@ public class TerritoryUtils {
 
 	public static HashSet<Territory> findCluster(State state, Player player,
 			Territory territory, HashSet<Territory> cluster, HashSet<Territory> used) {
-		System.out.println("find cluster");
+		System.out.println("find cluster : length = " + cluster.size());
 		HashSet<Territory> neighbours = TerritoryUtils.getFriendlyNeighbours(
 				state, territory, player);
 		for (Territory neighbour : neighbours) {

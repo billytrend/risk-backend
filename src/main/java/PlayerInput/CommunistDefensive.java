@@ -37,7 +37,7 @@ public class CommunistDefensive implements PlayerInterface {
 	}
 
 	@Override
-	public Territory getTerritory(Player player, HashSet<Territory> possibles,
+	public Territory getTerritory(Player player, HashSet<Territory> possibles,Territory from,
 			boolean canResign, RequestReason reason) {
 
 		// NEEDS TO BE FINISHED

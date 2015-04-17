@@ -45,7 +45,7 @@ public class StartAustralia implements PlayerInterface {
 
 
     public Territory getTerritory(Player player,
-                                  HashSet<Territory> possibles,boolean canResign, RequestReason reason) {
+                                  HashSet<Territory> possibles,Territory from,boolean canResign, RequestReason reason) {
 
         ArrayList<Territory> territoryList = new ArrayList<Territory>(possibles);
 

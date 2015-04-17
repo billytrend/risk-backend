@@ -54,7 +54,7 @@ public class DumbBotInterface implements PlayerInterface {
     /**
      * 
      */
-    public Territory getTerritory(Player player, HashSet<Territory> possibles,
+    public Territory getTerritory(Player player, HashSet<Territory> possibles,Territory from,
                                          boolean canResign, RequestReason reason) {
     	
         ArrayList<Territory> posList = new ArrayList<Territory>(possibles);
