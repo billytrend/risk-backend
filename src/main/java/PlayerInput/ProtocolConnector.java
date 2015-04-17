@@ -7,14 +7,34 @@ import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 
 import org.hamcrest.internal.ArrayIterator;
+import org.javatuples.Triplet;
 
 import GameEngine.RequestReason;
+import GameState.Card;
 import GameState.Territory;
+import PeerServer.protocol.cards.play_cards;
 import PeerServer.protocol.gameplay.attack;
 import PeerServer.protocol.gameplay.attack_capture;
 import PeerServer.protocol.gameplay.defend;
 import PeerServer.protocol.gameplay.fortify;
 import PeerServer.protocol.gameplay.setup;
+
+
+// INT
+// -- dice
+// attack choice dice
+// defend choice dice
+// -- armies
+// placing_armies_phase
+// reinforcement
+// post attack move
+
+// TER
+// attack from
+// arrach to
+// placing armies setup
+// placing armies phase
+// reinforcement phase
 
 public class ProtocolConnector {
 
@@ -59,8 +79,13 @@ public class ProtocolConnector {
         		next = responsesQueue.peek();
         		currentReason = next.getValue();   		
         		
-        		if(currentReason != servedReason)
-        			break;
+        		if(currentReason != servedReason){
+        			if(servedReason == RequestReason.ATTACK_CHOICE_FROM){
+        				if((currentReason != RequestReason.ATTACK_CHOICE_TO) &&
+        				(currentReason != RequestReason.ATTACK_CHOICE_DICE))
+        					break;
+        			}
+        		}
         		
         		try {
         			next = responsesQueue.take();
@@ -69,36 +94,30 @@ public class ProtocolConnector {
     			}
         	}
     		
-        	switch(servedReason){
-        		case ATTACK_CHOICE_DICE:
-        			
-        			break;
-        		case DEFEND_CHOICE_DICE:
-        			
-        			break;
-        		case ATTACK_CHOICE_FROM:
-        			
-        			break;
-        		case ATTACK_CHOICE_TO:
-        			
-        			break;
-        		case PLACING_ARMIES_SET_UP:
-        			createSetUpResponse(responseParts);
-        			break;
-        		case PLACING_REMAINING_ARMIES_PHASE:
-        			
-        			break;
-        		case PLACING_ARMIES_PHASE:
-        			
-        			break;
-        		case REINFORCEMENT_PHASE:
-        			
-        			break;
-        		case POST_ATTACK_MOVEMENT:
-        			
-        			break;
-        		
-        		// TODO: cards
+        	if(servedReason == null){
+    			createPlayCards(responseParts);
+        	}
+        	else{
+	        	switch(servedReason){
+	        		case ATTACK_CHOICE_FROM:
+	        			createAttackResponse(responseParts);
+	        			break;
+	        		case PLACING_ARMIES_SET_UP:
+	        			createSetUpResponse(responseParts);
+	        			break;
+	        		case PLACING_REMAINING_ARMIES_PHASE:
+	        			createSetUpResponse(responseParts); // TODO: not 100% sure about this        	
+	        			break;
+	        		case PLACING_ARMIES_PHASE:
+	        			createSetUpResponse(responseParts); // TODO: not sure!!!!
+	        			break;
+	        		case REINFORCEMENT_PHASE:
+	        			createFortifyResponse(responseParts); // TODO: ...
+	        			break;
+	        		case POST_ATTACK_MOVEMENT:
+	        			createAttackCapture(responseParts);
+	        			break;
+        		}
         	}
     		
 		} catch (InterruptedException e) {
@@ -119,7 +138,8 @@ public class ProtocolConnector {
     		System.out.println("ERROR - createSetUp");
     	}
     	
-    	setup setup = new setup(id, myID, ran.nextInt(60));
+    	setup setup = new setup(id, myID, ran.nextInt(50));
+    
     	try {
 			protocolQueue.put(setup);
 		} catch (InterruptedException e) {
@@ -155,8 +175,14 @@ public class ProtocolConnector {
     	payload[1] = idTo;
     	payload[2] = armies;
     	
-    	fortify fort = new fortify(payload, myID, ran.nextInt(60));
-    	protocolQueue.add(fort);
+    	fortify fort = new fortify(payload, myID, ran.nextInt(50));
+    	
+    	try {
+			protocolQueue.put(fort);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
     
@@ -171,7 +197,12 @@ public class ProtocolConnector {
     		System.out.println("ERROR - createDefendResponse");
     
     	defend def = new defend(armies, myID, ran.nextInt(50));
-    	protocolQueue.add(def);  	
+    	try {
+			protocolQueue.put(def);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  	
     }
     
     
@@ -201,7 +232,13 @@ public class ProtocolConnector {
     	payload[2] = armies;
     	
     	attack att = new attack(payload, myID, ran.nextInt(50));
-    	protocolQueue.add(att);
+    	
+    	try {
+			protocolQueue.put(att);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
     
@@ -232,50 +269,57 @@ public class ProtocolConnector {
     	payload[2] = armies;
     	
     	attack_capture att = new attack_capture(payload, myID, ran.nextInt(50));
-    	protocolQueue.add(att);
+    
+    	try {
+			protocolQueue.put(att);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
     
     public void createPlayCards(ArrayList<Object> responses){
+    	int[][] cards = new int[responses.size()][3];
+    	int armies = -1; // TODO: no idea?
     	
+    	for(int i = 0; i < responses.size(); i++){
+    		Object object = responses.get(i);
+    		if(object instanceof Triplet){
+    			Triplet<Card, Card, Card> set = (Triplet<Card, Card, Card>) object;
+    			int[] cardsIds = new int[3];
+    			
+    			//TODO: 
+    		//	cardsIds[0] = set.getValue0(). getId
+    		//	cardsIds[1] = set.getValue1(). getId
+    		//	cardsIds[2] = set.getValue2(). getId
+    			cards[i] = cardsIds;
+    		}
+    		else{
+    			System.out.println("Error in  createPlayCards");
+    		}
+    	}
+    	
+    	play_cards play_cards = new play_cards(cards, armies, myID, ran.nextInt(50));
+    	try {
+			protocolQueue.put(play_cards);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
+    
+
     
     public Integer getId(Object ob){
     	Territory territory = (ob instanceof Territory) ? (Territory) ob : null;
     	if(territory == null){
-    		System.out.println("Error in setup response creation.");
+    		System.out.println("Error in territory parsing");
     		return null;
     	}
     	
     	int id = territory.getNumeralId();
     	return id;
     }
-    
-
-    
-    
-    // INT
-    // -- dice
-    // attack choice dice
-    // defend choice dice
-    // -- armies
-    // placing_armies_phase
-    // reinforcement
-    // post attack move
-    
-    // TER
-    // attack from
-    // arrach to
-    // placing armies setup
-    // placing armies phase
-    // reinforcement phase
-    
-    
-    
-    
-    
-    
-    
-    
     
 }

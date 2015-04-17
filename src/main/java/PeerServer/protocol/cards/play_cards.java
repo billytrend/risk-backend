@@ -14,6 +14,14 @@ package PeerServer.protocol.cards;
  */
 public class play_cards {
 	
+	public play_cards(int[][] cards, int armies, int id, int ack){
+		this.payload = new payload();
+		this.payload.cards = cards;
+		this.payload.armies = armies;
+		player_id = id;
+		ack_id = ack;
+	}
+	
 	public payload payload;
 	public int player_id;
 	public int ack_id;
