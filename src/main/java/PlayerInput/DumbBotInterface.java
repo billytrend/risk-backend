@@ -105,7 +105,10 @@ public class DumbBotInterface implements PlayerInterface {
 
     @Override
     public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
-        return possibleCombinations.get(0);
+        if(possibleCombinations.size() == 0)
+        	return null;
+        else
+        	return possibleCombinations.get(0);
     }
 
     @Override
