@@ -38,7 +38,7 @@ public class BorderControl implements PlayerInterface {
 				if (numberOfArmies / 2 > max) {
 					return max;
 				} else
-					return numberOfArmies / 2;
+					return numberOfArmies+1 / 2;
 
 				// think about the difference in the size of the threats?
 			}
@@ -50,7 +50,7 @@ public class BorderControl implements PlayerInterface {
 
 	public Territory getTerritory(Player player, HashSet<Territory> possibles,
 			Territory from, boolean canResign, RequestReason reason) {
-
+System.out.println(reason);
 		ArrayList<HashSet<Territory>> clusters = TerritoryUtils.getAllClusters(
 				state, player);
 		switch (reason) {
@@ -124,8 +124,9 @@ public class BorderControl implements PlayerInterface {
 					}
 				}
 			}
+			break;
 		case ATTACK_CHOICE_TO:
-
+			
 			int armiesOnTerritory = ArmyUtils.getNumberOfArmiesOnTerritory(
 					player, from);
 			HashSet<Territory> enemyNeighbours = TerritoryUtils
@@ -141,16 +142,11 @@ public class BorderControl implements PlayerInterface {
 
 				}
 			}
+			break;
 
 		case REINFORCEMENT_PHASE:
 			// move armies outwards - look for weakest, unprotected territories
-			int lowestArmies = 100;
-			int armies=0;
-			//Territory weak
-			for(Territory t:possibles){
-				armies = ArmyUtils.getArmiesOnTerritory(player, t).size();
-				
-			}
+			return TerritoryUtils.getWeakestOwned(player, possibles);
 
 		}
 
@@ -180,7 +176,7 @@ public class BorderControl implements PlayerInterface {
 
 	public Triplet<Card, Card, Card> getCardChoice(Player player,
 			ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
-		return null;
+		return possibleCombinations.get(0);
 
 	}
 

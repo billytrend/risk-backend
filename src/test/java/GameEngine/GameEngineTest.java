@@ -112,7 +112,7 @@ public class GameEngineTest{
 		returnValue = gameEngine.testCall(PlayState.USING_REMAINING_ARMIES);
 		
 		assertFalse(ArmyUtils.somePlayerHasUndeployedArmies(gameState));
-		assertEquals(returnValue, PlayState.PLAYER_CONVERTING_CARDS);
+		assertEquals(returnValue, PlayState.PLAYER_BEGINNING_TURN);
 	}
 	
 	
@@ -278,7 +278,7 @@ public class GameEngineTest{
 		assertEquals(ArmyUtils.getArmiesOnTerritory(player2, sortedTerritories.get(2)).size(), 5);
 		assertEquals(ArmyUtils.getArmiesOnTerritory(player2, sortedTerritories.get(3)).size(), 10);
 		
-		assertEquals(returnValue, PlayState.PLAYER_CONVERTING_CARDS);
+		assertEquals(returnValue, PlayState.PLAYER_BEGINNING_TURN);
 		
 	}
 	

@@ -122,7 +122,7 @@ public class PlayerConnection implements PlayerInterface  {
     @Override
     public void reportStateChange(Change change) {
         try {
-            Thread.sleep(5);
+            Thread.sleep(50);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

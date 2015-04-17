@@ -6,8 +6,10 @@ import GameState.Player;
 import GameState.State;
 import LobbyServer.SingleGameServer;
 import PlayerInput.BorderControl;
+import PlayerInput.CommunistAggressive;
+import PlayerInput.CommunistDefensive;
 import PlayerInput.DumbBotInterface;
-
+import PlayerInput.PlayerInterface;
 
 import java.util.ArrayList;
 
@@ -27,15 +29,15 @@ public class SingleGameRunner {
         ArrayList<Player> players = new ArrayList<Player>();
         State gameState = RiskMapGameBuilder.buildGame(null);
         //pink
-        players.add(0, new Player(new DumbBotInterface()));
+        players.add(0, new Player(new CommunistAggressive(gameState)));
         //blue
-        players.add(1, new Player(new DumbBotInterface()));
+        players.add(1, new Player(new BorderControl(gameState)));
         //purple
-        players.add(2, new Player(new BorderControl(gameState)));
-        //green
-        players.add(3, new Player(new DumbBotInterface()));
-        //yellow
-        players.add(4, new Player(new DumbBotInterface()));
+        players.add(2, new Player(new CommunistAggressive(gameState)));
+//        //green
+//        players.add(3, new Player(new DumbBotInterface()));
+//        //yellow
+//        players.add(4, new Player(new DumbBotInterface()));
         SingleGameRunner s = new SingleGameRunner(players, gameState);
         s.start();
     }

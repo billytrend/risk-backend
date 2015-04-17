@@ -16,7 +16,7 @@ import java.util.Random;
 /**
  * Created by root on 08/04/2015.
  */
-public class CommunistDefensive {
+public class CommunistDefensive implements PlayerInterface{
     public State currentState;
     public Territory currentTer;
 
@@ -60,10 +60,10 @@ public class CommunistDefensive {
                 return territoryList.get(randNo);
 
             case PLACING_REMAINING_ARMIES_PHASE:
-                return TerritoryUtils.getWeakestOwned(player, territoryList);
+                return TerritoryUtils.getWeakestOwned(player, possibles);
 
             case PLACING_ARMIES_PHASE:
-                return TerritoryUtils.getWeakestOwned(player, territoryList);
+                return TerritoryUtils.getWeakestOwned(player, possibles);
 
             case ATTACK_CHOICE_FROM:
                 currentTer = TerritoryUtils.getStrongestOwned(player, territoryList);
@@ -135,5 +135,13 @@ public class CommunistDefensive {
         // TODO Auto-generated method stub
 
     }
+
+
+	@Override
+	public Territory getTerritory(Player player, HashSet<Territory> possibles,
+			Territory from, boolean canResign, RequestReason reason) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
