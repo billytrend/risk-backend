@@ -46,8 +46,8 @@ public class CommunistDefensive implements PlayerInterface{
      */
 
 
-    public Territory getTerritory(Player player,
-                                  HashSet<Territory> possibles,boolean canResign, RequestReason reason) {
+    public Territory getTerritory(Player player, HashSet<Territory> possibles,Territory from,
+                                  boolean canResign, RequestReason reason) {
 
         ArrayList<Territory> territoryList = new ArrayList<Territory>(possibles);
 
@@ -59,7 +59,6 @@ public class CommunistDefensive implements PlayerInterface{
         switch (reason) {
 
             case PLACING_ARMIES_SET_UP:
-
                 return territoryList.get(randNo);
 
             case PLACING_REMAINING_ARMIES_PHASE:
@@ -69,7 +68,7 @@ public class CommunistDefensive implements PlayerInterface{
                 return TerritoryUtils.getWeakestOwned(player, possibles);
 
             case ATTACK_CHOICE_FROM:
-                currentTer = TerritoryUtils.getStrongestOwned(player, territoryList);
+                currentTer = TerritoryUtils.getStrongestOwned(player, territoryList, currentState);
                 return currentTer;
 
             case ATTACK_CHOICE_TO:
@@ -140,11 +139,5 @@ public class CommunistDefensive implements PlayerInterface{
     }
 
 
-	@Override
-	public Territory getTerritory(Player player, HashSet<Territory> possibles,
-			Territory from, boolean canResign, RequestReason reason) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }

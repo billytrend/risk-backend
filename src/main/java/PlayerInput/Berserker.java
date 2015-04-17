@@ -36,6 +36,8 @@ public class Berserker implements PlayerInterface {
         return max;
     }
 
+
+
     /**
      * The choice can be made only from the set of possible territories.
      *
@@ -46,7 +48,7 @@ public class Berserker implements PlayerInterface {
 
 
     public Territory getTerritory(Player player,
-                                  HashSet<Territory> possibles,boolean canResign, RequestReason reason) {
+                                  HashSet<Territory> possibles, Territory from, boolean canResign, RequestReason reason) {
 
         ArrayList<Territory> territoryList = new ArrayList<Territory>(possibles);
 
@@ -62,13 +64,13 @@ public class Berserker implements PlayerInterface {
                 return territoryList.get(randNo);
 
             case PLACING_ARMIES_PHASE:
-                return TerritoryUtils.getWeakestOwned(player, territoryList);
+                return TerritoryUtils.getWeakestOwned(player, possibles);
 
             case ATTACK_CHOICE_FROM:
                 if(turnNo < 100){
                     return null;
                 }
-                currenTerr = TerritoryUtils.getStrongestOwned(player, territoryList);
+                currenTerr = TerritoryUtils.getStrongestOwned(player, territoryList, currentState);
                 return currenTerr;
 
             case ATTACK_CHOICE_TO:

@@ -44,7 +44,7 @@ public class theLooser implements PlayerInterface {
 
 
     public Territory getTerritory(Player player,
-                                  HashSet<Territory> possibles,boolean canResign, RequestReason reason) {
+                                  HashSet<Territory> possibles, Territory from, boolean canResign, RequestReason reason) {
 
         ArrayList<Territory> territoryList = new ArrayList<Territory>(possibles);
 
@@ -63,10 +63,10 @@ public class theLooser implements PlayerInterface {
                 return territoryList.get(randNo);
 
             case ATTACK_CHOICE_FROM:
-                return TerritoryUtils.getWeakestOwned(player, territoryList);
+                return TerritoryUtils.getWeakestOwned(player, possibles);
 
             case ATTACK_CHOICE_TO:
-                return TerritoryUtils.getStrongestOwned(player, territoryList);
+                return TerritoryUtils.getStrongestOwned(player, territoryList, currentState);
 
             case REINFORCEMENT_PHASE:
                 return null;
@@ -91,9 +91,9 @@ public class theLooser implements PlayerInterface {
                 return 1;
 
             case PLACING_REMAINING_ARMIES_PHASE:
-                return 1;
+                return max;
             case PLACING_ARMIES_PHASE:
-                return 1;
+                return max;
             case ATTACK_CHOICE_DICE:
                 return 1;
             case DEFEND_CHOICE_DICE:

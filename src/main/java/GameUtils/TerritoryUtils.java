@@ -170,15 +170,17 @@ public class TerritoryUtils {
 		}
 		return attackers;
 	}
-	
-    public static Territory getStrongestOwned(Player player, ArrayList<Territory> territoryList){
-        Territory strongest;
+
+
+
+    public static Territory getStrongestOwned(Player player, ArrayList<Territory> territoryList, State state){
+        //Territory strongest;
         int temp = 0;
         int index = 0;
         for(int i = 0; i < territoryList.size(); i++){
             int numberOfArmies = ArmyUtils.getNumberOfArmiesOnTerritory(player,
                     territoryList.get(i));
-            if (numberOfArmies > temp) {
+            if (numberOfArmies > temp && (getEnemyNeighbours(state, territoryList.get(i), player)).size() > 0 ) {
                 temp = numberOfArmies;
                 index = i;
             }
@@ -265,6 +267,29 @@ public class TerritoryUtils {
 
 
         if(armiesTo + (armiesTo / 4) >= armiesFrom)
+            flag = false;
+
+        return flag;
+    }
+
+    public static boolean goodIdeaAgr(State state, Territory fromTer, Territory toTer){
+        boolean flag = true;
+
+        Player ownerFrom = PlayerUtils.getTerritoryOwner(state,
+                fromTer);
+        Player ownerTo = PlayerUtils.getTerritoryOwner(state,
+                toTer);
+
+
+        int armiesFrom = ArmyUtils
+                .getNumberOfArmiesOnTerritory(ownerFrom,
+                        fromTer);
+        int armiesTo = ArmyUtils
+                .getNumberOfArmiesOnTerritory(ownerTo,
+                        toTer);
+
+
+        if(armiesTo >= armiesFrom)
             flag = false;
 
         return flag;
