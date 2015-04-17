@@ -6,6 +6,7 @@ import LobbyServer.LobbyState.ObjectFromClient.GameComms.*;
 import com.esotericsoftware.minlog.Log;
 import org.junit.Test;
 
+import java.net.UnknownHostException;
 import java.util.HashSet;
 
 public class CommTest {
@@ -27,6 +28,10 @@ public class CommTest {
         Log.debug(Jsonify.getObjectAsJsonString(e));
         Log.debug(Jsonify.getObjectAsJsonString(h));
         Log.debug(Jsonify.getObjectAsJsonString(i));
+    }
+
+    @Test
+    public void testSingleGameRun() throws UnknownHostException {
     }
 
 //    @Test

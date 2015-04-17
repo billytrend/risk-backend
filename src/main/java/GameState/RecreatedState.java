@@ -7,7 +7,7 @@ public class RecreatedState extends State {
 	
 	public RecreatedState(ArrayList<String> playerIds, ArrayList<String> territoryIds, int startingArmies){
 				
-		super(new ArrayList<Player>());
+		super();
 		
 		for(String id : playerIds){
 			Player newPlayer = new Player(null, startingArmies, id);

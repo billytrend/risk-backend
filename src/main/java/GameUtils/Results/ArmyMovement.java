@@ -8,9 +8,9 @@ import GameUtils.ArmyUtils;
 
 public class ArmyMovement extends ArmyChange {
 	
-	private String sourceId;
-	private String targetId;
-	
+	private final String sourceId;
+    private final String targetId;
+
 	public ArmyMovement(String playerId, String sourceId, String targetId, int number, PlayState actionPlayed) {
 		super(playerId, number, actionPlayed);
 		this.sourceId = sourceId;

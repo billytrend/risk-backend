@@ -4,6 +4,7 @@ import GameState.Card;
 import GameState.CardType;
 import GameState.Player;
 import GameState.State;
+import com.esotericsoftware.minlog.Log;
 import org.javatuples.Triplet;
 import org.paukov.combinatorics.Factory;
 import org.paukov.combinatorics.Generator;
@@ -14,18 +15,24 @@ import java.util.Random;
 
 public class CardUtils {
 
-    public static int getCurrentArmyPayout(State state) {
-        int[] initial = new int[]{4, 6, 8};
-        if (state.getNumberOfCardSetsUsed() < initial.length) return initial[state.getNumberOfCardSetsUsed()];
-        int payout = (state.getNumberOfCardSetsUsed() - 1) * 5;
-        if (payout > 60) return 60;
+    public static int getCurrentArmyPayout(Player player) {
+        int payout = 4;
+        int setsUsed = player.getNumberOfCardSetsUsed();
+        //first 5 sets, add 2 to payout
+        for(int i = 0; i < setsUsed && i < 4 ;i++) payout +=2;
+        //sixth set add 3
+        if(setsUsed >=5) payout +=3;
+        //add another 5 for each set after the sixth
+        for(int i = 5; i < setsUsed; i++) payout +=5;
+        
         return payout;
+        
     }
     
-    public static void incrementNumberOfCardSetsUsed(State state) {
-        state.setNumberOfCardSetsUsed(state.getNumberOfCardSetsUsed() + 1);
+    public static void incrementNumberOfCardSetsUsed(Player player) {
+        player.incrementNumberOfCardSetsUsed();
     }
-    
+
     public static void addCard(State s, Card c) {
         s.getCards().add(c);
     }
@@ -43,6 +50,7 @@ public class CardUtils {
     }
     
     public static void givePlayerCard(Card c, Player p) {
+    	Log.debug("give player card");
         c.setOwner(p);
     }
     
@@ -91,6 +99,8 @@ public class CardUtils {
     public static ArrayList<Triplet<Card, Card, Card>> getPossibleCardCombinations(State s, Player p) {
         ArrayList<Card> playersCards = getPlayersCards(s, p);
         ArrayList<Triplet<Card, Card, Card>> combinations = new ArrayList<Triplet<Card, Card, Card>>();
+
+        if (playersCards.size() == 0) return combinations;
 
         ArrayList<Card> horseCards = getCardsOfType(playersCards, CardType.HORSE);
         ArrayList<Card> soldierCards = getCardsOfType(playersCards, CardType.SOLDIER);
@@ -142,8 +152,6 @@ public class CardUtils {
                 combinations.add(trip);
             }
         }
-
-
         return combinations;
     }
 

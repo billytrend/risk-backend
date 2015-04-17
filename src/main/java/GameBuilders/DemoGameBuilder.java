@@ -5,7 +5,6 @@ import GameState.State;
 import GameState.Territory;
 import GameUtils.ContinentUtils;
 import GameUtils.TerritoryUtils;
-import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
 
 import java.util.ArrayList;
@@ -31,7 +30,7 @@ public class DemoGameBuilder {
         }
         
         State state = new State(ps);
-        
+
         // creating territories
         Territory demoLandA = new Territory("demoland", 0);
         Territory demoLandB = new Territory("egstate", 1);

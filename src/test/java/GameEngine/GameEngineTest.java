@@ -1,13 +1,17 @@
 package GameEngine;
 
-import java.util.*;
 import GameBuilders.DemoGameBuilder;
+import GameState.Player;
+import GameState.State;
+import GameState.Territory;
+import GameUtils.ArmyUtils;
+import GameUtils.TerritoryUtils;
+import PlayerInput.PlayerInterface;
 import com.esotericsoftware.minlog.Log;
-import GameState.*;
-import GameUtils.*;
-import PlayerInput.*;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -270,7 +274,7 @@ public class GameEngineTest{
 		assertEquals(ArmyUtils.getArmiesOnTerritory(player2, sortedTerritories.get(2)).size(), 5);
 		assertEquals(ArmyUtils.getArmiesOnTerritory(player2, sortedTerritories.get(3)).size(), 10);
 		
-		assertEquals(returnValue, PlayState.PLAYER_ENDED_GO);
+		assertEquals(returnValue, PlayState.PLAYER_CONVERTING_CARDS);
 		
 	}
 	
@@ -305,7 +309,7 @@ public class GameEngineTest{
 		int predictedMaxNumOfArmies = 200;
 		for(int i = 0; i < predictedMaxNumOfArmies; i++){
 			when(player1Interface.getNumberOfArmies((Player) anyObject(), eq(i),
-					(RequestReason) anyObject())).thenReturn(i);
+					(RequestReason) anyObject(), (Territory) anyObject(), (Territory) anyObject())).thenReturn(i);
 		}
 
 	}
@@ -341,10 +345,10 @@ public class GameEngineTest{
 		for(int i = 0; i < predictedMaxNumOfArmies; i++){
 			if(i == 0){
 				when(player2Interface.getNumberOfArmies((Player) anyObject(), eq(i),
-						eq(RequestReason.REINFORCEMENT_PHASE))).thenReturn(0);
+						eq(RequestReason.REINFORCEMENT_PHASE), (Territory) anyObject(), (Territory) anyObject())).thenReturn(0);
 			}else{
 				when(player2Interface.getNumberOfArmies((Player) anyObject(), eq(i),
-						eq(RequestReason.PLACING_ARMIES_PHASE))).thenReturn(1);
+						eq(RequestReason.PLACING_ARMIES_PHASE), (Territory) anyObject(), (Territory) anyObject())).thenReturn(1);
 			}
 		}
 	}

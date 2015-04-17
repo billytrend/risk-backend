@@ -1,11 +1,11 @@
 package GameEngine;
 
-import java.util.ArrayList;
-
 import GameState.Player;
 import GameState.State;
 import GameUtils.PlayerUtils;
 import GameUtils.TerritoryUtils;
+
+import java.util.ArrayList;
 
 public class WinConditions {
 	private int numOfPlayersRemaining;
@@ -34,6 +34,7 @@ public class WinConditions {
 	public int getNumOfPlayersRemaining() {
 		return numOfPlayersRemaining;
 	}
+
 	public void setNumOfPlayersRemaining(int numberOfPlayersRemained) {
 		this.numOfPlayersRemaining = numberOfPlayersRemained;
 	}

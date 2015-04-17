@@ -15,6 +15,10 @@ public abstract class Change {
 		this.actingPlayerId = actingPlayerId;
 		this.actionPlayed = actionPlayed;
 	}
+
+	public Change(String actingPlayerId){
+		this.actingPlayerId = actingPlayerId;
+	}
 	
 	
 	public abstract void applyChange(State state);

@@ -1,15 +1,10 @@
 package GameUtils.Results;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.SimpleGraph;
-
-import GameState.Player;
 import GameState.RecreatedState;
 import GameState.State;
-import GameState.Territory;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 
 public class StateChangeRecord {

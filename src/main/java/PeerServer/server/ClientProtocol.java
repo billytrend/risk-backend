@@ -1,41 +1,24 @@
 package PeerServer.server;
 
-import static com.esotericsoftware.minlog.Log.debug;
-
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import javax.swing.JTable.PrintMode;
-
-import com.esotericsoftware.minlog.Log;
-
-import GameBuilders.RiskMapGameBuilder;
 import GameEngine.GameEngine;
 import GameState.Player;
 import GameState.State;
 import GeneralUtils.Jsonify;
+import PeerServer.protocol.gameplay.setup;
 import PeerServer.protocol.general.acknowledgement;
 import PeerServer.protocol.general.leave_game;
 import PeerServer.protocol.general.timeout;
-import PeerServer.protocol.setup.accept_join_game;
-import PeerServer.protocol.setup.initialise_game;
-import PeerServer.protocol.setup.join_game;
-import PeerServer.protocol.setup.ping;
-import PeerServer.protocol.setup.players_joined;
-import PeerServer.protocol.setup.ready;
-import PeerServer.protocol.setup.reject_join_game;
-import PeerServer.server.HostProtocol.ChangeState;
+import PeerServer.protocol.setup.*;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
 import PlayerInput.RemotePlayer;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import static com.esotericsoftware.minlog.Log.debug;
 
 
 public class ClientProtocol extends AbstractProtocol{
@@ -115,59 +98,115 @@ public class ClientProtocol extends AbstractProtocol{
 		}
 	}
 
-
 	@Override
 	protected void takeGameAction() {
+		String command;
 		switch(protocolState){
 		case PLAY_CARDS:
 			debug("\n PLAY_CARDS");
-			protocolState = play_cards("");
-			break;
-		case DRAW_CARD:
-			debug("\n DRAW_CARD");
-			//this.protocolState = draw_card(command);
+			command = client.receive();
+			if(command.contains("timeout"))
+				protocolState = timeout(command);
+			if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+				protocolState = play_cards(command);
 			break;
 		case DEPLOY:
 			debug("\n DEPLOY");
-			protocolState = deploy("");			
+			command = client.receive();
+			if(command.contains("timeout"))
+				protocolState = timeout(command);
+			if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+			protocolState = deploy(command);			
 			break;
 		case ATTACK:
 			debug("\n ATTACK");
-			protocolState = attack("");
-			//TODO: remember to check if it is ATTACK CAPTURE/ FORTIFY/ATTACK again
+			command = client.receive();
+			if(command.contains("timeout"))
+				protocolState = timeout(command);
+			if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+			protocolState = attack(command);
 			break;
 		case DEFEND:
 			debug("\n DEFEND");
-			//create a defend command for host
-			protocolState = defend("");
+			command = client.receive();
+			if(command.contains("timeout"))
+				protocolState = timeout(command);
+			if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+			protocolState = defend(command);
 			break;
 		case ATTACK_CAPTURE:
 			debug("\n ATTACK_CAPTURE");
-			protocolState = attack_capture("");
+			command = client.receive();
+			if(command.contains("timeout"))
+				protocolState = timeout(command);
+			if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+			protocolState = attack_capture(command);
 			break;
 		case FORTIFY:
 			debug("\n FORTIFY");
-			protocolState = fortify("");
+			command = client.receive();
+			if(command.contains("timeout"))
+				protocolState = timeout(command);
+			if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+			protocolState = fortify(command);
 			break;
 		case ACK:
 			debug("\n ACK");
-			protocolState = acknowledge("");
+			command = client.receive();
+			if(command.contains("timeout"))
+				protocolState = timeout(command);
+			if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+			protocolState = acknowledge(command);
 			break;
 		case ROLL_HASH:
 			debug("\n ROLL_HASH");
-			protocolState = roll_hash("");
+			command = client.receive();
+			if(command.contains("timeout"))
+				protocolState = timeout(command);
+			if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+			protocolState = roll_hash(command);
 			break;
 		case ROLL_NUMBER:
 			debug("\n ROLL_NUMBER");
-			protocolState = roll_number("");
+			command = client.receive();
+			if(command.contains("timeout"))
+				protocolState = timeout(command);
+			if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+			protocolState = roll_number(command);
 			break;
 		case TIMEOUT:
 			debug("\n TIMEOUT");
-			protocolState = timeout("");
+			command = client.receive();
+			if(command.contains("leave"))
+				protocolState = leave_game(command);
+			else
+			protocolState = timeout(command);
 			break;
 		case LEAVE_GAME:
 			debug("\n LEAVE_GAME");
-			this.protocolState = leave_game("");
+			command = client.receive();
+			if(command.contains("timeout"))
+				protocolState = timeout(command);
+			else
+			this.protocolState = leave_game(command);
 			break;	
 		default:
 			System.out.println("in default not good");
@@ -280,7 +319,6 @@ public class ClientProtocol extends AbstractProtocol{
 		return ProtocolState.PLAYERS_JOINED;
 	}
 
-
 	@Override
 	protected ProtocolState ping(String command){
 		ping ping = (ping) Jsonify.getJsonStringAsObject(command, ping.class);
@@ -309,7 +347,6 @@ public class ClientProtocol extends AbstractProtocol{
 
 		return ProtocolState.PING;
 	}
-
 
 	@Override
 	protected ProtocolState ready(String command){
@@ -444,10 +481,9 @@ public class ClientProtocol extends AbstractProtocol{
 	protected ProtocolState setup_game(String command){
 		if(command.contains("timeout"))
 			return timeout(command);
-		Object setup = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.gameplay.setup.class);
+		Object setup = Jsonify.getJsonStringAsObject(command, setup.class);
 		return protocolState;	
 	}
-
 
 	public static void main(String[] args) {
 		ClientProtocol protocol = new ClientProtocol();
