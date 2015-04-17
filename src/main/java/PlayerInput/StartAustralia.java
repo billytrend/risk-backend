@@ -23,7 +23,9 @@ public class StartAustralia implements PlayerInterface {
     public StartAustralia(State a){
         this.currentState = a;
     }
+    public StartAustralia() {
 
+    }
 
     /**
      * *
