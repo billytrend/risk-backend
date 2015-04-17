@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 package PeerServer.protocol.gameplay;
 
 /**
@@ -34,6 +32,12 @@ public class attack {
 	
 	public attack(int sourceId, int destId, int armies, int playerID, int ack_id){
 		payload = new int[]{sourceId, destId, armies};
+		this.player_id = playerID;
+		this.ack_id = ack_id;
+	}
+
+	public attack(int[] payload, int playerID, int ack_id){
+		this.payload = payload;
 		this.player_id = playerID;
 		this.ack_id = ack_id;
 	}

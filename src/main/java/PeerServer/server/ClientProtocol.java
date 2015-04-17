@@ -4,6 +4,7 @@ import GameEngine.GameEngine;
 import GameState.Player;
 import GameState.State;
 import GeneralUtils.Jsonify;
+import PeerServer.protocol.gameplay.setup;
 import PeerServer.protocol.general.acknowledgement;
 import PeerServer.protocol.general.leave_game;
 import PeerServer.protocol.general.timeout;
@@ -480,7 +481,7 @@ public class ClientProtocol extends AbstractProtocol{
 	protected ProtocolState setup_game(String command){
 		if(command.contains("timeout"))
 			return timeout(command);
-		Object setup = Jsonify.getJsonStringAsObject(command, PeerServer.protocol.setup.setup.class);
+		Object setup = Jsonify.getJsonStringAsObject(command, setup.class);
 		return protocolState;	
 	}
 

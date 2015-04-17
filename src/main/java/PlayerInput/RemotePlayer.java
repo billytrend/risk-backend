@@ -28,64 +28,6 @@ import PeerServer.protocol.dice.*;
 import PeerServer.protocol.gameplay.*;
 
 /**
- * 
- * {
-	"command": "setup",
-	"payload": 5,
-	"player_id": 0,
-	"ack_id": 1
-}
- * {
-	"command": "deploy",
-	"payload": [
-		[1, 2],
-		[2, 2]
-	],
-	"player_id": 0,
-	"ack_id": 1
-}
-
-{
-	"command": "play_cards",
-	"payload": {
-		"cards": [
-			[1, 2, 3],
-			[4, 5, 6]
-		],
-		"armies": 3
-	},
-	"player_id": 0,
-	"ack_id": 1
-}
-
- * {
-	"command": "attack",
-	"payload": [1, 2, 2],
-	"player_id": 0,
-	"ack_id": 1
-}
-
-{
-	"command": "defend",
-	"payload": 2,
-	"player_id": 0,
-	"ack_id": 1
-}
-
-{
-	"command": "attack_capture",
-	"payload": [1, 2, 2],
-	"player_id": 0,
-	"ack_id": 1
-}
-
-{
-	"command": "fortify",
-	"payload": [1, 2, 5],
-	"player_id": 0,
-	"ack_id": 1
-}
- * @author pjc8
  *
  */
 

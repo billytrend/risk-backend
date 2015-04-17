@@ -99,6 +99,8 @@ public class DumbBotInterface implements PlayerInterface {
         emit(player, "Chose " + max);
         return ran.nextInt(max + 1);
     }
+    
+    // TODO: you have to play cards if you have more than 5
 
     @Override
     public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
