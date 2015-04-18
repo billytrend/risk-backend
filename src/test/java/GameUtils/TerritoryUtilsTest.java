@@ -379,13 +379,16 @@ public class TerritoryUtilsTest {
 		ArmyUtils.givePlayerNArmies(player1, 15);
 		ArmyUtils.givePlayerNArmies(player2, 15);
 		
-		ArmyUtils.deployArmies(player1, egstate, 1);
-		ArmyUtils.deployArmies(player1, otherplace, 4);
+		ArmyUtils.deployArmies(player2, egstate, 2);
+		ArmyUtils.deployArmies(player1, otherplace, 5);
 		ArmyUtils.deployArmies(player2, demoland, 3);
 		ArmyUtils.deployArmies(player1, someplace, 2);
 		
 		assertTrue(TerritoryUtils.goodIdea(gameState, otherplace, demoland, 1));
-		
+		assertFalse(TerritoryUtils.goodIdea(gameState, someplace, demoland, 1));
+		assertFalse(TerritoryUtils.goodIdea(gameState, someplace, egstate, 1));
+		assertTrue(TerritoryUtils.goodIdea(gameState,  otherplace,demoland,1.25));
+		assertFalse(TerritoryUtils.goodIdea(gameState, someplace, otherplace, 1.25));
 	}
 	
 	
