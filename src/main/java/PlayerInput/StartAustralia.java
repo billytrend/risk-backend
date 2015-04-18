@@ -12,6 +12,7 @@ import org.javatuples.Triplet;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -50,7 +51,6 @@ public class StartAustralia implements PlayerInterface {
                                   HashSet<Territory> possibles,Territory from,boolean canResign, RequestReason reason) {
 
         ArrayList<Territory> territoryList = new ArrayList<Territory>(possibles);
-
         switch (reason) {
 
             case PLACING_ARMIES_SET_UP:
@@ -64,10 +64,10 @@ public class StartAustralia implements PlayerInterface {
 
             case ATTACK_CHOICE_FROM:
             	ArrayList<Territory> australia = ContinentUtils.getContinentById(currentState, "australia").getTerritories();
-               return TerritoryUtils.getStrongestOwned(player, territoryList, currentState);
+               return TerritoryUtils.getStrongestOwned(player, possibles);
 
             case ATTACK_CHOICE_TO:
-                return TerritoryUtils.getStrongestEnemy(currentState, territoryList, "siam");
+                return TerritoryUtils.getStrongestEnemy(currentState, possibles, "siam");
 
             case REINFORCEMENT_PHASE:
                 return null;
@@ -139,6 +139,13 @@ public class StartAustralia implements PlayerInterface {
 
 	@Override
 	public void reportStateChange(Change change) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void createResponse() {
 		// TODO Auto-generated method stub
 		
 	}

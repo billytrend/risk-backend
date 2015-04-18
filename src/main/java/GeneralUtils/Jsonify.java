@@ -1,21 +1,17 @@
 package GeneralUtils;
 
-import java.util.Arrays;
-
 import GameState.State;
 import GeneralUtils.Serialisers.GameStateSerialiser;
 import GeneralUtils.Serialisers.LobbySerialiser;
 import LobbyServer.LobbyState.Lobby;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParseException;
 
 public class Jsonify {
 
     public static Gson gson = new GsonBuilder()
-            .registerTypeAdapter(Lobby.class, new LobbySerialiser())
             .serializeNulls()
+            .registerTypeAdapter(Lobby.class, new LobbySerialiser())
             .registerTypeAdapter(State.class, new GameStateSerialiser())
             .create();
     

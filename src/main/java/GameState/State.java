@@ -29,9 +29,6 @@ public class State {
 	private PlayerQueue playerQueue;
 	private ArrayList<Continent> continents = new ArrayList<Continent>();
 	private final ArrayList<Card> cards = new ArrayList<Card>();
-//	private int numberOfCardSetsUsed = 0;
-	    
-	private int numberOfCardSetsUsed = 0;
 	
 	public State(ArrayList<Player> players){
 		this();
@@ -39,7 +36,6 @@ public class State {
     }
     
     public State() {
-    	numberOfCardSetsUsed = 0;
     	players = new ArrayList<Player>();
     }
 
@@ -47,7 +43,7 @@ public class State {
         this.players = players;
         this.playerQueue = new PlayerQueue(players);
 
-        playerMapping = new HashMap<String, Player>();
+    	playerMapping = new HashMap<String, Player>();
         for(Player player : players){
             playerMapping.put(player.getId(), player);
         }

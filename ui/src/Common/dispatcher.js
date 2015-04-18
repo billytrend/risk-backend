@@ -28,6 +28,7 @@ var AppDispatcher = assign(new Dispatcher(), {
             action: action
         });
     }
+
 });
 
 module.exports = AppDispatcher;

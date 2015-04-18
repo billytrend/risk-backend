@@ -260,8 +260,7 @@ public class RiskMapGameBuilder {
 	public static void createCardDeck(State state) throws FileNotFoundException{
 		ArrayList<String> t = state.getTerritoryIds();
 		File cards = new File("cards");
-		Scanner scanner;
-		scanner = new Scanner(cards);
+		Scanner scanner = new Scanner(cards);
 		while(scanner.hasNextLine()){
 			String[] values = scanner.nextLine().split(":|,|\"");
 			int territory = Integer.parseInt(values[0]);
@@ -281,6 +280,7 @@ public class RiskMapGameBuilder {
 		}
 		CardUtils.addCard(state, new Card(null, CardType.WILD));
 		CardUtils.addCard(state, new Card(null, CardType.WILD));
+		scanner.close();
 	}
 
 	/*

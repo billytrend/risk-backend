@@ -1,6 +1,7 @@
 package PlayerInput;
 
 import GameEngine.RequestReason;
+
 import GameState.Card;
 import GameState.Player;
 import GameState.State;
@@ -11,7 +12,6 @@ import org.javatuples.Triplet;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Random;
 
 /**
  * Created by root on 08/04/2015.
@@ -49,17 +49,12 @@ public class CommunistDefensive implements PlayerInterface{
     public Territory getTerritory(Player player, HashSet<Territory> possibles,Territory from,
                                   boolean canResign, RequestReason reason) {
 
-        ArrayList<Territory> territoryList = new ArrayList<Territory>(possibles);
-
-        Random rand = new Random();
-        int randNo = TerritoryUtils.randInt(0, territoryList.size()-1);
-
         //System.out.println(TerritoryUtils.getWeakestOwned(player, territoryList).getId());
 
         switch (reason) {
 
             case PLACING_ARMIES_SET_UP:
-                return territoryList.get(randNo);
+                return TerritoryUtils.getRandomTerritory(currentState, possibles);
 
             case PLACING_REMAINING_ARMIES_PHASE:
                 return TerritoryUtils.getWeakestOwned(player, possibles);
@@ -68,11 +63,11 @@ public class CommunistDefensive implements PlayerInterface{
                 return TerritoryUtils.getWeakestOwned(player, possibles);
 
             case ATTACK_CHOICE_FROM:
-                currentTer = TerritoryUtils.getStrongestOwned(player, territoryList, currentState);
+                currentTer = TerritoryUtils.getStrongestOwned(player, possibles);
                 return currentTer;
 
             case ATTACK_CHOICE_TO:
-                Territory weakestTer = TerritoryUtils.getWeakestEnemy(currentState, territoryList, currentTer.getId());
+                Territory weakestTer = TerritoryUtils.getWeakestEnemy(currentState, possibles, currentTer.getId());
                 if(TerritoryUtils.goodIdea(currentState, currentTer, weakestTer)){
                     return weakestTer;
                 } else {
@@ -80,7 +75,7 @@ public class CommunistDefensive implements PlayerInterface{
                         return null;
                     }
                 }
-                return territoryList.get(randNo);
+                return TerritoryUtils.getRandomTerritory(currentState, possibles);
 
             case REINFORCEMENT_PHASE:
                 if(canResign){
@@ -118,11 +113,9 @@ public class CommunistDefensive implements PlayerInterface{
             // links.
             case POST_ATTACK_MOVEMENT:
                 return max; // Moves the maximum number of armies post attack.
+		default:
+			return 0;
         }
-
-
-        return 0;
-
     }
 
     /**
@@ -138,6 +131,10 @@ public class CommunistDefensive implements PlayerInterface{
 
     }
 
+    @Override
+    public void createResponse() {
+
+    }
 
 
 }

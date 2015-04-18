@@ -11,7 +11,6 @@ import org.javatuples.Triplet;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Random;
 
 /**
  * Created by root on 08/04/2015.
@@ -48,21 +47,12 @@ public class Berserker implements PlayerInterface {
 
 
     public Territory getTerritory(Player player,
-                                  HashSet<Territory> possibles, Territory from, boolean canResign, RequestReason reason) {
-
-        ArrayList<Territory> territoryList = new ArrayList<Territory>(possibles);
-
-        int randNo = TerritoryUtils.randInt(0, territoryList.size() - 1);
+                                  HashSet<Territory> possibles,Territory from, boolean canResign, RequestReason reason) {
 
         switch (reason) {
-
             case PLACING_ARMIES_SET_UP:
-
-                return territoryList.get(randNo);
-
             case PLACING_REMAINING_ARMIES_PHASE:
-                return territoryList.get(randNo);
-
+                return TerritoryUtils.getRandomTerritory(currentState, possibles);
             case PLACING_ARMIES_PHASE:
                 return TerritoryUtils.getWeakestOwned(player, possibles);
 
@@ -70,11 +60,11 @@ public class Berserker implements PlayerInterface {
                 if(turnNo < 100){
                     return null;
                 }
-                currenTerr = TerritoryUtils.getStrongestOwned(player, territoryList, currentState);
+                currenTerr = TerritoryUtils.getStrongestOwned(player, possibles);
                 return currenTerr;
 
             case ATTACK_CHOICE_TO:
-                return TerritoryUtils.getStrongestEnemy(currentState,territoryList,currenTerr.getId());
+                return TerritoryUtils.getStrongestEnemy(currentState,possibles,currenTerr.getId());
 
             case REINFORCEMENT_PHASE:
                 turnNo++;
@@ -115,8 +105,10 @@ public class Berserker implements PlayerInterface {
             // links.
             case POST_ATTACK_MOVEMENT:
                 return max; // Moves the maximum number of armies post attack.
+		default:
+			return 0;
         }
-        return 0;
+       
 
     }
 
@@ -130,6 +122,11 @@ public class Berserker implements PlayerInterface {
 
     public void reportStateChange(Change change) {
         // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void createResponse() {
 
     }
 
