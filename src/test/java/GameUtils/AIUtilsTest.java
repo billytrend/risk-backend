@@ -25,6 +25,7 @@ public class AIUtilsTest {
 	Territory egstate = null;
 	Territory someplace = null;
 	Territory otherplace = null;
+	Player player1, player2, player3;
 
 	@Before
 	public void stateSetUp(){
@@ -44,19 +45,18 @@ public class AIUtilsTest {
 			if(id.equals("otherplace"))
 				otherplace = t;
 		}
+		ArrayList<Player> players = gameState.getPlayers();
+		player1 = players.get(0);
+		player2 = players.get(1);
+		player3 = players.get(2);
+		ArmyUtils.givePlayerNArmies(player1, 15);
+		ArmyUtils.givePlayerNArmies(player2, 15);
+		ArmyUtils.givePlayerNArmies(player3, 15);
 	}
 
 	@Test
 	public void getStrongestTerritoryTest(){
 		HashSet<Territory> territorySet = new HashSet<Territory>();
-		
-		ArrayList<Player> players = gameState.getPlayers();
-		Player player1 = players.get(0);
-		Player player2 = players.get(1);
-		Player player3 = players.get(2);
-		ArmyUtils.givePlayerNArmies(player1, 10);
-		ArmyUtils.givePlayerNArmies(player2, 10);
-		ArmyUtils.givePlayerNArmies(player3, 10);
 		
 		assertEquals(null, AIUtils.getStrongestTerritory(gameState, territorySet));
 		territorySet = TerritoryUtils.getAllTerritories(gameState);
@@ -90,13 +90,7 @@ public class AIUtilsTest {
 	public void getWeakestTerritoryTest(){
 		HashSet<Territory> territorySet = new HashSet<Territory>();
 		
-		ArrayList<Player> players = gameState.getPlayers();
-		Player player1 = players.get(0);
-		Player player2 = players.get(1);
-		Player player3 = players.get(2);
-		ArmyUtils.givePlayerNArmies(player1, 15);
-		ArmyUtils.givePlayerNArmies(player2, 15);
-		ArmyUtils.givePlayerNArmies(player3, 15);
+		
 		
 		assertEquals(AIUtils.getWeakestTerritory(gameState, territorySet),null);
 		territorySet = TerritoryUtils.getAllTerritories(gameState);
@@ -127,12 +121,6 @@ public class AIUtilsTest {
 	@Test
 	public void goodIdeaTest(){
 		
-		ArrayList<Player> players = gameState.getPlayers();
-		Player player1 = players.get(0);
-		Player player2 = players.get(1);
-		ArmyUtils.givePlayerNArmies(player1, 15);
-		ArmyUtils.givePlayerNArmies(player2, 15);
-		
 		ArmyUtils.deployArmies(player2, egstate, 2);
 		ArmyUtils.deployArmies(player1, otherplace, 5);
 		ArmyUtils.deployArmies(player2, demoland, 3);
@@ -145,5 +133,48 @@ public class AIUtilsTest {
 		assertFalse(AIUtils.goodIdea(gameState, someplace, otherplace, 1.25));
 	}
 	
+	@Test
+	public void getAllClustersTest(){
+		ArmyUtils.deployArmies(player1, egstate, 2);
+		ArmyUtils.deployArmies(player1, otherplace, 2);
+		ArrayList<HashSet<Territory>> clusters = AIUtils.getAllClusters(gameState, player1);
+		
+		
+		assertEquals(1, clusters.size());
+		assertEquals(2, clusters.get(0).size());
+		
+		ArmyUtils.deployArmies(player2, demoland, 2);
+		
+		clusters = AIUtils.getAllClusters(gameState, player2);
+		assertEquals(1, clusters.size());
+		assertEquals(1, clusters.get(0).size());
+		
+		ArmyUtils.deployArmies(player2, someplace, 2);
+		
+		clusters = AIUtils.getAllClusters(gameState, player2);
+
+		assertEquals(2, clusters.size());
+		assertEquals(1, clusters.get(0).size());
+		assertEquals(1, clusters.get(1).size());
+
+		for(Territory t: territories){
+			ArmyUtils.deployArmies(player1, t, 2);
+		}
+		clusters = AIUtils.getAllClusters(gameState, player1);
+		assertEquals(1, clusters.size());
+		assertEquals(4, clusters.get(0).size());
+	}
+	
+	@Test
+	public void getRandomTerritoryTest(){
+		HashSet<Territory> map = new HashSet<Territory>();
+		for(Territory t: territories){
+			map.add(t);
+		}
+		Territory random = AIUtils.getRandomTerritory(gameState, map);
+		assertTrue(random.equals(egstate) || random.equals(someplace) || random.equals(demoland) || random.equals(otherplace));
+		Territory nullTerr = AIUtils.getRandomTerritory(gameState, new HashSet<Territory>());
+	}
+
 	
 }

@@ -91,5 +91,10 @@ public class PlayerUtilsTest {
 		// even the ones that have already lost
 		assertEquals(gameState.getPlayers().size(), 2);
 	}
+	
+	@Test
+	public void playersInGameTest(){
+		assertEquals(2, PlayerUtils.getPlayersInGame(gameState).size());
+	}
 
 }

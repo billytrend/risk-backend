@@ -55,6 +55,9 @@ public class TerritoryUtilsTest {
 		}
 	}
 	
+	//@Test
+	//public void getTerritoryWithNameTest()
+	
 	@Test
 	public void getAllTerritoriesTest() {
 		assertEquals(TerritoryUtils.getAllTerritories(gameState).size(), 4);
@@ -301,10 +304,17 @@ public class TerritoryUtilsTest {
 	@Test
 	public void getAllCountryNamesTest(){
 		ArrayList<String> countryNames = TerritoryUtils.getAllCountryNames(gameState);
-	//	assertEquals("demoland", countryNames.get(0));
-	//	assertEquals("egstate", countryNames.get(1));
-		//assertEquals("otherplace", countryNames.get(2));
-		
+		assertEquals(4, countryNames.size());
+		assertTrue(countryNames.contains("demoland"));
+		assertTrue(countryNames.contains("egstate"));
+		assertTrue(countryNames.contains("otherplace"));
+		assertTrue(countryNames.contains("someplace"));
+	}
+	
+	@Test
+	public void getAllBorderPairsTest(){
+		ArrayList<String[]> pairs = TerritoryUtils.getAllBorderPairs(gameState);
+		assertEquals(5, pairs.size());
 	}
 	
 	

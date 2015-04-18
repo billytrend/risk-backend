@@ -15,21 +15,6 @@ import static com.esotericsoftware.minlog.Log.debug;
  */
 public class PlayerUtils {
 
-    /**
-     * @param state
-     * @param player
-     * @return
-     */
-    public static ArrayList<Continent> playerContinents(State state, Player player) {
-        ArrayList<Continent> continents = new ArrayList<Continent>();
-        HashSet<Territory> playersTerritories = TerritoryUtils.getPlayersTerritories(player);
-        for (Continent c : state.getContinents()) {
-            if (playersTerritories.containsAll(c.getTerritories())) {
-                continents.add(c);
-            }
-        }
-        return continents;
-    }
 
     /**
      * @param p

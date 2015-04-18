@@ -16,43 +16,33 @@ import org.junit.Test;
 import java.util.ArrayList;
 
 public class BorderControlTest {
+	Player play1, play2, play3, play4;
 
+	@Before
+	public void setup() throws InterruptedException {
 
-    @Before
-    public void setUp() throws Exception {
-    }
+		PlayerInterface[] interfaces = new PlayerInterface[] {
+				new DumbBotInterface(), new DumbBotInterface(),
+				new DumbBotInterface(), new DumbBotInterface() };
 
-  
+		State gameState = RiskMapGameBuilder.buildGame(interfaces);
 
-    @Test
-    public void testBorderControl() throws InterruptedException {
-        Log.NONE();
+		play1 = new Player(new BorderControl(gameState));
+		play2 = new Player(new CommunistAggressive(gameState));
+		play3 = new Player(new DumbBotInterface());
+		play4 = new Player(new DumbBotInterface());
 
-        PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface(),
-	    		new DumbBotInterface(), new DumbBotInterface()};
+		ArrayList<Player> playerList = new ArrayList<Player>();
+		playerList.add(play1);
+		playerList.add(play2);
+		playerList.add(play3);
+		playerList.add(play4);
 
-        State gameState = RiskMapGameBuilder.buildGame(interfaces);
+		gameState.setPlayers(playerList);
+	}
 
-        Player play1 = new Player(new BorderControl(gameState));
-        Player play2 = new Player(new CommunistAggressive(gameState));
-        Player play3 = new Player(new DumbBotInterface());
-        Player play4 = new Player(new DumbBotInterface());
-
-        ArrayList<Player> playerList = new ArrayList<Player>();
-        playerList.add(play1);
-        playerList.add(play2);
-        playerList.add(play3);
-        playerList.add(play4);
-
-        gameState.setPlayers(playerList);
-//        Log.DEBUG = true;
-
-        gameState.print();
-
-        // TODO: add assertions about state.
-    }
-    @After
-    public void tearDown() throws Exception {
-
+	@Test
+    public void numberOfDice(){
+    	
     }
 }

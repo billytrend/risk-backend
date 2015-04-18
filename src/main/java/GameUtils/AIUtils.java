@@ -108,12 +108,14 @@ public class AIUtils {
 		public static Territory getRandomTerritory(State state,
 				HashSet<Territory> possibles) {
 			Random rand = new Random();
+			if(possibles.size() > 0){
 			int randomNumber = rand.nextInt(possibles.size());
 			int count = 0;
 			for (Territory territory : possibles) {
 				if (count == randomNumber)
 					return territory;
 				count++;
+			}
 			}
 			return null;
 		}

@@ -10,9 +10,7 @@ import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultEdge;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Random;
 
 /**
  * A class that contains the methods that have to do with any 'territory
@@ -20,15 +18,6 @@ import java.util.Random;
  *
  */
 public class TerritoryUtils {
-
-	public static Territory getTerritoryWithName(State state, String name) {
-		for (Territory t : getAllTerritories(state)) {
-			if (t.getId().equals(name)) {
-				return t;
-			}
-		}
-		return null;
-	}
 
 	/**
 	 * @param state
@@ -169,20 +158,6 @@ public class TerritoryUtils {
 		}
 		return attackers;
 	}
-	
-  
-    public static int randInt(int min, int max) {
-
-        // NOTE: Usually this should be a field rather than a method
-        // variable so that it is not re-seeded every call.
-        Random rand = new Random();
-
-        // nextInt is normally exclusive of the top value,
-        // so add 1 to make it inclusive
-        int randomNum = rand.nextInt((max - min) + 1) + min;
-
-        return randomNum;
-    }
 
 	/**
 	 * 
@@ -209,17 +184,9 @@ public class TerritoryUtils {
 		state.addMapping(territory.getId(), territory);
 	}
 
-	/**
-	 * 
-	 * @param state
-	 * @param a
-	 * @param b
-	 */
 	public static void addBorder(State state, Territory a, Territory b) {
 		state.getTerritories().addEdge(a, b);
 	}
-
-
 
 	public static Territory getTerritoryByName(State state, String name) {
 		HashSet<Territory> allTerritories = getAllTerritories(state);
