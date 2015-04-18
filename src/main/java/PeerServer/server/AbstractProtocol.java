@@ -70,11 +70,12 @@ public abstract class AbstractProtocol implements Runnable {
 	protected Timer timer = new Timer();
 	protected ChangeState currentTask;
 	protected Thread mainThread = Thread.currentThread();
-	protected boolean timerSet;
+	protected boolean timerSet = false;
 	protected ProtocolState nextStateAfterAck;
 	
 	protected int numOfPlayers;
 
+	
 	public void run(){
 		state = new State();
 
@@ -94,6 +95,7 @@ public abstract class AbstractProtocol implements Runnable {
 		}
 		System.out.println("end");
 	}
+	
 
 	protected abstract void takeSetupAction();
 
@@ -641,7 +643,7 @@ public abstract class AbstractProtocol implements Runnable {
 			synchronized(this){
 				try {
 					// wait for a bit second to let the main thread reach interrupt
-					wait(3000);
+					wait(4000);
 				} catch (Exception e) {}
 
 				if(protocolState == ProtocolState.JOIN_GAME)
