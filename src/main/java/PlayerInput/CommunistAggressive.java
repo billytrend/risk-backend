@@ -83,15 +83,15 @@ public class CommunistAggressive implements PlayerInterface{
 
             case PLACING_REMAINING_ARMIES_PHASE:
             case PLACING_ARMIES_PHASE:
-                return TerritoryUtils.getWeakestOwned(player, possibles);
+                return TerritoryUtils.getWeakestTerritory(currentState,possibles);
 
             case ATTACK_CHOICE_FROM:
-                currentTer = TerritoryUtils.getStrongestOwned(player, possibles);
+                currentTer = TerritoryUtils.getStrongestTerritory(currentState,possibles);
                 return currentTer;
 
             case ATTACK_CHOICE_TO:
-                Territory weakestTer = TerritoryUtils.getWeakestEnemy(currentState, possibles);
-                if(TerritoryUtils.goodIdeaAgr(currentState, currentTer, weakestTer)){
+                Territory weakestTer = TerritoryUtils.getWeakestTerritory(currentState,possibles);
+                if(TerritoryUtils.goodIdea(currentState, currentTer, weakestTer, 1)){
                     return weakestTer;
                 } else {
                     if(canResign){

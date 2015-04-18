@@ -2,10 +2,8 @@ package PlayerInput;
 
 import GameEngine.RequestReason;
 import GameState.Card;
-import GameState.CardType;
 import GameState.Player;
 import GameState.Territory;
-import GameUtils.CardUtils;
 import GameUtils.Results.Change;
 import PeerServer.protocol.gameplay.*;
 
@@ -16,15 +14,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.LinkedBlockingQueue;
+
 
 import PeerServer.protocol.cards.*;
-import PeerServer.protocol.dice.*;
-import PeerServer.protocol.gameplay.*;
 
 /**
  *

@@ -170,13 +170,14 @@ public class TerritoryUtils {
 		return attackers;
 	}
 	
-    public static Territory getStrongestOwned(Player player, HashSet<Territory> territoryList){
+    public static Territory getStrongestTerritory(State state, HashSet<Territory> territoryList){
         Territory strongest = null;
-        int temp = 0;
+        int highestNumberOfSoldiers = 0;
         for(Territory t:territoryList){
+        	Player player = PlayerUtils.getTerritoryOwner(state, t);
             int numberOfArmies = ArmyUtils.getNumberOfArmiesOnTerritory(player,t);
-            if (numberOfArmies > temp) {
-                temp = numberOfArmies;
+            if (numberOfArmies > highestNumberOfSoldiers) {
+            	highestNumberOfSoldiers = numberOfArmies;
                 strongest = t;
             }
         }
@@ -184,62 +185,27 @@ public class TerritoryUtils {
         return strongest;
     }
 
-    public static Territory getWeakestOwned(Player player, HashSet<Territory> territoryList){
+
+    public static Territory getWeakestTerritory(State state, HashSet<Territory> territoryList){
+
+        int lowestNumberOfSoldiers = Integer.MAX_VALUE;
         Territory weakest = null;
-        int temp = Integer.MAX_VALUE;
-        
-        for(Territory territory: territoryList){
-            int numberOfArmies = ArmyUtils.getNumberOfArmiesOnTerritory(player,
-                    territory);
-            if (numberOfArmies < temp) {
-                temp = numberOfArmies;
-                weakest = territory;
-            }
-        }
-
-        return weakest;
-    }
-
-	  public static Territory getStrongestEnemy(State state, HashSet<Territory> territoryList){
-
-	        int temp = 0;
-	        Territory strongest = null;
-
-	        for (Territory t : territoryList) {
-	            Player enemyOwner = PlayerUtils.getTerritoryOwner(state,t);
-	            int numberOfEnemySoldiers = ArmyUtils
-	                    .getNumberOfArmiesOnTerritory(enemyOwner,t);
-
-
-	            if (numberOfEnemySoldiers > temp) {
-	                temp = numberOfEnemySoldiers;
-	                strongest = t;
-	                }
-	            }
-
-	        return strongest;
-	        }
-
-    public static Territory getWeakestEnemy(State state, HashSet<Territory> territoryList){
-
-        int temp = Integer.MAX_VALUE;
-        Territory weakest = getRandomTerritory(state, territoryList);
-
         for (Territory t : territoryList) {
-            Player enemyOwner = PlayerUtils.getTerritoryOwner(state,t);
-            int numberOfEnemySoldiers = ArmyUtils
-                    .getNumberOfArmiesOnTerritory(enemyOwner,t);
+            Player player = PlayerUtils.getTerritoryOwner(state,t);
+            int numberOfSoldiers = ArmyUtils
+                    .getNumberOfArmiesOnTerritory(player,t);
 
 
-            if (numberOfEnemySoldiers < temp) {
-                temp = numberOfEnemySoldiers;
+
+            if (numberOfSoldiers < lowestNumberOfSoldiers) {
+            	lowestNumberOfSoldiers = numberOfSoldiers;
                 weakest = t;
             }
         }
 
         return weakest;
     }
-    public static boolean goodIdea(State state, Territory fromTer, Territory toTer){
+    public static boolean goodIdea(State state, Territory fromTer, Territory toTer, double ratioToOne){
         boolean flag = true;
 
         Player ownerFrom = PlayerUtils.getTerritoryOwner(state,
@@ -256,30 +222,7 @@ public class TerritoryUtils {
                         toTer);
 
 
-        if(armiesTo + (armiesTo / 4) >= armiesFrom)
-            flag = false;
-
-        return flag;
-    }
-
-    public static boolean goodIdeaAgr(State state, Territory fromTer, Territory toTer){
-        boolean flag = true;
-
-        Player ownerFrom = PlayerUtils.getTerritoryOwner(state,
-                fromTer);
-        Player ownerTo = PlayerUtils.getTerritoryOwner(state,
-                toTer);
-
-
-        int armiesFrom = ArmyUtils
-                .getNumberOfArmiesOnTerritory(ownerFrom,
-                        fromTer);
-        int armiesTo = ArmyUtils
-                .getNumberOfArmiesOnTerritory(ownerTo,
-                        toTer);
-
-
-        if(armiesTo >= armiesFrom)
+        if(armiesTo * ratioToOne >= armiesFrom)
             flag = false;
 
         return flag;

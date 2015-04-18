@@ -67,10 +67,10 @@ public class GrabContinent implements PlayerInterface {
 
             case ATTACK_CHOICE_FROM:
                 ArrayList<Territory> australia = ContinentUtils.getContinentById(currentState, continentID).getTerritories();
-                return TerritoryUtils.getStrongestOwned(player, possibles);
+                return TerritoryUtils.getStrongestTerritory(currentState, possibles);
 
             case ATTACK_CHOICE_TO:
-                return TerritoryUtils.getStrongestEnemy(currentState, possibles);
+                return TerritoryUtils.getStrongestTerritory(currentState, possibles);
 
             case REINFORCEMENT_PHASE:
                 return null;

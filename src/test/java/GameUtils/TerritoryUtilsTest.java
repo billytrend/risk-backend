@@ -26,14 +26,32 @@ public class TerritoryUtilsTest {
 	private State gameState;
 	private Territory[] territories;
 	PlayerInterface[] interfaces;
+	Territory demoland = null;
+	Territory egstate = null;
+	Territory someplace = null;
+	Territory otherplace = null;
 
 	@Before
 	public void stateSetUp(){
-		interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface()};
+		interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface(), new DumbBotInterface()};
 		gameState = DemoGameBuilder.buildGame(interfaces);
 		territories = new Territory[gameState.getTerritories().vertexSet().size()];
 		gameState.getTerritories().vertexSet().toArray(territories);
 		GameEngine engine = new GameEngine(gameState);
+		
+		
+		
+		for(Territory t : territories){
+			String id = t.getId();
+			if(id.equals("demoland"))
+				demoland = t;
+			if(id.equals("egstate"))
+				egstate = t;
+			if(id.equals("someplace"))
+				someplace = t;
+			if(id.equals("otherplace"))
+				otherplace = t;
+		}
 	}
 	
 	@Test
@@ -41,25 +59,12 @@ public class TerritoryUtilsTest {
 		assertEquals(TerritoryUtils.getAllTerritories(gameState).size(), 4);
 		assertTrue(TerritoryUtils.getAllTerritories(gameState).containsAll(Arrays.asList(territories)));
 		
-		gameState = DemoGameBuilder.buildTestGame(2, 7, interfaces);
+		gameState = DemoGameBuilder.buildTestGame(3, 7, interfaces);
 		assertEquals(TerritoryUtils.getAllTerritories(gameState).size(), 7);
 	}
 	
 	@Test
 	public void areNeighboursTest() {
-		Territory demoland = null;
-		Territory egstate = null;
-		Territory someplace = null;
-		
-		for(Territory t : territories){
-			String id = t.getId();
-			if(id.equals("demoland"))
-				demoland = t;
-			else if(id.equals("egstate"))
-				egstate = t;
-			else if(id.equals("someplace"))
-				someplace = t;
-		}
 		
 		assertTrue(TerritoryUtils.areNeighbours(gameState, demoland, egstate));
 		assertTrue(TerritoryUtils.areNeighbours(gameState, egstate, someplace));
@@ -141,22 +146,6 @@ public class TerritoryUtilsTest {
 	
 	@Test
 	public void getNeighboursTest(){
-		Territory demoland = null;
-		Territory egstate = null;
-		Territory someplace = null;
-		Territory otherplace = null;
-		
-		for(Territory t : territories){
-			String id = t.getId();
-			if(id.equals("demoland"))
-				demoland = t;
-			else if(id.equals("egstate"))
-				egstate = t;
-			else if(id.equals("someplace"))
-				someplace = t;
-			else if(id.equals("otherplace"))
-				otherplace = t;
-		}
 		
 		HashSet<Territory> neighboursDemoland = TerritoryUtils.getNeighbours(gameState, demoland);
 		HashSet<Territory> neighboursEgstate = TerritoryUtils.getNeighbours(gameState, egstate);
@@ -173,22 +162,6 @@ public class TerritoryUtilsTest {
 	
 	@Test
 	public void getEnemyNeighboursTest(){
-		Territory demoland = null;
-		Territory egstate = null;
-		Territory someplace = null;
-		Territory otherplace = null;
-		
-		for(Territory t : territories){
-			String id = t.getId();
-			if(id.equals("demoland"))
-				demoland = t;
-			else if(id.equals("egstate"))
-				egstate = t;
-			else if(id.equals("someplace"))
-				someplace = t;
-			else if(id.equals("otherplace"))
-				otherplace = t;
-		}
 		
 		ArrayList<Player> players = gameState.getPlayers();
 		Player player1 = players.get(0);
@@ -211,22 +184,6 @@ public class TerritoryUtilsTest {
 	
 	@Test
 	public void getFriendlyNeighboursTest(){
-		Territory demoland = null;
-		Territory egstate = null;
-		Territory someplace = null;
-		Territory otherplace = null;
-		
-		for(Territory t : territories){
-			String id = t.getId();
-			if(id.equals("demoland"))
-				demoland = t;
-			else if(id.equals("egstate"))
-				egstate = t;
-			else if(id.equals("someplace"))
-				someplace = t;
-			else if(id.equals("otherplace"))
-				otherplace = t;
-		}
 		
 		ArrayList<Player> players = gameState.getPlayers();
 		Player player1 = players.get(0);
@@ -271,22 +228,6 @@ public class TerritoryUtilsTest {
 	
 	@Test
 	public void getPossibleAttackingTerritories(){
-		Territory demoland = null;
-		Territory egstate = null;
-		Territory someplace = null;
-		Territory otherplace = null;
-		
-		for(Territory t : territories){
-			String id = t.getId();
-			if(id.equals("demoland"))
-				demoland = t;
-			else if(id.equals("egstate"))
-				egstate = t;
-			else if(id.equals("someplace"))
-				someplace = t;
-			else if(id.equals("otherplace"))
-				otherplace = t;
-		}
 		
 		ArrayList<Player> players = gameState.getPlayers();
 		Player player1 = players.get(0);
@@ -310,22 +251,6 @@ public class TerritoryUtilsTest {
 	
 	@Test
 	public void getDeployableTest(){
-		Territory demoland = null;
-		Territory egstate = null;
-		Territory someplace = null;
-		Territory otherplace = null;
-		
-		for(Territory t : territories){
-			String id = t.getId();
-			if(id.equals("demoland"))
-				demoland = t;
-			else if(id.equals("egstate"))
-				egstate = t;
-			else if(id.equals("someplace"))
-				someplace = t;
-			else if(id.equals("otherplace"))
-				otherplace = t;
-		}
 		
 		ArrayList<Player> players = gameState.getPlayers();
 		Player player1 = players.get(0);
@@ -356,22 +281,7 @@ public class TerritoryUtilsTest {
 	
 	@Test
 	public void addBorderTest() {
-		Territory demoland = null;
-		Territory egstate = null;
-		Territory someplace = null;
-		Territory otherplace = null;
-		
-		for(Territory t : territories){
-			String id = t.getId();
-			if(id.equals("demoland"))
-				demoland = t;
-			else if(id.equals("egstate"))
-				egstate = t;
-			else if(id.equals("someplace"))
-				someplace = t;
-			else if(id.equals("otherplace"))
-				otherplace = t;
-		}
+	
 		
 		HashSet<Territory> neighboursDemoland = TerritoryUtils.getNeighbours(gameState, demoland);
 		assertEquals(neighboursDemoland.size(), 2);
@@ -380,5 +290,104 @@ public class TerritoryUtilsTest {
 		neighboursDemoland = TerritoryUtils.getNeighbours(gameState, demoland);
 		assertEquals(neighboursDemoland.size(), 3);
 	}
+	
+	@Test
+	public void getStrongestTerritoryTest(){
+		HashSet<Territory> territorySet = new HashSet<Territory>();
+		
+		ArrayList<Player> players = gameState.getPlayers();
+		Player player1 = players.get(0);
+		Player player2 = players.get(1);
+		Player player3 = players.get(2);
+		ArmyUtils.givePlayerNArmies(player1, 10);
+		ArmyUtils.givePlayerNArmies(player2, 10);
+		ArmyUtils.givePlayerNArmies(player3, 10);
+		
+		assertEquals(null, TerritoryUtils.getStrongestTerritory(gameState, territorySet));
+		territorySet = TerritoryUtils.getAllTerritories(gameState);
+		ArmyUtils.deployArmies(player1, egstate, 1);
+		ArmyUtils.deployArmies(player1, otherplace, 3);
+		ArmyUtils.deployArmies(player1, demoland, 4);
+		ArmyUtils.deployArmies(player1, someplace, 2);
+		
+		assertEquals(demoland, TerritoryUtils.getStrongestTerritory(gameState, territorySet));
+		
+		ArmyUtils.destroyArmies(player1, egstate, 1);
+		ArmyUtils.destroyArmies(player1, otherplace, 1);
+		ArmyUtils.destroyArmies(player1, someplace, 1);
+		
+		ArmyUtils.deployArmies(player2, egstate, 1);
+		ArmyUtils.deployArmies(player2, otherplace, 5);
+		ArmyUtils.deployArmies(player3, someplace, 3);
+		
+		HashSet<Territory> enemyTerritories = new HashSet<Territory>();
+		enemyTerritories.add(egstate);
+		enemyTerritories.add(otherplace);
+		enemyTerritories.add(someplace);
+		assertEquals(otherplace,TerritoryUtils.getStrongestTerritory(gameState, enemyTerritories));
+		
+		
+		
+		
+		
+	}
+	@Test
+	public void getWeakestTerritoryTest(){
+		HashSet<Territory> territorySet = new HashSet<Territory>();
+		
+		ArrayList<Player> players = gameState.getPlayers();
+		Player player1 = players.get(0);
+		Player player2 = players.get(1);
+		Player player3 = players.get(2);
+		ArmyUtils.givePlayerNArmies(player1, 15);
+		ArmyUtils.givePlayerNArmies(player2, 15);
+		ArmyUtils.givePlayerNArmies(player3, 15);
+		
+		assertEquals(TerritoryUtils.getWeakestTerritory(gameState, territorySet),null);
+		territorySet = TerritoryUtils.getAllTerritories(gameState);
+		ArmyUtils.deployArmies(player1, egstate, 1);
+		ArmyUtils.deployArmies(player1, otherplace, 3);
+		ArmyUtils.deployArmies(player1, demoland, 4);
+		ArmyUtils.deployArmies(player1, someplace, 2);
+		
+		assertEquals(TerritoryUtils.getWeakestTerritory(gameState, territorySet), egstate);
+		
+		ArmyUtils.destroyArmies(player1, egstate, 1);
+		ArmyUtils.destroyArmies(player1, otherplace, 3);
+		ArmyUtils.destroyArmies(player1, someplace, 2);
+		
+		ArmyUtils.deployArmies(player2, egstate, 5);
+		ArmyUtils.deployArmies(player2, otherplace, 1);
+		ArmyUtils.deployArmies(player3, someplace, 3);
+		
+		HashSet<Territory> enemyTerritories = new HashSet<Territory>();
+		enemyTerritories.add(egstate);
+		enemyTerritories.add(otherplace);
+		enemyTerritories.add(someplace);
+		assertEquals(otherplace,TerritoryUtils.getWeakestTerritory(gameState, enemyTerritories));
+		
+		
+	}
+	
+	@Test
+	public void goodIdeaTest(){
+		HashSet<Territory> territorySet = new HashSet<Territory>();
+		
+		ArrayList<Player> players = gameState.getPlayers();
+		Player player1 = players.get(0);
+		Player player2 = players.get(1);
+		ArmyUtils.givePlayerNArmies(player1, 15);
+		ArmyUtils.givePlayerNArmies(player2, 15);
+		
+		ArmyUtils.deployArmies(player1, egstate, 1);
+		ArmyUtils.deployArmies(player1, otherplace, 4);
+		ArmyUtils.deployArmies(player2, demoland, 3);
+		ArmyUtils.deployArmies(player1, someplace, 2);
+		
+		assertTrue(TerritoryUtils.goodIdea(gameState, otherplace, demoland, 1));
+		
+	}
+	
+	
 	
 }
