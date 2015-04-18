@@ -222,7 +222,7 @@ public class TerritoryUtils {
 
     public static Territory getWeakestEnemy(State state, HashSet<Territory> territoryList, String territoryID){
 
-        int temp = 0;
+        int temp = Integer.MAX_VALUE;
         Territory weakest = null;
 
         for (Territory t : territoryList) {
