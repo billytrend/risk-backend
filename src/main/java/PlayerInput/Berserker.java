@@ -78,6 +78,9 @@ public class Berserker implements PlayerInterface {
 
             case REINFORCEMENT_PHASE:
                 turnNo++;
+                if(turnNo > 100){
+                    return TerritoryUtils.getWeakestOwned(player, possibles);
+                }
                 return null;
             default:
                 break;

@@ -54,13 +54,13 @@ public class StartAustralia implements PlayerInterface {
         switch (reason) {
 
             case PLACING_ARMIES_SET_UP:
-                return getAustralianContinentTerritory(currentState);
+                return getAustralianContinentTerritory(currentState, territoryList);
 
             case PLACING_REMAINING_ARMIES_PHASE:
-                return getAustralianContinentTerritory(currentState);
+                return getAustralianContinentTerritory(currentState, territoryList);
 
             case PLACING_ARMIES_PHASE:
-                return getAustralianContinentTerritory(currentState);
+                return getAustralianContinentTerritory(currentState, territoryList);
 
             case ATTACK_CHOICE_FROM:
             	ArrayList<Territory> australia = ContinentUtils.getContinentById(currentState, "australia").getTerritories();
@@ -82,11 +82,20 @@ public class StartAustralia implements PlayerInterface {
 
 
 
-    private Territory getAustralianContinentTerritory(State state){
+    private Territory getAustralianContinentTerritory(State state, ArrayList<Territory> possibles){
         Random rand = new Random();
         ArrayList<Territory> territoryList = ContinentUtils.getContinentById(state, "australia").getTerritories();
-        int randomNum = rand.nextInt((territoryList.size()) + 1);
-        return territoryList.get(randomNum);
+        int randomNum = rand.nextInt((territoryList.size()));
+
+        for (int i = 0; i < possibles.size(); i++) {
+             if(territoryList.get(randomNum).equals(possibles.get(i))){
+                 return territoryList.get(randomNum);
+             }
+        }
+
+        randomNum = rand.nextInt(possibles.size());
+
+        return possibles.get(randomNum);
     }
 
     /**
@@ -124,7 +133,7 @@ public class StartAustralia implements PlayerInterface {
      * @return a triplet of cards which represents choice
      */
     public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
-        return null;
+        return possibleCombinations.get(0);
     }
 
 
