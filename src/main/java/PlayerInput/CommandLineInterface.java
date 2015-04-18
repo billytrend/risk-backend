@@ -62,7 +62,7 @@ public class CommandLineInterface implements PlayerInterface {
     /**
      * 
      */
-    public Territory getTerritory(Player player, HashSet<Territory> possibles, boolean canResign, RequestReason reason) {
+    public Territory getTerritory(Player player, HashSet<Territory> possibles, Territory from, boolean canResign, RequestReason reason) {
         ArrayList<Territory> posList = new ArrayList<Territory>(possibles);
         emit(player, reason.toString());
         String out = "Please choose a territory";

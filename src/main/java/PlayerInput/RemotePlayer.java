@@ -88,7 +88,7 @@ public class RemotePlayer implements PlayerInterface  {
 	
 
 	@Override
-	public Territory getTerritory(Player player, HashSet<Territory> possibles, boolean canResign, RequestReason reason) {
+	public Territory getTerritory(Player player, HashSet<Territory> possibles,Territory from, boolean canResign, RequestReason reason) {
 		if(lastReason == null){
 			lastReason = reason;
 			try{

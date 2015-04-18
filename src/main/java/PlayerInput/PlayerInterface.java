@@ -35,7 +35,7 @@ public interface PlayerInterface {
      * @return
      */
     public Territory getTerritory(Player player,
-    		HashSet<Territory> possibles,boolean canResign, RequestReason reason);
+    		HashSet<Territory> possibles,Territory from, boolean canResign, RequestReason reason);
 
     /**
      * The choice can only be made up to the specified max value.

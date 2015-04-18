@@ -3,10 +3,12 @@ package GameEngine;
 import GameState.*;
 import GameUtils.ArmyUtils;
 import GameUtils.CardUtils;
+import GameUtils.ContinentUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.Results.*;
 import GameUtils.TerritoryUtils;
 import PlayerInput.PlayerInterface;
+
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -120,9 +122,9 @@ public class GameEngine implements Runnable {
 				this.playState = useARemainingArmy();
 				break;
 
-			case PLAYER_CONVERTING_CARDS:
+			case PLAYER_BEGINNING_TURN:
 				debug("\nCARDS");
-				this.playState = convertCards();
+				this.playState = giveAdditionalArmies();
 				break;
 
 			case PLAYER_PLACING_ARMIES:
@@ -212,7 +214,7 @@ public class GameEngine implements Runnable {
 		// player specifies the country
 		debug(currentPlayer.getClass().toString());
 		Territory toFill = currentPlayer.getCommunicationMethod()
-				.getTerritory(currentPlayer, emptyTerritories, false, RequestReason.PLACING_ARMIES_SET_UP);
+				.getTerritory(currentPlayer, emptyTerritories, null, false, RequestReason.PLACING_ARMIES_SET_UP);
 		debug(toFill.getId());
 
 		// deploy a single army in this place
@@ -257,7 +259,7 @@ public class GameEngine implements Runnable {
 			// if none of the other players has undeployed armies
 			// the game goes to the next state
 			if (!ArmyUtils.somePlayerHasUndeployedArmies(gameState)) {
-				return PLAYER_CONVERTING_CARDS;
+				return PLAYER_BEGINNING_TURN;
 			}
 			
 			// keep going for the sake of the player who still has remaining armies
@@ -269,7 +271,7 @@ public class GameEngine implements Runnable {
 		
 		// ask a player what country they want to pick
 		Territory toFill = currentPlayer.getCommunicationMethod()
-				.getTerritory(currentPlayer, usersTerritories, false, RequestReason.PLACING_REMAINING_ARMIES_PHASE);
+				.getTerritory(currentPlayer, usersTerritories, null, false, RequestReason.PLACING_REMAINING_ARMIES_PHASE);
 
 		// deploy the armies
         Change stateChange = new ArmyPlacement(currentPlayer.getId(), toFill.getId(), 1, USING_REMAINING_ARMIES);
@@ -280,29 +282,45 @@ public class GameEngine implements Runnable {
 		return USING_REMAINING_ARMIES;
 
 	}
+	
+	private PlayState giveAdditionalArmies(){
 
-	/**
-	 * TODO: all things card related!!
-	 * @return
-	 */
-	private PlayState convertCards() {
+		int payout = TerritoryUtils.getPlayersTerritories(currentPlayer).size()/3;
 
-        int payout = CardUtils.getCurrentArmyPayout(currentPlayer);
+		if(payout < 3) payout = 3;
+
+		payout += ContinentUtils.getContinentPayout(gameState, currentPlayer);
+
+		payout += convertCards();
 
         ArmyHandout handout = new ArmyHandout(currentPlayer.getId(), payout, playState);
 
         applyAndReportChange(gameState, handout);
 
+		return PLAYER_PLACING_ARMIES;
+	}
+
+	/**
+	 * TODO: all things card related!!
+	 * @return
+	 */
+	private int convertCards() {
+
         ArrayList<Triplet<Card, Card, Card>> possibleCombinations = CardUtils.getPossibleCardCombinations(gameState, currentPlayer);
-		
+
+		if (possibleCombinations.size() == 0) return 0;
+
+		int cardPayout = CardUtils.getCurrentArmyPayout(currentPlayer);
+
 		Triplet<Card, Card, Card> choice = currentPlayer.getCommunicationMethod().getCardChoice(currentPlayer, possibleCombinations);
-		
-		if (choice == null)
-			return PLAYER_PLACING_ARMIES;
 
-		CardUtils.releaseCards(choice);
+        if (choice == null) return 0;
 
-		return PLAYER_CONVERTING_CARDS;
+
+        CardUtils.releaseCards(choice);
+
+		return cardPayout;
+
 	}
 	
 
@@ -330,7 +348,7 @@ public class GameEngine implements Runnable {
 		
 		// find out which country the player wants to place in
 		Territory toFill = currentPlayer.getCommunicationMethod()
-				.getTerritory(currentPlayer, playersTerritories, false, RequestReason.PLACING_ARMIES_PHASE);
+				.getTerritory(currentPlayer, playersTerritories, null, false, RequestReason.PLACING_ARMIES_PHASE);
 
 		if(toFill == null){
 			System.out.println("BUG - player need to place more armies!");
@@ -368,7 +386,7 @@ public class GameEngine implements Runnable {
 
 		// find out which country the player wants to attack from
 		Territory attacking = currentPlayer.getCommunicationMethod()
-				.getTerritory(currentPlayer, possibleAttackingTerritories, true, RequestReason.ATTACK_CHOICE_FROM);
+				.getTerritory(currentPlayer, possibleAttackingTerritories, null, true, RequestReason.ATTACK_CHOICE_FROM);
 		
 		if(attacking == null){
 			debug("PLAYER DOESNT WANT TO INVADE");
@@ -382,7 +400,7 @@ public class GameEngine implements Runnable {
 			
 		// ask the player which country he wants to attack
 		Territory defending = currentPlayer
-				.getCommunicationMethod().getTerritory(currentPlayer, attackable, true, RequestReason.ATTACK_CHOICE_TO);
+				.getCommunicationMethod().getTerritory(currentPlayer, attackable, attacking, true, RequestReason.ATTACK_CHOICE_TO);
 		
 		if(defending == null){
 			return PLAYER_MOVING_ARMIES;
@@ -515,7 +533,7 @@ public class GameEngine implements Runnable {
 		
 		// find out which one the player wants to move from
 		Territory source = currentPlayer
-				.getCommunicationMethod().getTerritory(currentPlayer, canBeDeployedFrom, true, RequestReason.REINFORCEMENT_PHASE);
+				.getCommunicationMethod().getTerritory(currentPlayer, canBeDeployedFrom, null, true, RequestReason.REINFORCEMENT_PHASE);
 		
 		//------------------------------------
 		// HANDLE HERE NOT MOVING RESPONCE? - null country selection?
@@ -530,7 +548,7 @@ public class GameEngine implements Runnable {
 
 		// get the choice made
 		Territory target = currentPlayer
-				.getCommunicationMethod().getTerritory(currentPlayer, canBeDeployedTo, true, RequestReason.REINFORCEMENT_PHASE);
+				.getCommunicationMethod().getTerritory(currentPlayer, canBeDeployedTo, source, true, RequestReason.REINFORCEMENT_PHASE);
 
         if(target == null){
             debug("PLAYER DOESNT WANT TO MOVE");
@@ -565,7 +583,7 @@ public class GameEngine implements Runnable {
 		
 		currentPlayer = gameState.getPlayerQueue().next();
 		
-		return PLAYER_CONVERTING_CARDS;
+		return PLAYER_BEGINNING_TURN;
 	}
 
 }
