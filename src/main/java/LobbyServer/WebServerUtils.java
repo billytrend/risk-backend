@@ -1,9 +1,11 @@
 package LobbyServer;
 
 import GeneralUtils.Jsonify;
+import LobbyServer.LobbyState.GameDescription;
 import LobbyServer.LobbyState.ObjectFromClient.ClientMessage;
 import LobbyServer.LobbyState.ObjectFromClient.GameComms.*;
 import LobbyServer.LobbyState.ObjectFromClient.GenericTypingObject;
+import LobbyServer.LobbyState.ObjectFromClient.JoinGameReq;
 
 import java.util.HashMap;
 
@@ -20,6 +22,10 @@ public class WebServerUtils {
         availableClasses.put("Response", Response.class);
         availableClasses.put("TerritoryRequest", TerritoryRequest.class);
         availableClasses.put("TerritoryResponse", TerritoryResponse.class);
+        availableClasses.put("CardRequest", CardRequest.class);
+        availableClasses.put("CardResponse", CardResponse.class);
+        availableClasses.put("GameDescription", GameDescription.class);
+        availableClasses.put("JoinGameReq", JoinGameReq.class);
     }
     
     public static ClientMessage getMessageObject(String s) {

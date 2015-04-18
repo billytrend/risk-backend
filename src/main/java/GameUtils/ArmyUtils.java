@@ -143,8 +143,9 @@ public class ArmyUtils {
         }
 
 	    ArrayList<Player> players = state.getPlayers();
-	      for(Player p : players){
-	    	  givePlayerNArmies(p, numOfArmies);
-	      } 
+
+        for(Player p : players){
+            givePlayerNArmies(p, numOfArmies);
+        }
 	}
 }

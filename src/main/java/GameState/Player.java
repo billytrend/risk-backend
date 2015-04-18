@@ -17,7 +17,7 @@ public class Player {
 	private String publicKey = ""; 	
 	private int numberId;
 	private transient PlayerInterface communicationMethod;
-	private transient ArrayList<Army> armies;
+	private transient ArrayList<Army> armies = new ArrayList<Army>();
     private int cardSetsUsed;
     private String colour = "";
 

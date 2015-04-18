@@ -16,16 +16,16 @@ import java.util.Random;
 public class CardUtils {
 
     public static int getCurrentArmyPayout(Player player) {
-        int payout = 4;
+        int cardPayout = 4;
         int setsUsed = player.getNumberOfCardSetsUsed();
         //first 5 sets, add 2 to payout
-        for(int i = 0; i < setsUsed && i < 4 ;i++) payout +=2;
+        for(int i = 0; i < setsUsed && i < 4 ;i++) cardPayout +=2;
         //sixth set add 3
-        if(setsUsed >=5) payout +=3;
+        if(setsUsed >=5) cardPayout +=3;
         //add another 5 for each set after the sixth
-        for(int i = 5; i < setsUsed; i++) payout +=5;
+        for(int i = 5; i < setsUsed; i++) cardPayout +=5;
         
-        return payout;
+        return cardPayout;
         
     }
     

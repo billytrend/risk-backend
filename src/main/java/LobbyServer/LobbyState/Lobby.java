@@ -1,27 +1,31 @@
 package LobbyServer.LobbyState;
 
-import GameState.State;
 import org.java_websocket.WebSocket;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Lobby {
     
     private HashMap<WebSocket, PlayerConnection> playerConnections = new HashMap<WebSocket, PlayerConnection>();
-    private HashSet<State> currentGames = new HashSet<State>();
+    private LinkedList<GameDescription> unstartedGames = new LinkedList<GameDescription>();
+    private LinkedList<GameDescription> startedGames = new LinkedList<GameDescription>();
 
     public Set<Map.Entry<WebSocket, PlayerConnection>> getPlayerConnections() {
         return new HashSet<Map.Entry<WebSocket, PlayerConnection>>(playerConnections.entrySet());
     }
 
-    public HashSet<State> getCurrentGames() {
-        return currentGames;
+    public LinkedList<GameDescription> getunstartedGames() {
+        return unstartedGames;
     }
-    
+
+    public LinkedList<GameDescription> getStartedGames() {
+        return startedGames;
+    }
+
     public HashMap<WebSocket, PlayerConnection> getPlayerConnectionsMap() {
         return this.playerConnections;
     }
+
+
+
 }

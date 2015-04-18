@@ -170,15 +170,17 @@ public class TerritoryUtils {
 		}
 		return attackers;
 	}
-	
-    public static Territory getStrongestOwned(Player player, ArrayList<Territory> territoryList){
-        Territory strongest;
+
+
+
+    public static Territory getStrongestOwned(Player player, ArrayList<Territory> territoryList, State state){
+        //Territory strongest;
         int temp = 0;
         int index = 0;
         for(int i = 0; i < territoryList.size(); i++){
             int numberOfArmies = ArmyUtils.getNumberOfArmiesOnTerritory(player,
                     territoryList.get(i));
-            if (numberOfArmies > temp) {
+            if (numberOfArmies > temp && (getEnemyNeighbours(state, territoryList.get(i), player)).size() > 0 ) {
                 temp = numberOfArmies;
                 index = i;
             }
@@ -186,6 +188,23 @@ public class TerritoryUtils {
 
         return territoryList.get(index);
     }
+
+    public static Territory getWeakestOwned(Player player, HashSet<Territory> territoryList){
+        Territory strongest = null;
+        int temp = Integer.MAX_VALUE;
+        
+        for(Territory territory: territoryList){
+            int numberOfArmies = ArmyUtils.getNumberOfArmiesOnTerritory(player,
+                    territory);
+            if (numberOfArmies < temp) {
+                temp = numberOfArmies;
+                strongest = territory;
+            }
+        }
+
+        return strongest;
+    }
+
 	  public static Territory getStrongestEnemy(State state, ArrayList<Territory> territoryList, String territoryID){
 
 	        int temp = 0;
@@ -207,6 +226,87 @@ public class TerritoryUtils {
 
 	        return territoryList.get(index);
 	        }
+
+    public static Territory getWeakestEnemy(State state, ArrayList<Territory> territoryList, String territoryID){
+
+        int temp = 0;
+        int index = 0;
+
+        for (int i = 0; i < territoryList.size(); i++) {
+            Player enemyOwner = PlayerUtils.getTerritoryOwner(state,
+                    territoryList.get(i));
+            int numberOfEnemySoldiers = ArmyUtils
+                    .getNumberOfArmiesOnTerritory(enemyOwner,
+                            territoryList.get(i));
+
+
+            if (numberOfEnemySoldiers < temp && (territoryList.get(i).getId() != territoryID)) {
+                temp = numberOfEnemySoldiers;
+                index = i;
+            }
+        }
+
+        return territoryList.get(index);
+    }
+
+    public static boolean goodIdea(State state, Territory fromTer, Territory toTer){
+        boolean flag = true;
+
+        Player ownerFrom = PlayerUtils.getTerritoryOwner(state,
+                fromTer);
+        Player ownerTo = PlayerUtils.getTerritoryOwner(state,
+                toTer);
+
+
+        int armiesFrom = ArmyUtils
+                .getNumberOfArmiesOnTerritory(ownerFrom,
+                       fromTer);
+        int armiesTo = ArmyUtils
+                .getNumberOfArmiesOnTerritory(ownerTo,
+                        toTer);
+
+
+        if(armiesTo + (armiesTo / 4) >= armiesFrom)
+            flag = false;
+
+        return flag;
+    }
+
+    public static boolean goodIdeaAgr(State state, Territory fromTer, Territory toTer){
+        boolean flag = true;
+
+        Player ownerFrom = PlayerUtils.getTerritoryOwner(state,
+                fromTer);
+        Player ownerTo = PlayerUtils.getTerritoryOwner(state,
+                toTer);
+
+
+        int armiesFrom = ArmyUtils
+                .getNumberOfArmiesOnTerritory(ownerFrom,
+                        fromTer);
+        int armiesTo = ArmyUtils
+                .getNumberOfArmiesOnTerritory(ownerTo,
+                        toTer);
+
+
+        if(armiesTo >= armiesFrom)
+            flag = false;
+
+        return flag;
+    }
+
+    public static int randInt(int min, int max) {
+
+        // NOTE: Usually this should be a field rather than a method
+        // variable so that it is not re-seeded every call.
+        Random rand = new Random();
+
+        // nextInt is normally exclusive of the top value,
+        // so add 1 to make it inclusive
+        int randomNum = rand.nextInt((max - min) + 1) + min;
+
+        return randomNum;
+    }
 
 	/**
 	 * 
@@ -261,7 +361,7 @@ public class TerritoryUtils {
 
 	public static HashSet<Territory> findCluster(State state, Player player,
 			Territory territory, HashSet<Territory> cluster, HashSet<Territory> used) {
-		System.out.println("find cluster");
+		System.out.println("find cluster : length = " + cluster.size());
 		HashSet<Territory> neighbours = TerritoryUtils.getFriendlyNeighbours(
 				state, territory, player);
 		for (Territory neighbour : neighbours) {

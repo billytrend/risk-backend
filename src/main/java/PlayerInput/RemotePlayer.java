@@ -2,76 +2,31 @@ package PlayerInput;
 
 import GameEngine.RequestReason;
 import GameState.Card;
+import GameState.CardType;
 import GameState.Player;
 import GameState.Territory;
+import GameUtils.CardUtils;
 import GameUtils.Results.Change;
 import PeerServer.protocol.gameplay.*;
+
 import org.hamcrest.internal.ArrayIterator;
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import PeerServer.protocol.cards.*;
+import PeerServer.protocol.dice.*;
+import PeerServer.protocol.gameplay.*;
 
 /**
- * 
- * {
-	"command": "setup",
-	"payload": 5,
-	"player_id": 0,
-	"ack_id": 1
-}
- * {
-	"command": "deploy",
-	"payload": [
-		[1, 2],
-		[2, 2]
-	],
-	"player_id": 0,
-	"ack_id": 1
-}
-
-{
-	"command": "play_cards",
-	"payload": {
-		"cards": [
-			[1, 2, 3],
-			[4, 5, 6]
-		],
-		"armies": 3
-	},
-	"player_id": 0,
-	"ack_id": 1
-}
-
- * {
-	"command": "attack",
-	"payload": [1, 2, 2],
-	"player_id": 0,
-	"ack_id": 1
-}
-
-{
-	"command": "defend",
-	"payload": 2,
-	"player_id": 0,
-	"ack_id": 1
-}
-
-{
-	"command": "attack_capture",
-	"payload": [1, 2, 2],
-	"player_id": 0,
-	"ack_id": 1
-}
-
-{
-	"command": "fortify",
-	"payload": [1, 2, 5],
-	"player_id": 0,
-	"ack_id": 1
-}
- * @author pjc8
  *
  */
 
@@ -86,17 +41,18 @@ public class RemotePlayer implements PlayerInterface  {
     private  BlockingQueue<Object> responses;
     private RequestReason lastReason = null;
     private Object response = null;
-    private ArrayIterator it = null;
+    private Iterator iterator = null;
     private int[] lastDeployChoice;
-    
+        
+    boolean gotCardChoices = false;
+
     
 	@Override
-	public int getNumberOfDice(Player player, int max, RequestReason reason) {
+	public int getNumberOfDice(Player player, int max, RequestReason reason, Territory attacking, Territory defending) {
 		if(reason != lastReason){
 			try{
 				response = responses.take(); // blocks if needed
-				if(it != null)
-					it = null;
+				iterator = null; // reset iterator
 			}catch(InterruptedException e){
 				e.printStackTrace();
 			}
@@ -132,14 +88,12 @@ public class RemotePlayer implements PlayerInterface  {
 	
 
 	@Override
-	public Territory getTerritory(Player player, HashSet<Territory> possibles, boolean canResign, RequestReason reason) {
+	public Territory getTerritory(Player player, HashSet<Territory> possibles,Territory from, boolean canResign, RequestReason reason) {
 		if(lastReason == null){
 			lastReason = reason;
 			try{
 				response = responses.take(); // blocks if needed
-				if(it != null)
-					it = null;
-				
+				iterator = null; 
 			}catch(InterruptedException e){
 				e.printStackTrace();
 			}
@@ -185,10 +139,10 @@ public class RemotePlayer implements PlayerInterface  {
 					System.out.println("A BUG in asking for territory");
 					return null;
 				}	
-				if(it == null)
-					it = new ArrayIterator(((deploy) response).payload);
-				if(it.hasNext()){
-					lastDeployChoice = (int[]) it.next();
+				if(iterator == null)
+					iterator = new ArrayIterator(((deploy) response).payload);
+				if(iterator.hasNext()){
+					lastDeployChoice = (int[]) iterator.next();
 					id = lastDeployChoice[0];
 				}
 				else{
@@ -236,8 +190,7 @@ public class RemotePlayer implements PlayerInterface  {
 		if(reason != lastReason){
 			try{
 				response = responses.take(); // blocks if needed
-				if(it != null)
-					it = null;
+				iterator = null;
 			}catch(InterruptedException e){
 				e.printStackTrace();
 			}
@@ -284,13 +237,73 @@ public class RemotePlayer implements PlayerInterface  {
 
 	
 	@Override
-	public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
-		return null;
+	public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations){
+	
+		// if we don't have any available card choices
+		if(!gotCardChoices){
+			try{
+				response = responses.take(); // blocks if needed
+			}catch(InterruptedException e){
+				e.printStackTrace();
+			}
+			
+			if(!(response instanceof play_cards)){
+				System.out.println("BUG getting cards");
+				return null;
+			}
+			
+			int[][] cards = ((play_cards) response).payload.cards;
+			int armies = ((play_cards) response).payload.armies;
+			
+			if(cards == null)
+				return null;
+			
+			List<Triplet<Card, Card, Card>> cardSets = new ArrayList<Triplet<Card,Card,Card>>();
+			
+			for(int[] cardSet : cards){
+				// TODO: fill this in:
+				
+				// recognize a card by its id!!!! 
+				// get it and append to the triplet
+				// add triplet to the array of cardSets above
+				
+				//	Card a = CardUtils.getCardsOfType(state, cardType);
+				//Triplet set = new Triplet<A, B, C>(value0, value1, value2)
+			}
+			
+			// set iterator so remaining cardsets will be returned later
+			iterator = cardSets.iterator();
+			gotCardChoices = true;
+			if(iterator.hasNext()){
+				return (Triplet<Card, Card, Card>) iterator.next();
+			}
+			return null;
+		}
+		
+		// if we already parsed card choices return the next one
+		else{
+			if(iterator.hasNext()){
+				return (Triplet<Card, Card, Card>) iterator.next();
+			}
+			// if there are no more choices, return null
+			else{
+				gotCardChoices = false;
+				return null;
+			}
+		}
 	}
+	
 
     @Override
     public void reportStateChange(Change change) {
-      //  connection.send(Jsonify.getObjectAsJsonString(change));
+
     }
+
+
+	@Override
+	public void createResponse() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

@@ -25,7 +25,7 @@ public interface PlayerInterface {
      * @param max
      * @return
      */
-    public int getNumberOfDice(Player player, int max, RequestReason reason);
+    int getNumberOfDice(Player currentPlayer, int maxAttackingDice, RequestReason attackChoiceDice, Territory attacking, Territory defending);
 
     /**
      * The choice can be made only from the set of possible territories.
@@ -35,7 +35,7 @@ public interface PlayerInterface {
      * @return
      */
     public Territory getTerritory(Player player,
-    		HashSet<Territory> possibles,boolean canResign, RequestReason reason);
+    		HashSet<Territory> possibles,Territory from, boolean canResign, RequestReason reason);
 
     /**
      * The choice can only be made up to the specified max value.
@@ -53,5 +53,7 @@ public interface PlayerInterface {
     public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations);
     
     public void reportStateChange(Change change);
+
+    public void createResponse();
     
 }

@@ -35,7 +35,8 @@ public class GameEngineTest{
 		gameState = DemoGameBuilder.buildGame(interfaces);
 		HashSet<Territory> territories = TerritoryUtils.getAllTerritories(gameState);
 	    gameEngine = new TestableGameEngine(gameState);
-	    
+        ArmyUtils.giveStartingArmies(gameState);
+
 		sortedTerritories = new ArrayList<Territory>();
 		sortedTerritories.addAll(territories);
 		Collections.sort(sortedTerritories, comparator);
@@ -43,9 +44,6 @@ public class GameEngineTest{
 		createMockTwo();
 	}
 
-
-	
-	
 	
 	@Test
 	public void fillAnEmptyCountryTest(){
@@ -111,7 +109,7 @@ public class GameEngineTest{
 		returnValue = gameEngine.testCall(PlayState.USING_REMAINING_ARMIES);
 		
 		assertFalse(ArmyUtils.somePlayerHasUndeployedArmies(gameState));
-		assertEquals(returnValue, PlayState.PLAYER_CONVERTING_CARDS);
+		assertEquals(returnValue, PlayState.PLAYER_BEGINNING_TURN);
 	}
 	
 	
@@ -277,7 +275,7 @@ public class GameEngineTest{
 		assertEquals(ArmyUtils.getArmiesOnTerritory(player2, sortedTerritories.get(2)).size(), 5);
 		assertEquals(ArmyUtils.getArmiesOnTerritory(player2, sortedTerritories.get(3)).size(), 10);
 		
-		assertEquals(returnValue, PlayState.PLAYER_CONVERTING_CARDS);
+		assertEquals(returnValue, PlayState.PLAYER_BEGINNING_TURN);
 		
 	}
 	
@@ -288,7 +286,7 @@ public class GameEngineTest{
 	private void createMockOne(){
 		for(int i = 1; i < 4 ; i++){
 			when(player1Interface.getNumberOfDice((Player) anyObject(), eq(i),
-				(RequestReason) anyObject())).thenReturn(i);
+				(RequestReason) anyObject(), (Territory) anyObject(), (Territory) anyObject())).thenReturn(i);
 		}
 		
 		ArrayList<HashSet<Territory>> subsets = getSubsets(sortedTerritories);
@@ -302,8 +300,7 @@ public class GameEngineTest{
 			// == the output is deterministic
 			Collections.sort(sorted, comparator);
 			if(sorted.size() > 0){
-				when(player1Interface.getTerritory((Player) anyObject(), eq(subset),
-						anyBoolean(), (RequestReason) anyObject())).thenReturn(sorted.get(0));
+				when(player1Interface.getTerritory((Player) anyObject(), eq(subset), (Territory) anyObject(), anyBoolean(), (RequestReason) anyObject())).thenReturn(sorted.get(0));
 			}
 
 		}	
@@ -321,7 +318,7 @@ public class GameEngineTest{
 	private void createMockTwo(){
 		for(int i = 1; i < 4 ; i++){
 			when(player2Interface.getNumberOfDice((Player) anyObject(), eq(i),
-				(RequestReason) anyObject())).thenReturn(i);
+				(RequestReason) anyObject(), (Territory) anyObject(), (Territory) anyObject())).thenReturn(i);
 		}
 		
 		ArrayList<HashSet<Territory>> subsets = getSubsets(sortedTerritories);
@@ -334,11 +331,11 @@ public class GameEngineTest{
 			
 			Collections.sort(sorted, comparator);
 			if(sorted.size() > 0){
-				when(player2Interface.getTerritory((Player) anyObject(), eq(subset),
+				when(player2Interface.getTerritory((Player) anyObject(), eq(subset), (Territory) anyObject(),
 						eq(false), (RequestReason) anyObject())).thenReturn(sorted.get(0));
 
 				// resign if you can
-				when(player2Interface.getTerritory((Player) anyObject(), eq(subset),
+				when(player2Interface.getTerritory((Player) anyObject(), eq(subset), (Territory) anyObject(),
 						eq(true), (RequestReason) anyObject())).thenReturn(null);
 			}
 		}	

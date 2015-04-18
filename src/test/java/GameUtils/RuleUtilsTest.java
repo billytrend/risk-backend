@@ -48,16 +48,16 @@ public class RuleUtilsTest{
 			ArmyUtils.deployArmies(player2, territories[i], 1);
 		}
 	
-		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 43);
-		assertEquals(ArmyUtils.getUndeployedArmies(player2).size(), 52);
+		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 3);
+		assertEquals(ArmyUtils.getUndeployedArmies(player2).size(), 12);
 
 		RuleUtils.doArmyHandout(gameState, player1);
 		RuleUtils.doArmyHandout(gameState, player2);
 		
 		// player 1 should get 4 armies
-		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 47);
+		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 7);
 		// player2 shoulld get 3 armies
-		assertEquals(ArmyUtils.getUndeployedArmies(player2).size(), 55);
+		assertEquals(ArmyUtils.getUndeployedArmies(player2).size(), 15);
 		
 	}
 	

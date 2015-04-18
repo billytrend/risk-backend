@@ -5,17 +5,13 @@ import GameState.Card;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
-import GameUtils.ArmyUtils;
 import GameUtils.ContinentUtils;
-import GameUtils.PlayerUtils;
-import GameUtils.TerritoryUtils;
 import GameUtils.Results.Change;
-
+import GameUtils.TerritoryUtils;
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -27,7 +23,9 @@ public class StartAustralia implements PlayerInterface {
     public StartAustralia(State a){
         this.currentState = a;
     }
+    public StartAustralia() {
 
+    }
 
     /**
      * *
@@ -35,7 +33,7 @@ public class StartAustralia implements PlayerInterface {
      * @param max
      * @return
      */
-    public int getNumberOfDice(Player player, int max, RequestReason reason) {
+    public int getNumberOfDice(Player player, int max, RequestReason reason, Territory attacking, Territory defending) {
         return max;
     }
 
@@ -49,7 +47,7 @@ public class StartAustralia implements PlayerInterface {
 
 
     public Territory getTerritory(Player player,
-                                  HashSet<Territory> possibles,boolean canResign, RequestReason reason) {
+                                  HashSet<Territory> possibles,Territory from,boolean canResign, RequestReason reason) {
 
         ArrayList<Territory> territoryList = new ArrayList<Territory>(possibles);
 
@@ -66,7 +64,7 @@ public class StartAustralia implements PlayerInterface {
 
             case ATTACK_CHOICE_FROM:
             	ArrayList<Territory> australia = ContinentUtils.getContinentById(currentState, "australia").getTerritories();
-               return TerritoryUtils.getStrongestOwned(player, territoryList);
+               return TerritoryUtils.getStrongestOwned(player, territoryList, currentState);
 
             case ATTACK_CHOICE_TO:
                 return TerritoryUtils.getStrongestEnemy(currentState, territoryList, "siam");
@@ -132,6 +130,13 @@ public class StartAustralia implements PlayerInterface {
 
 	@Override
 	public void reportStateChange(Change change) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void createResponse() {
 		// TODO Auto-generated method stub
 		
 	}
