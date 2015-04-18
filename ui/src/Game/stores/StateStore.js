@@ -32,6 +32,8 @@ var StateStore = assign({}, EventEmitter.prototype, {
 
     _changes: [],
 
+    _gameStarted: false,
+
     getCountryState: function(country) {
         if (this._gameState.ownerships[country] == undefined) {
             return {
@@ -125,9 +127,14 @@ var StateStore = assign({}, EventEmitter.prototype, {
         }
     },
 
-    applyState: function(state) {
-        this._gameState = state;
+    applyGameStart: function(change) {
+        this._gameState = change.gameState;
+        this._gameStarted = true;
         this.emit('state_change');
+    },
+
+    gameStarted: function() {
+        return this._gameStarted;
     },
 
     emitChange: function(type) {
@@ -152,7 +159,7 @@ AppDispatcher.register(function(payload) {
 
     StateStore.emitChange();
 
-    if (payload.action.changeType) {
+    if (StateStore['apply' + payload.action.changeType]) {
         StateStore['apply' + payload.action.changeType](payload.action);
     }
 

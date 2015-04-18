@@ -71,6 +71,7 @@ public class GameEngine implements Runnable {
 	 * current state in the iterateGame function.
 	 */
 	private void play() throws InterruptedException {
+        applyAndReportChange(gameState, new GameStart("", BEGINNING_STATE, gameState));
 		while (true) {
 			if(!iterateGame()) return;
 		}
@@ -97,9 +98,10 @@ public class GameEngine implements Runnable {
 	private boolean iterateGame() throws InterruptedException, NullPointerException {
 
         // if play state changes, let people know
-        if (previousPlayState != playState && currentPlayer != null) {
-            applyAndReportChange(gameState, new PlayStateUpdate(currentPlayer.getId(), playState));
-        }
+        // TODO: BUH WHY?
+//        if (previousPlayState != playState && currentPlayer != null) {
+//            applyAndReportChange(gameState, new PlayStateUpdate(currentPlayer.getId(), playState));
+//        }
 
 		switch (this.playState) {
 			case BEGINNING_STATE:
