@@ -1,13 +1,14 @@
 package PlayerInput;
 
 import GameEngine.RequestReason;
-
 import GameState.Card;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.Results.Change;
+import GameUtils.AIUtils;
 import GameUtils.TerritoryUtils;
+
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -57,18 +58,18 @@ public class CommunistDefensive implements PlayerInterface{
                 return TerritoryUtils.getRandomTerritory(currentState, possibles);
 
             case PLACING_REMAINING_ARMIES_PHASE:
-                return TerritoryUtils.getWeakestTerritory(currentState,possibles);
+                return AIUtils.getWeakestTerritory(currentState,possibles);
 
             case PLACING_ARMIES_PHASE:
-                return TerritoryUtils.getWeakestTerritory(currentState,possibles);
+                return AIUtils.getWeakestTerritory(currentState,possibles);
 
             case ATTACK_CHOICE_FROM:
-                currentTer = TerritoryUtils.getStrongestTerritory(currentState,possibles);
+                currentTer = AIUtils.getStrongestTerritory(currentState,possibles);
                 return currentTer;
 
             case ATTACK_CHOICE_TO:
-                Territory weakestTer = TerritoryUtils.getWeakestTerritory(currentState,possibles);
-                if(TerritoryUtils.goodIdea(currentState, currentTer, weakestTer, 1.25)){
+                Territory weakestTer = AIUtils.getWeakestTerritory(currentState,possibles);
+                if(AIUtils.goodIdea(currentState, currentTer, weakestTer, 1.25)){
                     return weakestTer;
                 } else {
                     if(canResign){

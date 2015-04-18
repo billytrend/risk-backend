@@ -6,7 +6,9 @@ import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.Results.Change;
+import GameUtils.AIUtils;
 import GameUtils.TerritoryUtils;
+
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -54,22 +56,22 @@ public class Berserker implements PlayerInterface {
             case PLACING_REMAINING_ARMIES_PHASE:
                 return TerritoryUtils.getRandomTerritory(currentState, possibles);
             case PLACING_ARMIES_PHASE:
-                return TerritoryUtils.getWeakestTerritory(currentState,possibles);
+                return AIUtils.getWeakestTerritory(currentState,possibles);
 
             case ATTACK_CHOICE_FROM:
                 if(turnNo < 100){
                     return null;
                 }
-                currenTerr = TerritoryUtils.getStrongestTerritory(currentState,possibles);
+                currenTerr = AIUtils.getStrongestTerritory(currentState,possibles);
                 return currenTerr;
 
             case ATTACK_CHOICE_TO:
-                return TerritoryUtils.getStrongestTerritory(currentState,possibles);
+                return AIUtils.getStrongestTerritory(currentState,possibles);
 
             case REINFORCEMENT_PHASE:
                 turnNo++;
                 if(turnNo > 100){
-                    return TerritoryUtils.getWeakestTerritory(currentState,possibles);
+                    return AIUtils.getWeakestTerritory(currentState,possibles);
                 }
                 return null;
             default:

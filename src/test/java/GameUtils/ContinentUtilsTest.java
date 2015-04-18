@@ -1,8 +1,7 @@
 package GameUtils;
 
 import GameBuilders.RiskMapGameBuilder;
-import GameBuilders.DemoGameBuilder;
-import GameEngine.GameEngine;
+
 import GameState.Continent;
 import GameState.Player;
 import GameState.State;
@@ -14,7 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
