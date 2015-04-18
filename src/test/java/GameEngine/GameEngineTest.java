@@ -300,8 +300,7 @@ public class GameEngineTest{
 			// == the output is deterministic
 			Collections.sort(sorted, comparator);
 			if(sorted.size() > 0){
-				when(player1Interface.getTerritory((Player) anyObject(), eq(subset),null,
-						anyBoolean(), (RequestReason) anyObject())).thenReturn(sorted.get(0));
+				when(player1Interface.getTerritory((Player) anyObject(), eq(subset), (Territory) anyObject(), anyBoolean(), (RequestReason) anyObject())).thenReturn(sorted.get(0));
 			}
 
 		}	
@@ -332,11 +331,11 @@ public class GameEngineTest{
 			
 			Collections.sort(sorted, comparator);
 			if(sorted.size() > 0){
-				when(player2Interface.getTerritory((Player) anyObject(), eq(subset), null,
+				when(player2Interface.getTerritory((Player) anyObject(), eq(subset), (Territory) anyObject(),
 						eq(false), (RequestReason) anyObject())).thenReturn(sorted.get(0));
 
 				// resign if you can
-				when(player2Interface.getTerritory((Player) anyObject(), eq(subset), null,
+				when(player2Interface.getTerritory((Player) anyObject(), eq(subset), (Territory) anyObject(),
 						eq(true), (RequestReason) anyObject())).thenReturn(null);
 			}
 		}	
