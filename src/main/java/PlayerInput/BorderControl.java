@@ -50,7 +50,6 @@ public class BorderControl implements PlayerInterface {
 
 	public Territory getTerritory(Player player, HashSet<Territory> possibles,
 			Territory from, boolean canResign, RequestReason reason) {
-System.out.println(reason);
 		ArrayList<HashSet<Territory>> clusters = TerritoryUtils.getAllClusters(
 				state, player);
 		switch (reason) {
@@ -79,6 +78,7 @@ System.out.println(reason);
 			Territory weakest = null;
 			int lowestDefense = 100;
 			for (HashSet<Territory> cluster : clusters) {
+				
 				for (Territory territory : cluster) {
 					HashSet<Territory> enemies = TerritoryUtils
 							.getEnemyNeighbours(state, territory, player);
@@ -169,6 +169,9 @@ System.out.println(reason);
 			return armiesFrom - 1;
 		else
 			return armiesFrom / 2;
+		
+		case PLACING_ARMIES_PHASE:
+			return 1;
 		}
 		return max;
 

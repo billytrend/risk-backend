@@ -308,6 +308,7 @@ public class GameEngineTest{
 			}
 
 		}	
+		
 
 		// mock that always moves the maximum number of armies
 		int predictedMaxNumOfArmies = 200;

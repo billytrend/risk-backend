@@ -33,7 +33,7 @@ public class SingleGameRunner {
         //blue
         players.add(1, new Player(new BorderControl(gameState)));
         //purple
-        players.add(2, new Player(new CommunistAggressive(gameState)));
+        players.add(2, new Player(new BorderControl(gameState)));
 //        //green
 //        players.add(3, new Player(new DumbBotInterface()));
 //        //yellow
