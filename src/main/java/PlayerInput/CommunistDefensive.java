@@ -67,7 +67,7 @@ public class CommunistDefensive implements PlayerInterface{
                 return currentTer;
 
             case ATTACK_CHOICE_TO:
-                Territory weakestTer = TerritoryUtils.getWeakestEnemy(currentState, possibles, currentTer.getId());
+                Territory weakestTer = TerritoryUtils.getWeakestEnemy(currentState, possibles);
                 if(TerritoryUtils.goodIdea(currentState, currentTer, weakestTer)){
                     return weakestTer;
                 } else {

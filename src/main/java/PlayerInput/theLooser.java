@@ -23,13 +23,7 @@ public class theLooser implements PlayerInterface {
     }
 
 
-    /**
-     * *
-     * @param player
-     * @param max
-     * @return
-     */
-    public int getNumberOfDice(Player player, int max, RequestReason reason, Territory attacking, Territory defending) {
+    public int getNumberOfDice(Player currentPlayer, int maxAttackingDice, RequestReason attackChoiceDice, Territory attacking, Territory defending) {
         return 1;
     }
 
@@ -52,11 +46,13 @@ public class theLooser implements PlayerInterface {
             case PLACING_ARMIES_PHASE:
                 return TerritoryUtils.getRandomTerritory(currentState, possibles);
 
+
             case ATTACK_CHOICE_FROM:
                 return TerritoryUtils.getWeakestOwned(player, possibles);
 
             case ATTACK_CHOICE_TO:
-                return TerritoryUtils.getStrongestOwned(player, possibles);
+                System.out.println(TerritoryUtils.getStrongestEnemy(currentState, possibles).getId());
+                return TerritoryUtils.getStrongestEnemy(currentState, possibles);
 
             case REINFORCEMENT_PHASE:
             default:
@@ -73,6 +69,8 @@ public class theLooser implements PlayerInterface {
      * @return
      */
     public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
+
+        System.out.println(max);
         switch (reason) {
             case PLACING_ARMIES_SET_UP:
                 return 1;

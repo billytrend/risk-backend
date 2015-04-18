@@ -70,7 +70,7 @@ public class GrabContinent implements PlayerInterface {
                 return TerritoryUtils.getStrongestOwned(player, possibles);
 
             case ATTACK_CHOICE_TO:
-                return TerritoryUtils.getStrongestEnemy(currentState, possibles, "siaml");
+                return TerritoryUtils.getStrongestEnemy(currentState, possibles);
 
             case REINFORCEMENT_PHASE:
                 return null;

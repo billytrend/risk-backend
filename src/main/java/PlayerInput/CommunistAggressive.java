@@ -90,7 +90,7 @@ public class CommunistAggressive implements PlayerInterface{
                 return currentTer;
 
             case ATTACK_CHOICE_TO:
-                Territory weakestTer = TerritoryUtils.getWeakestEnemy(currentState, possibles, currentTer.getId());
+                Territory weakestTer = TerritoryUtils.getWeakestEnemy(currentState, possibles);
                 if(TerritoryUtils.goodIdeaAgr(currentState, currentTer, weakestTer)){
                     return weakestTer;
                 } else {

@@ -64,7 +64,7 @@ public class Berserker implements PlayerInterface {
                 return currenTerr;
 
             case ATTACK_CHOICE_TO:
-                return TerritoryUtils.getStrongestEnemy(currentState,possibles,currenTerr.getId());
+                return TerritoryUtils.getStrongestEnemy(currentState,possibles);
 
             case REINFORCEMENT_PHASE:
                 turnNo++;

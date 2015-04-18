@@ -67,7 +67,7 @@ public class StartAustralia implements PlayerInterface {
                return TerritoryUtils.getStrongestOwned(player, possibles);
 
             case ATTACK_CHOICE_TO:
-                return TerritoryUtils.getStrongestEnemy(currentState, possibles, "siam");
+                return TerritoryUtils.getStrongestEnemy(currentState, possibles);
 
             case REINFORCEMENT_PHASE:
                 return null;

@@ -200,7 +200,7 @@ public class TerritoryUtils {
         return weakest;
     }
 
-	  public static Territory getStrongestEnemy(State state, HashSet<Territory> territoryList, String territoryID){
+	  public static Territory getStrongestEnemy(State state, HashSet<Territory> territoryList){
 
 	        int temp = 0;
 	        Territory strongest = null;
@@ -211,7 +211,7 @@ public class TerritoryUtils {
 	                    .getNumberOfArmiesOnTerritory(enemyOwner,t);
 
 
-	            if (numberOfEnemySoldiers > temp && (t.getId() != territoryID)) {
+	            if (numberOfEnemySoldiers > temp) {
 	                temp = numberOfEnemySoldiers;
 	                strongest = t;
 	                }
@@ -220,10 +220,10 @@ public class TerritoryUtils {
 	        return strongest;
 	        }
 
-    public static Territory getWeakestEnemy(State state, HashSet<Territory> territoryList, String territoryID){
+    public static Territory getWeakestEnemy(State state, HashSet<Territory> territoryList){
 
         int temp = Integer.MAX_VALUE;
-        Territory weakest = null;
+        Territory weakest = getRandomTerritory(state, territoryList);
 
         for (Territory t : territoryList) {
             Player enemyOwner = PlayerUtils.getTerritoryOwner(state,t);
@@ -231,7 +231,7 @@ public class TerritoryUtils {
                     .getNumberOfArmiesOnTerritory(enemyOwner,t);
 
 
-            if (numberOfEnemySoldiers < temp && (t.getId() != territoryID)) {
+            if (numberOfEnemySoldiers < temp) {
                 temp = numberOfEnemySoldiers;
                 weakest = t;
             }

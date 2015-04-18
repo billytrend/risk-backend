@@ -43,61 +43,50 @@ public class Billy implements PlayerInterface{
      */
     @Override
     public Territory getTerritory(Player player, HashSet<Territory> possibles, Territory from, boolean canResign, RequestReason reason) {
-        PlayerInterface contGrab;
-        PlayerInterface bordCont;
-        PlayerInterface commie;
+        PlayerInterface contGrab = new GrabContinent(currentState, contID);
+        PlayerInterface bordCont = new BorderControl(currentState);
+        PlayerInterface commie = new CommunistDefensive(currentState);
 
         switch (reason) {
             case PLACING_ARMIES_SET_UP:
                 if(turnCounter < STARTUPMETRIC) {
-                    contGrab = new GrabContinent(currentState, contID);
                     return contGrab.getTerritory(player,possibles,from,canResign,reason);
                 } else {
-                    commie = new CommunistDefensive(currentState);
                     return commie.getTerritory(player, possibles, from, canResign, reason);
                 }
 
 
             case PLACING_REMAINING_ARMIES_PHASE:
                 if(turnCounter < STARTUPMETRIC) {
-                    contGrab = new GrabContinent(currentState, contID);
                     return contGrab.getTerritory(player,possibles,from,canResign,reason);
                 } else {
-                    commie = new CommunistDefensive(currentState);
                     return commie.getTerritory(player, possibles, from, canResign, reason);
                 }
 
             case PLACING_ARMIES_PHASE:
                 if(turnCounter < STARTUPMETRIC) {
-                    contGrab = new GrabContinent(currentState, contID);
                     return contGrab.getTerritory(player,possibles,from,canResign,reason);
                 } else {
-                    commie = new CommunistDefensive(currentState);
                     return commie.getTerritory(player, possibles, from, canResign, reason);
                 }
 
             case ATTACK_CHOICE_FROM:
                 if(turnCounter < STARTUPMETRIC) {
-                    contGrab = new GrabContinent(currentState, contID);
                     return contGrab.getTerritory(player,possibles,from,canResign,reason);
                 } else {
-                    commie = new CommunistDefensive(currentState);
                     return commie.getTerritory(player, possibles, from, canResign, reason);
                 }
 
             case ATTACK_CHOICE_TO:
                 if(turnCounter < STARTUPMETRIC) {
-                    contGrab = new GrabContinent(currentState, contID);
                     return contGrab.getTerritory(player,possibles,from,canResign,reason);
                 } else {
-                    commie = new CommunistDefensive(currentState);
                     return commie.getTerritory(player, possibles, from, canResign, reason);
                 }
 
             case REINFORCEMENT_PHASE:
                 turnCounter++;
                 if(turnCounter < STARTUPMETRIC) {
-                    bordCont = new BorderControl(currentState);
                     return bordCont.getTerritory(player,possibles,from,canResign,reason);
                 }
 
