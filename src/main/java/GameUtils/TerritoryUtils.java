@@ -185,6 +185,7 @@ public class TerritoryUtils {
         return strongest;
     }
 
+
     public static Territory getWeakestTerritory(State state, HashSet<Territory> territoryList){
 
         int lowestNumberOfSoldiers = Integer.MAX_VALUE;
@@ -193,6 +194,7 @@ public class TerritoryUtils {
             Player player = PlayerUtils.getTerritoryOwner(state,t);
             int numberOfSoldiers = ArmyUtils
                     .getNumberOfArmiesOnTerritory(player,t);
+
 
 
             if (numberOfSoldiers < lowestNumberOfSoldiers) {

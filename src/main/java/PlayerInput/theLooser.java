@@ -23,13 +23,7 @@ public class theLooser implements PlayerInterface {
     }
 
 
-    /**
-     * *
-     * @param player
-     * @param max
-     * @return
-     */
-    public int getNumberOfDice(Player player, int max, RequestReason reason, Territory attacking, Territory defending) {
+    public int getNumberOfDice(Player currentPlayer, int maxAttackingDice, RequestReason attackChoiceDice, Territory attacking, Territory defending) {
         return 1;
     }
 
@@ -51,6 +45,7 @@ public class theLooser implements PlayerInterface {
             case PLACING_REMAINING_ARMIES_PHASE:
             case PLACING_ARMIES_PHASE:
                 return TerritoryUtils.getRandomTerritory(currentState, possibles);
+
 
             case ATTACK_CHOICE_FROM:
                 return TerritoryUtils.getWeakestTerritory(currentState,possibles);
