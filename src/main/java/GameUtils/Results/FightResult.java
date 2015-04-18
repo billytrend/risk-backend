@@ -1,11 +1,12 @@
 package GameUtils.Results;
 
 import GameEngine.PlayState;
+
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.ArmyUtils;
-import GameUtils.RuleUtils;
+
 
 /**
  * A class that provides all the details about a fight

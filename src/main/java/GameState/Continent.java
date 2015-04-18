@@ -1,7 +1,6 @@
 package GameState;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 /**
  * A class representing a continent along with its

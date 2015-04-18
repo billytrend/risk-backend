@@ -147,11 +147,10 @@ System.out.println(reason);
 		case REINFORCEMENT_PHASE:
 			// move armies outwards - look for weakest, unprotected territories
 			return TerritoryUtils.getWeakestOwned(player, possibles);
-
+		default:
+			break;
 		}
-
 		return null;
-
 	}
 
 	// need to and from
@@ -169,9 +168,9 @@ System.out.println(reason);
 			return armiesFrom - 1;
 		else
 			return armiesFrom / 2;
+		default:
+			return max;
 		}
-		return max;
-
 	}
 
 	public Triplet<Card, Card, Card> getCardChoice(Player player,

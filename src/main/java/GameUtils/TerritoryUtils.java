@@ -171,20 +171,18 @@ public class TerritoryUtils {
 		return attackers;
 	}
 	
-    public static Territory getStrongestOwned(Player player, ArrayList<Territory> territoryList){
-        Territory strongest;
+    public static Territory getStrongestOwned(Player player, HashSet<Territory> territoryList){
+        Territory strongest = null;
         int temp = 0;
-        int index = 0;
-        for(int i = 0; i < territoryList.size(); i++){
-            int numberOfArmies = ArmyUtils.getNumberOfArmiesOnTerritory(player,
-                    territoryList.get(i));
+        for(Territory t:territoryList){
+            int numberOfArmies = ArmyUtils.getNumberOfArmiesOnTerritory(player,t);
             if (numberOfArmies > temp) {
                 temp = numberOfArmies;
-                index = i;
+                strongest = t;
             }
         }
 
-        return territoryList.get(index);
+        return strongest;
     }
 
     public static Territory getWeakestOwned(Player player, HashSet<Territory> territoryList){
@@ -203,48 +201,44 @@ public class TerritoryUtils {
         return strongest;
     }
 
-	  public static Territory getStrongestEnemy(State state, ArrayList<Territory> territoryList, String territoryID){
+	  public static Territory getStrongestEnemy(State state, HashSet<Territory> territoryList, String territoryID){
 
 	        int temp = 0;
-	        int index = 0;
+	        Territory strongest = null;
 
-	        for (int i = 0; i < territoryList.size(); i++) {
-	            Player enemyOwner = PlayerUtils.getTerritoryOwner(state,
-	                    territoryList.get(i));
+	        for (Territory t : territoryList) {
+	            Player enemyOwner = PlayerUtils.getTerritoryOwner(state,t);
 	            int numberOfEnemySoldiers = ArmyUtils
-	                    .getNumberOfArmiesOnTerritory(enemyOwner,
-	                            territoryList.get(i));
+	                    .getNumberOfArmiesOnTerritory(enemyOwner,t);
 
 
-	            if (numberOfEnemySoldiers > temp && (territoryList.get(i).getId() != territoryID)) {
+	            if (numberOfEnemySoldiers > temp && (t.getId() != territoryID)) {
 	                temp = numberOfEnemySoldiers;
-	                index = i;
+	                strongest = t;
 	                }
 	            }
 
-	        return territoryList.get(index);
+	        return strongest;
 	        }
 
-    public static Territory getWeakestEnemy(State state, ArrayList<Territory> territoryList, String territoryID){
+    public static Territory getWeakestEnemy(State state, HashSet<Territory> territoryList, String territoryID){
 
         int temp = 0;
-        int index = 0;
+        Territory weakest = null;
 
-        for (int i = 0; i < territoryList.size(); i++) {
-            Player enemyOwner = PlayerUtils.getTerritoryOwner(state,
-                    territoryList.get(i));
+        for (Territory t : territoryList) {
+            Player enemyOwner = PlayerUtils.getTerritoryOwner(state,t);
             int numberOfEnemySoldiers = ArmyUtils
-                    .getNumberOfArmiesOnTerritory(enemyOwner,
-                            territoryList.get(i));
+                    .getNumberOfArmiesOnTerritory(enemyOwner,t);
 
 
-            if (numberOfEnemySoldiers < temp && (territoryList.get(i).getId() != territoryID)) {
+            if (numberOfEnemySoldiers < temp && (t.getId() != territoryID)) {
                 temp = numberOfEnemySoldiers;
-                index = i;
+                weakest = t;
             }
         }
 
-        return territoryList.get(index);
+        return weakest;
     }
 
     public static boolean goodIdea(State state, Territory fromTer, Territory toTer){
@@ -336,7 +330,6 @@ public class TerritoryUtils {
 
 	public static HashSet<Territory> findCluster(State state, Player player,
 			Territory territory, HashSet<Territory> cluster, HashSet<Territory> used) {
-		System.out.println("find cluster : length = " + cluster.size());
 		HashSet<Territory> neighbours = TerritoryUtils.getFriendlyNeighbours(
 				state, territory, player);
 		for (Territory neighbour : neighbours) {

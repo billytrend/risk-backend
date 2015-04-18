@@ -22,7 +22,6 @@ public class CommunistAggressive implements PlayerInterface {
 	private int initialDeploymentCounter;
 	private int deploymentCounter;
 	private int attackFromCounter;
-	private ArrayList<Territory> currentStrongTerritories = new ArrayList<Territory>();
 
 	private static final int MIN = 0;
 
@@ -141,10 +140,6 @@ public class CommunistAggressive implements PlayerInterface {
 				}
 			}
 
-			int randomWeakest = rand.nextInt(weakestTerritories.size() - MIN
-					+ 1)
-					+ MIN;
-
             if(weakestTerritories.size() == 0){
                 return null;
             }
@@ -180,9 +175,9 @@ public class CommunistAggressive implements PlayerInterface {
 						// links.
 		case POST_ATTACK_MOVEMENT:
 			return max; // Moves the maximum number of armies post attack.
+		default:
+			return 0;
 		}
-
-		return 0;
 	}
 
 	public void getCard(Player player, Card card) {

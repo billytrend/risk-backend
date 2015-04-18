@@ -49,8 +49,6 @@ public class StartAustralia implements PlayerInterface {
     public Territory getTerritory(Player player,
                                   HashSet<Territory> possibles,Territory from,boolean canResign, RequestReason reason) {
 
-        ArrayList<Territory> territoryList = new ArrayList<Territory>(possibles);
-
         switch (reason) {
 
             case PLACING_ARMIES_SET_UP:
@@ -64,10 +62,10 @@ public class StartAustralia implements PlayerInterface {
 
             case ATTACK_CHOICE_FROM:
             	ArrayList<Territory> australia = ContinentUtils.getContinentById(currentState, "australia").getTerritories();
-               return TerritoryUtils.getStrongestOwned(player, territoryList);
+               return TerritoryUtils.getStrongestOwned(player, possibles);
 
             case ATTACK_CHOICE_TO:
-                return TerritoryUtils.getStrongestEnemy(currentState, territoryList, "siam");
+                return TerritoryUtils.getStrongestEnemy(currentState, possibles, "siam");
 
             case REINFORCEMENT_PHASE:
                 return null;
