@@ -2,6 +2,7 @@ package GameUtils;
 
 
 import GameBuilders.DemoGameBuilder;
+
 import GameEngine.GameEngine;
 import GameState.Player;
 import GameState.State;
@@ -290,107 +291,6 @@ public class TerritoryUtilsTest {
 		neighboursDemoland = TerritoryUtils.getNeighbours(gameState, demoland);
 		assertEquals(neighboursDemoland.size(), 3);
 	}
-	
-	@Test
-	public void getStrongestTerritoryTest(){
-		HashSet<Territory> territorySet = new HashSet<Territory>();
-		
-		ArrayList<Player> players = gameState.getPlayers();
-		Player player1 = players.get(0);
-		Player player2 = players.get(1);
-		Player player3 = players.get(2);
-		ArmyUtils.givePlayerNArmies(player1, 10);
-		ArmyUtils.givePlayerNArmies(player2, 10);
-		ArmyUtils.givePlayerNArmies(player3, 10);
-		
-		assertEquals(null, TerritoryUtils.getStrongestTerritory(gameState, territorySet));
-		territorySet = TerritoryUtils.getAllTerritories(gameState);
-		ArmyUtils.deployArmies(player1, egstate, 1);
-		ArmyUtils.deployArmies(player1, otherplace, 3);
-		ArmyUtils.deployArmies(player1, demoland, 4);
-		ArmyUtils.deployArmies(player1, someplace, 2);
-		
-		assertEquals(demoland, TerritoryUtils.getStrongestTerritory(gameState, territorySet));
-		
-		ArmyUtils.destroyArmies(player1, egstate, 1);
-		ArmyUtils.destroyArmies(player1, otherplace, 1);
-		ArmyUtils.destroyArmies(player1, someplace, 1);
-		
-		ArmyUtils.deployArmies(player2, egstate, 1);
-		ArmyUtils.deployArmies(player2, otherplace, 5);
-		ArmyUtils.deployArmies(player3, someplace, 3);
-		
-		HashSet<Territory> enemyTerritories = new HashSet<Territory>();
-		enemyTerritories.add(egstate);
-		enemyTerritories.add(otherplace);
-		enemyTerritories.add(someplace);
-		assertEquals(otherplace,TerritoryUtils.getStrongestTerritory(gameState, enemyTerritories));
-		
-		
-		
-		
-		
-	}
-	@Test
-	public void getWeakestTerritoryTest(){
-		HashSet<Territory> territorySet = new HashSet<Territory>();
-		
-		ArrayList<Player> players = gameState.getPlayers();
-		Player player1 = players.get(0);
-		Player player2 = players.get(1);
-		Player player3 = players.get(2);
-		ArmyUtils.givePlayerNArmies(player1, 15);
-		ArmyUtils.givePlayerNArmies(player2, 15);
-		ArmyUtils.givePlayerNArmies(player3, 15);
-		
-		assertEquals(TerritoryUtils.getWeakestTerritory(gameState, territorySet),null);
-		territorySet = TerritoryUtils.getAllTerritories(gameState);
-		ArmyUtils.deployArmies(player1, egstate, 1);
-		ArmyUtils.deployArmies(player1, otherplace, 3);
-		ArmyUtils.deployArmies(player1, demoland, 4);
-		ArmyUtils.deployArmies(player1, someplace, 2);
-		
-		assertEquals(TerritoryUtils.getWeakestTerritory(gameState, territorySet), egstate);
-		
-		ArmyUtils.destroyArmies(player1, egstate, 1);
-		ArmyUtils.destroyArmies(player1, otherplace, 3);
-		ArmyUtils.destroyArmies(player1, someplace, 2);
-		
-		ArmyUtils.deployArmies(player2, egstate, 5);
-		ArmyUtils.deployArmies(player2, otherplace, 1);
-		ArmyUtils.deployArmies(player3, someplace, 3);
-		
-		HashSet<Territory> enemyTerritories = new HashSet<Territory>();
-		enemyTerritories.add(egstate);
-		enemyTerritories.add(otherplace);
-		enemyTerritories.add(someplace);
-		assertEquals(otherplace,TerritoryUtils.getWeakestTerritory(gameState, enemyTerritories));
-		
-		
-	}
-	
-	@Test
-	public void goodIdeaTest(){
-		HashSet<Territory> territorySet = new HashSet<Territory>();
-		
-		ArrayList<Player> players = gameState.getPlayers();
-		Player player1 = players.get(0);
-		Player player2 = players.get(1);
-		ArmyUtils.givePlayerNArmies(player1, 15);
-		ArmyUtils.givePlayerNArmies(player2, 15);
-		
-		ArmyUtils.deployArmies(player2, egstate, 2);
-		ArmyUtils.deployArmies(player1, otherplace, 5);
-		ArmyUtils.deployArmies(player2, demoland, 3);
-		ArmyUtils.deployArmies(player1, someplace, 2);
-		
-		assertTrue(TerritoryUtils.goodIdea(gameState, otherplace, demoland, 1));
-		assertFalse(TerritoryUtils.goodIdea(gameState, someplace, demoland, 1));
-		assertFalse(TerritoryUtils.goodIdea(gameState, someplace, egstate, 1));
-		assertTrue(TerritoryUtils.goodIdea(gameState,  otherplace,demoland,1.25));
-		assertFalse(TerritoryUtils.goodIdea(gameState, someplace, otherplace, 1.25));
-	}
-	
 	
 	
 }

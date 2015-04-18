@@ -5,9 +5,11 @@ import GameState.Card;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
+import GameUtils.AIUtils;
 import GameUtils.ContinentUtils;
 import GameUtils.Results.Change;
 import GameUtils.TerritoryUtils;
+
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -67,10 +69,10 @@ public class GrabContinent implements PlayerInterface {
 
             case ATTACK_CHOICE_FROM:
                 ArrayList<Territory> australia = ContinentUtils.getContinentById(currentState, continentID).getTerritories();
-                return TerritoryUtils.getStrongestTerritory(currentState, possibles);
+                return AIUtils.getStrongestTerritory(currentState, possibles);
 
             case ATTACK_CHOICE_TO:
-                return TerritoryUtils.getStrongestTerritory(currentState, possibles);
+                return AIUtils.getStrongestTerritory(currentState, possibles);
 
             case REINFORCEMENT_PHASE:
                 return null;

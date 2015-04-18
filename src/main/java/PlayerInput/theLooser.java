@@ -6,7 +6,9 @@ import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.Results.Change;
+import GameUtils.AIUtils;
 import GameUtils.TerritoryUtils;
+
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -48,10 +50,10 @@ public class theLooser implements PlayerInterface {
 
 
             case ATTACK_CHOICE_FROM:
-                return TerritoryUtils.getWeakestTerritory(currentState,possibles);
+                return AIUtils.getWeakestTerritory(currentState,possibles);
 
             case ATTACK_CHOICE_TO:
-                return TerritoryUtils.getStrongestTerritory(currentState,possibles);
+                return AIUtils.getStrongestTerritory(currentState,possibles);
 
             case REINFORCEMENT_PHASE:
             default:

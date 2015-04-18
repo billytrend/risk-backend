@@ -5,10 +5,12 @@ import GameState.Card;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
+import GameUtils.AIUtils;
 import GameUtils.ArmyUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.Results.Change;
 import GameUtils.TerritoryUtils;
+
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -50,7 +52,7 @@ public class BorderControl implements PlayerInterface {
 
 	public Territory getTerritory(Player player, HashSet<Territory> possibles,
 			Territory from, boolean canResign, RequestReason reason) {
-		ArrayList<HashSet<Territory>> clusters = TerritoryUtils.getAllClusters(
+		ArrayList<HashSet<Territory>> clusters = AIUtils.getAllClusters(
 				state, player);
 		switch (reason) {
 		case PLACING_ARMIES_SET_UP:
@@ -146,7 +148,7 @@ public class BorderControl implements PlayerInterface {
 
 		case REINFORCEMENT_PHASE:
 			// move armies outwards - look for weakest, unprotected territories
-			return TerritoryUtils.getStrongestTerritory(state,possibles);
+			return AIUtils.getStrongestTerritory(state,possibles);
 		default:
 			break;
 		}
