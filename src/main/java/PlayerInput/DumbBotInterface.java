@@ -28,7 +28,7 @@ public class DumbBotInterface implements PlayerInterface {
     Random ran = new Random();
 	private static Scanner scanner;
 	private BlockingQueue<Entry<Object, RequestReason>> connectorQueue;
-	private ProtocolConnector connector;
+	private Thread connectorThread;
 	
     
 	// the protocol needs to call this method so that
@@ -42,13 +42,14 @@ public class DumbBotInterface implements PlayerInterface {
 		connectorQueue = new LinkedBlockingDeque<Entry<Object, RequestReason>>();
 		
 		// create a connector to connect with protocol
-		connector = new ProtocolConnector(connectorQueue, sharedQueue, id);
-		connector.run();
+		ProtocolConnector connector = new ProtocolConnector(connectorQueue, sharedQueue, id);
+		connectorThread = new Thread(connector);
+		connectorThread.start();
 	}
 	
 	public DumbBotInterface(){
 		connectorQueue = null;
-		connector = null;
+		connectorThread = null;
 	}
     
 	protected void emit(Player p, String message) {

@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -63,6 +65,14 @@ public abstract class AbstractProtocol implements Runnable {
 	protected byte[] randomNumber;
 	protected int dieRollResult;
 
+	public boolean wrongCommand = false;
+	
+	protected Timer timer = new Timer();
+	protected ChangeState currentTask;
+	protected Thread mainThread = Thread.currentThread();
+	protected boolean timerSet;
+	protected ProtocolState nextStateAfterAck;
+	
 	protected int numOfPlayers;
 
 	public void run(){
@@ -134,7 +144,7 @@ public abstract class AbstractProtocol implements Runnable {
 			this.localPlayer = playerInterface;
 		}
 		else
-			playerInterface = new RemotePlayer(newSharedQueue);
+			playerInterface = new RemotePlayer(newSharedQueue, Thread.currentThread(), this);
 
 	
 		Player newOne;
@@ -192,6 +202,7 @@ public abstract class AbstractProtocol implements Runnable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+
 	}
 
 	/**
@@ -604,5 +615,48 @@ public abstract class AbstractProtocol implements Runnable {
 
 		return protocolState;
 	}
+	
+	/**
+	 * ChangeState represents a thread that is supposed
+	 * to run after a time specified in a timer which uses it
+	 * The thread simply changes the state of the game to the next one
+	 *
+	 */
+	public class ChangeState extends TimerTask{
+		
+		public ChangeState(){
+			timerSet = true;
+		}
+		
+		@Override
+		public void run() {
+			ProtocolState newState = protocolState;
+			myID = 0;
+
+			// interrupt the main thread - for safety, so it doesn't access the protocolState
+			// field we want to change and to make sure its not in the middle of sth that
+			// we can mess up by changing state
+			mainThread.interrupt();
+			
+			synchronized(this){
+				try {
+					// wait for a bit second to let the main thread reach interrupt
+					wait(3000);
+				} catch (Exception e) {}
+
+				if(protocolState == ProtocolState.JOIN_GAME)
+					protocolState = ProtocolState.PING;
+				else if(protocolState == ProtocolState.PING_ACK)
+					protocolState = ProtocolState.READY;
+				else if(protocolState == ProtocolState.ACK)
+					protocolState = nextStateAfterAck;
+
+				timerSet = false;
+				// change state and notify the main thread so it continues running
+				notify();
+			}
+		}		
+	}
+
 
 }

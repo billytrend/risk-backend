@@ -25,6 +25,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import PeerServer.protocol.cards.*;
 import PeerServer.protocol.dice.*;
 import PeerServer.protocol.gameplay.*;
+import PeerServer.server.AbstractProtocol;
 
 /**
  *
@@ -34,8 +35,10 @@ public class RemotePlayer implements PlayerInterface  {
 	
 	//TODO: check for castin errors!
 	
-	public RemotePlayer(BlockingQueue sharedQueue){
+	public RemotePlayer(BlockingQueue sharedQueue, Thread thread, AbstractProtocol protocol){
 		responses = sharedQueue;
+		protocolThread = thread;
+		this.protocol = protocol;
 	}
 	
     private  BlockingQueue<Object> responses;
@@ -43,8 +46,12 @@ public class RemotePlayer implements PlayerInterface  {
     private Object response = null;
     private Iterator iterator = null;
     private int[] lastDeployChoice;
-        
+    
+    private Thread protocolThread;
+    private AbstractProtocol protocol;
+    
     boolean gotCardChoices = false;
+    boolean wrongCommand;
 
     
 	@Override
@@ -58,33 +65,53 @@ public class RemotePlayer implements PlayerInterface  {
 			}
 		}
 		
-		int number;
+		
+		int number = 0;
 		switch(reason){
 			case ATTACK_CHOICE_DICE:
 				if(!(response instanceof attack)){
-					System.out.println("BUG in asking for dice");
-					return 0;
+					wrongCommand = true;
 				}
-				number =  ((attack) response).payload[2]; 
+				else
+					number =  ((attack) response).payload[2]; 
 				break;
+				
 			case DEFEND_CHOICE_DICE:
 				if(!(response instanceof defend)){
-					System.out.println("BUG in asking for dice");
-					return 0;
-				}			
-				number = ((defend) response).payload;
+					wrongCommand = true;
+				}
+				else
+					number = ((defend) response).payload;
 				break;
+				
 			default: 
-				System.out.println("A BUG in asking for dice");
-				return 0;
+				wrongCommand = true;
 		}
 		
 		if(number > max){
-			System.out.println("Illigal dice number");
+			wrongCommand = true;
+		}
+		
+		if(wrongCommand){
+			System.out.println("A BUG in asking for dice");
+			notifyProtocol();
 			return 0;
 		}
+		
 		return number;
 	}
+	
+
+	
+	private void notifyProtocol() {
+		protocolThread.interrupt();
+		
+		synchronized(this){
+			protocol.wrongCommand = true;
+			notify();
+		}
+	}
+
 	
 
 	@Override
@@ -99,63 +126,65 @@ public class RemotePlayer implements PlayerInterface  {
 			}
 		}
 		
-		int id;
+		int id = 0;
+		Territory toReturn;
 		switch(reason){
 		// ATTACK
 			case ATTACK_CHOICE_FROM:
 				if(!(response instanceof attack)){
-					System.out.println("BUG in asking for dice");
-					return null;
+					wrongCommand = true;
 				}
-				id = ((attack) response).payload[0];
+				else
+					id = ((attack) response).payload[0];
 				break;
 			case ATTACK_CHOICE_TO:
 				if(!(response instanceof attack)){
-					System.out.println("A BUG in asking for territory");
-					return null;
-				}			
-				id = ((attack) response).payload[1];
+					wrongCommand = true;
+				}
+				else
+					id = ((attack) response).payload[1];
 				break;
 						
 		// SETUP
 			case PLACING_ARMIES_SET_UP:
 				if(!(response instanceof setup)){
-					System.out.println("A BUG in asking for territory");
-					return null;
+					wrongCommand = true;
 				}			
-				id = ((setup) response).payload;
+				else
+					id = ((setup) response).payload;
 				break;
 			case PLACING_REMAINING_ARMIES_PHASE:
 				if(!(response instanceof setup)){
-					System.out.println("A BUG in asking for territory");
-					return null;
+					wrongCommand = true;
 				}			
-				id = ((setup) response).payload;
+				else
+					id = ((setup) response).payload;
 				break;
 				
 		// DEPLOY
 			case PLACING_ARMIES_PHASE:
 				if(!(response instanceof deploy)){
-					System.out.println("A BUG in asking for territory");
-					return null;
-				}	
-				if(iterator == null)
-					iterator = new ArrayIterator(((deploy) response).payload);
-				if(iterator.hasNext()){
-					lastDeployChoice = (int[]) iterator.next();
-					id = lastDeployChoice[0];
+					wrongCommand = true;
 				}
 				else{
-					System.out.println("Player didnt place all of his armies");
-					return null;
+					if(iterator == null)
+						iterator = new ArrayIterator(((deploy) response).payload);
+					if(iterator.hasNext()){
+						lastDeployChoice = (int[]) iterator.next();
+						id = lastDeployChoice[0];
+					}
+					else{
+						System.out.println("Player didnt place all of his armies");
+						wrongCommand = true;
+						toReturn = null;
+					}
 				}
 				break;
 	
 		// ENDING MOVE, PLACNING SOME ARMIES
 			case REINFORCEMENT_PHASE:
 				if(!(response instanceof fortify)){
-					System.out.println("A BUG in asking for territory");
-					return null;
+					wrongCommand = true;
 				}
 				// no reinforsments
 				if(((fortify) response).payload == null)
@@ -168,8 +197,13 @@ public class RemotePlayer implements PlayerInterface  {
 					id = ((fortify) response).payload[1];
 				break;
 			default:
-				System.out.println("A BUG in asking for territory");
-				return null;
+				wrongCommand = true;
+		}
+		
+		if(wrongCommand){
+			System.out.println("BUG in asking for territory");
+			notifyProtocol();
+			return null;
 		}
 		
 		// return the territory of the specified id
@@ -178,13 +212,14 @@ public class RemotePlayer implements PlayerInterface  {
 				return ter;
 		}
 
-		// no territory like that found in possibles
-		// TODO: handle wrong input nicely -- connect with protocol?
-		System.out.println("illegal territory specified");
+		// if it got here it means that an illegal territory was specified
+		// notify protocol and return
+		notifyProtocol();
 		return null;
-
 	}
 
+	
+	
     @Override
     public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
 		if(reason != lastReason){
@@ -201,35 +236,36 @@ public class RemotePlayer implements PlayerInterface  {
 		// DEPLOY
 			case PLACING_ARMIES_PHASE:
 				if(!(response instanceof deploy)){
-					System.out.println("BUG getting number of armies");
-					return 0;
+					wrongCommand = true;
 				}	
 				number = lastDeployChoice[1];
 				break;
 		// ENDING MOVE, PLACNING SOME ARMIES
 			case REINFORCEMENT_PHASE:
 				if(!(response instanceof fortify)){
-					System.out.println("BUG getting number of armies");
-					return 0;
+					wrongCommand = true;
 				}
 				number = ((fortify) response).payload[2];
 				break;
 			case POST_ATTACK_MOVEMENT:
 				if(!(response instanceof attack_capture)){
-					System.out.println("BUG getting number of armies");
-					return 0;
+					wrongCommand = true;
 				}
 				// no reinforsments
 				number = ((attack_capture) response).payload[2];
 				break;
 			default:
-				System.out.println("A BUG in asking for dice");
-				return 0;
+				wrongCommand = true;
+
 		}
 		
 		if(number > max){
-			System.out.println("illegal army amount: " + number + " max: " + max);
-			return 0;
+			wrongCommand = true;
+		}
+		
+		if(wrongCommand){
+			System.out.println("BUG getting armies");
+			notifyProtocol();
 		}
 		
 		return number;
@@ -248,8 +284,7 @@ public class RemotePlayer implements PlayerInterface  {
 			}
 			
 			if(!(response instanceof play_cards)){
-				System.out.println("BUG getting cards");
-				return null;
+				wrongCommand = true;
 			}
 			
 			int[][] cards = ((play_cards) response).payload.cards;
@@ -277,6 +312,12 @@ public class RemotePlayer implements PlayerInterface  {
 			if(iterator.hasNext()){
 				return (Triplet<Card, Card, Card>) iterator.next();
 			}
+			
+			if(wrongCommand){
+				System.out.println("BUG getting cards");
+				notifyProtocol();
+			}
+			
 			return null;
 		}
 		

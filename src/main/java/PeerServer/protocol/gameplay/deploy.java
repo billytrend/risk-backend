@@ -30,8 +30,4 @@ public class deploy {
 	public class payload{
 		public int pairs [][];
 	}
-
-
-
-
 }

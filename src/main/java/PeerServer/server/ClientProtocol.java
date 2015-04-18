@@ -221,8 +221,10 @@ public class ClientProtocol extends AbstractProtocol{
 		// send request to join the game
 		String name = getRandomName();
 		join_game join = new join_game(new Integer[]{1}, new String[]{}, name, "key");
-		client.send(Jsonify.getObjectAsJsonString(join));
+		
 		System.out.println("\nSEND: " + Jsonify.getObjectAsJsonString(join));
+
+		client.send(Jsonify.getObjectAsJsonString(join));
 
 		return ProtocolState.JOIN_RESPONSE;
 	}
