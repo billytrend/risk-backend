@@ -219,18 +219,7 @@ public class TerritoryUtils {
 		state.getTerritories().addEdge(a, b);
 	}
 
-	public static Territory getRandomTerritory(State state,
-			HashSet<Territory> possibles) {
-		Random rand = new Random();
-		int randomNumber = rand.nextInt(possibles.size());
-		int count = 0;
-		for (Territory territory : possibles) {
-			if (count == randomNumber)
-				return territory;
-			count++;
-		}
-		return null;
-	}
+
 
 	public static Territory getTerritoryByName(State state, String name) {
 		HashSet<Territory> allTerritories = getAllTerritories(state);
