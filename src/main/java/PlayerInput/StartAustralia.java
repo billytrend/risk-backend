@@ -64,7 +64,7 @@ public class StartAustralia implements PlayerInterface {
 
             case ATTACK_CHOICE_FROM:
             	ArrayList<Territory> australia = ContinentUtils.getContinentById(currentState, "australia").getTerritories();
-               return TerritoryUtils.getStrongestOwned(player, territoryList);
+               return TerritoryUtils.getStrongestOwned(player, possibles);
 
             case ATTACK_CHOICE_TO:
                 return TerritoryUtils.getStrongestEnemy(currentState, territoryList, "siam");
@@ -130,6 +130,13 @@ public class StartAustralia implements PlayerInterface {
 
 	@Override
 	public void reportStateChange(Change change) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void createResponse() {
 		// TODO Auto-generated method stub
 		
 	}

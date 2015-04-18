@@ -1,12 +1,14 @@
+var ServerComm = require('../Common/ServerCommunication');
 
+var TodoActions = {
 
-module.exports.constants = {
-    CREATE_GAME: "ADD_TODO"
-};
-
-
-module.exports.actions = {
-    createGame: function(game) {
-        this.dispatch(constants.CREATE_GAME, game);
+    joinGame: function(i) {
+        ServerComm.sendMessage({
+            commandType: 'JoinGameReq',
+            gameIndex: i
+        });
     }
+
 };
+
+module.exports = TodoActions;

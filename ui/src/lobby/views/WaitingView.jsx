@@ -2,32 +2,34 @@ var React = require('react/addons'),
     Store = require('../Store'),
     Actions = require('../Actions'),
     Player = require('./Player.jsx');
-;
 
 module.exports = React.createClass({
 
+    getInitialState: function () {
+        return Store.getGameToBeJoined();
+    },
+
+    componentDidMount: function() {
+        Store.addChangeListener("waiting_game", this._refreshState);
+    },
+
+    componentWillUnmount: function() {
+        Store.removeChangeListener("waiting_game", this._refreshState);
+    },
 
     _selectGame: function() {
         Actions.joinGame(this.props.index);
     },
 
+    _refreshState: function() {
+        this.setState(Store.getGameToBeJoined());
+    },
+
     render: function() {
-        var gameState = this.props.game;
 
-        //if (gameState === undefined) {
-        //    return (
-        //        <div>
-        //            <input value={ gameState.gameName ? gameState.gameName : '' } />
-        //            {
-        //                gameState.players.map(function() {
-        //                    return <Player />;
-        //                })
-        //            }
-        //        </div>
-        //    );
-        //}
+        var gameState = this.state;
 
-        var self = this;
+        if (!gameState) return <div></div>;
 
         return (
             <div className="game">
@@ -37,7 +39,7 @@ module.exports = React.createClass({
                         gameState.players.map(function(player) {
                             return <Player playerState={ player }/>;
                         })
-                    }
+                        }
                 </div>
                 <div>
                     <button onClick={ self._selectGame } >Join game</button>

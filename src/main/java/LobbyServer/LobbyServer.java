@@ -1,16 +1,13 @@
 package LobbyServer;
 
-import GameBuilders.RiskMapGameBuilder;
-import GameEngine.GameEngine;
-import GameState.State;
 import GeneralUtils.Jsonify;
+import LobbyServer.LobbyState.GameDescription;
 import LobbyServer.LobbyState.Lobby;
+import LobbyServer.LobbyState.LobbyUtils;
 import LobbyServer.LobbyState.ObjectFromClient.ClientMessage;
 import LobbyServer.LobbyState.ObjectFromClient.GameComms.Response;
+import LobbyServer.LobbyState.ObjectFromClient.JoinGameReq;
 import LobbyServer.LobbyState.PlayerConnection;
-import LobbyServer.LobbyUtils.LobbyUtils;
-import PlayerInput.DumbBotInterface;
-import PlayerInput.PlayerInterface;
 import org.java_websocket.WebSocket;
 import org.java_websocket.WebSocketImpl;
 import org.java_websocket.handshake.ClientHandshake;
@@ -23,7 +20,7 @@ import java.util.Collection;
 
 import static com.esotericsoftware.minlog.Log.debug;
 
-public class GameServer extends WebSocketServer {
+public class LobbyServer extends WebSocketServer {
     
     public static void main( String[] args ) throws InterruptedException , IOException {
         WebSocketImpl.DEBUG = false;
@@ -32,17 +29,17 @@ public class GameServer extends WebSocketServer {
             port = Integer.parseInt( args[ 0 ] );
         } catch ( Exception ex ) {
         }
-        GameServer s = new GameServer( port );
+        LobbyServer s = new LobbyServer( port );
         s.start();
     }
 
     private Lobby lobby = new Lobby();
 
-    public GameServer(int port) throws UnknownHostException {
+    public LobbyServer(int port) throws UnknownHostException {
         super( new InetSocketAddress( port ) );
     }
 
-    public GameServer(InetSocketAddress address) {
+    public LobbyServer(InetSocketAddress address) {
         super( address );
     }
 
@@ -54,23 +51,20 @@ public class GameServer extends WebSocketServer {
      */
     @Override
     public void onOpen( WebSocket conn, ClientHandshake handshake ) {
-        debug("hi!");
-        PlayerConnection player = new PlayerConnection(conn);
-        LobbyUtils.addConnection(this.lobby, conn, player);
-        debug(Jsonify.getObjectAsJsonString(new Lobby()));
-        PlayerInterface[] interfaces = new PlayerInterface[]{player, new DumbBotInterface(), new DumbBotInterface(), new DumbBotInterface()};
-        State gameState = RiskMapGameBuilder.buildGame(interfaces);
-        GameEngine game = new GameEngine(gameState);
-        Thread gameThr = new Thread(game);
-        System.out.println(Jsonify.getObjectAsJsonString(gameState));
-        conn.send(Jsonify.getObjectAsJsonString(gameState));
-        gameThr.start();
-        debug("Hi!");
+
+        // push player into lobby
+        LobbyUtils.addConnection(this.lobby, conn);
+
+        LobbyUtils.addGame(lobby, new GameDescription("test", 2));
+
+        // send the lobby state to the player
+        conn.send(Jsonify.getObjectAsJsonString(lobby));
 
     }
 
     @Override
     public void onClose( WebSocket conn, int code, String reason, boolean remote ) {
+        // replace connPlayer with AI
         this.sendToAll( conn + " has left the room!" );
         debug(conn + " has left the room!");
     }
@@ -87,12 +81,32 @@ public class GameServer extends WebSocketServer {
      */
     @Override
     public void onMessage( WebSocket conn, String message ) {
-        debug("RECD :::" + message);
+
+        // extract message
         ClientMessage messageObject = WebServerUtils.getMessageObject(message);
-        PlayerConnection player = LobbyUtils.getPlayer(lobby, conn);
+
+        // if game response, route to game
         if (messageObject instanceof Response) {
             LobbyUtils.routeMessage(lobby, conn, messageObject);
         }
+
+        // if game description create, add to lobby
+        if (messageObject instanceof GameDescription) {
+            LobbyUtils.addGameDescription(lobby, messageObject);
+            LobbyUtils.updateStateForLobbiedPlayers(lobby);
+        }
+
+        // if join game, add to game and send confirmation with game meta
+        if (messageObject instanceof JoinGameReq) {
+            if (LobbyUtils.addPlayerToGame(lobby, ((JoinGameReq) messageObject).gameIndex, conn)) {
+                LobbyUtils.confirmJoined(conn, ((JoinGameReq) messageObject).gameIndex);
+            }
+            LobbyUtils.updateStateForLobbiedPlayers(lobby);
+            LobbyUtils.startGames(lobby);
+        }
+
+        debug("RECD :::" + message);
+        PlayerConnection player = LobbyUtils.getPlayer(lobby, conn);
     }
 
     @Override

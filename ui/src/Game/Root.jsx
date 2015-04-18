@@ -10,7 +10,9 @@ var Inspector = require('./views/Inspector.jsx'),
     Prompt = require('./views/Prompt.jsx'),
     ArmySelection = require('./views/map_views/ArmySelection.jsx'),
     ServerRequest = require('./stores/ServerRequest'),
-    SoundTrack = require('./views/Audio.jsx');
+    StateStore = require('./stores/StateStore'),
+    SoundTrack = require('./views/Audio.jsx'),
+    Lobby = require('../lobby/views/LobbyView.jsx');
 
 module.exports = React.createClass({
 
@@ -33,6 +35,7 @@ module.exports = React.createClass({
     render: function() {
         var self = this;
         return <div>
+            { StateStore.gameStarted() ? '' : <Lobby /> }
             <SoundTrack />
             <Prompt />
             <div className="view_layer main_view">

@@ -189,4 +189,9 @@ public class BorderControl implements PlayerInterface {
 
 	}
 
+    @Override
+    public void createResponse() {
+
+    }
+
 }

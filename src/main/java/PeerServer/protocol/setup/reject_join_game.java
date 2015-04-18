@@ -21,9 +21,4 @@ public class reject_join_game {
 	public reject_join_game(String error_message) {
 		this.payload = error_message;
 	}
-	
-	public reject_join_game(){
-		
-	}
-	
 }

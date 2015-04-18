@@ -16,6 +16,7 @@ import java.util.Random;
 /**
  * Created by root on 08/04/2015.
  */
+
 public class CommunistDefensive implements PlayerInterface{
     public State currentState;
     public Territory currentTer;
@@ -45,18 +46,19 @@ public class CommunistDefensive implements PlayerInterface{
      */
 
 
-    public Territory getTerritory(Player player,
-                                  HashSet<Territory> possibles,boolean canResign, RequestReason reason) {
+    public Territory getTerritory(Player player, HashSet<Territory> possibles,Territory from,
+                                  boolean canResign, RequestReason reason) {
 
         ArrayList<Territory> territoryList = new ArrayList<Territory>(possibles);
 
         Random rand = new Random();
-        int randNo = rand.nextInt(territoryList.size() - 0 + 1) + 0;
+        int randNo = TerritoryUtils.randInt(0, territoryList.size()-1);
+
+        //System.out.println(TerritoryUtils.getWeakestOwned(player, territoryList).getId());
 
         switch (reason) {
 
             case PLACING_ARMIES_SET_UP:
-
                 return territoryList.get(randNo);
 
             case PLACING_REMAINING_ARMIES_PHASE:
@@ -66,7 +68,7 @@ public class CommunistDefensive implements PlayerInterface{
                 return TerritoryUtils.getWeakestOwned(player, possibles);
 
             case ATTACK_CHOICE_FROM:
-                currentTer = TerritoryUtils.getStrongestOwned(player, territoryList);
+                currentTer = TerritoryUtils.getStrongestOwned(player, possibles);
                 return currentTer;
 
             case ATTACK_CHOICE_TO:
@@ -128,7 +130,7 @@ public class CommunistDefensive implements PlayerInterface{
      * @return a triplet of cards which represents choice
      */
     public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
-        return null;
+        return possibleCombinations.get(0);
     }
 
     public void reportStateChange(Change change) {
@@ -136,12 +138,10 @@ public class CommunistDefensive implements PlayerInterface{
 
     }
 
+    @Override
+    public void createResponse() {
 
-	@Override
-	public Territory getTerritory(Player player, HashSet<Territory> possibles,
-			Territory from, boolean canResign, RequestReason reason) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    }
+
 
 }
