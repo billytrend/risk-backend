@@ -17,7 +17,7 @@ import java.util.Random;
 /**
  * Created by root on 08/04/2015.
  */
-public class Berserker {
+public class Berserker implements PlayerInterface {
     public State currentState;
 
     public Berserker(State a){
@@ -133,5 +133,12 @@ public class Berserker {
         // TODO Auto-generated method stub
 
     }
+
+
+	@Override
+	public void createResponse() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

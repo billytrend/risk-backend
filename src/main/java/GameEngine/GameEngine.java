@@ -295,16 +295,16 @@ public class GameEngine implements Runnable {
 
         ArrayList<Triplet<Card, Card, Card>> possibleCombinations = CardUtils.getPossibleCardCombinations(gameState, currentPlayer);
 		
-		if (possibleCombinations.size() == 0) return PLAYER_PLACING_ARMIES;
-
 		Triplet<Card, Card, Card> choice = currentPlayer.getCommunicationMethod().getCardChoice(currentPlayer, possibleCombinations);
-
+		
+		if (choice == null)
+			return PLAYER_PLACING_ARMIES;
 
 		CardUtils.releaseCards(choice);
 
-		return PLAYER_PLACING_ARMIES;
-
+		return PLAYER_CONVERTING_CARDS;
 	}
+	
 
 	/**
 	 * Method used within the entire game. It is called any time

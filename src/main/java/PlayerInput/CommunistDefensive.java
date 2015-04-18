@@ -183,4 +183,10 @@ public class CommunistDefensive implements PlayerInterface {
 
     }
 
+	@Override
+	public void createResponse() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

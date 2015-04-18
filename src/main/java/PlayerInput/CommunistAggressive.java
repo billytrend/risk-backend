@@ -198,6 +198,10 @@ public class CommunistAggressive implements PlayerInterface {
 	@Override
 	public Triplet<Card, Card, Card> getCardChoice(Player player,
 			ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
+		
+	    if(possibleCombinations.size() == 0)
+	        	return null;
+
 		Random rand = new Random();
 		ArrayList<Triplet<Card, Card, Card>> possibles = CardUtils.getPossibleCardCombinations(currentState, player);
 		return possibles.get(rand.nextInt(possibles.size()));
@@ -207,5 +211,11 @@ public class CommunistAggressive implements PlayerInterface {
     public void reportStateChange(Change change) {
 
     }
+
+	@Override
+	public void createResponse() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

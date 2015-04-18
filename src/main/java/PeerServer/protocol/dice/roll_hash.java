@@ -10,10 +10,29 @@ package PeerServer.protocol.dice;
  * transmitting its roll_number command, to avoid any player being able to pre-compute the results.
  * @author 120011995
  *
+ *{
+
+"command": "roll_hash",
+
+"payload":
+
+"7b3d979ca8330a94fa7e9e1b466d8b99e0bcdea1ec90596c0dcc8d7ef6b4300c",
+
+"player_id": 0
+
+}
  */
+
+
 public class roll_hash {
 	
+	public roll_hash(String payload, int player_id){
+		this.payload = payload;
+		this.player_id = player_id;
+	}
+	
 	//SHA-256 Hash as a hexadecimal string
-	String SHA256_Hash;
-	int player_id;
+	public String command = "roll_hash";
+	public String payload;
+	public int player_id;
 }

@@ -227,7 +227,7 @@ public class ProtocolTest {
 	public void setupTest(){
 		String command = "{\"command\": \"setup\",\"payload\": 5,\"player_id\": 0,\"ack_id\": 1}";
 		
-		setup setup = (PeerServer.protocol.gameplay.setup) Jsonify.getJsonStringAsObject(command, setup.class);
+		setup setup = (setup) Jsonify.getJsonStringAsObject(command, setup.class);
 		//check it is not null
 		assertNotNull(setup);
 		
@@ -238,7 +238,7 @@ public class ProtocolTest {
 		assertEquals(setup.ack_id, 1);
 
 		//create a new object 
-		setup setupToString = new setup("setup", 5, 0, 1);
+		setup setupToString = new setup( 5, 0, 1);
 		String setupString = Jsonify.getObjectAsJsonString(setupToString);
 		System.out.println(setupString);
 		command = command.replaceAll(",\\s",",");
