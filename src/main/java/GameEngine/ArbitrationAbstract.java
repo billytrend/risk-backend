@@ -7,26 +7,19 @@ import GameState.State;
 import GameUtils.Results.FightResult;
 
 public abstract class ArbitrationAbstract {
-/*
-	 public void setFirstPlayer(State state);
 
-	    public static Integer dieThrowWrapper(){
-	    	return dieThrow();
-	    }
+	    public abstract void setFirstPlayer(State state);
+	 
+	    public abstract Integer dieThrowWrapper();
 	     
+
 	    /**
 	     * Returns a random result of multiple dice throw.
 	     *
 	     * @param numOfDice
 	     * @return
-	     *
-	    private  Integer[] nDiceThrow(int numOfDice){
-	        Integer[] result = new Integer[numOfDice];
-	        for(int i = 0; i < numOfDice; i++){
-	            result[i] = dieThrow();
-	        }
-	        return result;
-	    }
+	     */
+	    public abstract Integer[] nDiceThrow(int numOfDice);
 
 	  /**
 	     * This method carries out the whole fight including dice throw,
@@ -38,7 +31,7 @@ public abstract class ArbitrationAbstract {
 	     * @param dA
 	     * @param dB
 	     * @return
-	     *
+	     */
 	   public FightResult carryOutFight(FightResult result, int dA, int dB) {
 
 	       Integer[] attackDice = nDiceThrow(dA);
@@ -57,7 +50,7 @@ public abstract class ArbitrationAbstract {
 	     * @param attacker
 	     * @param defender
 	     * @return
-	     *
+	     */
 	   private FightResult arbitrateFight(FightResult result, Integer[] attacker, Integer[] defender){
 
 	        // sort in descending order - to later compare the highest results
@@ -85,8 +78,5 @@ public abstract class ArbitrationAbstract {
 
 	        return result;
 	    }
-
-	    
-	    */
-	    
+    
 }

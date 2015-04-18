@@ -83,11 +83,6 @@ public class ClientProtocol extends AbstractProtocol{
 			else
 				protocolState = init_game(command);
 			break;
-		case SETUP_GAME:
-			debug("\n SETUP_GAME");
-			command = client.receive();
-			protocolState = setup_game(command);
-			break;
 		case LEAVE_GAME:
 			debug("\n LEAVE_GAME");
 			protocolState = leave_game("");
@@ -98,121 +93,6 @@ public class ClientProtocol extends AbstractProtocol{
 		}
 	}
 
-	@Override
-	protected void takeGameAction() {
-		String command;
-		switch(protocolState){
-		case PLAY_CARDS:
-			debug("\n PLAY_CARDS");
-			command = client.receive();
-			if(command.contains("timeout"))
-				protocolState = timeout(command);
-			if(command.contains("leave"))
-				protocolState = leave_game(command);
-			else
-				protocolState = play_cards(command);
-			break;
-		case DEPLOY:
-			debug("\n DEPLOY");
-			command = client.receive();
-			if(command.contains("timeout"))
-				protocolState = timeout(command);
-			if(command.contains("leave"))
-				protocolState = leave_game(command);
-			else
-			protocolState = deploy(command);			
-			break;
-		case ATTACK:
-			debug("\n ATTACK");
-			command = client.receive();
-			if(command.contains("timeout"))
-				protocolState = timeout(command);
-			if(command.contains("leave"))
-				protocolState = leave_game(command);
-			else
-			protocolState = attack(command);
-			break;
-		case DEFEND:
-			debug("\n DEFEND");
-			command = client.receive();
-			if(command.contains("timeout"))
-				protocolState = timeout(command);
-			if(command.contains("leave"))
-				protocolState = leave_game(command);
-			else
-			protocolState = defend(command);
-			break;
-		case ATTACK_CAPTURE:
-			debug("\n ATTACK_CAPTURE");
-			command = client.receive();
-			if(command.contains("timeout"))
-				protocolState = timeout(command);
-			if(command.contains("leave"))
-				protocolState = leave_game(command);
-			else
-			protocolState = attack_capture(command);
-			break;
-		case FORTIFY:
-			debug("\n FORTIFY");
-			command = client.receive();
-			if(command.contains("timeout"))
-				protocolState = timeout(command);
-			if(command.contains("leave"))
-				protocolState = leave_game(command);
-			else
-			protocolState = fortify(command);
-			break;
-		case ACK:
-			debug("\n ACK");
-			command = client.receive();
-			if(command.contains("timeout"))
-				protocolState = timeout(command);
-			if(command.contains("leave"))
-				protocolState = leave_game(command);
-			else
-			protocolState = acknowledge(command);
-			break;
-		case ROLL_HASH:
-			debug("\n ROLL_HASH");
-			command = client.receive();
-			if(command.contains("timeout"))
-				protocolState = timeout(command);
-			if(command.contains("leave"))
-				protocolState = leave_game(command);
-			else
-			protocolState = roll_hash(command);
-			break;
-		case ROLL_NUMBER:
-			debug("\n ROLL_NUMBER");
-			command = client.receive();
-			if(command.contains("timeout"))
-				protocolState = timeout(command);
-			if(command.contains("leave"))
-				protocolState = leave_game(command);
-			else
-			protocolState = roll_number(command);
-			break;
-		case TIMEOUT:
-			debug("\n TIMEOUT");
-			command = client.receive();
-			if(command.contains("leave"))
-				protocolState = leave_game(command);
-			else
-			protocolState = timeout(command);
-			break;
-		case LEAVE_GAME:
-			debug("\n LEAVE_GAME");
-			command = client.receive();
-			if(command.contains("timeout"))
-				protocolState = timeout(command);
-			else
-			this.protocolState = leave_game(command);
-			break;	
-		default:
-			System.out.println("in default not good");
-			break;
-		}
-	}
 
 	//*********************** GAME SETUP ******************************
 
@@ -402,10 +282,7 @@ public class ClientProtocol extends AbstractProtocol{
 		versionPlayed = init.payload.version;
 		featuresUsed = init.payload.supported_features;
 
-		State state = new State(startingPlayers);
-		engine = new GameEngine(state);
-
-		diceRoller.setFaceValue(startingPlayers.size());
+		//diceRoller.setFaceValue(startingPlayers.size());
 
 		return ProtocolState.LEAVE_GAME;
 	}
@@ -472,28 +349,6 @@ public class ClientProtocol extends AbstractProtocol{
 	}
 
 
-	@Override
-	protected ProtocolState setup_game(String command){
-		if(command.contains("timeout"))
-			return timeout(command);
-		Object setup = Jsonify.getJsonStringAsObject(command, setup.class);
-		return protocolState;	
-	}
-
-	public static void main(String[] args) {
-		ClientProtocol protocol = new ClientProtocol();
-		protocol.run();
-	}
-
-	public void run() {
-		// localhost should be replaced with an argument args[0], port args[1]
-		client = new Client("localhost", 4444);
-
-		super.run();
-
-		client.close();
-	}
-
 
 	@Override
 	protected void sendCommand(String command, Integer exceptId) {
@@ -506,7 +361,24 @@ public class ClientProtocol extends AbstractProtocol{
 
 	@Override
 	protected String receiveCommand() {
-		// TODO Auto-generated method stub
-		return null;
+		return client.receive();
 	}
+	
+	
+	public void run() {
+		// localhost should be replaced with an argument args[0], port args[1]
+		client = new Client("localhost", 4444);
+		state = new State();
+
+		super.run();
+
+		client.close();
+	}
+
+	public static void main(String[] args) {
+		ClientProtocol protocol = new ClientProtocol();
+		protocol.run();
+	}
+
+
 }
