@@ -23,8 +23,9 @@ public class GrabContinent implements PlayerInterface {
     public String continentID = "asia";
 
 
-    public GrabContinent(State a){
+    public GrabContinent(State a, String continentID){
         this.currentState = a;
+        this.continentID = continentID;
     }
     public GrabContinent() {
 
