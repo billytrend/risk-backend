@@ -71,7 +71,7 @@ public class BorderControl implements PlayerInterface {
 					}
 				}
 			}
-			return TerritoryUtils.getRandomTerritory(state, possibles);
+			return AIUtils.getRandomTerritory(state, possibles);
 		case PLACING_REMAINING_ARMIES_PHASE:
 			// reinforce outer edges of clusters
 		case PLACING_ARMIES_PHASE:

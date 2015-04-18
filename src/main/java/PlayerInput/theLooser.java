@@ -46,7 +46,7 @@ public class theLooser implements PlayerInterface {
             case PLACING_ARMIES_SET_UP:
             case PLACING_REMAINING_ARMIES_PHASE:
             case PLACING_ARMIES_PHASE:
-                return TerritoryUtils.getRandomTerritory(currentState, possibles);
+                return AIUtils.getRandomTerritory(currentState, possibles);
 
 
             case ATTACK_CHOICE_FROM:

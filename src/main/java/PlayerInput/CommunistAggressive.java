@@ -81,7 +81,7 @@ public class CommunistAggressive implements PlayerInterface{
         switch (reason) {
 
             case PLACING_ARMIES_SET_UP:
-                return TerritoryUtils.getRandomTerritory(currentState, possibles);
+                return AIUtils.getRandomTerritory(currentState, possibles);
 
             case PLACING_REMAINING_ARMIES_PHASE:
             case PLACING_ARMIES_PHASE:
@@ -100,7 +100,7 @@ public class CommunistAggressive implements PlayerInterface{
                         return null;
                     }
                 }
-                return TerritoryUtils.getRandomTerritory(currentState, possibles);
+                return AIUtils.getRandomTerritory(currentState, possibles);
 
             case REINFORCEMENT_PHASE:
                 if(canResign){

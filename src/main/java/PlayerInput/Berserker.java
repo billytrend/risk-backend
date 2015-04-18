@@ -54,7 +54,7 @@ public class Berserker implements PlayerInterface {
         switch (reason) {
             case PLACING_ARMIES_SET_UP:
             case PLACING_REMAINING_ARMIES_PHASE:
-                return TerritoryUtils.getRandomTerritory(currentState, possibles);
+                return AIUtils.getRandomTerritory(currentState, possibles);
             case PLACING_ARMIES_PHASE:
                 return AIUtils.getWeakestTerritory(currentState,possibles);
 

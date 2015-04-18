@@ -292,5 +292,20 @@ public class TerritoryUtilsTest {
 		assertEquals(neighboursDemoland.size(), 3);
 	}
 	
+	@Test
+	public void getTerritoryByNameTest(){
+		assertEquals(TerritoryUtils.getTerritoryByName(gameState, "egstate"), egstate);
+		assertEquals(TerritoryUtils.getTerritoryByName(gameState, "nonterritory"), null);
+	}
+	
+	@Test
+	public void getAllCountryNamesTest(){
+		ArrayList<String> countryNames = TerritoryUtils.getAllCountryNames(gameState);
+	//	assertEquals("demoland", countryNames.get(0));
+	//	assertEquals("egstate", countryNames.get(1));
+		//assertEquals("otherplace", countryNames.get(2));
+		
+	}
+	
 	
 }
