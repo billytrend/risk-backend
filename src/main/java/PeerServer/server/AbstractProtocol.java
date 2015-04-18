@@ -6,7 +6,6 @@ import GameState.Player;
 import GameState.State;
 import GameUtils.PlayerUtils;
 import GeneralUtils.Jsonify;
-import PeerServer.protocol.cards.deploy;
 import PeerServer.protocol.cards.play_cards;
 import PeerServer.protocol.dice.Die;
 import PeerServer.protocol.dice.Die.HashMismatchException;
@@ -17,6 +16,7 @@ import PeerServer.protocol.dice.roll_number;
 import PeerServer.protocol.gameplay.attack;
 import PeerServer.protocol.gameplay.attack_capture;
 import PeerServer.protocol.gameplay.defend;
+import PeerServer.protocol.gameplay.deploy;
 import PeerServer.protocol.gameplay.fortify;
 import PeerServer.protocol.general.acknowledgement;
 import PlayerInput.DumbBotInterface;
@@ -120,6 +120,7 @@ public abstract class AbstractProtocol implements Runnable {
 		// TODO: make sure its ok with game engine
 		PlayerUtils.removePlayer(state, player);
 	}
+	
 
 	protected Player createNewPlayer(String name, int id, boolean localPlayer){
 		// creating player and mapping its id to its interface
@@ -146,7 +147,8 @@ public abstract class AbstractProtocol implements Runnable {
 		numOfPlayers++;
 		
 		//interfaceMapping.put(0, playerInterface);
-		state.setPlayers(startingPlayers); /// ???? needed?
+		if(state != null)
+			state.setPlayers(startingPlayers); /// ???? needed?
 		
 		return newOne;
 	}
@@ -199,7 +201,7 @@ public abstract class AbstractProtocol implements Runnable {
 	 */
 	protected Object getResponseFromLocalPlayer(){
 		BlockingQueue<Object> queue = queueMapping.get(myID);
-		localPlayer.createResponse();
+		//localPlayer.createResponse();
 		
 		Object response = null;
 		try {
@@ -276,6 +278,8 @@ public abstract class AbstractProtocol implements Runnable {
 
 	//***************************** CARDS ***********************************
 
+	
+	
 	/**
 	 * Sent by each player at the start of their turn, specifying group(s) of 
 	 * cards to trade in for armies, and the number of armies they are expecting to receive. 
@@ -312,7 +316,7 @@ public abstract class AbstractProtocol implements Runnable {
 		//we are sending command 
 		if(command == ""){
 			//create deploy object based on player choices
-			deploy deploy = (PeerServer.protocol.cards.deploy) getResponseFromLocalPlayer();
+			deploy deploy = (PeerServer.protocol.gameplay.deploy) getResponseFromLocalPlayer();
 			String deployString = Jsonify.getObjectAsJsonString(deploy);
 			
 			//send to all clients or just host if you are client 

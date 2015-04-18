@@ -1,7 +1,7 @@
 /**
  * 
  */
-package PeerServer.protocol.cards;
+package PeerServer.protocol.gameplay;
 
 
 /**
