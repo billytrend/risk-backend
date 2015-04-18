@@ -51,7 +51,6 @@ public class theLooser implements PlayerInterface {
                 return TerritoryUtils.getWeakestOwned(player, possibles);
 
             case ATTACK_CHOICE_TO:
-                System.out.println(TerritoryUtils.getStrongestEnemy(currentState, possibles).getId());
                 return TerritoryUtils.getStrongestEnemy(currentState, possibles);
 
             case REINFORCEMENT_PHASE:
@@ -69,8 +68,6 @@ public class theLooser implements PlayerInterface {
      * @return
      */
     public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
-
-        System.out.println(max);
         switch (reason) {
             case PLACING_ARMIES_SET_UP:
                 return 1;

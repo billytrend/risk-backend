@@ -21,6 +21,8 @@ public class Billy implements PlayerInterface{
     public State currentState;
     public  int STARTUPMETRIC = 5;
     public String contID = "north_america";
+    public Territory currTer;
+
 
     public Billy(State currentState) {
         this.currentState = currentState;
@@ -45,7 +47,7 @@ public class Billy implements PlayerInterface{
     public Territory getTerritory(Player player, HashSet<Territory> possibles, Territory from, boolean canResign, RequestReason reason) {
         PlayerInterface contGrab = new GrabContinent(currentState, contID);
         PlayerInterface bordCont = new BorderControl(currentState);
-        PlayerInterface commie = new CommunistDefensive(currentState);
+        PlayerInterface commie = new BorderControl(currentState);
 
         switch (reason) {
             case PLACING_ARMIES_SET_UP:
@@ -72,16 +74,18 @@ public class Billy implements PlayerInterface{
 
             case ATTACK_CHOICE_FROM:
                 if(turnCounter < STARTUPMETRIC) {
-                    return contGrab.getTerritory(player,possibles,from,canResign,reason);
+                    currTer = contGrab.getTerritory(player,possibles,from,canResign,reason);
+                    return currTer;
                 } else {
-                    return commie.getTerritory(player, possibles, from, canResign, reason);
+                    currTer = commie.getTerritory(player, possibles, from, canResign, reason);
+                    return currTer;
                 }
 
             case ATTACK_CHOICE_TO:
                 if(turnCounter < STARTUPMETRIC) {
                     return contGrab.getTerritory(player,possibles,from,canResign,reason);
                 } else {
-                    return commie.getTerritory(player, possibles, from, canResign, reason);
+                    return commie.getTerritory(player, possibles, currTer, canResign, reason);
                 }
 
             case REINFORCEMENT_PHASE:
