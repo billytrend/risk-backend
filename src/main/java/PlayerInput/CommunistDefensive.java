@@ -57,18 +57,18 @@ public class CommunistDefensive implements PlayerInterface{
                 return TerritoryUtils.getRandomTerritory(currentState, possibles);
 
             case PLACING_REMAINING_ARMIES_PHASE:
-                return TerritoryUtils.getWeakestOwned(player, possibles);
+                return TerritoryUtils.getWeakestTerritory(currentState,possibles);
 
             case PLACING_ARMIES_PHASE:
-                return TerritoryUtils.getWeakestOwned(player, possibles);
+                return TerritoryUtils.getWeakestTerritory(currentState,possibles);
 
             case ATTACK_CHOICE_FROM:
-                currentTer = TerritoryUtils.getStrongestOwned(player, possibles);
+                currentTer = TerritoryUtils.getStrongestTerritory(currentState,possibles);
                 return currentTer;
 
             case ATTACK_CHOICE_TO:
-                Territory weakestTer = TerritoryUtils.getWeakestEnemy(currentState, possibles, currentTer.getId());
-                if(TerritoryUtils.goodIdea(currentState, currentTer, weakestTer)){
+                Territory weakestTer = TerritoryUtils.getWeakestTerritory(currentState,possibles);
+                if(TerritoryUtils.goodIdea(currentState, currentTer, weakestTer, 1.25)){
                     return weakestTer;
                 } else {
                     if(canResign){
@@ -105,7 +105,7 @@ public class CommunistDefensive implements PlayerInterface{
             case PLACING_ARMIES_PHASE:
                 return 1;
             case ATTACK_CHOICE_DICE:
-                return 3;
+                return max;
             case DEFEND_CHOICE_DICE:
                 return 2;
             case REINFORCEMENT_PHASE:

@@ -22,13 +22,10 @@ public class BorderControlTest {
     public void setUp() throws Exception {
     }
 
-    @After
-    public void tearDown() throws Exception {
-
-    }
+  
 
     @Test
-    public void testCommunist() throws InterruptedException {
+    public void testBorderControl() throws InterruptedException {
         Log.NONE();
 
         PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface(),
@@ -54,11 +51,8 @@ public class BorderControlTest {
 
         // TODO: add assertions about state.
     }
+    @After
+    public void tearDown() throws Exception {
 
-    @Test
-    public void testJsonify() {
-
-        Lobby t = new Lobby();
-//        debug(Jsonify.getObjectAsJsonString(t));
-//        debug(Jsonify.getObjectAsJsonString(new Territory("lol")));
-    }}
+    }
+}

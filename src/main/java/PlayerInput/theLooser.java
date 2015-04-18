@@ -53,10 +53,10 @@ public class theLooser implements PlayerInterface {
                 return TerritoryUtils.getRandomTerritory(currentState, possibles);
 
             case ATTACK_CHOICE_FROM:
-                return TerritoryUtils.getWeakestOwned(player, possibles);
+                return TerritoryUtils.getWeakestTerritory(currentState,possibles);
 
             case ATTACK_CHOICE_TO:
-                return TerritoryUtils.getStrongestOwned(player, possibles);
+                return TerritoryUtils.getStrongestTerritory(currentState,possibles);
 
             case REINFORCEMENT_PHASE:
             default:

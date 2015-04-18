@@ -146,7 +146,7 @@ public class BorderControl implements PlayerInterface {
 
 		case REINFORCEMENT_PHASE:
 			// move armies outwards - look for weakest, unprotected territories
-			return TerritoryUtils.getWeakestOwned(player, possibles);
+			return TerritoryUtils.getStrongestTerritory(state,possibles);
 		default:
 			break;
 		}
