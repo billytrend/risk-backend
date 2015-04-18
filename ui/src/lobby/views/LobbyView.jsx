@@ -1,31 +1,41 @@
-var Require = require('react'),
-    FluxMixin = Fluxxor.FluxMixin(React),
-    StoreWatchMixin = Fluxxor.StoreWatchMixin,
-    GameView = require('./GameView.jsx');
+var React = require('react'),
+    Dispatcher = require('../Dispatcher'),
+    Store = require('../Store'),
+    GameView = require('./GameView.jsx'),
+    WaitingView = require('./GameView.jsx');
 
-var Application = React.createClass({
+module.exports = React.createClass({
 
-    mixins: [FluxMixin, StoreWatchMixin("LobbyStore")],
 
     getInitialState: function() {
-        var flux = this.getFlux();
-        return { newTodoText: "" };
+        return Store.getLobbyState();
     },
 
-    getStateFromFlux: function() {
-        var flux = this.getFlux();
+    componentDidMount: function() {
+        Store.addChangeListener("lobby_update", this._refreshState);
+    },
 
-        return flux.store("LobbyStore").getState();
+    componentWillUnmount: function() {
+        Store.removeChangeListener("lobby_update", this._refreshState);
+    },
+
+    _refreshState: function() {
+        this.setState(Store.getLobbyState());
     },
 
     render: function() {
         return (
             <div>
-                {
-                    this.state.games.map(function(e) {
-                        return <GameView game={ e }/>;
-                    })
-                }
+                <div>
+
+                </div>
+                <div className="games">
+                    {
+                        this.state.unstartedGames.map(function(e, i) {
+                            return <GameView game={ e } index={ i } />;
+                        })
+                    }
+                </div>
             </div>
         );
     }

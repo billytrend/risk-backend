@@ -35,6 +35,8 @@ public class Berserker implements PlayerInterface {
         return max;
     }
 
+
+
     /**
      * The choice can be made only from the set of possible territories.
      *
@@ -53,6 +55,7 @@ public class Berserker implements PlayerInterface {
                 return TerritoryUtils.getRandomTerritory(currentState, possibles);
             case PLACING_ARMIES_PHASE:
                 return TerritoryUtils.getWeakestOwned(player, possibles);
+
             case ATTACK_CHOICE_FROM:
                 if(turnNo < 100){
                     return null;
@@ -116,6 +119,11 @@ public class Berserker implements PlayerInterface {
 
     public void reportStateChange(Change change) {
         // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void createResponse() {
 
     }
 

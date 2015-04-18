@@ -24,7 +24,4 @@ public class acknowledgement {
 		this.payload = payload;
 		this.player_id = player_id;
 	}
-	
-
-
 }

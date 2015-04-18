@@ -122,11 +122,16 @@ public class PlayerConnection implements PlayerInterface  {
     @Override
     public void reportStateChange(Change change) {
         try {
-            Thread.sleep(50);
+            Thread.sleep(25);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         connection.send(Jsonify.getObjectAsJsonString(change));
+    }
+
+    @Override
+    public void createResponse() {
+
     }
 
 }

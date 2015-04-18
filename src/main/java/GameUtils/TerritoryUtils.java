@@ -21,23 +21,22 @@ import java.util.Random;
  */
 public class TerritoryUtils {
 
-    public static Territory getTerritoryWithName(State state, String name) {
-        for (Territory t : getAllTerritories(state)) {
-            if (t.getId().equals(name)) {
-                return t;
-            }
-        }
-        return null;
-    }
-    
-    /**
-     * @param state
-     * @return
-     */
-    public static HashSet<Territory> getAllTerritories(State state) {
-        return new HashSet<Territory>(state.getTerritories().vertexSet());
-    }
+	public static Territory getTerritoryWithName(State state, String name) {
+		for (Territory t : getAllTerritories(state)) {
+			if (t.getId().equals(name)) {
+				return t;
+			}
+		}
+		return null;
+	}
 
+	/**
+	 * @param state
+	 * @return
+	 */
+	public static HashSet<Territory> getAllTerritories(State state) {
+		return new HashSet<Territory>(state.getTerritories().vertexSet());
+	}
 
 	public static HashSet<Pair<Territory, Territory>> getAllBorders(State state) {
 		HashSet<Pair<Territory, Territory>> borderPairs = new HashSet<Pair<Territory, Territory>>();
@@ -186,7 +185,7 @@ public class TerritoryUtils {
     }
 
     public static Territory getWeakestOwned(Player player, HashSet<Territory> territoryList){
-        Territory strongest = null;
+        Territory weakest = null;
         int temp = Integer.MAX_VALUE;
         
         for(Territory territory: territoryList){
@@ -194,11 +193,11 @@ public class TerritoryUtils {
                     territory);
             if (numberOfArmies < temp) {
                 temp = numberOfArmies;
-                strongest = territory;
+                weakest = territory;
             }
         }
 
-        return strongest;
+        return weakest;
     }
 
 	  public static Territory getStrongestEnemy(State state, HashSet<Territory> territoryList, String territoryID){
@@ -240,7 +239,6 @@ public class TerritoryUtils {
 
         return weakest;
     }
-
     public static boolean goodIdea(State state, Territory fromTer, Territory toTer){
         boolean flag = true;
 
@@ -259,6 +257,29 @@ public class TerritoryUtils {
 
 
         if(armiesTo + (armiesTo / 4) >= armiesFrom)
+            flag = false;
+
+        return flag;
+    }
+
+    public static boolean goodIdeaAgr(State state, Territory fromTer, Territory toTer){
+        boolean flag = true;
+
+        Player ownerFrom = PlayerUtils.getTerritoryOwner(state,
+                fromTer);
+        Player ownerTo = PlayerUtils.getTerritoryOwner(state,
+                toTer);
+
+
+        int armiesFrom = ArmyUtils
+                .getNumberOfArmiesOnTerritory(ownerFrom,
+                        fromTer);
+        int armiesTo = ArmyUtils
+                .getNumberOfArmiesOnTerritory(ownerTo,
+                        toTer);
+
+
+        if(armiesTo >= armiesFrom)
             flag = false;
 
         return flag;
@@ -312,24 +333,25 @@ public class TerritoryUtils {
 		state.getTerritories().addEdge(a, b);
 	}
 
-	public static ArrayList<HashSet<Territory>> getAllClusters(State state, Player player){
-    	HashSet<Territory> world = getPlayersTerritories(player);
-    	ArrayList<HashSet<Territory>> allClusters = new ArrayList<HashSet<Territory>>();
-    	HashSet<Territory> used = new HashSet<Territory>();
-    	for(Territory t: world){
-    		HashSet<Territory> cluster = new HashSet<Territory>();
-    		//don't want to add the same cluster twice
-    		if(!used.contains(t)){
-    			cluster.add(t);
-    			used.add(t);
-    			allClusters.add(findCluster(state,player, t, cluster, used));
-    		}
-    	}
-    	return orderClusters(allClusters);
-    }
+	public static ArrayList<HashSet<Territory>> getAllClusters(State state,
+			Player player) {
+		HashSet<Territory> world = getPlayersTerritories(player);
+		ArrayList<HashSet<Territory>> allClusters = new ArrayList<HashSet<Territory>>();
+		HashSet<Territory> used = new HashSet<Territory>();
+		for (Territory t : world) {
+			HashSet<Territory> cluster = new HashSet<Territory>();
+			// don't want to add the same cluster twice
+			if (!used.contains(t)) {
+				cluster.add(t);
+				used.add(t);
+				allClusters.add(findCluster(state, player, t, cluster, used));
+			}
+		}
+		return orderClusters(allClusters);
+	}
 
 	public static HashSet<Territory> findCluster(State state, Player player,
-			Territory territory, HashSet<Territory> cluster, HashSet<Territory> used) {
+		Territory territory, HashSet<Territory> cluster, HashSet<Territory> used) {
 		HashSet<Territory> neighbours = TerritoryUtils.getFriendlyNeighbours(
 				state, territory, player);
 		for (Territory neighbour : neighbours) {
@@ -341,50 +363,51 @@ public class TerritoryUtils {
 		}
 		return cluster;
 	}
-	public static ArrayList<HashSet<Territory>> orderClusters(ArrayList<HashSet<Territory>> clusters){
+
+	public static ArrayList<HashSet<Territory>> orderClusters(
+			ArrayList<HashSet<Territory>> clusters) {
 		Collections.sort(clusters, new HashSetSizeComparator());
-    	return clusters;
-    }
-	public static Territory getRandomTerritory(State state, HashSet<Territory> possibles){
+		return clusters;
+	}
+
+	public static Territory getRandomTerritory(State state,
+			HashSet<Territory> possibles) {
 		Random rand = new Random();
 		int randomNumber = rand.nextInt(possibles.size());
 		int count = 0;
-		for(Territory territory : possibles){
-			if(count == randomNumber) return territory;
+		for (Territory territory : possibles) {
+			if (count == randomNumber)
+				return territory;
 			count++;
 		}
 		return null;
 	}
-	
-    public static Territory getTerritoryByName(State state, String name) {
-        HashSet<Territory> allTerritories = getAllTerritories(state);
-        for (Territory territory : allTerritories) {
-            if (territory.getId().equals(name)) {
-                return territory;
-            }
-        }
-        return null;
-    }
 
-    public static ArrayList<String> getAllCountryNames(State state) {
-        ArrayList<String> names = new ArrayList<String>();
-        for (Territory t : getAllTerritories(state)) {
-            names.add(t.getId());
-        }
-        return names;
-    }
+	public static Territory getTerritoryByName(State state, String name) {
+		HashSet<Territory> allTerritories = getAllTerritories(state);
+		for (Territory territory : allTerritories) {
+			if (territory.getId().equals(name)) {
+				return territory;
+			}
+		}
+		return null;
+	}
 
-    public static ArrayList<String[]> getAllBorderPairs(State state) {
-        ArrayList<String[]> pairs = new ArrayList<String[]>();
-        for (Pair<Territory, Territory> p : getAllBorders(state)) {
-            pairs.add(
-                new String[] {
-                        p.getValue0().getId(),
-                        p.getValue1().getId()
-                }
-            );
-        }
-        return pairs;
-    }
+	public static ArrayList<String> getAllCountryNames(State state) {
+		ArrayList<String> names = new ArrayList<String>();
+		for (Territory t : getAllTerritories(state)) {
+			names.add(t.getId());
+		}
+		return names;
+	}
+
+	public static ArrayList<String[]> getAllBorderPairs(State state) {
+		ArrayList<String[]> pairs = new ArrayList<String[]>();
+		for (Pair<Territory, Territory> p : getAllBorders(state)) {
+			pairs.add(new String[] { p.getValue0().getId(),
+					p.getValue1().getId() });
+		}
+		return pairs;
+	}
 
 }

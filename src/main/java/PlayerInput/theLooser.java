@@ -78,9 +78,9 @@ public class theLooser implements PlayerInterface {
                 return 1;
 
             case PLACING_REMAINING_ARMIES_PHASE:
-                return 1;
+                return max;
             case PLACING_ARMIES_PHASE:
-                return 1;
+                return max;
             case ATTACK_CHOICE_DICE:
                 return 1;
             case DEFEND_CHOICE_DICE:
@@ -107,6 +107,11 @@ public class theLooser implements PlayerInterface {
 
     public void reportStateChange(Change change) {
         // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void createResponse() {
 
     }
 

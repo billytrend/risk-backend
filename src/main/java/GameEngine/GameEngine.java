@@ -73,6 +73,7 @@ public class GameEngine implements Runnable {
 	 * current state in the iterateGame function.
 	 */
 	private void play() throws InterruptedException {
+        applyAndReportChange(gameState, new GameStart("", BEGINNING_STATE, gameState));
 		while (true) {
 			if(!iterateGame()) return;
 		}
@@ -99,9 +100,10 @@ public class GameEngine implements Runnable {
 	private boolean iterateGame() throws InterruptedException, NullPointerException {
 
         // if play state changes, let people know
-        if (previousPlayState != playState && currentPlayer != null) {
-            applyAndReportChange(gameState, new PlayStateUpdate(currentPlayer.getId(), playState));
-        }
+        // TODO: BUH WHY?
+//        if (previousPlayState != playState && currentPlayer != null) {
+//            applyAndReportChange(gameState, new PlayStateUpdate(currentPlayer.getId(), playState));
+//        }
 
 		switch (this.playState) {
 			case BEGINNING_STATE:
@@ -282,12 +284,19 @@ public class GameEngine implements Runnable {
 	}
 	
 	private PlayState giveAdditionalArmies(){
+
 		int payout = TerritoryUtils.getPlayersTerritories(currentPlayer).size()/3;
+
 		if(payout < 3) payout = 3;
+
 		payout += ContinentUtils.getContinentPayout(gameState, currentPlayer);
+
 		payout += convertCards();
+
         ArmyHandout handout = new ArmyHandout(currentPlayer.getId(), payout, playState);
+
         applyAndReportChange(gameState, handout);
+
 		return PLAYER_PLACING_ARMIES;
 	}
 
@@ -298,14 +307,22 @@ public class GameEngine implements Runnable {
 	private int convertCards() {
 
         ArrayList<Triplet<Card, Card, Card>> possibleCombinations = CardUtils.getPossibleCardCombinations(gameState, currentPlayer);
+
 		if (possibleCombinations.size() == 0) return 0;
+
 		int cardPayout = CardUtils.getCurrentArmyPayout(currentPlayer);
+
 		Triplet<Card, Card, Card> choice = currentPlayer.getCommunicationMethod().getCardChoice(currentPlayer, possibleCombinations);
-		CardUtils.releaseCards(choice);
+
+        if (choice == null) return 0;
+
+
+        CardUtils.releaseCards(choice);
 
 		return cardPayout;
 
 	}
+	
 
 	/**
 	 * Method used within the entire game. It is called any time

@@ -1,9 +1,7 @@
-var Require = require('react'),
-    FluxMixin = Fluxxor.FluxMixin(React),
-    StoreWatchMixin = Fluxxor.StoreWatchMixin,
-    GameView = require('./GameView.jsx');
+var React = require('react'),
+    Fluxxor = require('../Dispatcher');
 
-var Application = React.createClass({
+module.exports = React.createClass({
 
 
     render: function() {
@@ -11,9 +9,8 @@ var Application = React.createClass({
 
         return (
             <div>
-                <div>{ playerState.name }</div>
-                <div>{ playerState.type }</div>
-                <div>{ playerState.connected }</div>
+                <div>{ playerState.numberId }</div>
+                <div>{ playerState.id }</div>
             </div>
         );
     }
