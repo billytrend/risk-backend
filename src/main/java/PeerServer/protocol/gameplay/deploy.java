@@ -1,7 +1,7 @@
 /**
  * 
  */
-package PeerServer.protocol.cards;
+package PeerServer.protocol.gameplay;
 
 
 /**
@@ -30,8 +30,4 @@ public class deploy {
 	public class payload{
 		public int pairs [][];
 	}
-
-
-
-
 }

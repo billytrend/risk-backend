@@ -30,6 +30,8 @@ public class GameEngine implements Runnable {
 	private boolean currentPlayerHasTakenCountry = false;
 	private StateChangeRecord changeRecord;
 	private WinConditions winConditions;
+	private ArbitrationAbstract arbitration;
+	
 	HashSet<Territory> possibleAttackingTerritories;
 	
 	public StateChangeRecord getStateChangeRecord(){
@@ -48,8 +50,14 @@ public class GameEngine implements Runnable {
 				state.getPlayers().get(0).getArmies().size());
 		winConditions = new WinConditions();
         ArmyUtils.giveStartingArmies(gameState);
-
+        arbitration = new Arbitration();
     }
+	
+	public GameEngine(State state, ArbitrationAbstract arbitration) {
+		this(state);
+        this.arbitration = arbitration;
+    }
+	
 	
 	public State getState(){
 		return gameState;
@@ -169,7 +177,7 @@ public class GameEngine implements Runnable {
 
 		// set first player if they havent been set from the protocol side
 		if(currentPlayer == null){
-			Arbitration.setFirstPlayer(this.gameState);
+			arbitration.setFirstPlayer(this.gameState);
 			// record this in the state
 			this.currentPlayer = gameState.getPlayerQueue().getCurrent();
 		}
@@ -397,7 +405,7 @@ public class GameEngine implements Runnable {
 				attacking.getId(), defending.getId());
 	
 		// decide the results of the fight
-		Arbitration.carryOutFight(result, attackDiceNumber, defendDiceNumber);
+		arbitration.carryOutFight(result, attackDiceNumber, defendDiceNumber);
 
         applyAndReportChange(gameState, result);
 

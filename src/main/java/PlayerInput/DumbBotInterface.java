@@ -5,7 +5,7 @@ import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
 import GameUtils.Results.Change;
-import PeerServer.server.ProtocolConnector;
+
 
 import org.javatuples.Triplet;
 
@@ -28,13 +28,13 @@ public class DumbBotInterface implements PlayerInterface {
     Random ran = new Random();
 	private static Scanner scanner;
 	private BlockingQueue<Entry<Object, RequestReason>> connectorQueue;
-	private ProtocolConnector connector;
+	private Thread connectorThread;
 	
     
 	// the protocol needs to call this method so that
 	// the locals players responses can be parsed
     public void createResponse(){
-    	connector.generateNextResponse();
+    	//connector.generateNextResponse();
     }
 	
 	public DumbBotInterface(BlockingQueue sharedQueue, int id){
@@ -42,12 +42,14 @@ public class DumbBotInterface implements PlayerInterface {
 		connectorQueue = new LinkedBlockingDeque<Entry<Object, RequestReason>>();
 		
 		// create a connector to connect with protocol
-		connector = new ProtocolConnector(connectorQueue, sharedQueue, id);
+		ProtocolConnector connector = new ProtocolConnector(connectorQueue, sharedQueue, id);
+		connectorThread = new Thread(connector);
+		connectorThread.start();
 	}
 	
 	public DumbBotInterface(){
 		connectorQueue = null;
-		connector = null;
+		connectorThread = null;
 	}
     
 	protected void emit(Player p, String message) {
@@ -152,6 +154,8 @@ public class DumbBotInterface implements PlayerInterface {
     	if(connectorQueue != null){
 	    	// notify connector which can later respond to the protocol
 	        try {
+	        	connectorQueue.put(new MyEntry(from, reason));
+	        	connectorQueue.put(new MyEntry(to, reason));
 	        	connectorQueue.put(new MyEntry(Integer.valueOf(toReturn), reason));
 	        } catch (InterruptedException e) {
 				// TODO Auto-generated catch block

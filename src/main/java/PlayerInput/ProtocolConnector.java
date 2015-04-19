@@ -1,5 +1,6 @@
 package PlayerInput;
 
+import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.ArrayList;
 import java.util.Queue;
@@ -16,130 +17,204 @@ import PeerServer.protocol.cards.play_cards;
 import PeerServer.protocol.gameplay.attack;
 import PeerServer.protocol.gameplay.attack_capture;
 import PeerServer.protocol.gameplay.defend;
+import PeerServer.protocol.gameplay.deploy;
 import PeerServer.protocol.gameplay.fortify;
 import PeerServer.protocol.gameplay.setup;
 
 
-// INT
-// -- dice
-// attack choice dice
-// defend choice dice
-// -- armies
-// placing_armies_phase
-// reinforcement
-// post attack move
+public class ProtocolConnector implements Runnable {
 
-// TER
-// attack from
-// arrach to
-// placing armies setup
-// placing armies phase
-// reinforcement phase
-
-public class ProtocolConnector {
-
-	public void RemotePlayer(BlockingQueue responses, BlockingQueue sharedQueue, int id){
+	public ProtocolConnector(BlockingQueue responses, BlockingQueue sharedQueue, int id){
 		this.protocolQueue = sharedQueue;
 		this.responsesQueue = responses;
 		this.myID = id;
 	}
 	
-	// queue used to communicate with the protocol
-	// shared with the protocol instance
-    private  BlockingQueue<Object> protocolQueue;
+	private BlockingQueue<Entry<Object, RequestReason>> responsesQueue; // gets responses from local player
+    private  BlockingQueue<Object> protocolQueue; // sends responses to protocol
+    
     private int myID;
     private Random ran = new Random();
-    
-    // queue used to accept all responses from the local
-    // player interface
-	private BlockingQueue<Entry<Object, RequestReason>> responsesQueue; 
 
-   // private RequestReason lastReason = null;
-    private Object response = null;
-    private ArrayIterator it = null;
-    private int[] lastDeployChoice;
-//    private Entry<Object, RequestReason> lastResponse;
-   
-    
-    private void generateNextResponse(){
-    	Entry<Object, RequestReason> next;
-    	try {
-    		next = responsesQueue.take();
 
-        	RequestReason servedReason = next.getValue();
-        	RequestReason currentReason = servedReason;
-        	
-        	// stores all information needed to generate response
-        	ArrayList<Object> responseParts = new ArrayList<Object>();
-        
-        	// get all information with the same request reason
-        	while(true){
-        		responseParts.add(next.getKey());
-        		
-        		next = responsesQueue.peek();
-        		currentReason = next.getValue();   		
-        		
-        		if(currentReason != servedReason){
-        			if(servedReason == RequestReason.ATTACK_CHOICE_FROM){
-        				if((currentReason != RequestReason.ATTACK_CHOICE_TO) &&
-        				(currentReason != RequestReason.ATTACK_CHOICE_DICE))
-        					break;
-        			}
-        		}
-        		
-        		try {
-        			next = responsesQueue.take();
-    			} catch (InterruptedException e) {
-    				e.printStackTrace();
-    			}
-        	}
-    		
-        	if(servedReason == null){
-    			createPlayCards(responseParts);
-        	}
-        	else{
-	        	switch(servedReason){
-	        		case ATTACK_CHOICE_FROM:
-	        			createAttackResponse(responseParts);
-	        			break;
-	        		case PLACING_ARMIES_SET_UP:
-	        			createSetUpResponse(responseParts);
-	        			break;
-	        		case PLACING_REMAINING_ARMIES_PHASE:
-	        			createSetUpResponse(responseParts); // TODO: not 100% sure about this        	
-	        			break;
-	        		case PLACING_ARMIES_PHASE:
-	        			createSetUpResponse(responseParts); // TODO: not sure!!!!
-	        			break;
-	        		case REINFORCEMENT_PHASE:
-	        			createFortifyResponse(responseParts); // TODO: ...
-	        			break;
-	        		case POST_ATTACK_MOVEMENT:
-	        			createAttackCapture(responseParts);
-	        			break;
-        		}
-        	}
-    		
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-   
+    public void run(){
+    	while(true){
+    		generateNextResponse();
+    	}
     }
     
-    // setup -- territory id to place payload
-    public void createSetUpResponse(ArrayList<Object> responseParts){
+    public void generateNextResponse(){
+    	Entry<Object, RequestReason> next = null;
     	
-    	if(responseParts.size() != 0)
-    		System.out.println("Wrong size of setup parts");
+    	try {
+			next = responsesQueue.take();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+
+    	ArrayList<Object> responseParts = new ArrayList<Object>();
+        RequestReason servedReason = next.getValue();
+    	responseParts.add(next.getKey());
     	
-    	Object ob = responseParts.get(0);
-    	Integer id = getId(ob);
-    	if(id == null){
-    		System.out.println("ERROR - createSetUp");
+    	appendNewResponseParts(responseParts, servedReason);
+    	createNewProtocolCommand(responseParts, servedReason);
+    }
+    
+	/**
+     * 
+     * @param servedReason 
+     * @param responseParts2 
+     * @return
+     */
+    private void appendNewResponseParts(ArrayList<Object> responseParts, RequestReason servedReason) {
+        RequestReason currentReason = servedReason;
+    	Entry<Object, RequestReason> next = null;
+
+        // get all information with the same request reason
+        while(true){        		
+        	next = responsesQueue.peek();
+        	currentReason = next.getValue();   		
+        		
+        	// if next reason differ from the current one stop collecting response parts
+        	if(currentReason != servedReason){
+        		if(servedReason == RequestReason.ATTACK_CHOICE_FROM){
+        			if((currentReason != RequestReason.ATTACK_CHOICE_TO) &&
+        			(currentReason != RequestReason.ATTACK_CHOICE_DICE))
+        				break;
+        		}
+        		else
+        			break;
+        	}
+        	
+        	// TODO: not sure about that, but it should be somewhere!
+        	if(responsesQueue.isEmpty())
+        		break;
+        	
+        	// if it was the same, take it from the queue
+        	try {
+        		next = responsesQueue.take();
+    		} catch (InterruptedException e) {
+    			e.printStackTrace();
+    		}
+        	
+        	responseParts.add(next.getKey());
+        }
+	}
+
+    
+    /**
+     * 
+     * @param responseParts
+     * @param servedReason
+     */
+    private void createNewProtocolCommand(ArrayList<Object> responseParts,
+			RequestReason servedReason) {
+        if(servedReason == null){
+    			createPlayCardsCommand(responseParts);
+        }
+        else{
+	        switch(servedReason){
+	        	case PLACING_ARMIES_SET_UP: // asking for an empty territory id (setup)
+	        		createSetUpCommand(responseParts);
+	        		break;
+	        	case PLACING_REMAINING_ARMIES_PHASE:
+	        		createSetUpCommand(responseParts); // asking for our territory id (setup)   	
+	        		break;
+	        	case PLACING_ARMIES_PHASE:
+	        		createDeployCommand(responseParts); // asking for a territory id (from) and army amount 
+	        		break;
+	        	case REINFORCEMENT_PHASE:
+	        		createFortifyCommand(responseParts); // asking for two territory ids and army amount
+	        		break;
+	        	case ATTACK_CHOICE_FROM:
+	        		createAttackCommand(responseParts); // asking for two ids and army amount
+	        		break;
+	        	case POST_ATTACK_MOVEMENT:
+	        		createAttackCaptureCommand(responseParts); // asking for two territory ids and army amount
+	        		break;
+	        	case DEFEND_CHOICE_DICE: // asking for amount of armies / dice
+	        		createDefendCommand(responseParts);
+	        		break;
+	        }
+        }
+	}
+
+
+	/**
+     * Returns the number of armies / dice got from the player
+     * which is stored in the given responses array
+     * 
+     * @param responses
+     * @return
+     */
+    private Integer parseInteger(ArrayList<Object> responses, boolean territoryId){
+     	
+    	if(responses.size() != 0)
+    		System.out.println("Wrong size of required parts to parse int");
+    	if(territoryId){
+    		return getId(responses.get(0));
+    	}
+    	else
+    		return (Integer) responses.get(0);
+    }
+    
+    
+
+    /**
+     * Returns the array containing ids of two territories and a number
+     * specyfying the amount of armies. It gets the information from the responses
+     * array which should store two Territory objects and one Integer
+     * @param responses
+     * @return
+     */
+    private int[] parseTwoTerritoriesAndArmy(ArrayList<Object> responses){
+    	// need two territories and armies
+    	if(responses.size() != 3)
+    		System.out.println("Wrong size of territory - territory - int parts");
+    	
+    	Integer idFrom = getId(responses.get(0));	
+    	Integer idTo = getId(responses.get(1));
+    	Integer armies = (Integer) responses.get(2);
+    	
+    	int[] payload = new int[3];
+    	payload[0] = idFrom;
+    	payload[1] = idTo;
+    	payload[2] = armies;
+    	
+    	return payload;
+    }
+    
+    
+    
+    
+    /**
+     * returns the id of the given Territory object, if the object given
+     * is not an instance of Territory the method returns null
+     * @param ob
+     * @return
+     */
+    private Integer getId(Object ob){
+    	Territory territory = (ob instanceof Territory) ? (Territory) ob : null;
+    	if(territory == null){
+    		System.out.println("Error in territory parsing");
+    		return null;
     	}
     	
-    	setup setup = new setup(id, myID, ran.nextInt(50));
+    	int id = territory.getNumeralId();
+    	return id;
+    }
     
+   
+
+    /**
+     * Creates a setup command object and add it to the protocol queue
+     * to be retrieved by the protocol
+     * @param responseParts
+     */
+    private void createSetUpCommand(ArrayList<Object> responseParts){
+    	Integer id = parseInteger(responseParts, true); // get a territory id
+    	setup setup = new setup(id, myID, ran.nextInt(50));
+    	
     	try {
 			protocolQueue.put(setup);
 		} catch (InterruptedException e) {
@@ -149,32 +224,47 @@ public class ProtocolConnector {
     }
     
   
-    // fortify -- payload[] source id - destination id - armies or null
-    public void createFortifyResponse(ArrayList<Object> responseParts){
-    	// need two territories and armies
-    	if(responseParts.size() != 3)
-    		System.out.println("Wrong size of fortify parts");
-    	
-    	Integer idFrom = getId(responseParts.get(0));
-    	if(idFrom == null)
-    		System.out.println("ERROR - fortify");
-    	
-    	
-    	Integer idTo = getId(responseParts.get(1));
-    	if(idTo == null)
-    		System.out.println("ERROR - fortify");
-    	
-    	
-    	Object ob = responseParts.get(2);
-    	Integer armies = (ob instanceof Integer) ? (Integer) ob : null;
-    	if(armies == null)
-    		System.out.println("ERROR - fortify");
-    	
-    	int[] payload = new int[3];
-    	payload[0] = idFrom;
-    	payload[1] = idTo;
-    	payload[2] = armies;
-    	
+    /**
+     * Creates a deploy command and adds it to the protocol queue
+     * 
+     * @param responseParts
+     */
+	private void createDeployCommand(ArrayList<Object> responseParts) {
+		if((responseParts.size() % 2) != 0){
+			System.out.println("Wrong size of response parts in deploy");
+		}
+		int[][] payload = new int[responseParts.size() / 2][2];
+		
+		for(int i = 0; i < responseParts.size();){
+			Integer idFrom = getId(responseParts.get(i));
+	    	Integer armies = (Integer) responseParts.get(i + 1);
+	    	
+	    	int[] pair = new int[2];
+	    	pair[0] = idFrom;
+	    	pair[1] = armies;
+	    	
+	    	payload[i] = pair;
+	    	i += 2;
+		}
+		
+		deploy deploy = new deploy(payload, myID, ran.nextInt(50));
+		
+		try {
+			protocolQueue.put(deploy);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+    
+    /**
+     * Creates a fortify command and add it to the protocol queue
+     * 
+     * @param responseParts
+     */
+    private void createFortifyCommand(ArrayList<Object> responseParts){
+    	int[] payload = parseTwoTerritoriesAndArmy(responseParts);
     	fortify fort = new fortify(payload, myID, ran.nextInt(50));
     	
     	try {
@@ -186,17 +276,16 @@ public class ProtocolConnector {
     }
     
     
-    //defend: payload - amount of armies to defend with - dice
-    public void createDefendResponse(ArrayList<Object> responses){
-    	if(responses.size() != 0)
-    		System.out.println("Wrong size of defend parts");
-    	
-    	Object ob = responses.get(0);
-    	Integer armies = (ob instanceof Integer) ? (Integer) ob : null;
-    	if(armies == null)
-    		System.out.println("ERROR - createDefendResponse");
-    
+    /**
+     * Creates a defend command and adds it to the protocol queue
+     * 
+     * @param responses
+     */
+    private void createDefendCommand(ArrayList<Object> responses){
+    	Integer armies = parseInteger(responses, false); // there should be integer, not Territory 
+    														// so pass false as param
     	defend def = new defend(armies, myID, ran.nextInt(50));
+    	
     	try {
 			protocolQueue.put(def);
 		} catch (InterruptedException e) {
@@ -206,31 +295,13 @@ public class ProtocolConnector {
     }
     
     
-    public void createAttackResponse(ArrayList<Object> responses){
-    	// need two territories and an army
-    	if(responses.size() != 3)
-    		System.out.println("Wrong size of attack parts");
-    	
-    	Integer idFrom = getId(responses.get(0));
-    	if(idFrom == null)
-    		System.out.println("ERROR - attack");
-    	
-    	
-    	Integer idTo = getId(responses.get(1));
-    	if(idTo == null)
-    		System.out.println("ERROR - attack");
-    	
-    	
-    	Object ob = responses.get(2);
-    	Integer armies = (ob instanceof Integer) ? (Integer) ob : null;
-    	if(armies == null)
-    		System.out.println("ERROR - attack");
-    	
-    	int[] payload = new int[3];
-    	payload[0] = idFrom;
-    	payload[1] = idTo;
-    	payload[2] = armies;
-    	
+    /**
+     * Creates and attack command
+     * 
+     * @param responses
+     */
+    private void createAttackCommand(ArrayList<Object> responses){
+    	int[] payload = parseTwoTerritoriesAndArmy(responses);
     	attack att = new attack(payload, myID, ran.nextInt(50));
     	
     	try {
@@ -243,31 +314,13 @@ public class ProtocolConnector {
     
     
    
-    public void createAttackCapture(ArrayList<Object> responses){
-    	// need two territories and an army
-    	if(responses.size() != 3)
-    		System.out.println("Wrong size of attack capture parts");
-    	
-    	Integer idFrom = getId(responses.get(0));
-    	if(idFrom == null)
-    		System.out.println("ERROR - attack capture");
-    	
-    	
-    	Integer idTo = getId(responses.get(1));
-    	if(idTo == null)
-    		System.out.println("ERROR - attack capture");
-    	
-    	
-    	Object ob = responses.get(2);
-    	Integer armies = (ob instanceof Integer) ? (Integer) ob : null;
-    	if(armies == null)
-    		System.out.println("ERROR - attack capture");
-    	
-    	int[] payload = new int[3];
-    	payload[0] = idFrom;
-    	payload[1] = idTo;
-    	payload[2] = armies;
-    	
+    /**
+     * Creates a post attack movement command
+     * 
+     * @param responses
+     */
+    private void createAttackCaptureCommand(ArrayList<Object> responses){
+    	int[] payload = parseTwoTerritoriesAndArmy(responses);
     	attack_capture att = new attack_capture(payload, myID, ran.nextInt(50));
     
     	try {
@@ -278,8 +331,11 @@ public class ProtocolConnector {
 		}
     }
     
-    
-    public void createPlayCards(ArrayList<Object> responses){
+    /**
+     * Creares play card command
+     * @param responses
+     */
+    private void createPlayCardsCommand(ArrayList<Object> responses){
     	int[][] cards = new int[responses.size()][3];
     	int armies = -1; // TODO: no idea?
     	
@@ -307,19 +363,6 @@ public class ProtocolConnector {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    }
-    
-
-    
-    public Integer getId(Object ob){
-    	Territory territory = (ob instanceof Territory) ? (Territory) ob : null;
-    	if(territory == null){
-    		System.out.println("Error in territory parsing");
-    		return null;
-    	}
-    	
-    	int id = territory.getNumeralId();
-    	return id;
     }
     
 }
