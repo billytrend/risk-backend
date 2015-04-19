@@ -22,6 +22,12 @@ module.exports = React.createClass({
         ServerActions.selectDice(this.props.index);
     },
 
+    componentDidMount: function() {
+        pathBBox = this.getDOMNode().children[0].getBBox();
+        this.getDOMNode().setAttribute("viewBox", "0 0 " + pathBBox.width + " " + pathBBox.height);
+        this.getDOMNode().setAttribute("width", pathBBox.width );
+    },
+
     render: function() {
         var number = this.props.value ? this.props.value : 1,
             self = this,
