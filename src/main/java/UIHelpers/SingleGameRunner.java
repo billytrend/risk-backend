@@ -25,13 +25,13 @@ public class SingleGameRunner {
         ArrayList<Player> players = new ArrayList<Player>();
         State gameState = RiskMapGameBuilder.buildGame(null);
         //pink
-        players.add(0, new Player(new CommunistDefensive(gameState)));
+        players.add(0, new Player(new Billy(gameState)));
         //blue
-        players.add(1, new Player(new Billy(gameState)));
+        players.add(1, new Player(new DumbBotInterface()));
         //purple
-        players.add(1, new Player(new BorderControl(gameState)));
+        players.add(1, new Player(new DumbBotInterface()));
         //green
-        //players.add(2, new Player(new DumbBotInterface()));
+        players.add(2, new Player(new DumbBotInterface()));
         //yellow
         //players.add(3, new Player(new DumbBotInterface()));
 

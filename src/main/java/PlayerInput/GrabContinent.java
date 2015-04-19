@@ -59,16 +59,15 @@ public class GrabContinent implements PlayerInterface {
         switch (reason) {
 
             case PLACING_ARMIES_SET_UP:
-                return getContinentTerritory(currentState, territoryList);
+                return AIUtils.getContinentTerritory(currentState, territoryList, continentID);
 
             case PLACING_REMAINING_ARMIES_PHASE:
-                return getContinentTerritory(currentState, territoryList);
+                return AIUtils.getContinentTerritory(currentState, territoryList, continentID);
 
             case PLACING_ARMIES_PHASE:
-                return getContinentTerritory(currentState, territoryList);
+                return AIUtils.getContinentTerritory(currentState, territoryList, continentID);
 
             case ATTACK_CHOICE_FROM:
-                ArrayList<Territory> australia = ContinentUtils.getContinentById(currentState, continentID).getTerritories();
                 return AIUtils.getStrongestTerritory(currentState, possibles);
 
             case ATTACK_CHOICE_TO:
@@ -83,25 +82,6 @@ public class GrabContinent implements PlayerInterface {
         return null;
     }
 
-
-
-
-
-    private Territory getContinentTerritory(State state, ArrayList<Territory> possibles){
-        Random rand = new Random();
-        ArrayList<Territory> territoryList = ContinentUtils.getContinentById(state, continentID).getTerritories();
-        int randomNum = rand.nextInt((territoryList.size()));
-
-        for (int i = 0; i < possibles.size(); i++) {
-            if(territoryList.get(randomNum).equals(possibles.get(i))){
-                return territoryList.get(randomNum);
-            }
-        }
-
-        randomNum = rand.nextInt(possibles.size());
-
-        return possibles.get(randomNum);
-    }
 
     /**
      * The choice can only be made up to the specified max value.
