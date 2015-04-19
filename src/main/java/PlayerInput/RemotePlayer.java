@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
@@ -35,183 +36,82 @@ public class RemotePlayer implements PlayerInterface  {
 	
 	//TODO: check for castin errors!
 	
-	public RemotePlayer(BlockingQueue sharedQueue, Thread thread, AbstractProtocol protocol){
+	public RemotePlayer(BlockingQueue<Entry<Integer, RequestReason>>   sharedQueue, Thread thread, AbstractProtocol protocol){
 		responses = sharedQueue;
 		protocolThread = thread;
 		this.protocol = protocol;
 	}
 	
-    private  BlockingQueue<Object> responses;
-    private RequestReason lastReason = null;
-    private Object response = null;
-    private Iterator iterator = null;
-    private int[] lastDeployChoice;
-    
+    private BlockingQueue<Entry<Integer, RequestReason>> responses;  
+    private Entry<Integer, RequestReason> responseEntry;
     private Thread protocolThread;
     private AbstractProtocol protocol;
-    
-    boolean gotCardChoices = false;
     boolean wrongCommand;
 
     
-	@Override
-	public int getNumberOfDice(Player player, int max, RequestReason reason) {
-		if(reason != lastReason){
-			try{
-				response = responses.take(); // blocks if needed
-				iterator = null; // reset iterator
-			}catch(InterruptedException e){
-				e.printStackTrace();
-			}
-		}
-		
-		
-		int number = 0;
-		switch(reason){
-			case ATTACK_CHOICE_DICE:
-				if(!(response instanceof attack)){
-					wrongCommand = true;
-				}
-				else
-					number =  ((attack) response).payload[2]; 
-				break;
-				
-			case DEFEND_CHOICE_DICE:
-				if(!(response instanceof defend)){
-					wrongCommand = true;
-				}
-				else
-					number = ((defend) response).payload;
-				break;
-				
-			default: 
-				wrongCommand = true;
-		}
-		
-		if(number > max){
-			wrongCommand = true;
-		}
-		
-		if(wrongCommand){
-			System.out.println("A BUG in asking for dice");
-			notifyProtocol();
-			return 0;
-		}
-		
-		return number;
-	}
-	
+    private Integer getResponse(RequestReason reason){
+    	while(true){
+    		responseEntry = responses.peek();
+    		if(responseEntry != null)
+    			break;
+    	}
+    	RequestReason responseReason = responseEntry.getValue();
+    	
+    	boolean matching = ((responseReason == RequestReason.PLACING_ARMIES_SET_UP) 
+    			&& (reason == RequestReason.PLACING_REMAINING_ARMIES_PHASE));
 
-	
-	private void notifyProtocol() {
-		protocolThread.interrupt();
-		
-		synchronized(this){
-			protocol.wrongCommand = true;
-			notify();
-		}
-	}
-
-	
-
-	@Override
-	public Territory getTerritory(Player player, HashSet<Territory> possibles, boolean canResign, RequestReason reason) {
-		if(lastReason == null){
-			lastReason = reason;
-			try{
-				response = responses.take(); // blocks if needed
-				iterator = null; 
-			}catch(InterruptedException e){
-				e.printStackTrace();
-			}
-		}
-		
-		int id = 0;
-		Territory toReturn;
-		switch(reason){
-		// ATTACK
-			case ATTACK_CHOICE_FROM:
-				if(!(response instanceof attack)){
-					wrongCommand = true;
-				}
-				else
-					id = ((attack) response).payload[0];
-				break;
-			case ATTACK_CHOICE_TO:
-				if(!(response instanceof attack)){
-					wrongCommand = true;
-				}
-				else
-					id = ((attack) response).payload[1];
-				break;
-						
-		// SETUP
-			case PLACING_ARMIES_SET_UP:
-				if(!(response instanceof setup)){
-					wrongCommand = true;
-				}			
-				else
-					id = ((setup) response).payload;
-				break;
-			case PLACING_REMAINING_ARMIES_PHASE:
-				if(!(response instanceof setup)){
-					wrongCommand = true;
-				}			
-				else
-					id = ((setup) response).payload;
-				break;
-				
-		// DEPLOY
-			case PLACING_ARMIES_PHASE:
-				if(!(response instanceof deploy)){
-					wrongCommand = true;
-				}
-				else{
-					if(iterator == null)
-						iterator = new ArrayIterator(((deploy) response).payload);
-					if(iterator.hasNext()){
-						lastDeployChoice = (int[]) iterator.next();
-						id = lastDeployChoice[0];
-					}
-					else{
-						System.out.println("Player didnt place all of his armies");
-						wrongCommand = true;
-						toReturn = null;
-					}
-				}
-				break;
-	
-		// ENDING MOVE, PLACNING SOME ARMIES
-			case REINFORCEMENT_PHASE:
-				if(!(response instanceof fortify)){
-					wrongCommand = true;
-				}
-				// no reinforsments
-				if(((fortify) response).payload == null)
-					return null;
-				// from
-				if(canResign)
-					id = ((fortify) response).payload[0];
-				// to
-				else
-					id = ((fortify) response).payload[1];
-				break;
-			default:
-				wrongCommand = true;
-		}
-		
-		if(wrongCommand){
-			System.out.println("BUG in asking for territory");
+		if(!matching && (responseEntry.getValue() != reason)){
+			System.out.println("Request reason doesn't match");
 			notifyProtocol();
 			return null;
 		}
 		
+		try{
+			responseEntry = responses.take(); // blocks if needed
+			Integer response = responseEntry.getKey();
+			return response;
+		}catch(InterruptedException e){
+				e.printStackTrace();
+		}
+		
+		
+		return null;
+    }
+    
+	@Override
+	public int getNumberOfDice(Player player, int max, RequestReason reason) {
+		Integer response = getResponse(reason);
+		
+		if(response == null){
+			System.out.println("Wrong response");
+			return 0;
+		}
+		
+		return response;
+	}
+	
+
+	@Override
+	public Territory getTerritory(Player player, HashSet<Territory> possibles, boolean canResign, RequestReason reason) {
+
+		Integer response = getResponse(reason);
+		if(response == null){
+			System.out.println("Wrong response");
+			return null;
+		}
+		
+		System.out.print("\nREMOTE PLAYER: asked for territory ");
+
 		// return the territory of the specified id
 		for(Territory ter : possibles){
-			if(ter.getNumeralId() == id)
+			if(ter.getNumeralId() == response){
+				System.out.print(" -- RETURN " + response + "\n");
 				return ter;
+			}
 		}
-
+		
+		System.out.print(" -- HAD A PROBLEM... not returning, got id: " + response + "\n");
+		
 		// if it got here it means that an illegal territory was specified
 		// notify protocol and return
 		notifyProtocol();
@@ -222,118 +122,48 @@ public class RemotePlayer implements PlayerInterface  {
 	
     @Override
     public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
-		if(reason != lastReason){
-			try{
-				response = responses.take(); // blocks if needed
-				iterator = null;
-			}catch(InterruptedException e){
-				e.printStackTrace();
-			}
+    	Integer response = getResponse(reason);
+		
+		if(response == null){
+			System.out.println("Wrong response");
+			return 0;
 		}
 		
-		int number = 0;
-		switch(reason){
-		// DEPLOY
-			case PLACING_ARMIES_PHASE:
-				if(!(response instanceof deploy)){
-					wrongCommand = true;
-				}	
-				number = lastDeployChoice[1];
-				break;
-		// ENDING MOVE, PLACNING SOME ARMIES
-			case REINFORCEMENT_PHASE:
-				if(!(response instanceof fortify)){
-					wrongCommand = true;
-				}
-				number = ((fortify) response).payload[2];
-				break;
-			case POST_ATTACK_MOVEMENT:
-				if(!(response instanceof attack_capture)){
-					wrongCommand = true;
-				}
-				// no reinforsments
-				number = ((attack_capture) response).payload[2];
-				break;
-			default:
-				wrongCommand = true;
-
-		}
-		
-		if(number > max){
-			wrongCommand = true;
-		}
-		
-		if(wrongCommand){
-			System.out.println("BUG getting armies");
-			notifyProtocol();
-		}
-		
-		return number;
+		return response;
 	}
 
 	
 	@Override
 	public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations){
-	
-		// if we don't have any available card choices
-		if(!gotCardChoices){
-			try{
-				response = responses.take(); // blocks if needed
-			}catch(InterruptedException e){
-				e.printStackTrace();
-			}
-			
-			if(!(response instanceof play_cards)){
-				wrongCommand = true;
-			}
-			
-			int[][] cards = ((play_cards) response).payload.cards;
-			int armies = ((play_cards) response).payload.armies;
-			
-			if(cards == null)
-				return null;
-			
-			List<Triplet<Card, Card, Card>> cardSets = new ArrayList<Triplet<Card,Card,Card>>();
-			
-			for(int[] cardSet : cards){
-				// TODO: fill this in:
-				
-				// recognize a card by its id!!!! 
-				// get it and append to the triplet
-				// add triplet to the array of cardSets above
-				
-				//	Card a = CardUtils.getCardsOfType(state, cardType);
-				//Triplet set = new Triplet<A, B, C>(value0, value1, value2)
-			}
-			
-			// set iterator so remaining cardsets will be returned later
-			iterator = cardSets.iterator();
-			gotCardChoices = true;
-			if(iterator.hasNext()){
-				return (Triplet<Card, Card, Card>) iterator.next();
-			}
-			
-			if(wrongCommand){
-				System.out.println("BUG getting cards");
-				notifyProtocol();
-			}
-			
+	/*
+		Integer cardOneId = getResponse(null);
+		Integer cardTwoId = getResponse(null);
+		Integer cardThreeId = getResponse(null);
+		
+		if((cardOneId == null) || (cardTwoId == null) || (cardThreeId == null)){
+			System.out.println("Wrong cards? Or maybe ok...");
 			return null;
 		}
 		
-		// if we already parsed card choices return the next one
-		else{
-			if(iterator.hasNext()){
-				return (Triplet<Card, Card, Card>) iterator.next();
-			}
-			// if there are no more choices, return null
-			else{
-				gotCardChoices = false;
-				return null;
-			}
-		}
+		// TODO:
+		// get card with id 1
+		// get card with id 2
+		// get card with id 3
+		
+		Triplet<Card, Card, Card> cardSet = new Triplet<Card, Card, Card>(null, null, null);
+		return cardSet;*/
+		return null;
 	}
 	
+	
+	private void notifyProtocol() {
+		protocolThread.interrupt();
+		System.out.println("INTERRRUPP!!!!!!");
+		synchronized(this){
+			protocol.wrongCommand = true;
+			notify();
+		}
+	}
 
     @Override
     public void reportStateChange(Change change) {

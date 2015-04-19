@@ -3,6 +3,8 @@
  */
 package PeerServer.protocol.setup;
 
+import PeerServer.protocol.protocol_command;
+
 /**
  * Sent by the host at game start 
  * (after the “ready” command has been acknowledged by all players) 
@@ -18,7 +20,7 @@ package PeerServer.protocol.setup;
     }
 }
  */
-public class initialise_game {
+public class initialise_game extends protocol_command{
 
 	public initialise_game(Integer version, String[] supportedFeatures){
 		this.payload = new payload();

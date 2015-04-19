@@ -1,13 +1,18 @@
 package PeerServer.server;
 
 import static com.esotericsoftware.minlog.Log.debug;
+import GameBuilders.DemoGameBuilder;
 import GameBuilders.RiskMapGameBuilder;
 import GameEngine.ArbitrationAbstract;
 import GameEngine.GameEngine;
 import GameEngine.NetworkArbitration;
+import GameEngine.PlayState;
+import GameEngine.RequestReason;
 import GameState.Player;
 import GameState.State;
+import GameUtils.ArmyUtils;
 import GameUtils.PlayerUtils;
+import GameUtils.Results.Change;
 import GeneralUtils.Jsonify;
 import PeerServer.protocol.cards.play_cards;
 import PeerServer.protocol.dice.Die;
@@ -26,10 +31,12 @@ import PeerServer.protocol.general.acknowledgement;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.PlayerInterface;
 import PlayerInput.RemotePlayer;
+import PlayerInput.MyEntry;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -39,29 +46,32 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public abstract class AbstractProtocol implements Runnable {
 
-	protected int ack_timeout = 5;
-	protected int move_timeout = 5;
+	protected int ack_timeout = 2;
+	protected int move_timeout = 2;
 	protected ProtocolState protocolState = ProtocolState.JOIN_GAME;
 	protected String errorMessage = "default";
 	protected ArrayList<String> names = new ArrayList<String>();
 	protected ArrayList<String> funNames = new ArrayList<String>();
 	protected int ack_id = 0;
+	protected int their_ack_id = 0;
 	protected int myID;
+	protected String myName;
 	
  // GAME ENGINE RELATED
 	protected State state;
 	protected GameEngine engine = null;
 	protected ArrayList<Player> startingPlayers = new ArrayList<Player>();
 	protected int numOfPlayers;
-	protected int firstPlayerId = 0;
-	protected int currentPlayerId = 0;
-	protected PlayerInterface localPlayer;
+	protected int firstPlayerId = -1;
+	protected int currentPlayerId = -1;
 	protected NetworkArbitration networkArbitration = new NetworkArbitration();
+	protected Thread gameEngineThread;
 
 	// maps a player id with a blocking queue to notify them about their responses
 	// or take response from them (if they are local players)
-	protected HashMap<Integer, BlockingQueue<Object>> queueMapping =
-			new HashMap<Integer, BlockingQueue<Object>>();
+	protected HashMap<Integer, BlockingQueue<Entry<Integer, RequestReason>>> queueMapping =
+			new HashMap<Integer, BlockingQueue<Entry<Integer, RequestReason>>>();
+	protected BlockingQueue<Object> localPlayersQueue = new LinkedBlockingQueue<Object>();
 	
 // DIE ROLLS
 //TODO: need to change the amount of faces accordingly!
@@ -69,7 +79,8 @@ public abstract class AbstractProtocol implements Runnable {
 	protected RandomNumbers randGenerator;
 	protected byte[] randomNumber;
 	protected int dieRollResult;
-	
+
+
 // TIMER THINGS
 	protected Timer timer = new Timer();
 	protected ChangeState currentTask;
@@ -82,17 +93,9 @@ public abstract class AbstractProtocol implements Runnable {
 	protected abstract void takeSetupAction();
 	protected abstract void sendCommand(String command, Integer exceptId, boolean ack);
 	protected abstract String receiveCommand();
-
-	
-// SETUP ABSTRACT METHODS
-//	protected abstract ProtocolState join_game(String command);
-//	protected abstract ProtocolState accept_join_game(String command);
-//	protected abstract ProtocolState reject_join_game(String errorMessage2);
-//	protected abstract ProtocolState players_joined(String command);
-//	protected abstract ProtocolState ping(String command);
-//	protected abstract ProtocolState ready(String command);
-//	protected abstract ProtocolState init_game(String command);
-//	protected abstract ProtocolState leave_game(String command);
+	protected abstract void sendLeaveGame(int code, String reason);
+	protected abstract void handleLeaveGame(String command);
+	protected abstract void acknowledge(int ack);
 
 	public void run(){
 		try {
@@ -101,26 +104,45 @@ public abstract class AbstractProtocol implements Runnable {
 			e.printStackTrace();
 		}
 
-		RiskMapGameBuilder.addRiskTerritoriesToState(state);
-
+		//RiskMapGameBuilder.addRiskTerritoriesToState(state);
+		DemoGameBuilder.addFourTerritories(state);
+		
 		while(protocolState != null){
 			if(engine == null)
 				takeSetupAction();
 			else 
 				takeGameAction();
 		}
+		
 		System.out.println("end");
 	}
 
 
 	/**
 	 * Manages the different states and associated commands.
-	 * @param command
+	 * @param protocol_command
 	 * @return
 	 */
 	protected void takeGameAction() {
-        if(firstPlayerId == -1)
-        	  currentPlayerId = engine.getState().getPlayerQueue().getCurrent().getNumberId();
+		if(Thread.interrupted()){
+			if(timerSet){
+				synchronized(currentTask){
+					try {
+						currentTask.wait();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+			else{
+				if(wrongCommand)
+					sendLeaveGame(200, "Wrong commad received.");
+			}
+		}
+		
+		if(currentPlayerId  == -1)
+			currentPlayerId = 0;
         
         switch (protocolState) {
 	     //   case ROLL:
@@ -131,18 +153,20 @@ public abstract class AbstractProtocol implements Runnable {
 	     //       else
 	    //        	diceRolls = roll_hash(0); // dont know :((
 	       case SETUP_GAME:
-	    		debug("\n SETUP_GAME");
-	    		State state = new State(startingPlayers);
-	    		networkArbitration.setFirstPlayerId(firstPlayerId); // this should be got by now
-	    		engine = new GameEngine(state, networkArbitration);
-	    		
-				setup_game();
-				break;
-            case PLAY_CARDS:
+	    	   debug("\n SETUP_GAME");
+//	    	   networkArbitration.setFirstPlayerId(firstPlayerId); // this should be got by now
+	    	   if(gameEngineThread == null){
+		    	   gameEngineThread = new Thread(engine);
+		    	   gameEngineThread.start();
+		    	   currentPlayerId = engine.getState().getPlayerQueue().getCurrent().getNumberId();
+	    	   }
+	    	   setupGame();
+			   break;
+        /*    case PLAY_CARDS:
 	             debug("\n PLAY_CARDS");
-	            play_cards();
-	            
-				break;
+	            playCards();
+	            break;
+			*/	
             case DEPLOY:
 				debug("\n DEPLOY");
 				deploy();
@@ -158,169 +182,97 @@ public abstract class AbstractProtocol implements Runnable {
 				break;
             case ATTACK_CAPTURE:
 				debug("\n ATTACK_CAPTURE");
-				attack_capture();
+				attackCapture();
 	            break;
             case FORTIFY:
 				debug("\n FORTIFY");
 				fortify();	     
 	            break;
-          /*  case TIMEOUT:
-				debug("\n TIMEOUT");
-				timeout();
-	            break;*/
-          /*  case LEAVE_GAME:   /// we dont need it - we might just call the leave_game function
-           * 								// if we are leaving
-				leave_game("");
-				break;	*/
             default:
-				System.out.println("in default not good");
+			//	System.out.println("in default not good");
 				break;
 
 		}
 	}
 
 
-	/**
-	 * Removes the player from the state and the array of starting players
-	 * if the game has not started yet
-	 * @param id
-	 */
-	protected void removePlayer(int id){
-		Player player = state.lookUpPlayer(id);
-
-		numOfPlayers--;
-		// if a game hasnt started and a player needs to be removed
-		// then the starting array should be altered
-		if(engine == null){
-			startingPlayers.remove(state.lookUpPlayer(id));
+// ===============================================================
+//  MAIN GAME COMMANDS
+// ===============================================================
+	
+	protected void setupGame(){
+		nextStateAfterAck = ProtocolState.SETUP_GAME;
+		boolean changeToDeploy = false;	
+		
+		if(currentPlayerId == myID){
+			setup setup = (setup) getResponseFromLocalPlayer();
+			setup.ack_id = ack_id;
+			ack_id++;
+			
+			String setupString = Jsonify.getObjectAsJsonString(setup);
+			//Send to all clients
+			sendCommand(setupString, null, true);
 		}
+		//someone sent us a command
+		else {
+			String command = receiveCommand();
+			setup setup = (setup) Jsonify.getJsonStringAsObject(command, setup.class);
 
-		// remove them from interface mapping
-		//	interfaceMapping.remove(id);
-		queueMapping.remove(id);
-
-		// TODO: make sure its ok with game engine
-		PlayerUtils.removePlayer(state, player);
-	}
-	
-
-	protected Player createNewPlayer(String name, int id, boolean localPlayer){
-		// creating player and mapping its id to its interface
-		BlockingQueue<Object> newSharedQueue = new LinkedBlockingQueue<Object>();
-		queueMapping.put(id, newSharedQueue); // the mappigng stores all interfaces
-												// even local - need for checks!
-		
-		PlayerInterface playerInterface;
-		if(localPlayer){
-			playerInterface = new DumbBotInterface(newSharedQueue, id);
-			this.localPlayer = playerInterface;
+			if(setup == null){
+				sendLeaveGame(200, "Wrong command. Expected setup.");
+				return;
+			}
+			
+			notifyPlayerInterface(setup, setup.player_id);
+			their_ack_id = setup.ack_id;
+			
+		 	sendCommand(command, setup.player_id, true);
+		 	acknowledge(setup.ack_id);
 		}
-		else
-			playerInterface = new RemotePlayer(newSharedQueue, Thread.currentThread(), this);
-
-	
-		Player newOne;
-		if(name != "")
-			newOne = new Player(playerInterface, id, name);
-		else
-			newOne = new Player(playerInterface, id);
-
-		startingPlayers.add(newOne);
-		numOfPlayers++;
 		
-		//interfaceMapping.put(0, playerInterface);
-		if(state != null)
-			state.setPlayers(startingPlayers); /// ???? needed?
-		
-		return newOne;
-	}
-
-	
-
-	
-	/**
-	 * Method used to contact the PlayerInterface (RemotePlayer) and notify it
-	 * about its new response
-     * @param response
-     * @param playerId
-     */
-	protected void notifyPlayerInterface(Object response, Integer playerId){
-		BlockingQueue<Object> queue = queueMapping.get(playerId);
 		try {
-			queue.put(response);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	/**
-	 * Gets a response from the local player (their move, parsed into protocol command
-	 * object)
-	 * @return
-	 */
-	protected Object getResponseFromLocalPlayer(){
-		BlockingQueue<Object> queue = queueMapping.get(myID);
-		//localPlayer.createResponse();
-		
-		Object response = null;
-		try {
-			response = queue.take();
+			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		return response;
-	}
-
-	
-	
-
-
-
-	// TODO: Implement all these on the abstract side since both
-	// client and host will act very similarly here
-	// host will just override these call super() and perform some additional 
-	// stuff
-
-	//***************************** CARDS ***********************************
-
-	
-	protected void setup_game(){
-		//if command is empty then we have to setup
-/*		if(command == ""){
-			//create setup command
-			setup setup = (setup) getResponseFromLocalPlayer();
-			//convert to JSON stirng
-			String setupString = Jsonify.getObjectAsJsonString(setup);
-			//Send to all clients
-			sendCommand(setupString, null);
-		}
-		//someone sent us a command
-		else {
-			setup setup = (setup) Jsonify.getJsonStringAsObject(command, setup.class);
-
-			if(setup == null){
+		Change lastChange = engine.getStateChangeRecord().getLastChange();
+		if(lastChange != null){
+			String lastPlayer = lastChange.getActingPlayerId();
+			PlayState changeType = lastChange.getActionPlayed();
+			
+			System.out.println(lastPlayer + "  " + changeType.name());
+			
+			if(!ArmyUtils.somePlayerHasUndeployedArmies(state)){
+				System.out.println("in here");
+				
+				if(currentPlayerId == myID){
+					System.out.println("CHANGE to deploy case 1");
+					protocolState = ProtocolState.DEPLOY;
+				}
+				else if((lastPlayer != myName) && (changeType == PlayState.USING_REMAINING_ARMIES)){
+					System.out.println("CHANGE to deploy case 2");
+					protocolState = ProtocolState.DEPLOY;
+				}
 			}
-
-			sendCommand(command,setup.player_id);
-			notifyPlayerInterface(setup, setup.player_id);
+			else if(changeType == PlayState.PLAYER_PLACING_ARMIES){
+				System.out.println("CHANGE to deploy Case 3");
+				protocolState = ProtocolState.DEPLOY;
+			}
+			else if((engine.getPlayState() != PlayState.USING_REMAINING_ARMIES) && (engine.getPlayState() != PlayState.FILLING_EMPTY_COUNTRIES)){
+				System.out.println("CHANGE to deploy Case 4");
+				protocolState = ProtocolState.DEPLOY;
+			}
 		}
-*/
+
+		currentPlayerId = (currentPlayerId + 1) % numOfPlayers;
+	
 	}
 	
-	
-	/**
-	 * Sent by each player at the start of their turn, specifying group(s) of 
-	 * cards to trade in for armies, and the number of armies they are expecting to receive. 
-	 * This command must always be sent at the start of a turn, even if no cards are being traded.
-	 * @param command
-	 * @return
-	 */
-	protected void play_cards(){
-		/*//we are sending command 
-		//if(command == ""){
+
+	protected void playCards(){
+		/*if(currentPlayerId == myID){
 			//create play_cards object 
 			play_cards pc = (PeerServer.protocol.cards.play_cards) getResponseFromLocalPlayer();
 			String playCardsString = Jsonify.getObjectAsJsonString(pc);
@@ -343,62 +295,67 @@ public abstract class AbstractProtocol implements Runnable {
 	
 	
 	protected void deploy(){
-		/*//we are sending command 
-		if(command == ""){
+		System.out.println("in deploy");
+		nextStateAfterAck = ProtocolState.ATTACK;
+
+		//we are sending command 
+		if(currentPlayerId == myID){
 			//create deploy object based on player choices
-			deploy deploy = (PeerServer.protocol.gameplay.deploy) getResponseFromLocalPlayer();
+			deploy deploy = (deploy) getResponseFromLocalPlayer();
 			String deployString = Jsonify.getObjectAsJsonString(deploy);
 			
 			//send to all clients or just host if you are client 
-			sendCommand(deployString, null);
+			sendCommand(deployString, null, true);
 		}
-		//someone sent us the command
 		else{
-			//parse command into deploy object
+			String command = receiveCommand();
 			deploy deploy = (deploy) Jsonify.getJsonStringAsObject(command, deploy.class);
-			
-			//check its not null
 			if(deploy == null){
 			}
-			//send command to all players execpt the one who sent it to us
-			sendCommand(command, deploy.player_id);
-			//notify player interface to update game state/engine 
 			notifyPlayerInterface(deploy, deploy.player_id);
+			their_ack_id = deploy.ack_id;
+			
+			sendCommand(command, deploy.player_id, true);
+			acknowledge(their_ack_id);
 		}
-*/
-		//ack required
 	}
 
 
-	//*********************** ATTACK / DEFEND ******************************
-
 	protected void attack(){
-	/*	//we are sending command 
-		if(command == ""){
+		System.out.println("in attack");
+		//we are sending command 
+		if(currentPlayerId == myID){
 			//create deploy object based on player choices
 			attack attack = (attack) getResponseFromLocalPlayer();
-			
 			String attackString = Jsonify.getObjectAsJsonString(attack);
-			sendCommand(attackString, null);
+			
+			if(attack.payload == null)
+				nextStateAfterAck = ProtocolState.FORTIFY;
+			else
+				nextStateAfterAck = ProtocolState.DEFEND;
+			
+			sendCommand(attackString, null, true);
 		}
 		//someone sent us the command  player id if parsing
 		else{
-			//parse command into deploy object
+			String command = receiveCommand();
 			attack attack = (attack) Jsonify.getJsonStringAsObject(command, attack.class);
 			//check its not null
 			if(attack == null){
 			}
-
-			sendCommand(command, attack.player_id);
-			//notify interface
 			notifyPlayerInterface(attack, attack.player_id);
 
-            //Call dice roll
+			their_ack_id = attack.ack_id;
 
-
+			if(attack.payload == null)
+				nextStateAfterAck = ProtocolState.FORTIFY;
+			else
+				nextStateAfterAck = ProtocolState.DEFEND;
+			
+			sendCommand(command, attack.player_id, true);
+			acknowledge(their_ack_id);
+			// TODO: dice roll?
 		}
-*/
-		//might not be to ACK
 	}
 
 	protected void defend(){
@@ -427,7 +384,7 @@ public abstract class AbstractProtocol implements Runnable {
 
 	}
 
-	protected void attack_capture(){
+	protected void attackCapture(){
 		/*//we are sending command 
 		if(command == ""){
 			//create deploy object based on player choices
@@ -478,35 +435,13 @@ public abstract class AbstractProtocol implements Runnable {
 			//notify interface
 			notifyPlayerInterface(fortify, fortify.player_id);
 		}*/
-	}
-
-	protected void ack(){
-		/*//we are sending command 
-		if(command == ""){
-			//create deploy object based on player choices
-			acknowledgement acknowledgement = (acknowledgement) getResponseFromLocalPlayer();
-			//transfer object to JSON string
-			String acknowledgementString = Jsonify.getObjectAsJsonString(acknowledgement);
-			//send to all clients or just host if you are client 
-			sendCommand(acknowledgementString, null);
-		}
-		//someone sent us the command  player id if parsing
-		else{
-			//parse command into deploy object
-			acknowledgement acknowledgement = (acknowledgement) Jsonify.getJsonStringAsObject(command, 
-					acknowledgement.class);
-
-			//check its not null
-			if(acknowledgement == null){
-			}
-		}*/
 
 	}
 
 	//*********************** DICE ROLLS ******************************
 
 	/**
-	 * @param command
+	 * @param protocol_command
 	 * @return
 	 */
 	protected ArrayList<Integer> roll_hash(int faces){
@@ -610,7 +545,158 @@ public abstract class AbstractProtocol implements Runnable {
 		}*/
 	}
 	
+
+// ===============================================================
+//  CREATING AND REMOVING PLAYERS
+// ===============================================================
+
+	/**
+	 * Removes the player from the state and the array of starting players
+	 * if the game has not started yet
+	 * @param id
+	 */
+	protected void removePlayer(int id){
+		Player player = state.lookUpPlayer(id);
+
+		numOfPlayers--;
+		// if a game hasnt started and a player needs to be removed
+		// then the starting array should be altered
+		if(engine == null){
+			startingPlayers.remove(state.lookUpPlayer(id));
+		}
+
+		// remove them from interface mapping
+		//	interfaceMapping.remove(id);
+		queueMapping.remove(id);
+
+		// TODO: make sure its ok with game engine
+		PlayerUtils.removePlayer(state, player);
+	}
 	
+
+	protected Player createNewPlayer(String name, int id, boolean localPlayer){
+		// creating player and mapping its id to its interface
+	
+		PlayerInterface playerInterface;
+		if(localPlayer){
+			BlockingQueue<Object> newSharedQueue = new LinkedBlockingQueue<Object>();
+			playerInterface = new DumbBotInterface(newSharedQueue, id);
+			localPlayersQueue = newSharedQueue;
+		}
+		else{	
+			BlockingQueue<Entry<Integer, RequestReason>> newSharedQueue = new LinkedBlockingQueue<Entry<Integer, RequestReason>>();
+			playerInterface = new RemotePlayer(newSharedQueue, Thread.currentThread(), this);
+			queueMapping.put(id, newSharedQueue); // the mappigng stores all interfaces
+		}
+
+	
+		Player newOne;
+		if(name != "")
+			newOne = new Player(playerInterface, id, name);
+		else
+			newOne = new Player(playerInterface, id);
+
+		startingPlayers.add(newOne);
+		numOfPlayers++;
+		
+		//interfaceMapping.put(0, playerInterface);
+		if(state != null)
+			state.setPlayers(startingPlayers); /// ???? needed?
+		
+		return newOne;
+	}
+
+	
+// ===============================================================
+//  COMMUNICATION WITH PLAYER INTERFACES
+// ===============================================================
+	
+	/**
+	 * Method used to contact the PlayerInterface (RemotePlayer) and notify it
+	 * about its new response
+     * @param response
+     * @param playerId
+     */
+	protected void notifyPlayerInterface(Object response, Integer playerId){
+		BlockingQueue<Entry<Integer, RequestReason>> queue = queueMapping.get(playerId);
+
+		if(response instanceof setup){
+			try {
+				queue.put(new MyEntry(((setup) response).payload, RequestReason.PLACING_ARMIES_SET_UP));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		else if(response instanceof attack){
+			attack attack = (attack) response;
+			try {
+				queue.put(new MyEntry(attack.payload[0], RequestReason.ATTACK_CHOICE_FROM));
+				queue.put(new MyEntry(attack.payload[1], RequestReason.ATTACK_CHOICE_TO));
+				queue.put(new MyEntry(attack.payload[2], RequestReason.ATTACK_CHOICE_DICE));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}	
+		else if(response instanceof defend){
+			try {
+				queue.put(new MyEntry(((defend) response).payload, RequestReason.DEFEND_CHOICE_DICE));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}	
+		else if(response instanceof deploy){
+			deploy deploy = (deploy) response;
+			int[][] pairs = deploy.payload.pairs;
+			for(int i = 0; i < pairs.length; i++){
+				try {
+					queue.put(new MyEntry(pairs[0], RequestReason.PLACING_ARMIES_PHASE));
+					queue.put(new MyEntry(pairs[1], RequestReason.PLACING_ARMIES_PHASE));
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}	
+		}
+		else if(response instanceof fortify){
+			fortify fortify = (fortify) response;
+			try {
+				queue.put(new MyEntry(fortify.payload[0], RequestReason.REINFORCEMENT_PHASE));
+				queue.put(new MyEntry(fortify.payload[1], RequestReason.REINFORCEMENT_PHASE));
+				queue.put(new MyEntry(fortify.payload[2], RequestReason.REINFORCEMENT_PHASE));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		else if(response instanceof attack_capture){
+			attack_capture attack_capture = (attack_capture) response;
+			try {
+				queue.put(new MyEntry(attack_capture.payload[2], RequestReason.POST_ATTACK_MOVEMENT));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	/**
+	 * Gets a response from the local player (their move, parsed into protocol command
+	 * object)
+	 * @return
+	 */
+	protected Object getResponseFromLocalPlayer(){
+		Object response = null;
+		try {
+			response = localPlayersQueue.take();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		return response;
+	}
+
+	
+// ===============================================================
+//  NAME CREATION
+// ===============================================================	
 	
 	/**
 	 * Choose a name to play with
@@ -659,7 +745,6 @@ public abstract class AbstractProtocol implements Runnable {
 			// field we want to change and to make sure its not in the middle of sth that
 			// we can mess up by changing state
 			mainThread.interrupt();
-			
 			synchronized(this){
 				try {
 					// wait for a bit  to let the main thread reach interrupt

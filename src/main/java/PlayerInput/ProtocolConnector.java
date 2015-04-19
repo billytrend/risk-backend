@@ -30,7 +30,7 @@ public class ProtocolConnector implements Runnable {
 		this.myID = id;
 	}
 	
-	private BlockingQueue<Entry<Object, RequestReason>> responsesQueue; // gets responses from local player
+	private BlockingQueue<Entry<Integer, RequestReason>> responsesQueue; // gets responses from local player
     private  BlockingQueue<Object> protocolQueue; // sends responses to protocol
     
     private int myID;
@@ -44,7 +44,7 @@ public class ProtocolConnector implements Runnable {
     }
     
     public void generateNextResponse(){
-    	Entry<Object, RequestReason> next = null;
+    	Entry<Integer, RequestReason> next = null;
     	
     	try {
 			next = responsesQueue.take();
@@ -52,11 +52,15 @@ public class ProtocolConnector implements Runnable {
 			e1.printStackTrace();
 		}
 
-    	ArrayList<Object> responseParts = new ArrayList<Object>();
+    	ArrayList<Integer> responseParts = new ArrayList<Integer>();
         RequestReason servedReason = next.getValue();
     	responseParts.add(next.getKey());
     	
-    	appendNewResponseParts(responseParts, servedReason);
+    	if((servedReason != RequestReason.PLACING_ARMIES_SET_UP)
+    			&& (servedReason != RequestReason.DEFEND_CHOICE_DICE)
+    			&& (servedReason != RequestReason.PLACING_REMAINING_ARMIES_PHASE))
+    		appendNewResponseParts(responseParts, servedReason);
+    	
     	createNewProtocolCommand(responseParts, servedReason);
     }
     
@@ -66,13 +70,17 @@ public class ProtocolConnector implements Runnable {
      * @param responseParts2 
      * @return
      */
-    private void appendNewResponseParts(ArrayList<Object> responseParts, RequestReason servedReason) {
+    private void appendNewResponseParts(ArrayList<Integer> responseParts, RequestReason servedReason) {
         RequestReason currentReason = servedReason;
-    	Entry<Object, RequestReason> next = null;
+    	Entry<Integer, RequestReason> next = null;
 
         // get all information with the same request reason
         while(true){        		
         	next = responsesQueue.peek();
+        	if(next == null){
+        		continue;
+        	}
+        	
         	currentReason = next.getValue();   		
         		
         	// if next reason differ from the current one stop collecting response parts
@@ -107,7 +115,7 @@ public class ProtocolConnector implements Runnable {
      * @param responseParts
      * @param servedReason
      */
-    private void createNewProtocolCommand(ArrayList<Object> responseParts,
+    private void createNewProtocolCommand(ArrayList<Integer> responseParts,
 			RequestReason servedReason) {
         if(servedReason == null){
     			createPlayCardsCommand(responseParts);
@@ -147,15 +155,12 @@ public class ProtocolConnector implements Runnable {
      * @param responses
      * @return
      */
-    private Integer parseInteger(ArrayList<Object> responses, boolean territoryId){
+    private Integer parseInteger(ArrayList<Integer> responses){
      	
-    	if(responses.size() != 0)
+    	if(responses.size() != 1)
     		System.out.println("Wrong size of required parts to parse int");
-    	if(territoryId){
-    		return getId(responses.get(0));
-    	}
-    	else
-    		return (Integer) responses.get(0);
+
+    	return (Integer) responses.get(0);
     }
     
     
@@ -167,14 +172,14 @@ public class ProtocolConnector implements Runnable {
      * @param responses
      * @return
      */
-    private int[] parseTwoTerritoriesAndArmy(ArrayList<Object> responses){
+    private int[] parseTwoTerritoriesAndArmy(ArrayList<Integer> responses){
     	// need two territories and armies
     	if(responses.size() != 3)
     		System.out.println("Wrong size of territory - territory - int parts");
     	
-    	Integer idFrom = getId(responses.get(0));	
-    	Integer idTo = getId(responses.get(1));
-    	Integer armies = (Integer) responses.get(2);
+    	Integer idFrom = responses.get(0);	
+    	Integer idTo = responses.get(1);
+    	Integer armies = responses.get(2);
     	
     	int[] payload = new int[3];
     	payload[0] = idFrom;
@@ -185,25 +190,6 @@ public class ProtocolConnector implements Runnable {
     }
     
     
-    
-    
-    /**
-     * returns the id of the given Territory object, if the object given
-     * is not an instance of Territory the method returns null
-     * @param ob
-     * @return
-     */
-    private Integer getId(Object ob){
-    	Territory territory = (ob instanceof Territory) ? (Territory) ob : null;
-    	if(territory == null){
-    		System.out.println("Error in territory parsing");
-    		return null;
-    	}
-    	
-    	int id = territory.getNumeralId();
-    	return id;
-    }
-    
    
 
     /**
@@ -211,8 +197,9 @@ public class ProtocolConnector implements Runnable {
      * to be retrieved by the protocol
      * @param responseParts
      */
-    private void createSetUpCommand(ArrayList<Object> responseParts){
-    	Integer id = parseInteger(responseParts, true); // get a territory id
+    private void createSetUpCommand(ArrayList<Integer> responseParts){
+    	
+    	Integer id = parseInteger(responseParts); // get a territory id
     	setup setup = new setup(id, myID, ran.nextInt(50));
     	
     	try {
@@ -229,15 +216,17 @@ public class ProtocolConnector implements Runnable {
      * 
      * @param responseParts
      */
-	private void createDeployCommand(ArrayList<Object> responseParts) {
+	private void createDeployCommand(ArrayList<Integer> responseParts) {
+		System.out.println("IN DEPLOY -- connector");
+		
 		if((responseParts.size() % 2) != 0){
 			System.out.println("Wrong size of response parts in deploy");
 		}
 		int[][] payload = new int[responseParts.size() / 2][2];
 		
-		for(int i = 0; i < responseParts.size();){
-			Integer idFrom = getId(responseParts.get(i));
-	    	Integer armies = (Integer) responseParts.get(i + 1);
+		for(int i = 0; i < payload.length;){
+			Integer idFrom = responseParts.get(i);
+	    	Integer armies = responseParts.get(i + 1);
 	    	
 	    	int[] pair = new int[2];
 	    	pair[0] = idFrom;
@@ -263,7 +252,9 @@ public class ProtocolConnector implements Runnable {
      * 
      * @param responseParts
      */
-    private void createFortifyCommand(ArrayList<Object> responseParts){
+    private void createFortifyCommand(ArrayList<Integer> responseParts){
+		System.out.println("IN FORTIFY -- connector");
+
     	int[] payload = parseTwoTerritoriesAndArmy(responseParts);
     	fortify fort = new fortify(payload, myID, ran.nextInt(50));
     	
@@ -281,8 +272,10 @@ public class ProtocolConnector implements Runnable {
      * 
      * @param responses
      */
-    private void createDefendCommand(ArrayList<Object> responses){
-    	Integer armies = parseInteger(responses, false); // there should be integer, not Territory 
+    private void createDefendCommand(ArrayList<Integer> responses){
+		System.out.println("IN DEFEND -- connector");
+
+    	Integer armies = parseInteger(responses); // there should be integer, not Territory 
     														// so pass false as param
     	defend def = new defend(armies, myID, ran.nextInt(50));
     	
@@ -300,7 +293,9 @@ public class ProtocolConnector implements Runnable {
      * 
      * @param responses
      */
-    private void createAttackCommand(ArrayList<Object> responses){
+    private void createAttackCommand(ArrayList<Integer> responses){
+		System.out.println("IN ATTACK -- connector");
+
     	int[] payload = parseTwoTerritoriesAndArmy(responses);
     	attack att = new attack(payload, myID, ran.nextInt(50));
     	
@@ -319,7 +314,9 @@ public class ProtocolConnector implements Runnable {
      * 
      * @param responses
      */
-    private void createAttackCaptureCommand(ArrayList<Object> responses){
+    private void createAttackCaptureCommand(ArrayList<Integer> responses){
+		System.out.println("IN ATTACK_CAPTURE -- connector");
+
     	int[] payload = parseTwoTerritoriesAndArmy(responses);
     	attack_capture att = new attack_capture(payload, myID, ran.nextInt(50));
     
@@ -335,7 +332,9 @@ public class ProtocolConnector implements Runnable {
      * Creares play card command
      * @param responses
      */
-    private void createPlayCardsCommand(ArrayList<Object> responses){
+    private void createPlayCardsCommand(ArrayList<Integer> responses){
+		System.out.println("IN CARDS -- connector");
+
     	int[][] cards = new int[responses.size()][3];
     	int armies = -1; // TODO: no idea?
     	

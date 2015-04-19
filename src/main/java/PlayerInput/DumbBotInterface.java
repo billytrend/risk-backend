@@ -97,7 +97,7 @@ public class DumbBotInterface implements PlayerInterface {
      */
     public Territory getTerritory(Player player, HashSet<Territory> possibles,
                                          boolean canResign, RequestReason reason) {
-    	
+
         ArrayList<Territory> posList = new ArrayList<Territory>(possibles);
 
         String out = "Please choose a territory";
@@ -129,17 +129,21 @@ public class DumbBotInterface implements PlayerInterface {
 
         int toReturn = ran.nextInt(posList.size());
         
+        Territory chosen = posList.get(toReturn);
+        
+    	System.out.println("DUMB BOT: Asked for territory ---  RETURN: " + chosen.getNumeralId() + "\n");
+        
     	if(connectorQueue != null){
 	    	// notify connector which can later respond to the protocol
 	        try {
-				connectorQueue.put(new MyEntry(Integer.valueOf(toReturn), reason));
+				connectorQueue.put(new MyEntry(chosen.getNumeralId(), reason));
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
     	}
+    	
         return posList.get(toReturn);
-
     }
     
     /**
@@ -153,9 +157,17 @@ public class DumbBotInterface implements PlayerInterface {
 
     	if(connectorQueue != null){
 	    	// notify connector which can later respond to the protocol
-	        try {
-	        	connectorQueue.put(new MyEntry(from, reason));
-	        	connectorQueue.put(new MyEntry(to, reason));
+    	
+    		try {
+    			if(reason == RequestReason.POST_ATTACK_MOVEMENT){
+		        	if(from != null){
+		        		connectorQueue.put(new MyEntry(from.getNumeralId(), reason));
+		        	}
+		        	if(to != null){
+		        		connectorQueue.put(new MyEntry(to.getNumeralId(), reason));
+	
+		        	}
+    			}
 	        	connectorQueue.put(new MyEntry(Integer.valueOf(toReturn), reason));
 	        } catch (InterruptedException e) {
 				// TODO Auto-generated catch block
@@ -169,7 +181,7 @@ public class DumbBotInterface implements PlayerInterface {
 
     @Override
     public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
-    	Triplet<Card, Card , Card> choice;
+    	/*Triplet<Card, Card , Card> choice;
     	if(possibleCombinations.size() == 0)
         	choice = null;
         else
@@ -184,7 +196,8 @@ public class DumbBotInterface implements PlayerInterface {
 				e.printStackTrace();
 			}
     	}
-  		return choice;
+  		return choice;*/
+    	return null;
     }
     
     @Override

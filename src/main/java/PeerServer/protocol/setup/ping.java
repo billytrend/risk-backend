@@ -3,6 +3,8 @@
  */
 package PeerServer.protocol.setup;
 
+import PeerServer.protocol.protocol_command;
+
 /**
  * Sent by a host at the start of a game, and by all clients in 
  * response to this initial ping. "player_id" may be 
@@ -15,11 +17,10 @@ package PeerServer.protocol.setup;
     "player_id": 0
 }
  */
-public class ping {
+public class ping extends protocol_command {
 
 	public String command = "ping";
 	public Integer payload;		//can be null if sent by client 
-	public int player_id;
 	
 	public ping(int no_of_players, int player_id){
 		this.payload = no_of_players;

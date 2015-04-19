@@ -1,9 +1,11 @@
 package PeerServer.protocol.gameplay;
 
+import PeerServer.protocol.protocol_command;
+
 /**
 
  */
-public class setup {
+public class setup extends protocol_command {
 
 	public setup(int payload, int player_id, int ack_id){
 		this.payload = payload;
@@ -13,7 +15,6 @@ public class setup {
 	
 	public String command = "setup";
 	public int payload;
-	public int player_id;
 	public int ack_id;
 	
 }

@@ -6,7 +6,7 @@ import GameState.State;
 
 public class NetworkArbitration extends ArbitrationAbstract{
 
-	private int firstPlayerId = -1;
+	private int firstPlayerId = 0;
 	private ArrayList<Integer> diceThrowResult = null;
 	
 	@Override
@@ -17,11 +17,14 @@ public class NetworkArbitration extends ArbitrationAbstract{
 	@Override
 	public Integer[] nDiceThrow(int numOfDice) {
 		Integer[] result = new Integer[numOfDice];
-		if(diceThrowResult.size() != numOfDice){
+	/*	if(diceThrowResult.size() != numOfDice){
 			return null;
 		}
 		for(int i = 0; i < numOfDice; i++){
 			result[i] = diceThrowResult.get(i);
+		}*/
+		for(int i = 0; i < numOfDice; i++){
+			result[0] = 1; 
 		}
 		return result;
 	}

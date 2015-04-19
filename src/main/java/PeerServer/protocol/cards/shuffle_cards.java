@@ -1,10 +1,11 @@
 package PeerServer.protocol.cards;
 
+import PeerServer.protocol.protocol_command;
 import PeerServer.protocol.dice.Die;
 import PeerServer.protocol.dice.RandomNumbers;
 import PeerServer.protocol.dice.roll_hash;
 
-public class shuffle_cards {
+public class shuffle_cards extends protocol_command{
 
 	
 	

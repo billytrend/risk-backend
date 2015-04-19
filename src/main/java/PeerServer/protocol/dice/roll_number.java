@@ -3,6 +3,8 @@
  */
 package PeerServer.protocol.dice;
 
+import PeerServer.protocol.protocol_command;
+
 /**
  * Sent by each player following the receipt of a “roll_hash” being received from all other players. 
  * The payload should correspond to the previously sent hash.
@@ -19,7 +21,7 @@ package PeerServer.protocol.dice;
 "player_id": 0
 
  */
-public class roll_number {
+public class roll_number extends protocol_command{
 
 	public roll_number(String payload, int player_id){
 		this.payload = payload;
@@ -29,5 +31,4 @@ public class roll_number {
 	public String command = "roll_number";
 	//256 bit random number as hex string
 	public String payload;
-	public int player_id;
 }

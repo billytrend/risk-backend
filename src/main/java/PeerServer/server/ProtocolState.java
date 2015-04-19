@@ -7,12 +7,9 @@ package PeerServer.server;
  */
 public enum ProtocolState {
 	JOIN_GAME,
-	JOIN_RESPONSE,
 	PLAYERS_JOINED,
 	PING,
-	PING_ACK, 
 	READY,
-	ACK,
 	INIT_GAME,
 	SETUP_GAME,	
 	PLAY_CARDS,
@@ -25,7 +22,4 @@ public enum ProtocolState {
 	DRAWING_CARDS,
 	ROLL, 
 	FORTIFY,
-	LEAVE_GAME,
-	TIMEOUT,
-	END_GAME, ACCEPT_JOIN_GAME, REJECT_JOIN_GAME,
 }

@@ -3,6 +3,8 @@
  */
 package PeerServer.protocol.general;
 
+import PeerServer.protocol.protocol_command;
+
 /**
  * Sent by the host when a player does not respond in time. 
  * Can be received at any time.
@@ -30,11 +32,10 @@ package PeerServer.protocol.general;
  */
 
 
-public class timeout {
+public class timeout extends protocol_command{
 	
 	public String command = "timeout";
 	public int payload;
-	public int player_id;
 	public int ack_id;
 	
 	public timeout(int payload, int player_id, int ack_id){

@@ -141,6 +141,9 @@ public class ArmyUtils {
         if (numOfPlayers > 2) {
             numOfArmies -= 5 * (numOfPlayers - 3);
         }
+        
+        if(state.getTerritoryIds().size() == 4) // TODO: delete this!!
+        	numOfArmies = 6;
 
 	    ArrayList<Player> players = state.getPlayers();
 	      for(Player p : players){

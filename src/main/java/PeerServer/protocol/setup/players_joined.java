@@ -6,6 +6,7 @@ package PeerServer.protocol.setup;
 import java.util.ArrayList;
 
 import GameState.Player;
+import PeerServer.protocol.protocol_command;
 
 /**
  * 
@@ -23,7 +24,7 @@ import GameState.Player;
 }
  * 
  */
-public class players_joined {
+public class players_joined extends protocol_command {
 
 	public String command = "players_joined";
 	//2D array of integer player ID/string name pairs.

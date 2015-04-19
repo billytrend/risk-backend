@@ -58,6 +58,31 @@ public class DemoGameBuilder {
 
     }
     
+    public static void addFourTerritories(State state){
+        // creating territories
+        Territory demoLandA = new Territory("demoland", 0);
+        Territory demoLandB = new Territory("egstate", 1);
+        Territory demoLandC = new Territory("someplace", 2);
+        Territory demoLandD = new Territory("otherplace", 3);
+
+        TerritoryUtils.addTerritory(state, demoLandA);
+        TerritoryUtils.addTerritory(state, demoLandB);
+        TerritoryUtils.addTerritory(state, demoLandC);
+        TerritoryUtils.addTerritory(state, demoLandD);
+
+        //add neighbouring territories to each territory
+        TerritoryUtils.addBorder(state, demoLandA, demoLandB);
+        TerritoryUtils.addBorder(state, demoLandA, demoLandD);
+        TerritoryUtils.addBorder(state, demoLandB, demoLandC);
+        TerritoryUtils.addBorder(state, demoLandC, demoLandD);
+        TerritoryUtils.addBorder(state, demoLandD, demoLandB);
+        
+        Territory[] contAB = {demoLandA, demoLandB};
+        Territory[] contCD = {demoLandC, demoLandD};
+        ContinentUtils.addContinent(state, contAB, 4, "demoContAB", 0);
+        ContinentUtils.addContinent(state, contCD, 3, "demoContCD", 1);
+    }
+    
   /*  public static State buildTestGame(){
 
         // creating players

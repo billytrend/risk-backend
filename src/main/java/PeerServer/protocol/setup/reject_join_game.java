@@ -3,6 +3,8 @@
  */
 package PeerServer.protocol.setup;
 
+import PeerServer.protocol.protocol_command;
+
 /**
  * Sent by a host to a client on receipt 
  * of a “join_game” command, as rejection.
@@ -13,7 +15,7 @@ package PeerServer.protocol.setup;
     "payload": "Game in progress"
 }
  */
-public class reject_join_game {
+public class reject_join_game extends protocol_command {
 	public String command = "reject_join_game";
 	public String payload;		//describing reason for rejection
 	

@@ -3,6 +3,8 @@
  */
 package PeerServer.protocol.general;
 
+import PeerServer.protocol.protocol_command;
+
 /**
  *  Sent by each player in response to any command 
  *  specifying an “ack_id” being received.
@@ -15,10 +17,9 @@ package PeerServer.protocol.general;
 }
  */
 
-public class acknowledgement {
+public class acknowledgement extends protocol_command {
 	public String command = "acknowledgement";
 	public int payload;
-	public int player_id;
 
 	public acknowledgement(int payload, int player_id){
 		this.payload = payload;

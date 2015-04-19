@@ -77,10 +77,11 @@ public class ClientProtocol extends AbstractProtocol{
 				handleLeaveGame(command);
 			else
 				handleInitializeGame(command);
-				protocolState = null;
+			//	protocolState = null;
+				protocolState = ProtocolState.SETUP_GAME;
 			break;
 		default:
-			System.out.println("IN DEFAULT not good");
+		//	System.out.println("IN DEFAULT not good");
 			break;
 		}
 	}
@@ -92,8 +93,8 @@ public class ClientProtocol extends AbstractProtocol{
 	
 	protected void sendJoinGame() {
 		// send request to join the game
-		String name = getRandomName();
-		join_game join = new join_game(new Integer[]{1}, new String[]{}, name, "key");
+		myName = getRandomName();
+		join_game join = new join_game(new Integer[]{1}, new String[]{}, myName, "key");
 		
 		sendCommand(Jsonify.getObjectAsJsonString(join), null, false);
 		
@@ -251,6 +252,8 @@ public class ClientProtocol extends AbstractProtocol{
 			sendLeaveGame(200, "Expected init game command");
 			return;
 		}
+
+		engine = new GameEngine(state, networkArbitration);
 
 		versionPlayed = init.payload.version;
 		featuresUsed = init.payload.supported_features;

@@ -3,6 +3,8 @@
  */
 package PeerServer.protocol.setup;
 
+import PeerServer.protocol.protocol_command;
+
 /**
  * Sent by a host at the start of a game, indicating 
  * all players have responded to the initial ping, or the timeout 
@@ -16,7 +18,7 @@ package PeerServer.protocol.setup;
     "ack_id": 1
 }
  */
-public class ready {
+public class ready extends protocol_command{
 
 	public ready(String payload, int player_id, int ack_id){
 		this.payload = payload;
@@ -26,7 +28,6 @@ public class ready {
 	
 	public String command = "ready";
 	public Object payload = null;
-	public int player_id;
 	public int ack_id;
 	
 }

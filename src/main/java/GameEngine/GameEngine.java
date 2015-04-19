@@ -38,6 +38,10 @@ public class GameEngine implements Runnable {
 		return changeRecord;
 	}
 	
+	public PlayState getPlayState(){
+		return playState;
+	}
+	
 	
 	public GameEngine(State state, WinConditions conditions) {
 		this(state);
@@ -86,14 +90,14 @@ public class GameEngine implements Runnable {
 	}
     
     public void applyAndReportChange(State state, Change change) {
+        changeRecord.addStateChange(change);
         change.applyChange(state);
-        for (Player player :  gameState.getPlayers()) {
+        for (Player player : gameState.getPlayers()) {
             player.getCommunicationMethod().reportStateChange(change);
         }
         for (PlayerInterface ghost : gameState.getGhosts()) {
             ghost.reportStateChange(change);
         }
-        changeRecord.addStateChange(change);
     }
 
 	/**
@@ -104,11 +108,6 @@ public class GameEngine implements Runnable {
 	 * @throws NullPointerException
 	 */
 	private boolean iterateGame() throws InterruptedException, NullPointerException {
-
-        // if play state changes, let people know
-        if (previousPlayState != playState && currentPlayer != null) {
-            applyAndReportChange(gameState, new PlayStateUpdate(currentPlayer.getId(), playState));
-        }
 
 		switch (this.playState) {
 			case BEGINNING_STATE:
@@ -204,6 +203,7 @@ public class GameEngine implements Runnable {
 		debug(currentPlayer.getClass().toString());
 		Territory toFill = currentPlayer.getCommunicationMethod()
 				.getTerritory(currentPlayer, emptyTerritories, false, RequestReason.PLACING_ARMIES_SET_UP);
+		
 		debug(toFill.getId());
 
 		// deploy a single army in this place
