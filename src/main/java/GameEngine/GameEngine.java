@@ -103,6 +103,8 @@ public class GameEngine implements Runnable {
 //        if (previousPlayState != playState && currentPlayer != null) {
 //            applyAndReportChange(gameState, new PlayStateUpdate(currentPlayer.getId(), playState));
 //        }
+		
+		System.out.println("GAME ENGINE - line107 : " +TerritoryUtils.getPlayersTerritories(gameState.getPlayers().get(1)));
 
 		switch (this.playState) {
 			case BEGINNING_STATE:
