@@ -35,7 +35,6 @@ public class SingleGameRunner {
         //yellow
         //players.add(3, new Player(new DumbBotInterface()));
 
-
         SingleGameRunner s = new SingleGameRunner(players, gameState);
         s.start();
     }

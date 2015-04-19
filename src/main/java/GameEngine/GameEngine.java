@@ -28,7 +28,6 @@ public class GameEngine implements Runnable {
 	protected State gameState;
 	protected Player currentPlayer = null;
 	private PlayState playState = BEGINNING_STATE;
-    private PlayState previousPlayState;
 	private boolean currentPlayerHasTakenCountry = false;
 	private StateChangeRecord changeRecord;
 	private WinConditions winConditions;
@@ -177,12 +176,7 @@ public class GameEngine implements Runnable {
         }
 
         // do initial army handout
-        int numOfPlayers = PlayerUtils.getPlayersInGame(gameState).size();
-        int numOfArmies = 40;
-
-        if (numOfPlayers > 2) {
-            numOfArmies -= 5 * (numOfPlayers - 3);
-        }
+        int numOfArmies = ArmyUtils.getStartingArmies(gameState);
 
         ArrayList<Player> players = gameState.getPlayers();
 
