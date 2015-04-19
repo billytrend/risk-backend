@@ -150,8 +150,6 @@ public abstract class AbstractProtocol implements Runnable {
 		
 		return newOne;
 	}
-
-	
 	
 	/**
 	 * Choose a name to play with

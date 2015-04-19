@@ -113,4 +113,10 @@ public class PlayerConnection implements PlayerInterface  {
         connection.send(Jsonify.getObjectAsJsonString(change));
     }
 
+	@Override
+	public void createResponse() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
