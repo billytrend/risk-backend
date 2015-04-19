@@ -21,6 +21,7 @@ public class ArbitrationTest {
 	
 	private State gameState;
 	private Territory[] territories;
+	ArbitrationAbstract arbitration;
 
 	@Before
 	public void stateSetUp(){
@@ -28,6 +29,7 @@ public class ArbitrationTest {
 		gameState = DemoGameBuilder.buildTestGame(2, 2, interfaces);
 		territories = new Territory[TerritoryUtils.getAllTerritories(gameState).size()];
 		TerritoryUtils.getAllTerritories(gameState).toArray(territories);
+		arbitration = new Arbitration();
 	}
 	
 
@@ -37,7 +39,7 @@ public class ArbitrationTest {
 		ArrayList<Integer> results = new ArrayList<Integer>();
 		int tryTimes = 30;
 		for(int i = 0; i < 30; i++){
-			result = Arbitration.dieThrowWrapper();
+			result = arbitration.dieThrowWrapper();
 			results.add(result);
 			assertTrue((0 < result) && (result < 7));
 		}
@@ -54,7 +56,7 @@ public class ArbitrationTest {
 		Player player2 = players.get(1);
 		FightResult fightResult = new FightResult(player1.getId(), player2.getId(), territories[0].getId(), territories[1].getId());
 
-		fightResult = Arbitration.carryOutFight(fightResult, 3, 2);
+		fightResult = arbitration.carryOutFight(fightResult, 3, 2);
 		Integer[] attackDice = fightResult.getAttackDiceRolled();
 		Integer[] defendDice = fightResult.getDefendDiceRolled();
 		assertEquals(attackDice.length, 3);

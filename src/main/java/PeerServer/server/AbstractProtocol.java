@@ -39,12 +39,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public abstract class AbstractProtocol implements Runnable {
 
-	protected int ack_timeout = 3;
-	protected int move_timeout = 3;
+	protected int ack_timeout = 5;
+	protected int move_timeout = 5;
 	protected ProtocolState protocolState = ProtocolState.JOIN_GAME;
 	protected String errorMessage = "default";
-	protected int leaveCode;
-	protected String leaveReason;
 	protected ArrayList<String> names = new ArrayList<String>();
 	protected ArrayList<String> funNames = new ArrayList<String>();
 	protected int ack_id = 0;
@@ -76,10 +74,9 @@ public abstract class AbstractProtocol implements Runnable {
 	protected Timer timer = new Timer();
 	protected ChangeState currentTask;
 	protected Thread mainThread = Thread.currentThread();
-	protected boolean timerSet = false;
-	protected ProtocolState nextStateAfterAck;
-		
+	protected boolean timerSet;
 	public boolean wrongCommand = false;
+	protected ProtocolState nextStateAfterAck;
 	
 // ABSTRACT METHODS
 	protected abstract void takeSetupAction();
@@ -88,16 +85,14 @@ public abstract class AbstractProtocol implements Runnable {
 
 	
 // SETUP ABSTRACT METHODS
-	protected abstract ProtocolState join_game(String command);
-	protected abstract ProtocolState accept_join_game(String command);
-	protected abstract ProtocolState reject_join_game(String errorMessage2);
-	protected abstract ProtocolState players_joined(String command);
-	protected abstract ProtocolState ping(String command);
-	protected abstract ProtocolState ready(String command);
-	protected abstract ProtocolState acknowledge(String command);
-	protected abstract ProtocolState timeout(String command);
-	protected abstract ProtocolState init_game(String command);
-	protected abstract ProtocolState leave_game(String command);
+//	protected abstract ProtocolState join_game(String command);
+//	protected abstract ProtocolState accept_join_game(String command);
+//	protected abstract ProtocolState reject_join_game(String errorMessage2);
+//	protected abstract ProtocolState players_joined(String command);
+//	protected abstract ProtocolState ping(String command);
+//	protected abstract ProtocolState ready(String command);
+//	protected abstract ProtocolState init_game(String command);
+//	protected abstract ProtocolState leave_game(String command);
 
 	public void run(){
 		try {
@@ -649,8 +644,10 @@ public abstract class AbstractProtocol implements Runnable {
 	 *
 	 */
 	public class ChangeState extends TimerTask{
+		private ProtocolState nextState;
 		
-		public ChangeState(){
+		public ChangeState(ProtocolState next){
+			nextState = next;
 			timerSet = true;
 		}
 		
@@ -665,15 +662,14 @@ public abstract class AbstractProtocol implements Runnable {
 			
 			synchronized(this){
 				try {
-					// wait for a bit second to let the main thread reach interrupt
+					// wait for a bit  to let the main thread reach interrupt
 					wait(4000);
 				} catch (Exception e) {}
 
 				// change state to the following state
-				protocolState = nextStateAfterAck;
-
-				timerSet = false;
+				protocolState = nextState;
 				// change state and notify the main thread so it continues running
+				timerSet = false;
 				notify();
 			}
 		}		
