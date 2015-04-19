@@ -1,9 +1,6 @@
 package GameUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Random;
+import java.util.*;
 
 import GameState.Player;
 import GameState.State;
@@ -120,5 +117,43 @@ public class AIUtils {
 			}
 			return null;
 		}
+
+    public static Territory getContinentTerritory(State state, ArrayList<Territory> possibles, String continentID){
+        Random rand = new Random();
+        ArrayList<Territory> territoryList = ContinentUtils.getContinentById(state, continentID).getTerritories();
+        int randomNum = rand.nextInt((territoryList.size()));
+
+        for (int i = 0; i < possibles.size(); i++) {
+            if(territoryList.get(randomNum).equals(possibles.get(i))){
+                return territoryList.get(randomNum);
+            }
+        }
+
+        randomNum = rand.nextInt(possibles.size());
+
+        return possibles.get(randomNum);
+    }
+
+    public static String noTerritoryInContinent(State state, Player player, String[] continentIDs){
+        for (int i = 0; i < continentIDs.length; i++) {
+            if(!ownsOneInContinent(state, player, continentIDs[i])){
+                return continentIDs[i];
+            }
+
+        }
+        return null;
+    }
+
+    public static boolean ownsOneInContinent(State state, Player player, String continentID){
+        HashSet<Territory> contTerritoryList = new HashSet<Territory>(ContinentUtils.getContinentById(state, continentID).getTerritories());
+        HashSet<Territory> playerTerritoryList = TerritoryUtils.getPlayersTerritories(player);
+
+        for (Territory t : playerTerritoryList) {
+            if(contTerritoryList.contains(t)){
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

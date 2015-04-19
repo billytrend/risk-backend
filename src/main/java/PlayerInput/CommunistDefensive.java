@@ -53,6 +53,8 @@ public class CommunistDefensive implements PlayerInterface{
 
         //System.out.println(TerritoryUtils.getWeakestOwned(player, territoryList).getId());
 
+        currentTer = from;
+
         switch (reason) {
 
             case PLACING_ARMIES_SET_UP:
