@@ -17,10 +17,10 @@ import java.util.HashSet;
 /**
  * Created by root on 08/04/2015.
  */
-public class theLooser implements PlayerInterface {
+public class TheLoser implements PlayerInterface {
     public State currentState;
 
-    public theLooser(State a){
+    public TheLoser(State a){
         this.currentState = a;
     }
 

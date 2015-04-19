@@ -29,14 +29,17 @@ public class State {
 	private PlayerQueue playerQueue;
 	private ArrayList<Continent> continents = new ArrayList<Continent>();
 	private final ArrayList<Card> cards = new ArrayList<Card>();
+	private Player winner;
 	
 	public State(ArrayList<Player> players){
 		this();
+		winner = null;
 		setPlayers(players);
     }
     
     public State() {
     	players = new ArrayList<Player>();
+    	winner = null;
     }
 
     public void setPlayers(ArrayList<Player> players) {
@@ -121,6 +124,13 @@ public class State {
 
     public void addGhost(PlayerInterface p) {
         this.ghosts.add(p);
+    }
+    
+    public void setWinner(Player player){
+    	winner = player;
+    }
+    public Player getWinner(){
+    	return winner;
     }
     
 	/**

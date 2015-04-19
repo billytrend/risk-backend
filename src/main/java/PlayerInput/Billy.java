@@ -1,13 +1,12 @@
 package PlayerInput;
 
 import GameEngine.RequestReason;
+
 import GameState.Card;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
-import GameUtils.ContinentUtils;
 import GameUtils.Results.Change;
-import GameUtils.TerritoryUtils;
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -151,8 +150,10 @@ public class Billy implements PlayerInterface{
             // links.
             case POST_ATTACK_MOVEMENT:
                 return max - 2; // Moves the maximum number of armies post attack. - 2
+		default:
+			 return 0;
         }
-        return 0;
+       
 
     }
 

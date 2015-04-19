@@ -1,9 +1,8 @@
 package GameUtils;
 
 import GameState.*;
-
 import java.util.ArrayList;
-import java.util.HashSet;
+
 
 import static com.esotericsoftware.minlog.Log.debug;
 
@@ -75,5 +74,5 @@ public class PlayerUtils {
 	public static void removePlayer(State gameState, Player player) {
 		gameState.getPlayerQueue().removePlayer(player);
 	}
-    
+	
 }

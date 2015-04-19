@@ -1,13 +1,13 @@
 package PlayerInput;
 
 import GameEngine.RequestReason;
+
 import GameState.Card;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.Results.Change;
 import GameUtils.AIUtils;
-import GameUtils.TerritoryUtils;
 
 import org.javatuples.Triplet;
 

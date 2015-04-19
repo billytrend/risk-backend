@@ -24,12 +24,13 @@ public class SingleGameRunner {
     public static void main(String[] args) throws Exception {
         ArrayList<Player> players = new ArrayList<Player>();
         State gameState = RiskMapGameBuilder.buildGame(null);
+        
         //pink
-        players.add(0, new Player(new CommunistDefensive(gameState)));
+        players.add(0, new Player(new CommunistAggressive(gameState), "The test subject"));
         //blue
-        players.add(1, new Player(new Billy(gameState)));
+        players.add(1, new Player(new TheLoser(gameState), "Loser1"));
         //purple
-        players.add(1, new Player(new BorderControl(gameState)));
+        players.add(2, new Player(new TheLoser(gameState), "Loser2"));
         //green
         //players.add(2, new Player(new DumbBotInterface()));
         //yellow
@@ -37,6 +38,9 @@ public class SingleGameRunner {
 
         SingleGameRunner s = new SingleGameRunner(players, gameState);
         s.start();
+        
+
+        
     }
 
 
@@ -65,7 +69,8 @@ public class SingleGameRunner {
 
         SingleGameServer s = new SingleGameServer(8887, gameState, players);
         server.join();
-
+       
+        
 
     }
 

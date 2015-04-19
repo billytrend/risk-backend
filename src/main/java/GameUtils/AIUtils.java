@@ -77,6 +77,7 @@ public class AIUtils {
 	    public static ArrayList<HashSet<Territory>> getAllClusters(State state,
 				Player player) {
 			HashSet<Territory> world = TerritoryUtils.getPlayersTerritories(player);
+			
 			ArrayList<HashSet<Territory>> allClusters = new ArrayList<HashSet<Territory>>();
 			HashSet<Territory> used = new HashSet<Territory>();
 			for (Territory t : world) {
