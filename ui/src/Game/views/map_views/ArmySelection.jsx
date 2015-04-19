@@ -1,7 +1,8 @@
 var React = require('react/addons'),
     Die = require('./Die.jsx'),
     ServerRequest = require('../../stores/ServerRequest'),
-    ServerActions = require('../../actions/ServerActions');
+    ServerActions = require('../../actions/ServerActions'),
+    Country = require('./Country.jsx');
 
 var filters = {
     selected: 'selected',
@@ -11,7 +12,7 @@ var filters = {
 var UpArrow = React.createClass({
     render: function() {
         return (
-            <svg viewBox="0 0 1872 940">
+            <svg viewBox="0 0 1872 940" className="army_arrow">
                 <g opacity={ this.props.activated ? 1 : 0.5 } onClick={ this.props.onClick } stroke="none" strokeWidth="1" fill="none"  fill-rule="evenodd" >
                     <polygon stroke="#979797" fill="#6C6C6C" points="936 1 1870 939 936 676.008356 2 939 "></polygon>
                 </g>
@@ -23,7 +24,7 @@ var UpArrow = React.createClass({
 var DownArrow = React.createClass({
     render: function() {
         return (
-            <svg viewBox="0 0 1872 940">
+            <svg viewBox="0 0 1872 940" className="army_arrow">
                 <g opacity={ this.props.activated ? 1 : 0.5 } onClick={ this.props.onClick } stroke="none" strokeWidth="1" fill="none"  fill-rule="evenodd" >
                     <path  d="M2,1 L936,263.991644 L1870,1 L936,939 L2,1 Z" id="Triangle-1" stroke="#979797" fill="#6C6C6C" ></path>
                 </g>
@@ -76,34 +77,36 @@ module.exports = React.createClass({
         var self = this;
 
         return (
-            <div className="view_layer army_box">
-                <div>
-                    <UpArrow activated={ self.state.number + 1 <= self.props.max } onClick={ self._increase.bind(self, 1) } />
-                    <UpArrow activated={ self.state.number + 5 <= self.props.max } onClick={ self._increase.bind(self, 5) } />
-                    <UpArrow activated={ self.state.number + 10 <= self.props.max } onClick={ self._increase.bind(self, 10) } />
-                    <div />
-                    <div />
-                </div>
-                <div>
-                    <div>S</div>
-                    <div>H</div>
-                    <div>C</div>
-                    <div>
-                        { self.state.number }
+            <div className="view_layer">
+                <div className="dialogue_box">
+                    <div className="army_selection_column">
+                        <UpArrow activated={ self.state.number + 1 <= self.props.max } onClick={ self._increase.bind(self, 1) } />
+                        <div>S</div>
+                        <DownArrow activated={ self.state.number - 1 >= 0 }  onClick={ self._increase.bind(self, -1) } />
                     </div>
-                    <div>
-                        { self.props.max }
+                    <div className="army_selection_column">
+                        <UpArrow activated={ self.state.number + 5 <= self.props.max } onClick={ self._increase.bind(self, 5) } />
+                        <div>H</div>
+                        <DownArrow activated={ self.state.number - 5 >= 0 }  onClick={ self._increase.bind(self, -5) } />
+
                     </div>
-                </div>
-                <div>
-                    <DownArrow activated={ self.state.number - 1 >= 0 }  onClick={ self._increase.bind(self, -1) } />
-                    <DownArrow activated={ self.state.number - 5 >= 0 }  onClick={ self._increase.bind(self, -5) } />
-                    <DownArrow activated={ self.state.number - 10 >= 0 }  onClick={ self._increase.bind(self, -10) }/>
-                    <div />
-                    <div />
-                </div>
-                <div>
-                    <button onClick={ self.submit }>Submit</button>
+                    <div className="army_selection_column">
+                        <UpArrow activated={ self.state.number + 10 <= self.props.max } onClick={ self._increase.bind(self, 10) } />
+                        <div>C</div>
+
+                        <DownArrow activated={ self.state.number - 10 >= 0 }  onClick={ self._increase.bind(self, -10) }/>
+                    </div>
+                    <div className="army_selection_column">
+                        <div className="caption">deploy</div>
+                            { self.state.number }
+                    </div>
+                    <div className="army_selection_column">
+                        <div className="caption">out of</div>
+                            { self.props.max }
+                    </div>
+                    <div className="army_selection_column">
+                        <button onClick={ self.submit }>Deploy</button>
+                    </div>
                 </div>
             </div>
         )
