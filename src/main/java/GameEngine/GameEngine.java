@@ -611,7 +611,7 @@ public class GameEngine implements Runnable {
 		if (currentPlayerHasTakenCountry) {
             CardHandout c = new CardHandout(currentPlayer.getId());
             applyAndReportChange(gameState, c);
-
+            System.out.println("CAPTUREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEeeD  " + currentPlayer.getId());
 			currentPlayerHasTakenCountry = false;
 			countryTakenInPreviousTurn = true;
 		}

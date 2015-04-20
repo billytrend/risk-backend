@@ -13,6 +13,7 @@ import GameUtils.PlayerUtils;
 import GameUtils.Results.Change;
 import GeneralUtils.Jsonify;
 import PeerServer.protocol.dice.Die;
+import PeerServer.protocol.dice.roll_hash;
 import PeerServer.protocol.dice.Die.HashMismatchException;
 import PeerServer.protocol.dice.RandomNumbers;
 import PeerServer.protocol.gameplay.*;
@@ -64,7 +65,10 @@ public abstract class AbstractProtocol implements Runnable {
 	protected RandomNumbers randGenerator;
 	protected byte[] randomNumber;
 	protected int dieRollResult;
-
+	
+	// if these are set to -1 it means that we are rolling for number of players
+	protected int attackerDiceNum = -1;
+	protected int defenderDiceNum = -1;
 
 // TIMER THINGS
 	protected Timer timer = new Timer();
@@ -81,6 +85,7 @@ public abstract class AbstractProtocol implements Runnable {
 	protected abstract void sendLeaveGame(int code, String reason);
 	protected abstract void handleLeaveGame(String command);
 	protected abstract void acknowledge(int ack);
+	protected abstract void handleTimeout(String command);
 
 	public void run(){
 		try {
@@ -89,8 +94,8 @@ public abstract class AbstractProtocol implements Runnable {
 			e.printStackTrace();
 		}
 
-		RiskMapGameBuilder.addRiskTerritoriesToState(state);
-		//DemoGameBuilder.addFourTerritories(state);
+		//RiskMapGameBuilder.addRiskTerritoriesToState(state);
+		DemoGameBuilder.addFourTerritories(state);
 		
 		while(protocolState != null){
 			if(engine == null)
@@ -130,13 +135,13 @@ public abstract class AbstractProtocol implements Runnable {
 			currentPlayerId = 0;
         
         switch (protocolState) {
-	     //   case ROLL:
-	     //       debug("\n ROLL");
-	     //       ArrayList<Integer> diceRolls;
-	     //       if(engine == null)
-	     //       	diceRolls = roll_hash(0);
-	     //       else
-	    //        	diceRolls = roll_hash(0); // dont know :((
+	    /*    case ROLL:
+	            debug("\n ROLL");
+	            ArrayList<Integer> diceRolls;
+	            if(engine == null){
+	            	diceRolls = diceRolls(numOfPlayers);
+	            	currentPlayerId = diceRolls.get(0);
+	            }*/
 	       case SETUP_GAME:
 	    	   debug("\n SETUP_GAME");
 //	    	   networkArbitration.setFirstPlayerId(firstPlayerId); // this should be got by now
@@ -369,7 +374,8 @@ public abstract class AbstractProtocol implements Runnable {
 			}
 			
 			notifyPlayerInterface(attack, attack.player_id);
-
+			
+			attackerDiceNum = attack.payload[2];
 			their_ack_id = attack.ack_id;
 
 			if(attack.payload == null)
@@ -408,7 +414,8 @@ public abstract class AbstractProtocol implements Runnable {
 
 			notifyPlayerInterface(defend, defend.player_id);
 			their_ack_id = defend.ack_id;
-		
+			defenderDiceNum = defend.payload;
+			
 			sendCommand(command, defend.player_id, true);
 			acknowledge(their_ack_id);	
 		}
@@ -482,6 +489,55 @@ public abstract class AbstractProtocol implements Runnable {
 
 	//*********************** DICE ROLLS ******************************
 
+	protected ArrayList<Integer> roll(int faces){
+		ArrayList<roll_hash> hashes = getHashes(faces);
+		
+		return null;
+	}
+	
+	private ArrayList<roll_hash> getHashes(int faces) {
+		ArrayList<roll_hash> hashes = new ArrayList<roll_hash>();
+		
+	// generate and send our own hash
+		randomNumber = diceRoller.generateNumber();
+		byte[] hash;
+		try {
+			hash = diceRoller.hashByteArr(randomNumber);
+			String hashStr = new String(hash);
+
+			roll_hash rh = new roll_hash(hashStr, myID);
+			diceRoller.addHash(myID, hashStr);
+			sendCommand(Jsonify.getObjectAsJsonString(rh), null, false);
+			
+		} catch (HashMismatchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+
+	// receive others hashes
+		long startTime = System.currentTimeMillis();
+		long currentTime;
+		String command;
+		while(true){
+			command = receiveCommand();
+			if(!command.contains("roll_hash"))
+				sendLeaveGame(200, "Wrong command, expected roll hash");
+			
+			roll_hash rollHash = (roll_hash) Jsonify.getJsonFromCommand(command, roll_hash.class);
+			hashes.add(rollHash);
+			if(hashes.size() == numOfPlayers)
+				break;
+			
+			// if there is timeout
+			currentTime = System.currentTimeMillis();
+			if(startTime - currentTime > ack_timeout * 1000)
+				break;
+		}
+		
+		return hashes;
+	}
+	
 	/**
 	 * @param
 	 * @return

@@ -125,8 +125,7 @@ public class RemotePlayer implements PlayerInterface  {
 	
 	@Override
 	public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations){
-	/*
-		Integer cardOneId = getResponse(null);
+	/*	Integer cardOneId = getResponse(null);
 		Integer cardTwoId = getResponse(null);
 		Integer cardThreeId = getResponse(null);
 		
