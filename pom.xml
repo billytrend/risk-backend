@@ -95,7 +95,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>UIHelpers.SingleGameRunner</mainClass>
+                            <mainClass>UIHelpersrisk</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

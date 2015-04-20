@@ -12,3 +12,4 @@ scripts
 node
 bundle.js
 npm-debug.log
+npm-debug**.log
