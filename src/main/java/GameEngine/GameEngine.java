@@ -3,6 +3,7 @@ package GameEngine;
 import GameState.*;
 import GameUtils.*;
 import GameUtils.Results.*;
+import PlayerInput.DumbBotInterfaceProtocol;
 import PlayerInput.PlayerInterface;
 import org.javatuples.Triplet;
 
@@ -405,8 +406,11 @@ public class GameEngine implements Runnable {
 
         // if a player has no options // TODO: still ask them for the protocol
         if (possibleAttackingTerritories.size() == 0) {
-        	currentPlayer.getCommunicationMethod()
-        		.getTerritory(currentPlayer, possibleAttackingTerritories, null, true, RequestReason.ATTACK_CHOICE_FROM);
+            try {
+                currentPlayer.getCommunicationMethod().getTerritory(currentPlayer, possibleAttackingTerritories, null, true, RequestReason.ATTACK_CHOICE_FROM);
+            } catch (Exception e) {
+
+            }
             return PLAYER_MOVING_ARMIES;
         }
 
@@ -430,7 +434,7 @@ public class GameEngine implements Runnable {
 		
 		if(defending == null){
 			System.out.println("GE: def null");
-			return PLAYER_INVADING_COUNTRY;
+			return PLAYER_MOVING_ARMIES;
 		}
 
 		
@@ -558,8 +562,11 @@ public class GameEngine implements Runnable {
 
         // if a player has no options
         if (canBeDeployedFrom.size() == 0) {
-        	currentPlayer // let know the player interface  -- needed for protocol
-			.getCommunicationMethod().getTerritory(currentPlayer, canBeDeployedFrom, null, true, RequestReason.REINFORCEMENT_PHASE);
+            if (currentPlayer.getCommunicationMethod() instanceof DumbBotInterfaceProtocol) {
+                currentPlayer // let know the player interface  -- needed for protocol
+                        .getCommunicationMethod().getTerritory(currentPlayer, canBeDeployedFrom, null, true, RequestReason.REINFORCEMENT_PHASE);
+
+            }
             return endGo();
         }
 		
