@@ -1,0 +1,291 @@
+body {
+    -webkit-user-select: none;
+    -moz-user-select: -moz-none;
+    -ms-user-select: none;
+    user-select: none;
+    background-color: #59A8D9;
+    cursor: pointer;
+    font-family: "courier new", monospace;
+    margin: 0px;
+}
+
+.view_layer {
+    display: block;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    display:flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+
+.dice_box {
+    display:flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    width: 50%;
+}
+
+
+.main_view {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    align-items: center;
+    height: 90%;
+}
+
+.world_map {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: 80%;
+}
+
+.dice_box div svg:hover {
+    opacity: 0.5;
+}
+
+.prompt {
+    transition: 1s ease;
+    position: absolute;
+    left: 0;
+    bottom:0;
+    background-color: black;
+    padding: 5px;
+    color: white;
+    font-size: 20px;
+}
+
+.prompt_hidden {
+    opacity: 0;
+}
+
+
+.player_overview {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: stretch;
+    align-items: stretch;
+    align-items: stretch;
+    height: 100%;
+    width: 15%;
+    padding: 20px 5px 20px 5px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.player_overview * {
+
+}
+
+.player_icon {
+    width: 100%;
+    margin: 5px;
+    border-radius: 5px;
+    padding: 5px;
+    border: 3px solid transparent;
+    box-sizing: border-box
+}
+
+.in_play {
+    border: 3px solid black;
+}
+
+.fly_up {
+    transition: 1s ease;
+    transform: translateY(-50px);
+    opacity: 0.3;
+}
+
+.end_go {
+    position: absolute;
+    bottom: 10%;
+    left: 10%;
+}
+
+.card_box {
+    overflow-y: scroll;
+}
+
+.play_card {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    align-content: center;
+    align-items: center;
+}
+
+
+.die_face {
+    fill: rgb(255, 255, 255);
+}
+
+.attack_die {
+    fill: #ffa054;
+}
+
+.die_pip {
+    fill: rgb(0, 0, 0);
+}
+
+.hidden {
+    display: none;
+}
+
+.framed_country_wrapper svg {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.country_focus {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+
+
+.dialogue_box {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    align-content: center;
+    align-items: center;
+    background: linear-gradient(to bottom,  #f0f9ff 0%, #a1dbff 100%); /* W3C */
+    padding: 50px;
+    border-radius: 30px;
+    border: solid 3px;
+    width: 70%;
+    margin: 200px;
+}
+
+.army_selection_column {
+    width: 100%;
+    text-align: center;
+    font-size: 72px;
+    margin-right: 40px;
+
+}
+
+.caption {
+    font-size: 20px;
+}
+
+
+.card {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    align-content: center;
+    align-items: center;
+    background-color: beige;
+    height: 350px;
+    margin: 10px;
+    border-radius: 15px;
+}
+
+
+
+.country_label {
+    font-size: 20px;
+    transition: 0.2s ease;
+}
+
+.country_label circle {
+    opacity: 0.5;
+}
+
+.can_choose circle {
+    transition: 0.2s ease;
+    opacity: 1;
+}
+
+.country_label circle {
+    fill: white;
+    stroke-width: 3px;
+}
+
+.europe circle {
+    stroke: #3cb4d3;
+}
+.asia circle {
+    stroke: #6dc16f;
+}
+.africa circle {
+    stroke: #7a5c0a;
+}
+.australia circle {
+    stroke: #820087;
+}
+.north_america circle {
+    stroke: #b3ba1c;
+}
+
+.south_america circle {
+    stroke: #ca2a1c;
+}
+
+.connections path {
+    stroke: black;
+}
+
+.country_style {
+    stroke: black;
+    stroke-idth: 1px;
+}
+
+.card_box {
+    display: block;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: 50px;
+    height: 100%;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.card_triple {
+    display:flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    align-content: center;
+    align-items: center;
+    margin-top: 100px;
+    flex-shrink: 1;
+}
+
+.log {
+    height: 100px;
+}
+
+.die_hover {
+    opacity: 0.5;
+}

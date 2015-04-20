@@ -1,47 +1,30 @@
 package PeerServer.server;
 
-import static com.esotericsoftware.minlog.Log.debug;
 import GameBuilders.DemoGameBuilder;
-import GameBuilders.RiskMapGameBuilder;
-import GameEngine.ArbitrationAbstract;
 import GameEngine.GameEngine;
 import GameEngine.NetworkArbitration;
 import GameEngine.PlayState;
 import GameEngine.RequestReason;
 import GameState.Player;
 import GameState.State;
-import GameUtils.ArmyUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.Results.Change;
 import GeneralUtils.Jsonify;
-import PeerServer.protocol.cards.play_cards;
 import PeerServer.protocol.dice.Die;
 import PeerServer.protocol.dice.Die.HashMismatchException;
-import PeerServer.protocol.dice.Die.OutOfEntropyException;
 import PeerServer.protocol.dice.RandomNumbers;
-import PeerServer.protocol.dice.roll_hash;
-import PeerServer.protocol.dice.roll_number;
-import PeerServer.protocol.gameplay.attack;
-import PeerServer.protocol.gameplay.attack_capture;
-import PeerServer.protocol.gameplay.defend;
-import PeerServer.protocol.gameplay.deploy;
-import PeerServer.protocol.gameplay.fortify;
-import PeerServer.protocol.gameplay.setup;
-import PeerServer.protocol.general.acknowledgement;
+import PeerServer.protocol.gameplay.*;
 import PlayerInput.DumbBotInterface;
+import PlayerInput.MyEntry;
 import PlayerInput.PlayerInterface;
 import PlayerInput.RemotePlayer;
-import PlayerInput.MyEntry;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import static com.esotericsoftware.minlog.Log.debug;
 
 
 public abstract class AbstractProtocol implements Runnable {
@@ -120,7 +103,7 @@ public abstract class AbstractProtocol implements Runnable {
 
 	/**
 	 * Manages the different states and associated commands.
-	 * @param protocol_command
+	 * @param
 	 * @return
 	 */
 	protected void takeGameAction() {
@@ -452,7 +435,7 @@ public abstract class AbstractProtocol implements Runnable {
 	//*********************** DICE ROLLS ******************************
 
 	/**
-	 * @param protocol_command
+	 * @param
 	 * @return
 	 */
 	protected ArrayList<Integer> roll_hash(int faces){

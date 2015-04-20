@@ -1,0 +1,41 @@
+.games {
+    display:flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: flex-start;
+    align-items: center;
+}
+
+.game {
+    width: 200px;
+    height: 200px;
+    padding: 30px;
+    margin: 20px;
+    display:flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    align-content: center;
+    align-items: center;
+    background-color: #ffffff;
+    border-radius: 20px;
+    border: solid 3px;
+}
+
+.lobby_view {
+    z-index: 20;
+    background: lightblue;
+    padding: 5% 20% 0 20%;
+    box-sizing: border-box;
+    overflow-y: scroll;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    flex-shrink: 1;
+}
+
+.game_title {
+    font-size: 50px;
+    margin-bottom: 50px;
+}

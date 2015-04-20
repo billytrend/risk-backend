@@ -41,5 +41,15 @@ public class ContinentUtils {
 		}
 		return null;
 	}
+	public static int getContinentPayout(State state, Player player){
+		int contPayout = 0;
+		HashSet<Continent> ownedConts = getPlayersContinents(state, player); 
+		for(Continent c : ownedConts){
+			contPayout += c.getArmyReward();
+		}
+		return contPayout;
+	}
+	
+
 
 }

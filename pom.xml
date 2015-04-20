@@ -4,14 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>groupId</groupId>
+    <packaging>jar</packaging>
+
     <artifactId>risk-backend</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <properties>
-        <maven.compiler.target>1.6</maven.compiler.target>
-        <maven.compiler.source>1.6</maven.compiler.source>
-    </properties>
-	  <dependencies>
-		<dependency>
+    <dependencies>
+        <dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
 			<version>2.2</version>
@@ -72,15 +70,43 @@
             <artifactId>combinatoricslib</artifactId>
             <version>2.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>jetty</artifactId>
+            <version>6.1.26</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>UIHelpers.LobbyRunner</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
                 <version>0.0.23</version>
                 <configuration>
-                    <workingDirectory>risk-frontend</workingDirectory>
+                    <workingDirectory>ui</workingDirectory>
                 </configuration>
                 <executions>
                     <execution>
@@ -107,13 +133,23 @@
                         <!-- optional: default phase is "generate-resources" -->
                         <phase>generate-resources</phase>
 
-                        <!--<configuration>-->
-                            <!--&lt;!&ndash; optional: The default argument is actually-->
-                            <!--"install", so unless you need to run some other npm command,-->
-                            <!--you can remove this whole <configuration> section.-->
-                            <!--&ndash;&gt;-->
-                            <!--<arguments>install</arguments>-->
-                        <!--</configuration>-->
+                    </execution>
+                    <execution>
+                        <id>webpack build</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+
+                        <!-- optional: default phase is "generate-resources" -->
+                        <phase>generate-resources</phase>
+
+                        <configuration>
+                            <!-- optional: The default argument is actually
+                            "install", so unless you need to run some other npm command,
+                            you can remove this whole <configuration> section.
+                            -->
+                            <arguments>run production-build</arguments>
+                        </configuration>
                     </execution>
                 </executions>
 

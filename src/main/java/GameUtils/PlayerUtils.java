@@ -1,9 +1,8 @@
 package GameUtils;
 
 import GameState.*;
-
 import java.util.ArrayList;
-import java.util.HashSet;
+
 
 import static com.esotericsoftware.minlog.Log.debug;
 
@@ -15,21 +14,6 @@ import static com.esotericsoftware.minlog.Log.debug;
  */
 public class PlayerUtils {
 
-    /**
-     * @param state
-     * @param player
-     * @return
-     */
-    public static ArrayList<Continent> playerContinents(State state, Player player) {
-        ArrayList<Continent> continents = new ArrayList<Continent>();
-        HashSet<Territory> playersTerritories = TerritoryUtils.getPlayersTerritories(player);
-        for (Continent c : state.getContinents()) {
-            if (playersTerritories.containsAll(c.getTerritories())) {
-                continents.add(c);
-            }
-        }
-        return continents;
-    }
 
     /**
      * @param p
@@ -90,5 +74,5 @@ public class PlayerUtils {
 	public static void removePlayer(State gameState, Player player) {
 		gameState.getPlayerQueue().removePlayer(player);
 	}
-    
+	
 }

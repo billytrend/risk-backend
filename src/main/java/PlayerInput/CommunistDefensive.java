@@ -1,191 +1,144 @@
 package PlayerInput;
 
 import GameEngine.RequestReason;
+
 import GameState.Card;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
-import GameUtils.ArmyUtils;
-import GameUtils.PlayerUtils;
 import GameUtils.Results.Change;
+import GameUtils.AIUtils;
+
+
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Random;
 
-public class CommunistDefensive implements PlayerInterface {
+/**
+ * Created by root on 08/04/2015.
+ */
 
-	public State currentState;
-	private int initialDeploymentCounter;
-	private int deploymentCounter;
-	private int attackFromCounter;
-	private ArrayList<Territory> currentStrongTerritories = new ArrayList<Territory>();
+public class CommunistDefensive implements PlayerInterface{
+    public State currentState;
+    public Territory currentTer;
 
-	private static final int MIN = 0;
 
-	public CommunistDefensive(State a) {
-		this.initialDeploymentCounter = 0;
-		this.deploymentCounter = 0;
-		this.currentState = a;
-	}
+    public CommunistDefensive(State a){
+        this.currentState = a;
+    }
 
-	// Always returns the maximum number of dice.
-	@Override
-	public int getNumberOfDice(Player player, int max, RequestReason reason) {
-		return max;
-	}
 
-	@Override
-	public Territory getTerritory(Player player, HashSet<Territory> possibles,
-			boolean canResign, RequestReason reason) {
+    /**
+     * *
+     * @param player
+     * @param max
+     * @return
+     */
+    public int getNumberOfDice(Player player, int max, RequestReason reason, Territory attacking, Territory defending) {
+        return max;
+    }
 
-		// NEEDS TO BE FINISHED
-		Territory[] territoryArray = (Territory[]) possibles.toArray();
-		Random rand = new Random();
+    /**
+     * The choice can be made only from the set of possible territories.
+     *
+     * @param player
+     * @param possibles
+     * @return
+     */
 
-		// TODO: Make into helper method.
-		for (int i = 0; i < territoryArray.length; i++) {
-			Player self = PlayerUtils.getTerritoryOwner(currentState,
-					territoryArray[i]);
-			int strength = ArmyUtils.getArmiesOnTerritory(self,
-					territoryArray[i]).size();
 
-			if (strength < 3) {
-				this.currentStrongTerritories.add(territoryArray[i]);
-			}
+    public Territory getTerritory(Player player, HashSet<Territory> possibles,Territory from,
+                                  boolean canResign, RequestReason reason) {
 
-		}
+        //System.out.println(TerritoryUtils.getWeakestOwned(player, territoryList).getId());
 
-		switch (reason) {
+        currentTer = from;
 
-		case PLACING_ARMIES_SET_UP:
+        switch (reason) {
 
-			// Randomly selects a territory from the list of possible choices.
-			int randomNumber = rand.nextInt(territoryArray.length - MIN + 1)
-					+ MIN;
-			return territoryArray[randomNumber];
+            case PLACING_ARMIES_SET_UP:
+                return AIUtils.getRandomTerritory(currentState, possibles);
 
-		case PLACING_REMAINING_ARMIES_PHASE:
+            case PLACING_REMAINING_ARMIES_PHASE:
+                return AIUtils.getWeakestTerritory(currentState,possibles);
 
-			// Chooses a territory to add 1 of the remaining armies to.
-			// If there are still armies reset the counter and start from the
-			// beginning again.
+            case PLACING_ARMIES_PHASE:
+                return AIUtils.getWeakestTerritory(currentState,possibles);
 
-			Territory currentTerritory = territoryArray[this.initialDeploymentCounter];
+            case ATTACK_CHOICE_FROM:
+                currentTer = AIUtils.getStrongestTerritory(currentState,possibles);
+                return currentTer;
 
-			if (this.initialDeploymentCounter == territoryArray.length - 1) {
-				this.initialDeploymentCounter = 0;
-			} else {
-				this.initialDeploymentCounter++;
-			}
+            case ATTACK_CHOICE_TO:
+                Territory weakestTer = AIUtils.getWeakestTerritory(currentState,possibles);
+                if(AIUtils.goodIdea(currentState, currentTer, weakestTer, 1.25)){
+                    return weakestTer;
+                } else {
+                    if(canResign){
+                        return null;
+                    }
+                }
+                return AIUtils.getRandomTerritory(currentState, possibles);
 
-			return currentTerritory;
+            case REINFORCEMENT_PHASE:
+                if(canResign){
+                    return null;
+                }
+            default:
+                break;
+        }
 
-		case PLACING_ARMIES_PHASE:
+        return null;
+    }
 
-			// Chooses a territory to add 1 of the remaining armies to.
-			// If there are still armies reset the counter and start from the
-			// beginning again.
 
-			Territory currentTerritoryPlacing = territoryArray[this.deploymentCounter];
-
-			if (this.deploymentCounter == territoryArray.length - 1) {
-				this.deploymentCounter = 0;
-			} else {
-				this.deploymentCounter++;
-			}
-
-			return currentTerritoryPlacing;
-
-		case ATTACK_CHOICE_FROM:
-			return territoryArray[attackFromCounter];
-			
-			
-		case ATTACK_CHOICE_TO:
-
-			// Creates an arraylist of the weakest enemy territories (1 soldier)
-			// Chooses a random one of these and returns it.
-			ArrayList<Territory> weakestTerritories = new ArrayList<Territory>();
-
-			for (int i = 0; i < territoryArray.length; i++) {
-				Player enemyOwner = PlayerUtils.getTerritoryOwner(currentState,
-						territoryArray[i]);
-				int numberOfEnemySoldiers = ArmyUtils
-						.getNumberOfArmiesOnTerritory(enemyOwner,
-								territoryArray[i]);
-
-				if (numberOfEnemySoldiers == 1) {
-					weakestTerritories.add(territoryArray[i]);
-				}
-			}
-
-			int randomWeakest = rand.nextInt(weakestTerritories.size() - MIN
-					+ 1)
-					+ MIN;
-			return weakestTerritories.get(randomWeakest);
-
-		case REINFORCEMENT_PHASE:
-			return null; // TODO: Figure out average and reinforce depending on
-							// links.
+    /**
+     * The choice can only be made up to the specified max value.
+     *
+     * @param player
+     * @param max
+     * @return
+     */
+    public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
+        switch (reason) {
+            case PLACING_ARMIES_SET_UP:
+                return 1;
+            case PLACING_REMAINING_ARMIES_PHASE:
+                return 1;
+            case PLACING_ARMIES_PHASE:
+                return 1;
+            case ATTACK_CHOICE_DICE:
+                return max;
+            case DEFEND_CHOICE_DICE:
+                return 2;
+            case REINFORCEMENT_PHASE:
+                return 0; // TODO: Figure out average and reinforce depending on
+            // links.
+            case POST_ATTACK_MOVEMENT:
+                return max; // Moves the maximum number of armies post attack.
 		default:
-			break;
-		}
+			return 0;
+        }
+    }
 
-		return null;
-	}
+    /**
+     *
+     * @return a triplet of cards which represents choice
+     */
+    public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
+        return possibleCombinations.get(0);
+    }
 
-	@Override
-	public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
-
-		switch (reason) {
-		case PLACING_ARMIES_SET_UP:
-			return 1;
-			
-		case PLACING_REMAINING_ARMIES_PHASE:
-			return 1;
-		case PLACING_ARMIES_PHASE:
-			return 1;
-		case ATTACK_CHOICE_DICE:
-			return max;
-		case DEFEND_CHOICE_DICE:
-			return max;
-		case REINFORCEMENT_PHASE:
-			return 0; // TODO: Figure out average and reinforce depending on
-						// links.
-		case POST_ATTACK_MOVEMENT:
-			return max; // Moves the maximum number of armies post attack.
-		}
-
-		return 0;
-	}
-
-	public void giveCard(Player player, Card card) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public Card getCardOptions() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Triplet<Card, Card, Card> getCardChoice(Player player,
-			ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-    @Override
     public void reportStateChange(Change change) {
+        // TODO Auto-generated method stub
 
     }
 
-	@Override
-	public void createResponse() {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void createResponse() {
+
+    }
+
 
 }

@@ -3,6 +3,7 @@ package PlayerInput;
 import GameEngine.RequestReason;
 import GameState.Card;
 import GameState.Player;
+import GameState.State;
 import GameState.Territory;
 import GameUtils.Results.Change;
 
@@ -50,6 +51,13 @@ public class DumbBotInterface implements PlayerInterface {
 		connectorQueue = null;
 		connectorThread = null;
 	}
+
+	public DumbBotInterface(State a) {
+		connectorQueue = null;
+		connectorThread = null;
+	}
+
+
     
 	protected void emit(Player p, String message) {
 //        debug("[" + p.getId() + "]" + "\t\t");
@@ -73,9 +81,10 @@ public class DumbBotInterface implements PlayerInterface {
     /**
      * 
      */
-    public int getNumberOfDice(Player player, int max, RequestReason reason) {
-        emit(player, " how many dice do you want to throw? Max " + max);
-        emit(player, "Chose " + max);
+    public int getNumberOfDice(Player currentPlayer, int max, RequestReason reason, Territory attacking, Territory defending) {
+        emit(currentPlayer, " how many dice do you want to throw? Max " + max);
+        emit(currentPlayer, "Chose " + max);
+
         
         
     	// notify connector which can later respond to the protocol
@@ -96,9 +105,9 @@ public class DumbBotInterface implements PlayerInterface {
     /**
      * 
      */
-    public Territory getTerritory(Player player, HashSet<Territory> possibles,
+    public Territory getTerritory(Player player, HashSet<Territory> possibles,Territory from,
                                          boolean canResign, RequestReason reason) {
-
+    	
         ArrayList<Territory> posList = new ArrayList<Territory>(possibles);
 
         String out = "Please choose a territory";
@@ -226,7 +235,7 @@ public class DumbBotInterface implements PlayerInterface {
 
     @Override
     public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
-    	/*Triplet<Card, Card , Card> choice;
+    	Triplet<Card, Card , Card> choice;
     	if(possibleCombinations.size() == 0)
         	choice = null;
         else
@@ -241,8 +250,7 @@ public class DumbBotInterface implements PlayerInterface {
 				e.printStackTrace();
 			}
     	}
-  		return choice;*/
-    	return null;
+  		return null;
     }
     
     @Override

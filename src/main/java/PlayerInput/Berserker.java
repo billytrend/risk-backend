@@ -1,24 +1,26 @@
 package PlayerInput;
 
 import GameEngine.RequestReason;
+
 import GameState.Card;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
-import GameUtils.ContinentUtils;
 import GameUtils.Results.Change;
-import GameUtils.TerritoryUtils;
+import GameUtils.AIUtils;
+
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Random;
 
 /**
  * Created by root on 08/04/2015.
  */
 public class Berserker implements PlayerInterface {
+    public int turnNo = 0;
     public State currentState;
+    public Territory currenTerr;
 
     public Berserker(State a){
         this.currentState = a;
@@ -31,9 +33,11 @@ public class Berserker implements PlayerInterface {
      * @param max
      * @return
      */
-    public int getNumberOfDice(Player player, int max, RequestReason reason) {
+    public int getNumberOfDice(Player player, int max, RequestReason reason, Territory attacking, Territory defending) {
         return max;
     }
+
+
 
     /**
      * The choice can be made only from the set of possible territories.
@@ -45,29 +49,30 @@ public class Berserker implements PlayerInterface {
 
 
     public Territory getTerritory(Player player,
-                                  HashSet<Territory> possibles,boolean canResign, RequestReason reason) {
-
-        ArrayList<Territory> territoryList = new ArrayList<Territory>(possibles);
+                                  HashSet<Territory> possibles,Territory from, boolean canResign, RequestReason reason) {
 
         switch (reason) {
-
             case PLACING_ARMIES_SET_UP:
-                return getSouthAmericaContinentTerritory(currentState);
-
             case PLACING_REMAINING_ARMIES_PHASE:
-                return getSouthAmericaContinentTerritory(currentState);
-
+                return AIUtils.getRandomTerritory(currentState, possibles);
             case PLACING_ARMIES_PHASE:
-                return getSouthAmericaContinentTerritory(currentState);
+                return AIUtils.getWeakestTerritory(currentState,possibles);
 
             case ATTACK_CHOICE_FROM:
-                ArrayList<Territory> australia = ContinentUtils.getContinentById(currentState, "south_america").getTerritories();
-                return TerritoryUtils.getStrongestOwned(player, territoryList);
+                if(turnNo < 100){
+                    return null;
+                }
+                currenTerr = AIUtils.getStrongestTerritory(currentState,possibles);
+                return currenTerr;
 
             case ATTACK_CHOICE_TO:
-                return TerritoryUtils.getStrongestEnemy(currentState, territoryList, "siam");
+                return AIUtils.getStrongestTerritory(currentState,possibles);
 
             case REINFORCEMENT_PHASE:
+                turnNo++;
+                if(turnNo > 100){
+                    return AIUtils.getWeakestTerritory(currentState,possibles);
+                }
                 return null;
             default:
                 break;
@@ -76,16 +81,6 @@ public class Berserker implements PlayerInterface {
         return null;
     }
 
-
-
-
-
-    private Territory getSouthAmericaContinentTerritory(State state){
-        Random rand = new Random();
-        ArrayList<Territory> territoryList = ContinentUtils.getContinentById(state, "australia").getTerritories();
-        int randomNum = rand.nextInt((territoryList.size() - 0) + 1) + 0;
-        return territoryList.get(randomNum);
-    }
 
     /**
      * The choice can only be made up to the specified max value.
@@ -100,9 +95,9 @@ public class Berserker implements PlayerInterface {
                 return 1;
 
             case PLACING_REMAINING_ARMIES_PHASE:
-                return 1;
+                return max;
             case PLACING_ARMIES_PHASE:
-                return 1;
+                return max;
             case ATTACK_CHOICE_DICE:
                 return max;
             case DEFEND_CHOICE_DICE:
@@ -112,8 +107,10 @@ public class Berserker implements PlayerInterface {
             // links.
             case POST_ATTACK_MOVEMENT:
                 return max; // Moves the maximum number of armies post attack.
+		default:
+			return 0;
         }
-        return 0;
+       
 
     }
 
@@ -122,20 +119,17 @@ public class Berserker implements PlayerInterface {
      * @return a triplet of cards which represents choice
      */
     public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
-        return null;
+        return possibleCombinations.get(0);
     }
-
 
     public void reportStateChange(Change change) {
         // TODO Auto-generated method stub
 
     }
 
+    @Override
+    public void createResponse() {
 
-	@Override
-	public void createResponse() {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
 }

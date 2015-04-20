@@ -10,9 +10,7 @@ import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultEdge;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Random;
 
 /**
  * A class that contains the methods that have to do with any 'territory
@@ -21,23 +19,13 @@ import java.util.Random;
  */
 public class TerritoryUtils {
 
-    public static Territory getTerritoryWithName(State state, String name) {
-        for (Territory t : getAllTerritories(state)) {
-            if (t.getId().equals(name)) {
-                return t;
-            }
-        }
-        return null;
-    }
-    
-    /**
-     * @param state
-     * @return
-     */
-    public static HashSet<Territory> getAllTerritories(State state) {
-        return new HashSet<Territory>(state.getTerritories().vertexSet());
-    }
-
+	/**
+	 * @param state
+	 * @return
+	 */
+	public static HashSet<Territory> getAllTerritories(State state) {
+		return new HashSet<Territory>(state.getTerritories().vertexSet());
+	}
 
 	public static HashSet<Pair<Territory, Territory>> getAllBorders(State state) {
 		HashSet<Pair<Territory, Territory>> borderPairs = new HashSet<Pair<Territory, Territory>>();
@@ -170,43 +158,6 @@ public class TerritoryUtils {
 		}
 		return attackers;
 	}
-	
-    public static Territory getStrongestOwned(Player player, ArrayList<Territory> territoryList){
-        Territory strongest;
-        int temp = 0;
-        int index = 0;
-        for(int i = 0; i < territoryList.size(); i++){
-            int numberOfArmies = ArmyUtils.getNumberOfArmiesOnTerritory(player,
-                    territoryList.get(i));
-            if (numberOfArmies > temp) {
-                temp = numberOfArmies;
-                index = i;
-            }
-        }
-
-        return territoryList.get(index);
-    }
-	  public static Territory getStrongestEnemy(State state, ArrayList<Territory> territoryList, String territoryID){
-
-	        int temp = 0;
-	        int index = 0;
-
-	        for (int i = 0; i < territoryList.size(); i++) {
-	            Player enemyOwner = PlayerUtils.getTerritoryOwner(state,
-	                    territoryList.get(i));
-	            int numberOfEnemySoldiers = ArmyUtils
-	                    .getNumberOfArmiesOnTerritory(enemyOwner,
-	                            territoryList.get(i));
-
-
-	            if (numberOfEnemySoldiers > temp && (territoryList.get(i).getId() != territoryID)) {
-	                temp = numberOfEnemySoldiers;
-	                index = i;
-	                }
-	            }
-
-	        return territoryList.get(index);
-	        }
 
 	/**
 	 * 
@@ -233,90 +184,35 @@ public class TerritoryUtils {
 		state.addMapping(territory.getId(), territory);
 	}
 
-	/**
-	 * 
-	 * @param state
-	 * @param a
-	 * @param b
-	 */
 	public static void addBorder(State state, Territory a, Territory b) {
 		state.getTerritories().addEdge(a, b);
 	}
 
-	public static ArrayList<HashSet<Territory>> getAllClusters(State state, Player player){
-    	HashSet<Territory> world = getPlayersTerritories(player);
-    	ArrayList<HashSet<Territory>> allClusters = new ArrayList<HashSet<Territory>>();
-    	HashSet<Territory> used = new HashSet<Territory>();
-    	for(Territory t: world){
-    		HashSet<Territory> cluster = new HashSet<Territory>();
-    		//don't want to add the same cluster twice
-    		if(!used.contains(t)){
-    			cluster.add(t);
-    			used.add(t);
-    			allClusters.add(findCluster(state,player, t, cluster, used));
-    		}
-    	}
-    	return orderClusters(allClusters);
-    }
-
-	public static HashSet<Territory> findCluster(State state, Player player,
-			Territory territory, HashSet<Territory> cluster, HashSet<Territory> used) {
-		System.out.println("find cluster");
-		HashSet<Territory> neighbours = TerritoryUtils.getFriendlyNeighbours(
-				state, territory, player);
-		for (Territory neighbour : neighbours) {
-			if (!cluster.contains(neighbour)) {
-				cluster.add(neighbour);
-				used.add(neighbour);
-				return findCluster(state, player, neighbour, cluster, used);
+	public static Territory getTerritoryByName(State state, String name) {
+		HashSet<Territory> allTerritories = getAllTerritories(state);
+		for (Territory territory : allTerritories) {
+			if (territory.getId().equals(name)) {
+				return territory;
 			}
-		}
-		return cluster;
-	}
-	public static ArrayList<HashSet<Territory>> orderClusters(ArrayList<HashSet<Territory>> clusters){
-		Collections.sort(clusters, new HashSetSizeComparator());
-    	return clusters;
-    }
-	public static Territory getRandomTerritory(State state, HashSet<Territory> possibles){
-		Random rand = new Random();
-		int randomNumber = rand.nextInt(possibles.size());
-		int count = 0;
-		for(Territory territory : possibles){
-			if(count == randomNumber) return territory;
-			count++;
 		}
 		return null;
 	}
-	
-    public static Territory getTerritoryByName(State state, String name) {
-        HashSet<Territory> allTerritories = getAllTerritories(state);
-        for (Territory territory : allTerritories) {
-            if (territory.getId().equals(name)) {
-                return territory;
-            }
-        }
-        return null;
-    }
 
-    public static ArrayList<String> getAllCountryNames(State state) {
-        ArrayList<String> names = new ArrayList<String>();
-        for (Territory t : getAllTerritories(state)) {
-            names.add(t.getId());
-        }
-        return names;
-    }
+	public static ArrayList<String> getAllCountryNames(State state) {
+		ArrayList<String> names = new ArrayList<String>();
+		for (Territory t : getAllTerritories(state)) {
+			names.add(t.getId());
+		}
+		return names;
+	}
 
-    public static ArrayList<String[]> getAllBorderPairs(State state) {
-        ArrayList<String[]> pairs = new ArrayList<String[]>();
-        for (Pair<Territory, Territory> p : getAllBorders(state)) {
-            pairs.add(
-                new String[] {
-                        p.getValue0().getId(),
-                        p.getValue1().getId()
-                }
-            );
-        }
-        return pairs;
-    }
+	public static ArrayList<String[]> getAllBorderPairs(State state) {
+		ArrayList<String[]> pairs = new ArrayList<String[]>();
+		for (Pair<Territory, Territory> p : getAllBorders(state)) {
+			pairs.add(new String[] { p.getValue0().getId(),
+					p.getValue1().getId() });
+		}
+		return pairs;
+	}
 
 }

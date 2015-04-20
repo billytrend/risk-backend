@@ -20,7 +20,7 @@ import java.util.Scanner;
 public class RiskMapGameBuilder {
 
     private static String[] colours = new String[] {
-            "A6922E", "BFA065", "D96F32", "D95A2B", "A6453C"
+            "F5A9EE", "A6EDDE", "C5A6ED", "E6F07A", "BEF788", "FF33CC"
     };
 
 
@@ -39,18 +39,19 @@ public class RiskMapGameBuilder {
 	 * full risk map.
 	 */
 	public static State buildGame(PlayerInterface[] interfaces) {
-
-
-		// creating players
-		ArrayList<Player> ps = new ArrayList<Player>();
-		for (int i = 0; i < interfaces.length; i++) {
-            Player p = new Player(interfaces[i], i + 1);
-            p.setColour(colours[i]);
-			ps.add(p);
-		}
-		
         State state = new State();
-        state.setPlayers(ps);
+
+        if (interfaces != null) {
+            // creating players
+            ArrayList<Player> ps = new ArrayList<Player>();
+            for (int i = 0; i < interfaces.length; i++) {
+                Player p = new Player(interfaces[i], i + 1);
+                p.setColour(colours[i]);
+                ps.add(p);
+            }
+            state.setPlayers(ps);
+        }
+
 
         //array unused
       //  String[] countryNames = new String[]{ "eastern_australia","indonesia", "new_guinea", "alaska", "ontario", "northwest_territory", "venezuela", "madagascar", "north_africa", "greenland", "iceland", "great_britain", "scandinavia", "japan", "yakursk", "kamchatka", "siberia", "ural", "afghanistan", "middle_east", "india", "siam", "china", "mongolia", "irkutsk", "ukraine", "southern_europe", "western_europe", "northern_europe", "egypt", "east_africa", "congo", "south_africa", "brazil", "argentina", "eastern_united_states", "western_united_states", "quebec", "central_america", "peru", "western_australia", "alberta"};
@@ -141,9 +142,9 @@ public class RiskMapGameBuilder {
         //Add continents
         // TODO: AR THESE TEH RIGHT CONTINETN IDS?
         ContinentUtils.addContinent(state, northAmerica, 5, "north_america", 1);
-        ContinentUtils.addContinent(state, southAmerica, 3, "south_america", 2);
+        ContinentUtils.addContinent(state, southAmerica, 2, "south_america", 2);
         ContinentUtils.addContinent(state, europe, 5, "europe", 3);
-        ContinentUtils.addContinent(state, africa, 2, "africa" , 4);
+        ContinentUtils.addContinent(state, africa, 3, "africa" , 4);
         ContinentUtils.addContinent(state, asia, 7, "asia", 5);
         ContinentUtils.addContinent(state, australia, 2, "australia", 6);
 
@@ -261,25 +262,26 @@ public class RiskMapGameBuilder {
 		File cards = new File("cards");
 		Scanner scanner;
 		scanner = new Scanner(cards);
+        int cur = 0;
 		while(scanner.hasNextLine()){
 			String[] values = scanner.nextLine().split(":|,|\"");
 			int territory = Integer.parseInt(values[0]);
 			int cardType = Integer.parseInt(values[1]);
 			CardType type = CardType.SOLDIER;
 			switch (cardType) {
-			case 0:
-				type = CardType.SOLDIER;
-				break;
-			case 1:
-				type = CardType.HORSE;
-				break;
-			case 2:
-				type = CardType.CANNON;
+			    case 0:
+			    	type = CardType.SOLDIER;
+			    	break;
+			    case 1:
+			    	type = CardType.HORSE;
+			    	break;
+			    case 2:
+			    	type = CardType.CANNON;
 			}
-			CardUtils.addCard(state, new Card(TerritoryUtils.getTerritoryByName(state, t.get(territory)), type));
+			CardUtils.addCard(state, new Card(TerritoryUtils.getTerritoryByName(state, t.get(territory)), type, cur++));
 		}
-		CardUtils.addCard(state, new Card(null, CardType.WILD));
-		CardUtils.addCard(state, new Card(null, CardType.WILD));
+		CardUtils.addCard(state, new Card(null, CardType.WILD, cur++));
+		CardUtils.addCard(state, new Card(null, CardType.WILD, cur++));
 	}
 
 	/*
