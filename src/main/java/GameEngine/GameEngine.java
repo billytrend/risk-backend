@@ -406,10 +406,8 @@ public class GameEngine implements Runnable {
 
         // if a player has no options // TODO: still ask them for the protocol
         if (possibleAttackingTerritories.size() == 0) {
-            try {
+            if (currentPlayer.getCommunicationMethod() instanceof DumbBotInterfaceProtocol) {
                 currentPlayer.getCommunicationMethod().getTerritory(currentPlayer, possibleAttackingTerritories, null, true, RequestReason.ATTACK_CHOICE_FROM);
-            } catch (Exception e) {
-
             }
             return PLAYER_MOVING_ARMIES;
         }
@@ -434,7 +432,7 @@ public class GameEngine implements Runnable {
 		
 		if(defending == null){
 			System.out.println("GE: def null");
-			return PLAYER_MOVING_ARMIES;
+			return PLAYER_MOVING_ARMIES ;
 		}
 
 		
