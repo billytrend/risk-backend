@@ -29,17 +29,15 @@ public class State {
 	private PlayerQueue playerQueue;
 	private ArrayList<Continent> continents = new ArrayList<Continent>();
 	private final ArrayList<Card> cards = new ArrayList<Card>();
-	private Player winner;
+	private ArrayList<Player> endPositions = new ArrayList<Player>();
 	
 	public State(ArrayList<Player> players){
 		this();
-		winner = null;
 		setPlayers(players);
     }
     
     public State() {
     	players = new ArrayList<Player>();
-    	winner = null;
     }
 
     public void setPlayers(ArrayList<Player> players) {
@@ -126,11 +124,16 @@ public class State {
         this.ghosts.add(p);
     }
     
-    public void setWinner(Player player){
-    	winner = player;
+    public void setEndPosition(Player player){
+    	endPositions.add(player);
     }
-    public Player getWinner(){
-    	return winner;
+    public int getEndPosition(Player player){
+    	for(int i = 0; i < endPositions.size(); i++){
+    		if(player == endPositions.get(i)){
+    			return players.size() -i;
+    		}
+    	}
+    	return 0;
     }
     
 	/**
@@ -163,4 +166,6 @@ public class State {
     public ArrayList<PlayerInterface> getGhosts() {
         return ghosts;
     }
+
+
 }
