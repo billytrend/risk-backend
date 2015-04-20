@@ -61,10 +61,11 @@ public class SingleGameRunner {
         ResourceHandler resource_handler = new ResourceHandler();
         resource_handler.setWelcomeFiles(new String[]{ "index.html" });
 
-        resource_handler.setResourceBase("./ui-build/");
+        String webDir = this.getClass().getClassLoader().getResource("./").toExternalForm();
+        resource_handler.setResourceBase(webDir);
 
         HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[] { resource_handler, new DefaultHandler() });
+        handlers.setHandlers(new Handler[]{resource_handler, new DefaultHandler()});
         server.setHandler(handlers);
 
         server.start();

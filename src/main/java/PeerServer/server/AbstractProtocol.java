@@ -1,6 +1,5 @@
 package PeerServer.server;
 
-import GameBuilders.DemoGameBuilder;
 import GameBuilders.RiskMapGameBuilder;
 import GameEngine.GameEngine;
 import GameEngine.NetworkArbitration;
@@ -8,7 +7,6 @@ import GameEngine.PlayState;
 import GameEngine.RequestReason;
 import GameState.Player;
 import GameState.State;
-import GameUtils.ArmyUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.Results.Change;
 import GeneralUtils.Jsonify;
@@ -17,7 +15,7 @@ import PeerServer.protocol.dice.roll_hash;
 import PeerServer.protocol.dice.Die.HashMismatchException;
 import PeerServer.protocol.dice.RandomNumbers;
 import PeerServer.protocol.gameplay.*;
-import PlayerInput.DumbBotInterface;
+import PlayerInput.DumbBotInterfaceProtocol;
 import PlayerInput.MyEntry;
 import PlayerInput.PlayerInterface;
 import PlayerInput.RemotePlayer;
@@ -265,7 +263,7 @@ public abstract class AbstractProtocol implements Runnable {
 		}
 		
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(20);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -678,7 +676,7 @@ public abstract class AbstractProtocol implements Runnable {
 		PlayerInterface playerInterface;
 		if(localPlayer){
 			BlockingQueue<Object> newSharedQueue = new LinkedBlockingQueue<Object>();
-			playerInterface = new DumbBotInterface(newSharedQueue, id);
+			playerInterface = new DumbBotInterfaceProtocol(newSharedQueue, id);
 			localPlayersQueue = newSharedQueue;
 		}
 		else{	

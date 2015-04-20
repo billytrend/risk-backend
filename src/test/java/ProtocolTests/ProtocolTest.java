@@ -1,26 +1,16 @@
 package ProtocolTests;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import org.junit.Assert;
-import org.junit.Test;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import GameState.Player;
 import GeneralUtils.Jsonify;
 import PeerServer.protocol.gameplay.setup;
-import PeerServer.protocol.setup.accept_join_game;
-import PeerServer.protocol.setup.initialise_game;
-import PeerServer.protocol.setup.join_game;
-import PeerServer.protocol.setup.ping;
-import PeerServer.protocol.setup.players_joined;
-import PeerServer.protocol.setup.ready;
-import PeerServer.protocol.setup.reject_join_game;
+import PeerServer.protocol.setup.*;
+import com.google.gson.Gson;
+import org.junit.Test;
+
+import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class ProtocolTest {
 	
@@ -176,8 +166,8 @@ public class ProtocolTest {
 	
 	@Test
 	public void readyTest(){
-		String command = "{\"command\": \"ready\","
-				+ "\"payload\": null,\"player_id\": 0,\"ack_id\": 1}";
+
+		String command = "{\"command\":\"ready\",\"payload\":null,\"ack_id\":1,\"player_id\":0}";
 		
 		ready ready = (PeerServer.protocol.setup.ready) Jsonify.getJsonStringAsObject(command, ready.class);
 		//checks its not null
@@ -225,7 +215,7 @@ public class ProtocolTest {
 	//******************** not yet implemented 
 	@Test
 	public void setupTest(){
-		String command = "{\"command\": \"setup\",\"payload\": 5,\"player_id\": 0,\"ack_id\": 1}";
+		String command = "{\"command\":\"setup\",\"payload\":5,\"ack_id\":1,\"player_id\":0}";
 		
 		setup setup = (setup) Jsonify.getJsonStringAsObject(command, setup.class);
 		//check it is not null

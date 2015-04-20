@@ -77,6 +77,14 @@
         </dependency>
     </dependencies>
     <build>
+        <resources>
+            <resource>
+                <directory>./ui-build</directory>
+            </resource>
+            <resource>
+                <directory>./resources</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -87,7 +95,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>UIHelpers.LobbyRunner</mainClass>
+                            <mainClass>UIHelpers.SingleGameRunner</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

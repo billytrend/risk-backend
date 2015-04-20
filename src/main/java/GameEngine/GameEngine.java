@@ -3,9 +3,8 @@ package GameEngine;
 import GameState.*;
 import GameUtils.*;
 import GameUtils.Results.*;
-import PeerServer.server.ProtocolState;
+import PlayerInput.DumbBotInterfaceProtocol;
 import PlayerInput.PlayerInterface;
-
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -93,7 +92,8 @@ public class GameEngine implements Runnable {
 	 * current state in the iterateGame function.
 	 */
 	private void play() throws InterruptedException {
-		while (true) {
+        applyAndReportChange(gameState, new GameStart("", BEGINNING_STATE, gameState));
+        while (true) {
 			if(!iterateGame()) return;
 		}
 	}
@@ -406,8 +406,9 @@ public class GameEngine implements Runnable {
 
         // if a player has no options // TODO: still ask them for the protocol
         if (possibleAttackingTerritories.size() == 0) {
-        	currentPlayer.getCommunicationMethod()
-        		.getTerritory(currentPlayer, possibleAttackingTerritories, null, true, RequestReason.ATTACK_CHOICE_FROM);
+            if (currentPlayer.getCommunicationMethod() instanceof DumbBotInterfaceProtocol) {
+                currentPlayer.getCommunicationMethod().getTerritory(currentPlayer, possibleAttackingTerritories, null, true, RequestReason.ATTACK_CHOICE_FROM);
+            }
             return PLAYER_MOVING_ARMIES;
         }
 
@@ -431,7 +432,7 @@ public class GameEngine implements Runnable {
 		
 		if(defending == null){
 			System.out.println("GE: def null");
-			return PLAYER_INVADING_COUNTRY;
+			return PLAYER_MOVING_ARMIES;
 		}
 
 		
@@ -559,8 +560,11 @@ public class GameEngine implements Runnable {
 
         // if a player has no options
         if (canBeDeployedFrom.size() == 0) {
-        	currentPlayer // let know the player interface  -- needed for protocol
-			.getCommunicationMethod().getTerritory(currentPlayer, canBeDeployedFrom, null, true, RequestReason.REINFORCEMENT_PHASE);
+            if (currentPlayer.getCommunicationMethod() instanceof DumbBotInterfaceProtocol) {
+                currentPlayer // let know the player interface  -- needed for protocol
+                        .getCommunicationMethod().getTerritory(currentPlayer, canBeDeployedFrom, null, true, RequestReason.REINFORCEMENT_PHASE);
+
+            }
             return endGo();
         }
 		
