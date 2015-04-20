@@ -34,6 +34,7 @@ public abstract class ArbitrationAbstract {
 	     */
 	   public FightResult carryOutFight(FightResult result, int dA, int dB) {
 
+		   System.out.println("throwing " + dA + "  def: " + dB);
 	       Integer[] attackDice = nDiceThrow(dA);
 	       Integer[] defendDice = nDiceThrow(dB);
 
@@ -54,8 +55,12 @@ public abstract class ArbitrationAbstract {
 	   private FightResult arbitrateFight(FightResult result, Integer[] attacker, Integer[] defender){
 
 	        // sort in descending order - to later compare the highest results
-	        Arrays.sort(attacker, Collections.reverseOrder());
-	        Arrays.sort(defender, Collections.reverseOrder());
+		   if(attacker.length > 1){
+			   Arrays.sort(attacker, Collections.reverseOrder());
+		   }
+	        if(defender.length > 1){
+	        	Arrays.sort(defender, Collections.reverseOrder());
+	        }
 
 	        result.setAttackDiceRolled(attacker);
 	        result.setDefendDiceRolled(defender);

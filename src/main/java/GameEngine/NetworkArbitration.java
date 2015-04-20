@@ -24,7 +24,7 @@ public class NetworkArbitration extends ArbitrationAbstract{
 			result[i] = diceThrowResult.get(i);
 		}*/
 		for(int i = 0; i < numOfDice; i++){
-			result[0] = 1; 
+			result[i] = 1; 
 		}
 		return result;
 	}

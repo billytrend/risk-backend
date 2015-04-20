@@ -3,7 +3,7 @@
  */
 package PeerServer.protocol.gameplay;
 
-import PeerServer.protocol.protocol_command;
+import PeerServer.protocol.gameplay_command;
 
 /**
  * Sent by a player to signify the end of their turn, 
@@ -12,7 +12,7 @@ import PeerServer.protocol.protocol_command;
  * @author 120011995
  *
  */
-public class fortify extends protocol_command{
+public class fortify extends gameplay_command{
 
 	public String command = "fortify";
 	//source territory ID/destination territory ID/army count triple 
@@ -21,8 +21,8 @@ public class fortify extends protocol_command{
 	
 	
 	public fortify(int[] payload, int player_id, int ack_id){
+		super(player_id);
 		this.payload = payload;
-		this.player_id = player_id;
 		this.ack_id = ack_id;
 	}
 	

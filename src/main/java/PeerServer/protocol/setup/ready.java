@@ -3,7 +3,7 @@
  */
 package PeerServer.protocol.setup;
 
-import PeerServer.protocol.protocol_command;
+import PeerServer.protocol.gameplay_command;
 
 /**
  * Sent by a host at the start of a game, indicating 
@@ -18,7 +18,7 @@ import PeerServer.protocol.protocol_command;
     "ack_id": 1
 }
  */
-public class ready extends protocol_command{
+public class ready{
 
 	public ready(String payload, int player_id, int ack_id){
 		this.payload = payload;
@@ -29,5 +29,6 @@ public class ready extends protocol_command{
 	public String command = "ready";
 	public Object payload = null;
 	public int ack_id;
+	public int player_id;
 	
 }

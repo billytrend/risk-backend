@@ -3,7 +3,7 @@
  */
 package PeerServer.protocol.cards;
 
-import PeerServer.protocol.protocol_command;
+import PeerServer.protocol.gameplay_command;
 
 /**
  * Sent by each player at the start of their turn, 
@@ -14,13 +14,13 @@ import PeerServer.protocol.protocol_command;
  * @author 120011995
  *
  */
-public class play_cards extends protocol_command {
+public class play_cards extends gameplay_command {
 	
 	public play_cards(int[][] cards, int armies, int id, int ack){
+		super(id);
 		this.payload = new payload();
 		this.payload.cards = cards;
 		this.payload.armies = armies;
-		player_id = id;
 		ack_id = ack;
 	}
 	

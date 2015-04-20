@@ -60,8 +60,9 @@ public class RemotePlayer implements PlayerInterface  {
     	boolean matching = ((responseReason == RequestReason.PLACING_ARMIES_SET_UP) 
     			&& (reason == RequestReason.PLACING_REMAINING_ARMIES_PHASE));
 
-		if(!matching && (responseEntry.getValue() != reason)){
-			System.out.println("Request reason doesn't match");
+		if(!matching && (responseReason != reason)){
+			System.out.println("Request reason doesn't match ");
+			System.out.println(responseReason + "... " + reason);
 			notifyProtocol();
 			return null;
 		}
@@ -87,6 +88,8 @@ public class RemotePlayer implements PlayerInterface  {
 			return 0;
 		}
 		
+		System.out.print("\nREMOTE PLAYER: asked for number of dice " + reason.name() + " --- RETURN " + response);
+
 		return response;
 	}
 	
@@ -95,13 +98,13 @@ public class RemotePlayer implements PlayerInterface  {
 	public Territory getTerritory(Player player, HashSet<Territory> possibles, boolean canResign, RequestReason reason) {
 
 		Integer response = getResponse(reason);
+	
+		System.out.print("\nREMOTE PLAYER: asked for territory " + reason.name());
+
 		if(response == null){
-			System.out.println("Wrong response");
+			System.out.print(" -- RETURN " + response + "\n");
 			return null;
 		}
-		
-		System.out.print("\nREMOTE PLAYER: asked for territory ");
-
 		// return the territory of the specified id
 		for(Territory ter : possibles){
 			if(ter.getNumeralId() == response){
@@ -128,7 +131,8 @@ public class RemotePlayer implements PlayerInterface  {
 			System.out.println("Wrong response");
 			return 0;
 		}
-		
+		System.out.print("\nREMOTE PLAYER: asked for armies " + reason.name() + " --- RETURN " + response);
+
 		return response;
 	}
 

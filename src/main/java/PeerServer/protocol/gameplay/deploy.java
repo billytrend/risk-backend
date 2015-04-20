@@ -3,7 +3,7 @@
  */
 package PeerServer.protocol.gameplay;
 
-import PeerServer.protocol.protocol_command;
+import PeerServer.protocol.gameplay_command;
 
 
 /**
@@ -14,7 +14,7 @@ import PeerServer.protocol.protocol_command;
  * @author 120011995
  *
  */
-public class deploy extends protocol_command {
+public class deploy extends gameplay_command {
 
 	//2D array of territory_id / army count pairs 
 	public String command = "deploy";
@@ -22,9 +22,9 @@ public class deploy extends protocol_command {
 	public int ack_id;
 
 	public deploy(int pairs [][], int player_id, int ack_id) {
+		super(player_id);
 		this.payload =  new payload();
 		payload.pairs = pairs;
-		this.player_id = player_id;
 		this.ack_id = ack_id;
 	}
 

@@ -3,7 +3,7 @@
  */
 package PeerServer.protocol.general;
 
-import PeerServer.protocol.protocol_command;
+import PeerServer.protocol.gameplay_command;
 
 /**
  * Sent by any player who wishes to leave the game. May be sent at any time during the game. 
@@ -12,7 +12,7 @@ import PeerServer.protocol.protocol_command;
  * @author 120011995
  *
  */
-public class leave_game  extends protocol_command{
+public class leave_game  extends gameplay_command{
 
 	
 	// array of length three of arraysd of length 2
@@ -21,11 +21,11 @@ public class leave_game  extends protocol_command{
 	
 	
 	public leave_game(int responseCode, String msg, boolean updates, int id){
+		super(id);
 		this.payload = new payload();
 		payload.response = responseCode;
 		payload.message = msg;
 		payload.receive_updates = updates;
-		this.player_id = id;
 	}
 
 	public class payload{

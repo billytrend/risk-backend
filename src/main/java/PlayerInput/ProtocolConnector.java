@@ -62,6 +62,7 @@ public class ProtocolConnector implements Runnable {
     		appendNewResponseParts(responseParts, servedReason);
     	
     	createNewProtocolCommand(responseParts, servedReason);
+    	System.out.println("created new protocol command for: " + servedReason.name());
     }
     
 	/**
@@ -95,8 +96,8 @@ public class ProtocolConnector implements Runnable {
         	}
         	
         	// TODO: not sure about that, but it should be somewhere!
-        	if(responsesQueue.isEmpty())
-        		break;
+        //	if(responsesQueue.isEmpty())
+        	//	break;
         	
         	// if it was the same, take it from the queue
         	try {
@@ -106,6 +107,13 @@ public class ProtocolConnector implements Runnable {
     		}
         	
         	responseParts.add(next.getKey());
+        	
+        	if((servedReason == RequestReason.ATTACK_CHOICE_FROM) ||
+        			(servedReason == RequestReason.REINFORCEMENT_PHASE) ||
+        			(servedReason == RequestReason.POST_ATTACK_MOVEMENT)){
+        		if(responseParts.size() == 3)
+        			break;
+        	}
         }
 	}
 
@@ -181,10 +189,14 @@ public class ProtocolConnector implements Runnable {
     	Integer idTo = responses.get(1);
     	Integer armies = responses.get(2);
     	
-    	int[] payload = new int[3];
-    	payload[0] = idFrom;
-    	payload[1] = idTo;
-    	payload[2] = armies;
+    	int[] payload = null;
+    	if((idFrom != null) && (idTo != null)){
+    		System.out.println("new payload");
+	    	payload = new int[3];
+	    	payload[0] = idFrom;
+	    	payload[1] = idTo;
+	    	payload[2] = armies;
+    	}
     	
     	return payload;
     }
@@ -224,7 +236,8 @@ public class ProtocolConnector implements Runnable {
 		}
 		int[][] payload = new int[responseParts.size() / 2][2];
 		
-		for(int i = 0; i < payload.length;){
+		int payloadIndex = 0;
+		for(int i = 0; i < responseParts.size();){
 			Integer idFrom = responseParts.get(i);
 	    	Integer armies = responseParts.get(i + 1);
 	    	
@@ -232,7 +245,8 @@ public class ProtocolConnector implements Runnable {
 	    	pair[0] = idFrom;
 	    	pair[1] = armies;
 	    	
-	    	payload[i] = pair;
+	    	payload[payloadIndex] = pair;
+	    	payloadIndex++;
 	    	i += 2;
 		}
 		
@@ -297,6 +311,10 @@ public class ProtocolConnector implements Runnable {
 		System.out.println("IN ATTACK -- connector");
 
     	int[] payload = parseTwoTerritoriesAndArmy(responses);
+    	if((responses.get(0) != null) && (responses.get(1) == null))
+    		return;
+    	
+    	
     	attack att = new attack(payload, myID, ran.nextInt(50));
     	
     	try {
@@ -317,6 +335,7 @@ public class ProtocolConnector implements Runnable {
     private void createAttackCaptureCommand(ArrayList<Integer> responses){
 		System.out.println("IN ATTACK_CAPTURE -- connector");
 
+		/// TODO: we have to send it!! even if we dont move additional armies
     	int[] payload = parseTwoTerritoriesAndArmy(responses);
     	attack_capture att = new attack_capture(payload, myID, ran.nextInt(50));
     

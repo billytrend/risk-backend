@@ -1,7 +1,7 @@
 
 package PeerServer.protocol.gameplay;
 
-import PeerServer.protocol.protocol_command;
+import PeerServer.protocol.gameplay_command;
 
 /**
  * Sent zero or more times by a player during their turn. 
@@ -30,17 +30,17 @@ import PeerServer.protocol.protocol_command;
  *
  */
 
-public class attack extends protocol_command {
+public class attack extends gameplay_command {
 	
 	public attack(int sourceId, int destId, int armies, int playerID, int ack_id){
+		super(playerID);
 		payload = new int[]{sourceId, destId, armies};
-		this.player_id = playerID;
 		this.ack_id = ack_id;
 	}
 
 	public attack(int[] payload, int playerID, int ack_id){
+		super(playerID);
 		this.payload = payload;
-		this.player_id = playerID;
 		this.ack_id = ack_id;
 	}
 

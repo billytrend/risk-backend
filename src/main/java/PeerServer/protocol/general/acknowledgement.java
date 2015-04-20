@@ -3,7 +3,7 @@
  */
 package PeerServer.protocol.general;
 
-import PeerServer.protocol.protocol_command;
+import PeerServer.protocol.gameplay_command;
 
 /**
  *  Sent by each player in response to any command 
@@ -17,12 +17,12 @@ import PeerServer.protocol.protocol_command;
 }
  */
 
-public class acknowledgement extends protocol_command {
+public class acknowledgement extends gameplay_command {
 	public String command = "acknowledgement";
 	public int payload;
 
 	public acknowledgement(int payload, int player_id){
+		super(player_id);
 		this.payload = payload;
-		this.player_id = player_id;
 	}
 }

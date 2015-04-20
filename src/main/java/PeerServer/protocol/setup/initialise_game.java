@@ -3,7 +3,7 @@
  */
 package PeerServer.protocol.setup;
 
-import PeerServer.protocol.protocol_command;
+import PeerServer.protocol.gameplay_command;
 
 /**
  * Sent by the host at game start 
@@ -20,7 +20,7 @@ import PeerServer.protocol.protocol_command;
     }
 }
  */
-public class initialise_game extends protocol_command{
+public class initialise_game{
 
 	public initialise_game(Integer version, String[] supportedFeatures){
 		this.payload = new payload();

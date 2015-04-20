@@ -3,7 +3,7 @@
  */
 package PeerServer.protocol.general;
 
-import PeerServer.protocol.protocol_command;
+import PeerServer.protocol.gameplay_command;
 
 /**
  * Sent by the host when a player does not respond in time. 
@@ -32,15 +32,15 @@ import PeerServer.protocol.protocol_command;
  */
 
 
-public class timeout extends protocol_command{
+public class timeout extends gameplay_command{
 	
 	public String command = "timeout";
 	public int payload;
 	public int ack_id;
 	
 	public timeout(int payload, int player_id, int ack_id){
+		super(player_id);
 		this.payload = payload;
-		this.player_id = player_id;
 		this.ack_id = ack_id;
 	}
 	

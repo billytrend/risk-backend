@@ -3,7 +3,7 @@
  */
 package PeerServer.protocol.cards;
 
-import PeerServer.protocol.protocol_command;
+import PeerServer.protocol.gameplay_command;
 
 /**
  * Sent by a player during a turn after their final “attack” has been completed, 
@@ -11,7 +11,7 @@ import PeerServer.protocol.protocol_command;
  * @author 120011995
  *
  */
-public class draw_card extends protocol_command {
+public class draw_card {
 
 	public int card_id; //id of the card being drawn
 	public int ack_id;

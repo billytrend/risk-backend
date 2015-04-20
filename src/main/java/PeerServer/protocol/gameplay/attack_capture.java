@@ -3,7 +3,7 @@
  */
 package PeerServer.protocol.gameplay;
 
-import PeerServer.protocol.protocol_command;
+import PeerServer.protocol.gameplay_command;
 
 /**
  * Sent by an attacking player upon capturing an opposing territory. 
@@ -15,11 +15,11 @@ import PeerServer.protocol.protocol_command;
  * @author 120011995
  *
  */
-public class attack_capture extends protocol_command{
+public class attack_capture extends gameplay_command{
 
 	public attack_capture(int[] payload, int player_id, int ack_id){
+		super(player_id);
 		this.payload = payload;
-		this.player_id = player_id;
 		this.ack_id = ack_id;
 	}
 	

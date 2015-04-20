@@ -3,7 +3,7 @@
  */
 package PeerServer.protocol.setup;
 
-import PeerServer.protocol.protocol_command;
+import PeerServer.protocol.gameplay_command;
 
 /**
  * Sent by a host to a client on receipt of a 
@@ -23,7 +23,7 @@ import PeerServer.protocol.protocol_command;
 
  *
  */
-public class accept_join_game extends protocol_command {
+public class accept_join_game {
 	public String command = "accept_join_game";
 	public payload payload;
 	

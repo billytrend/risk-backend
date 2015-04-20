@@ -6,7 +6,6 @@ import GameState.Player;
 import GameState.Territory;
 import GameUtils.Results.Change;
 
-
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -89,6 +88,8 @@ public class DumbBotInterface implements PlayerInterface {
 				e.printStackTrace();
 			}
     	}
+    	System.out.println("DUMB BOT: Asked for dice " + reason.name() + " ---  RETURN: " + max + "\n");
+
         return max;
     }
 
@@ -122,28 +123,65 @@ public class DumbBotInterface implements PlayerInterface {
             emit(player,  "\t" + (i + 1) + ". " + posList.get(i).getId());
         }
         
+        Territory chosen = null;
+        
         // random choice
         if (ran.nextInt(10) == 0 && canResign) {
-            return null;
+        	System.out.println("could resign");
+            chosen = null;
         }
-
-        int toReturn = ran.nextInt(posList.size());
+        else if(posList.size() == 0){
+        	chosen = null;
+        }
+        else{
+            int toReturn = ran.nextInt(posList.size());
+            chosen = posList.get(toReturn);
+        }
+  
+        Integer chosenId = (chosen == null) ? null : chosen.getNumeralId();
+    	System.out.println("DUMB BOT: Asked for territory " + reason.name() + " ---  RETURN: " + chosenId + "\n");
         
-        Territory chosen = posList.get(toReturn);
-        
-    	System.out.println("DUMB BOT: Asked for territory ---  RETURN: " + chosen.getNumeralId() + "\n");
-        
-    	if(connectorQueue != null){
+  
 	    	// notify connector which can later respond to the protocol
-	        try {
-				connectorQueue.put(new MyEntry(chosen.getNumeralId(), reason));
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+	    try {
+			connectorQueue.put(new MyEntry(chosenId, reason));
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	    // need to add another thing (or two) to the queue so that the numbers match
+	    // this will be ignored later in connector anyway
+    	if((chosenId == null)){
+    		if(reason == RequestReason.ATTACK_CHOICE_TO){
+	    		 try {
+					connectorQueue.put(new MyEntry(null, RequestReason.ATTACK_CHOICE_DICE));
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		}
+    		else if(reason == RequestReason.ATTACK_CHOICE_FROM){
+    			 try {
+ 					connectorQueue.put(new MyEntry(null, RequestReason.ATTACK_CHOICE_TO));
+ 					connectorQueue.put(new MyEntry(null, RequestReason.ATTACK_CHOICE_DICE));
+ 				} catch (InterruptedException e) {
+ 					// TODO Auto-generated catch block
+ 					e.printStackTrace();
+ 				}
+    		}
+    		else if(reason == RequestReason.REINFORCEMENT_PHASE){
+   			 try {
+					connectorQueue.put(new MyEntry(null, RequestReason.REINFORCEMENT_PHASE));
+					connectorQueue.put(new MyEntry(null, RequestReason.REINFORCEMENT_PHASE));
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		}
     	}
-    	
-        return posList.get(toReturn);
+        
+        return chosen;
     }
     
     /**
@@ -154,10 +192,14 @@ public class DumbBotInterface implements PlayerInterface {
         emit(player, "Chose " + max);
         
         int toReturn = ran.nextInt(max + 1);
+        if((reason == RequestReason.ATTACK_CHOICE_DICE) ||
+        		(reason == RequestReason.DEFEND_CHOICE_DICE)){
+        	if(toReturn == 0)
+        		toReturn = 1;
+        }
 
     	if(connectorQueue != null){
 	    	// notify connector which can later respond to the protocol
-    	
     		try {
     			if(reason == RequestReason.POST_ATTACK_MOVEMENT){
 		        	if(from != null){
@@ -168,12 +210,15 @@ public class DumbBotInterface implements PlayerInterface {
 	
 		        	}
     			}
-	        	connectorQueue.put(new MyEntry(Integer.valueOf(toReturn), reason));
+
+	        	connectorQueue.put(new MyEntry(toReturn, reason));
 	        } catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
     	}
+    	System.out.println("DUMB BOT: Asked for armies " + reason.name() + "  ---  RETURN: " + toReturn + "\n");
+
         return toReturn;
     }
     

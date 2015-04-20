@@ -38,9 +38,21 @@ public class GameEngine implements Runnable {
 		return changeRecord;
 	}
 	
+// ==================== to be used by protocol ====================	
 	public PlayState getPlayState(){
 		return playState;
 	}
+	private boolean countryTakenInPreviousTurn;
+	
+	public boolean isCountryTaken(){
+		return countryTakenInPreviousTurn;
+	}
+	
+	public void resetCountryTaken(){
+		countryTakenInPreviousTurn = false;
+	}
+// ================================================================
+	
 	
 	
 	public GameEngine(State state, WinConditions conditions) {
@@ -243,7 +255,7 @@ public class GameEngine implements Runnable {
 		if (playersUndeployedArmies.size() == 0) {
 			
 			// the current player ends their turn
-			endGo();
+			//endGo();
 
 			// if none of the other players has undeployed armies
 			// the game goes to the next state
@@ -252,6 +264,7 @@ public class GameEngine implements Runnable {
 			}
 			
 			// keep going for the sake of the player who still has remaining armies
+			endGo();
 			return USING_REMAINING_ARMIES;
 		}
 
@@ -277,7 +290,6 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	private PlayState convertCards() {
-
         int payout = CardUtils.getCurrentArmyPayout(currentPlayer);
 
         ArmyUtils.givePlayerNArmies(currentPlayer, payout);
@@ -305,12 +317,12 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	protected PlayState placeArmy() {
-		
 		// get a list of players undeployed armies
 		ArrayList<Army> playersUndeployedArmies = ArmyUtils.getUndeployedArmies(currentPlayer);
 
 		// check if player has any armys left to place
 		if (playersUndeployedArmies.size() == 0) {
+			System.out.println("no armies, going to invade country.");
 			return PLAYER_INVADING_COUNTRY;
 		}
 
@@ -345,13 +357,15 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	protected PlayState invadeCountry() {
-		
+		System.out.println("GE: in invading");
 		// get the territories of the current player
 		possibleAttackingTerritories = TerritoryUtils
                 .getPossibleAttackingTerritories(gameState, currentPlayer);
 
-        // if a player has no options
+        // if a player has no options // TODO: still ask them for the protocol
         if (possibleAttackingTerritories.size() == 0) {
+        	currentPlayer.getCommunicationMethod()
+        		.getTerritory(currentPlayer, possibleAttackingTerritories, true, RequestReason.ATTACK_CHOICE_FROM);
             return PLAYER_MOVING_ARMIES;
         }
 
@@ -374,7 +388,8 @@ public class GameEngine implements Runnable {
 				.getCommunicationMethod().getTerritory(currentPlayer, attackable, true, RequestReason.ATTACK_CHOICE_TO);
 		
 		if(defending == null){
-			return PLAYER_MOVING_ARMIES;
+			System.out.println("GE: def null");
+			return PLAYER_INVADING_COUNTRY;
 		}
 
 		
@@ -473,8 +488,10 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	private boolean checkTheEndOfGame(){
-		if(winConditions.checkConditions(gameState))
+		if(winConditions.checkConditions(gameState)){
+			System.out.println("END GAME!!!");
 			return true;
+		}
 		else
 			return false;
 	}
@@ -498,6 +515,8 @@ public class GameEngine implements Runnable {
 
         // if a player has no options
         if (canBeDeployedFrom.size() == 0) {
+        	currentPlayer // let know the player interface  -- needed for protocol
+			.getCommunicationMethod().getTerritory(currentPlayer, canBeDeployedFrom, true, RequestReason.REINFORCEMENT_PHASE);
             return endGo();
         }
 		
@@ -542,10 +561,10 @@ public class GameEngine implements Runnable {
             CardUtils.givePlayerRandomCard(gameState, currentPlayer);
 
 			currentPlayerHasTakenCountry = false;
+			countryTakenInPreviousTurn = true;
 		}
 		
 		currentPlayer = gameState.getPlayerQueue().next();
-		
 		return PLAYER_CONVERTING_CARDS;
 	}
 

@@ -3,7 +3,7 @@
  */
 package PeerServer.protocol.dice;
 
-import PeerServer.protocol.protocol_command;
+import PeerServer.protocol.gameplay_command;
 
 /**
  * Sent by each player following the receipt of a “roll_hash” being received from all other players. 
@@ -21,11 +21,11 @@ import PeerServer.protocol.protocol_command;
 "player_id": 0
 
  */
-public class roll_number extends protocol_command{
+public class roll_number extends gameplay_command{
 
 	public roll_number(String payload, int player_id){
+		super(player_id);
 		this.payload = payload;
-		this.player_id = player_id;
 	}
 	
 	public String command = "roll_number";

@@ -3,7 +3,7 @@
  */
 package PeerServer.protocol.setup;
 
-import PeerServer.protocol.protocol_command;
+import PeerServer.protocol.gameplay_command;
 
 /**
  *  Sent by a client to a host attempting to join a game. 
@@ -28,7 +28,7 @@ import PeerServer.protocol.protocol_command;
  *
  */
 
-public class join_game extends protocol_command{
+public class join_game{
 	public String command = "join_game";
 	public payload payload;
 

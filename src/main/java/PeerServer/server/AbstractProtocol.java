@@ -237,32 +237,25 @@ public abstract class AbstractProtocol implements Runnable {
 			e.printStackTrace();
 		}
 		
+		System.out.println(engine.getPlayState());
 		Change lastChange = engine.getStateChangeRecord().getLastChange();
 		if(lastChange != null){
 			String lastPlayer = lastChange.getActingPlayerId();
 			PlayState changeType = lastChange.getActionPlayed();
-			
-			System.out.println(lastPlayer + "  " + changeType.name());
-			
-			if(!ArmyUtils.somePlayerHasUndeployedArmies(state)){
-				System.out.println("in here");
-				
+
+			if((engine.getPlayState() != PlayState.USING_REMAINING_ARMIES) && (engine.getPlayState() != PlayState.FILLING_EMPTY_COUNTRIES)){
 				if(currentPlayerId == myID){
 					System.out.println("CHANGE to deploy case 1");
 					protocolState = ProtocolState.DEPLOY;
 				}
-				else if((lastPlayer != myName) && (changeType == PlayState.USING_REMAINING_ARMIES)){
-					System.out.println("CHANGE to deploy case 2");
+				else if((lastPlayer.equals(myName)) && (changeType.name().equals(PlayState.USING_REMAINING_ARMIES.name()))){
+				  protocolState = ProtocolState.SETUP_GAME;
+				 }
+				else {
+					System.out.println("CHANGE to deploy Case 2");
+					System.out.println(lastPlayer + "  " + changeType.name() + " .... my name: " + myName);
 					protocolState = ProtocolState.DEPLOY;
 				}
-			}
-			else if(changeType == PlayState.PLAYER_PLACING_ARMIES){
-				System.out.println("CHANGE to deploy Case 3");
-				protocolState = ProtocolState.DEPLOY;
-			}
-			else if((engine.getPlayState() != PlayState.USING_REMAINING_ARMIES) && (engine.getPlayState() != PlayState.FILLING_EMPTY_COUNTRIES)){
-				System.out.println("CHANGE to deploy Case 4");
-				protocolState = ProtocolState.DEPLOY;
 			}
 		}
 
@@ -295,7 +288,7 @@ public abstract class AbstractProtocol implements Runnable {
 	
 	
 	protected void deploy(){
-		System.out.println("in deploy");
+		System.out.println("PROTOCOL: DEPLOY\n");
 		nextStateAfterAck = ProtocolState.ATTACK;
 
 		//we are sending command 
@@ -318,14 +311,14 @@ public abstract class AbstractProtocol implements Runnable {
 			sendCommand(command, deploy.player_id, true);
 			acknowledge(their_ack_id);
 		}
+		protocolState = ProtocolState.ATTACK;
 	}
 
 
 	protected void attack(){
-		System.out.println("in attack");
+		System.out.println("PROTOCOL: ATTACK\n");
 		//we are sending command 
-		if(currentPlayerId == myID){
-			//create deploy object based on player choices
+		if(currentPlayerId == myID){		
 			attack attack = (attack) getResponseFromLocalPlayer();
 			String attackString = Jsonify.getObjectAsJsonString(attack);
 			
@@ -343,6 +336,7 @@ public abstract class AbstractProtocol implements Runnable {
 			//check its not null
 			if(attack == null){
 			}
+			
 			notifyPlayerInterface(attack, attack.player_id);
 
 			their_ack_id = attack.ack_id;
@@ -356,86 +350,103 @@ public abstract class AbstractProtocol implements Runnable {
 			acknowledge(their_ack_id);
 			// TODO: dice roll?
 		}
+		protocolState = nextStateAfterAck;
+		if(protocolState == ProtocolState.DEFEND){
+			System.out.println("change player " + (currentPlayerId + 1));
+			currentPlayerId = (currentPlayerId + 1) % numOfPlayers;
+		}
 	}
 
 	protected void defend(){
-	/*	//we are sending command 
-		if(command == ""){
-			//create deploy object based on player choices
+		System.out.println("PROTOCOL: DEFEND\n");
+		//we are sending command 
+		nextStateAfterAck = ProtocolState.ATTACK_CAPTURE;
+		if(currentPlayerId == myID){
 			defend defend = (defend) getResponseFromLocalPlayer();
-			//transfer object to JSON string
 			String defendString = Jsonify.getObjectAsJsonString(defend);
-			//send to all clients or just host if you are client 
-			sendCommand(defendString, null);
+
+			sendCommand(defendString, null, true);
 		}
 		//someone sent us the command  player id if parsing
 		else{
 			//parse command into deploy object
+			String command = receiveCommand();
 			defend defend = (defend) Jsonify.getJsonStringAsObject(command, defend.class);
-
-			//check its not null
 			if(defend == null){
 			}
 
-			sendCommand(command, defend.player_id);
-			//notify interface
 			notifyPlayerInterface(defend, defend.player_id);
-		}*/
-
+			their_ack_id = defend.ack_id;
+		
+			sendCommand(command, defend.player_id, true);
+			acknowledge(their_ack_id);	
+		}
+		protocolState = nextStateAfterAck;
+		currentPlayerId = (currentPlayerId + 1) % numOfPlayers;
 	}
 
 	protected void attackCapture(){
-		/*//we are sending command 
-		if(command == ""){
-			//create deploy object based on player choices
-			attack_capture attack_capture = (attack_capture) getResponseFromLocalPlayer();
-			//transfer object to JSON string
-			String attack_captureString = Jsonify.getObjectAsJsonString(attack_capture);
-			//send to all clients or just host if you are client 
-			sendCommand(attack_captureString, null);
-		}
-		//someone sent us the command  player id if parsing
-		else{
-			//parse command into deploy object
-			attack_capture attack_capture = (attack_capture) Jsonify.getJsonStringAsObject(command, 
-					attack_capture.class);
+		System.out.println("PROTOCOL: ATTACK_CAPTURE\n");
 
-			//check its not null
-			if(attack_capture == null){
+		nextStateAfterAck = ProtocolState.ATTACK;
+		
+		// TODO: check whether we actually captured a territory?
+		if(engine.isCountryTaken()){
+			engine.resetCountryTaken();
+			
+			if(currentPlayerId == myID){
+				attack_capture attack_capture = (attack_capture) getResponseFromLocalPlayer();
+				String attack_captureString = Jsonify.getObjectAsJsonString(attack_capture);
+				
+				sendCommand(attack_captureString, null, true);
 			}
+			//someone sent us the command  player id if parsing
+			else{
+				String command = receiveCommand();
+				//parse command into deploy object
+				attack_capture attack_capture = (attack_capture) Jsonify.getJsonStringAsObject(command, 
+						attack_capture.class);
+	
+				//check its not null
+				if(attack_capture == null){
+				}
+				
+				notifyPlayerInterface(attack_capture, attack_capture.player_id);
+				their_ack_id = attack_capture.ack_id;
+				sendCommand(command, attack_capture.player_id, true);
+				acknowledge(their_ack_id);
+			}
+		}
 
-			sendCommand(command, attack_capture.player_id);
-			//notify interface
-			notifyPlayerInterface(attack_capture, attack_capture.player_id);
-		}*/
+		protocolState = nextStateAfterAck;
 	}
 
 
 	protected void fortify(){
-		/*//we are sending command 
-		if(command == ""){
-			//create deploy object based on player choices
+		System.out.println("PROTOCOL: FORTIFY\n");
+		System.out.println(currentPlayerId);
+		nextStateAfterAck = ProtocolState.DEPLOY; // TODO: change this
+		if(currentPlayerId == myID){
 			fortify fortify = (fortify) getResponseFromLocalPlayer();
-			//transfer object to JSON string
 			String fortifyString = Jsonify.getObjectAsJsonString(fortify);
-			//send to all clients or just host if you are client 
-			sendCommand(fortifyString, null);
+
+			sendCommand(fortifyString, null, true);
 		}
 		//someone sent us the command  player id if parsing
 		else{
-			//parse command into deploy object
+			String command = receiveCommand();
 			fortify fortify = (fortify) Jsonify.getJsonStringAsObject(command, 
 					fortify.class);
-
-			//check its not null
 			if(fortify == null){
 			}
 
-			sendCommand(command, fortify.player_id);
-			//notify interface
 			notifyPlayerInterface(fortify, fortify.player_id);
-		}*/
-
+			their_ack_id = fortify.ack_id;
+			sendCommand(command, fortify.player_id, true);
+			acknowledge(their_ack_id);
+		}
+		protocolState = nextStateAfterAck;
+		currentPlayerId = (currentPlayerId + 1) % numOfPlayers;
 	}
 
 	//*********************** DICE ROLLS ******************************
@@ -630,9 +641,14 @@ public abstract class AbstractProtocol implements Runnable {
 		else if(response instanceof attack){
 			attack attack = (attack) response;
 			try {
-				queue.put(new MyEntry(attack.payload[0], RequestReason.ATTACK_CHOICE_FROM));
-				queue.put(new MyEntry(attack.payload[1], RequestReason.ATTACK_CHOICE_TO));
-				queue.put(new MyEntry(attack.payload[2], RequestReason.ATTACK_CHOICE_DICE));
+				if(attack.payload == null){
+					queue.put(new MyEntry(null, RequestReason.ATTACK_CHOICE_FROM));
+				}
+				else{
+					queue.put(new MyEntry(attack.payload[0], RequestReason.ATTACK_CHOICE_FROM));
+					queue.put(new MyEntry(attack.payload[1], RequestReason.ATTACK_CHOICE_TO));
+					queue.put(new MyEntry(attack.payload[2], RequestReason.ATTACK_CHOICE_DICE));
+				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -649,8 +665,8 @@ public abstract class AbstractProtocol implements Runnable {
 			int[][] pairs = deploy.payload.pairs;
 			for(int i = 0; i < pairs.length; i++){
 				try {
-					queue.put(new MyEntry(pairs[0], RequestReason.PLACING_ARMIES_PHASE));
-					queue.put(new MyEntry(pairs[1], RequestReason.PLACING_ARMIES_PHASE));
+					queue.put(new MyEntry(pairs[i][0], RequestReason.PLACING_ARMIES_PHASE));
+					queue.put(new MyEntry(pairs[i][1], RequestReason.PLACING_ARMIES_PHASE));
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -659,9 +675,14 @@ public abstract class AbstractProtocol implements Runnable {
 		else if(response instanceof fortify){
 			fortify fortify = (fortify) response;
 			try {
-				queue.put(new MyEntry(fortify.payload[0], RequestReason.REINFORCEMENT_PHASE));
-				queue.put(new MyEntry(fortify.payload[1], RequestReason.REINFORCEMENT_PHASE));
-				queue.put(new MyEntry(fortify.payload[2], RequestReason.REINFORCEMENT_PHASE));
+				if(fortify.payload == null){
+					queue.put(new MyEntry(null, RequestReason.REINFORCEMENT_PHASE));
+				}
+				else{
+					queue.put(new MyEntry(fortify.payload[0], RequestReason.REINFORCEMENT_PHASE));
+					queue.put(new MyEntry(fortify.payload[1], RequestReason.REINFORCEMENT_PHASE));
+					queue.put(new MyEntry(fortify.payload[2], RequestReason.REINFORCEMENT_PHASE));
+				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

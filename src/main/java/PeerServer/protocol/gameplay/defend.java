@@ -3,7 +3,7 @@
  */
 package PeerServer.protocol.gameplay;
 
-import PeerServer.protocol.protocol_command;
+import PeerServer.protocol.gameplay_command;
 
 /**
  *  Sent by the defending player immediately following an “attack” command. 
@@ -16,11 +16,11 @@ import PeerServer.protocol.protocol_command;
  * @author 120011995
  *
  */
-public class defend  extends protocol_command{
+public class defend  extends gameplay_command{
 	
 	public defend(int armies, int player_id, int ack_id){
+		super(player_id);
 		this.payload = armies;
-		this.player_id = player_id;
 		this.ack_id = ack_id;
 	}
 	
