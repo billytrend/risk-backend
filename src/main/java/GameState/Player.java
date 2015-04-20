@@ -3,9 +3,6 @@ package GameState;
 import PlayerInput.PlayerInterface;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-
-import org.javatuples.Triplet;
 
 /**
  * A class that represents a single player. Each player
@@ -25,7 +22,6 @@ public class Player {
     private String colour = "";
     private int numberOfTurns;
     private int numberOfAttacks;
-    private HashSet<Territory> cardTerritories = new HashSet<Territory>();
 
 	public Player(PlayerInterface communicationMethod) {
 		this.communicationMethod = communicationMethod;
@@ -73,7 +69,8 @@ public class Player {
 	public PlayerInterface getCommunicationMethod() {
 		return communicationMethod;
 	}
-	public void setCommunicationMethod(PlayerInterface communicationMethod) {
+
+    public void setCommunicationMethod(PlayerInterface communicationMethod) {
 		this.communicationMethod = communicationMethod;
 	}
 
@@ -110,22 +107,17 @@ public class Player {
 	public void logTurn(){
 		numberOfTurns ++;
 	}
-	public void logAttack(){
+
+    public void logAttack(){
 		numberOfAttacks++;
 	}
-	public int getNumberOfTurns(){
+
+    public int getNumberOfTurns(){
 		return numberOfTurns;
 	}
-	public int getNumberOfAttacks(){
+
+    public int getNumberOfAttacks(){
 		return numberOfAttacks;
 	}
-	public void extraArmiesGiven(HashSet<Territory> cardTerritories){
-		this.cardTerritories = cardTerritories;
-	}
-	public HashSet<Territory> hasExtraArmies(){
-		return cardTerritories;
-	}
-	public void extraArmiesPlaced(){
-		cardTerritories = new HashSet<Territory>();
-	}
+
 }

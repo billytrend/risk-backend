@@ -3,10 +3,10 @@ package PlayerInput;
 import GameEngine.RequestReason;
 import GameState.Card;
 import GameState.Player;
+import GameState.State;
 import GameState.Territory;
 import GameUtils.Results.Change;
 import PeerServer.server.ProtocolConnector;
-
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -49,6 +49,13 @@ public class DumbBotInterface implements PlayerInterface {
 		connectorQueue = null;
 		connector = null;
 	}
+
+	public DumbBotInterface(State a) {
+		connectorQueue = null;
+		connector = null;
+	}
+
+
     
 	protected void emit(Player p, String message) {
 //        debug("[" + p.getId() + "]" + "\t\t");

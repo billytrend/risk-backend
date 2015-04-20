@@ -17,4 +17,5 @@ public class ArmyRequest extends Request {
         }
         humanRequest += ".";
     }
+
 }

@@ -1,13 +1,6 @@
 package GameUtils;
 
-import GameState.Card;
-import GameState.CardType;
-import GameState.Player;
-import GameState.State;
-import GameState.Territory;
-
-import com.esotericsoftware.minlog.Log;
-
+import GameState.*;
 import org.javatuples.Triplet;
 import org.paukov.combinatorics.Factory;
 import org.paukov.combinatorics.Generator;
@@ -30,20 +23,21 @@ public class CardUtils {
         //add another 5 for each set after the sixth
         for(int i = 5; i < setsUsed; i++) cardPayout +=5;
         
-        HashSet<Territory> cardTerritories = new HashSet<Territory>();
-        
-        for(Territory t: TerritoryUtils.getPlayersTerritories(player)){
-        	if(t == cards.getValue0().getTerritory()|| t == cards.getValue1().getTerritory() || t ==cards.getValue2().getTerritory()){
-        		ownsATerritory = true;
-        		//TODO: restrict where these can be placed
-        		cardTerritories.add(t);
-        		player.extraArmiesGiven(cardTerritories);
-        	}
-        }
-        if(ownsATerritory) cardPayout +=2;
-        
+
         return cardPayout;
         
+    }
+
+    public static HashSet<Territory> getTerritoriesOnCardsThatPlayersOwn(Player player, Triplet<Card, Card, Card> cards) {
+        HashSet<Territory> cardTerritories = new HashSet<Territory>();
+
+        for(Territory t: TerritoryUtils.getPlayersTerritories(player)){
+            if(t == cards.getValue0().getTerritory()|| t == cards.getValue1().getTerritory() || t ==cards.getValue2().getTerritory()){
+                cardTerritories.add(t);
+            }
+        }
+
+        return cardTerritories;
     }
 
 	public static void incrementNumberOfCardSetsUsed(Player player) {
@@ -90,14 +84,15 @@ public class CardUtils {
 		return unownedCards;
 	}
 
-	public static void givePlayerRandomCard(State s, Player p) {
+	public static Card givePlayerRandomCard(State s, Player p) {
 		ArrayList<Card> unownedCards = getUnownedCards(s);
 		if (unownedCards.size() == 0)
-			return;
+            return null;
 		Random r = new Random();
 		int randIndex = r.nextInt(unownedCards.size());
 		Card chosen = unownedCards.get(randIndex);
 		givePlayerCard(chosen, p);
+        return chosen;
 	}
 
 	public static ArrayList<Card> getCardsOfType(ArrayList<Card> cards,

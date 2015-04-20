@@ -53,6 +53,11 @@ public class LobbyUtils {
     public static boolean addPlayerToGame(Lobby l, int gameIndex, WebSocket conn) {
         PlayerConnection player = getPlayer(l, conn);
         GameDescription g = l.getunstartedGames().get(gameIndex);
+        return addPlayerToGame(l, g, conn);
+    }
+
+    public static boolean addPlayerToGame(Lobby l, GameDescription g, WebSocket conn) {
+        PlayerConnection player = getPlayer(l, conn);
         if (!g.isReady()) {
             g.getPlayers().add(new Player(player));
             return true;
@@ -60,15 +65,22 @@ public class LobbyUtils {
         return false;
     }
 
+    public static void addGhostToGame(Lobby l, GameDescription g, WebSocket conn) {
+        PlayerConnection player = getPlayer(l, conn);
+        g.addGhost(new PlayerConnection(conn));
+    }
+
     public static void startGames(Lobby l) {
         for (GameDescription g : l.getunstartedGames()) {
             if (g.isReady()) {
                 g.startGame();
+                moveToInProgress(l, g);
             }
         }
     }
 
-    public static void addGameDescription(Lobby lobby, ClientMessage messageObject) {
+    public static void addGameDescription(Lobby lobby, GameDescription messageObject) {
+        lobby.getunstartedGames().add(messageObject);
     }
 
     public static void checkGameShouldStart(Lobby l, int gameIndex) {
@@ -85,5 +97,10 @@ public class LobbyUtils {
                 p.getKey().send(Jsonify.getObjectAsJsonString(lobby));
             }
         }
+    }
+
+    public static void moveToInProgress(Lobby l, GameDescription g) {
+        l.getunstartedGames().remove(g);
+        l.getStartedGames().add(g);
     }
 }
