@@ -39,8 +39,6 @@ public class TestAgainstBilly {
 		
 	
         gameState = RiskMapGameBuilder.buildGame(null);
-
-		
 	}
 
 	@Test

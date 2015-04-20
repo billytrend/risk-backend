@@ -28,47 +28,50 @@ import java.util.ArrayList;
 import java.util.Timer;
 
 public class TestAgainstLosers {
-	Player player1, player2, player3, player4;
-	State gameState;
+	private Player player1, player2, player3, player4, player5, player6;
+	private State gameState;
 	final private File stats = new File("Statistics");
-	PrintWriter writer;
+	private PrintWriter writer;
+	private ArrayList<Player> players;
 	@Before
 	public void setup() throws InterruptedException, IOException {
-		
 		writer = new PrintWriter(new BufferedWriter (new FileWriter(stats, true)));
 		gameState = RiskMapGameBuilder.buildGame(null);
-
-		
+	players = new ArrayList<Player>();
 	}
 
 	@Test
-    public void testBorderControl(){
+    public void testBorderControlwithOneLoser(){
 		player1 = new Player(new BorderControl(gameState), "BorderControl");
+		player2 = new Player(new TheLoser(gameState));
+		players.add(player1);
+		players.add(player2);
     }
 	@Test
-	public void testCommunistAgressive() {
+	public void testCommunistAgressivewithOneLoser() {
 		player1 = new Player(new CommunistAggressive(gameState), "CommunistAgressive");
+		player2 = new Player(new TheLoser(gameState));
+		players.add(player1);
+		players.add(player2);
 	}
 	
 	@Test
-	public void testCommunistDefensive(){
+	public void testCommunistDefensivewithOneLoser(){
 		player1 = new Player(new CommunistDefensive(gameState), "CommunistDefensive");
+		player2 = new Player(new TheLoser(gameState));
+		players.add(player1);
+		players.add(player2);
 	}
 	@Test
-    public void testBilly(){
+    public void testBillywithOneLoser(){
 		player1 = new Player(new Billy(gameState), "Billy");
+		player2 = new Player(new TheLoser(gameState));
+		players.add(player1);
+		players.add(player2);
     }
 	@After
 	public void runGameAndWriteStats() throws InterruptedException{
-		ArrayList<Player> players = new ArrayList<Player>();
-		player2 = new Player(new TheLoser(gameState));
-		player3 = new Player(new TheLoser(gameState));
-		player4 = new Player(new TheLoser(gameState));
-		
-		players.add(player1);
-		players.add(player2);
-		players.add(player3);
-		players.add(player4);
+
 		
 		gameState.setPlayers(players);
 		
