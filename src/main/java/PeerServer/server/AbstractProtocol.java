@@ -1,12 +1,14 @@
 package PeerServer.server;
 
 import GameBuilders.DemoGameBuilder;
+import GameBuilders.RiskMapGameBuilder;
 import GameEngine.GameEngine;
 import GameEngine.NetworkArbitration;
 import GameEngine.PlayState;
 import GameEngine.RequestReason;
 import GameState.Player;
 import GameState.State;
+import GameUtils.ArmyUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.Results.Change;
 import GeneralUtils.Jsonify;
@@ -87,8 +89,8 @@ public abstract class AbstractProtocol implements Runnable {
 			e.printStackTrace();
 		}
 
-		//RiskMapGameBuilder.addRiskTerritoriesToState(state);
-		DemoGameBuilder.addFourTerritories(state);
+		RiskMapGameBuilder.addRiskTerritoriesToState(state);
+		//DemoGameBuilder.addFourTerritories(state);
 		
 		while(protocolState != null){
 			if(engine == null)
@@ -185,12 +187,36 @@ public abstract class AbstractProtocol implements Runnable {
 	
 	protected void setupGame(){
 		nextStateAfterAck = ProtocolState.SETUP_GAME;
-		boolean changeToDeploy = false;	
+		Change lastChange = engine.getStateChangeRecord().getLastChange();
+		String lastPlayer;
+		PlayState changeType;
 		
 		if(currentPlayerId == myID){
+			if(lastChange != null){
+				
+				lastPlayer = lastChange.getActingPlayerId();
+				changeType = lastChange.getActionPlayed();
+				
+				if(changeType != null){
+					if(!changeType.equals(PlayState.USING_REMAINING_ARMIES)){
+						// we did not do any setup move - we did not have enough armies
+						if(lastPlayer.equals(myName)){
+							protocolState = ProtocolState.DEPLOY;
+							return;
+						}
+						// this is our last move, then they will answer with deploy
+						else{
+							nextStateAfterAck = ProtocolState.DEPLOY;
+						}
+					}
+				}
+			}
+			
 			setup setup = (setup) getResponseFromLocalPlayer();
 			setup.ack_id = ack_id;
 			ack_id++;
+			
+	
 			
 			String setupString = Jsonify.getObjectAsJsonString(setup);
 			//Send to all clients
@@ -198,6 +224,26 @@ public abstract class AbstractProtocol implements Runnable {
 		}
 		//someone sent us a command
 		else {
+			
+			if(lastChange != null){
+				lastPlayer = lastChange.getActingPlayerId();
+				changeType = lastChange.getActionPlayed();
+				
+				if(changeType != null){
+					if(!changeType.equals(PlayState.USING_REMAINING_ARMIES)){
+						// they did not do any setup move - they did not have enough armies
+						if(lastPlayer.equals(state.lookUpPlayer(currentPlayerId))){
+							protocolState = ProtocolState.DEPLOY;
+							return;
+						}
+						// this is their last move, then they will answer with deploy
+						else{
+							nextStateAfterAck = ProtocolState.DEPLOY;
+						}
+					}
+				}	
+			}
+			
 			String command = receiveCommand();
 			setup setup = (setup) Jsonify.getJsonStringAsObject(command, setup.class);
 
@@ -220,30 +266,32 @@ public abstract class AbstractProtocol implements Runnable {
 			e.printStackTrace();
 		}
 		
-		System.out.println(engine.getPlayState());
+	/*	System.out.println(engine.getPlayState());
 		Change lastChange = engine.getStateChangeRecord().getLastChange();
 		if(lastChange != null){
 			String lastPlayer = lastChange.getActingPlayerId();
 			PlayState changeType = lastChange.getActionPlayed();
-
+			System.out.println(lastPlayer + "... my name: " + myName + "  " + changeType);
+			
 			if((engine.getPlayState() != PlayState.USING_REMAINING_ARMIES) && (engine.getPlayState() != PlayState.FILLING_EMPTY_COUNTRIES)){
 				if(currentPlayerId == myID){
 					System.out.println("CHANGE to deploy case 1");
 					protocolState = ProtocolState.DEPLOY;
 				}
 				else if((lastPlayer.equals(myName)) && (changeType.name().equals(PlayState.USING_REMAINING_ARMIES.name()))){
-				  protocolState = ProtocolState.SETUP_GAME;
-				 }
-				else {
+					System.out.println("not in deploy");
+					protocolState = ProtocolState.SETUP_GAME;
+				}
+				else if(!lastPlayer.equals(myName) && !(changeType.name().equals(PlayState.PLAYER_BEGINNING_TURN))){
 					System.out.println("CHANGE to deploy Case 2");
 					System.out.println(lastPlayer + "  " + changeType.name() + " .... my name: " + myName);
 					protocolState = ProtocolState.DEPLOY;
 				}
 			}
-		}
+		}*/
 
 		currentPlayerId = (currentPlayerId + 1) % numOfPlayers;
-	
+		protocolState = nextStateAfterAck;
 	}
 	
 
@@ -376,7 +424,7 @@ public abstract class AbstractProtocol implements Runnable {
 		// TODO: check whether we actually captured a territory?
 		if(engine.isCountryTaken()){
 			engine.resetCountryTaken();
-			
+			System.out.println("CAPTUREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEDDDDDDDDDDDDDDDDD");
 			if(currentPlayerId == myID){
 				attack_capture attack_capture = (attack_capture) getResponseFromLocalPlayer();
 				String attack_captureString = Jsonify.getObjectAsJsonString(attack_capture);

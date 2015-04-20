@@ -151,19 +151,13 @@ public class DumbBotInterface implements PlayerInterface {
     	System.out.println("DUMB BOT: Asked for territory " + reason.name() + " ---  RETURN: " + chosenId + "\n");
         
   
-	    	// notify connector which can later respond to the protocol
-	    try {
-			connectorQueue.put(new MyEntry(chosenId, reason));
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	    
 	    // need to add another thing (or two) to the queue so that the numbers match
 	    // this will be ignored later in connector anyway
     	if((chosenId == null)){
     		if(reason == RequestReason.ATTACK_CHOICE_TO){
 	    		 try {
+					connectorQueue.put(new MyEntry(chosenId, reason));
 					connectorQueue.put(new MyEntry(null, RequestReason.ATTACK_CHOICE_DICE));
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
@@ -172,6 +166,7 @@ public class DumbBotInterface implements PlayerInterface {
     		}
     		else if(reason == RequestReason.ATTACK_CHOICE_FROM){
     			 try {
+    				connectorQueue.put(new MyEntry(chosenId, reason));
  					connectorQueue.put(new MyEntry(null, RequestReason.ATTACK_CHOICE_TO));
  					connectorQueue.put(new MyEntry(null, RequestReason.ATTACK_CHOICE_DICE));
  				} catch (InterruptedException e) {
@@ -181,13 +176,31 @@ public class DumbBotInterface implements PlayerInterface {
     		}
     		else if(reason == RequestReason.REINFORCEMENT_PHASE){
    			 try {
-					connectorQueue.put(new MyEntry(null, RequestReason.REINFORCEMENT_PHASE));
-					connectorQueue.put(new MyEntry(null, RequestReason.REINFORCEMENT_PHASE));
+   				 // add only twice if there is one before
+   				 	if(connectorQueue.peek().getValue() == RequestReason.REINFORCEMENT_PHASE){
+   				 		connectorQueue.put(new MyEntry(null, RequestReason.REINFORCEMENT_PHASE));
+   				 		connectorQueue.put(new MyEntry(null, RequestReason.REINFORCEMENT_PHASE));
+   				 	}
+   				 	else{ // ad three times if there is nothing before and we are resigning
+   				 		connectorQueue.put(new MyEntry(null, RequestReason.REINFORCEMENT_PHASE));
+   				 		connectorQueue.put(new MyEntry(null, RequestReason.REINFORCEMENT_PHASE));
+   				 		connectorQueue.put(new MyEntry(null, RequestReason.REINFORCEMENT_PHASE));
+   				 	}
+
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
     		}
+    	}
+    	else{
+		    // notify connector which can later respond to the protocol
+		    try {
+				connectorQueue.put(new MyEntry(chosenId, reason));
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
     	}
         
         return chosen;

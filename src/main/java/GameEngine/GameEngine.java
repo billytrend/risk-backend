@@ -3,7 +3,9 @@ package GameEngine;
 import GameState.*;
 import GameUtils.*;
 import GameUtils.Results.*;
+import PeerServer.server.ProtocolState;
 import PlayerInput.PlayerInterface;
+
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -582,8 +584,8 @@ public class GameEngine implements Runnable {
 				.getCommunicationMethod().getTerritory(currentPlayer, canBeDeployedTo, source, true, RequestReason.REINFORCEMENT_PHASE);
 
         if(target == null){
-            debug("PLAYER DOESNT WANT TO MOVE");
-            return endGo();
+        	// they change their mind, let them decide again
+            return PlayState.PLAYER_MOVING_ARMIES;
         }
 
         int numberOfArmiesThatMayBeMoved = ArmyUtils

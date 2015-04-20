@@ -63,6 +63,7 @@ public class ProtocolConnector implements Runnable {
     	
     	createNewProtocolCommand(responseParts, servedReason);
     	System.out.println("created new protocol command for: " + servedReason.name());
+    	servedReason = null;
     }
     
 	/**
@@ -129,6 +130,7 @@ public class ProtocolConnector implements Runnable {
     			createPlayCardsCommand(responseParts);
         }
         else{
+        	System.out.println("CONNECTOR: " + servedReason + "  ===================");
 	        switch(servedReason){
 	        	case PLACING_ARMIES_SET_UP: // asking for an empty territory id (setup)
 	        		createSetUpCommand(responseParts);
@@ -270,6 +272,10 @@ public class ProtocolConnector implements Runnable {
 		System.out.println("IN FORTIFY -- connector");
 
     	int[] payload = parseTwoTerritoriesAndArmy(responseParts);
+    	// if they simply changed their ming, ignore it
+    	if((responseParts.get(0) != null) && responseParts.get(1) == null)
+    		return;
+    	
     	fortify fort = new fortify(payload, myID, ran.nextInt(50));
     	
     	try {
