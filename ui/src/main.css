@@ -5,7 +5,7 @@ body {
     user-select: none;
     background-color: #59A8D9;
     cursor: pointer;
-    font-family: courier, monospace;
+    font-family: "courier new", monospace;
     margin: 0px;
 }
 
@@ -39,12 +39,16 @@ body {
     flex-wrap: nowrap;
     justify-content: space-around;
     align-items: center;
-    height: 100%;
+    height: 90%;
 }
 
-.main_view .world_map {
-    width: 100%;
+.world_map {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
     height: 100%;
+    width: 80%;
 }
 
 .dice_box div svg:hover {
@@ -69,14 +73,19 @@ body {
     flex-wrap: nowrap;
     align-content: stretch;
     align-items: stretch;
+    align-items: stretch;
     height: 100%;
-    padding: 50px 1% 50px 1%;
+    width: 15%;
+    padding: 20px 5px 20px 5px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
 }
 
 .player_overview * {
 
 }
-
 
 .player_icon {
     width: 100%;
@@ -84,6 +93,7 @@ body {
     border-radius: 5px;
     padding: 5px;
     border: 3px solid transparent;
+    box-sizing: border-box
 }
 
 .in_play {
@@ -104,32 +114,6 @@ body {
 
 .card_box {
     overflow-y: scroll;
-}
-
-.card_box>div {
-    display:flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: space-around;
-    align-content: center;
-    align-items: stretch;
-    width: 100%;
-    margin-top: 100px;
-    margin-bottom: 100px;
-}
-
-.card {
-    width: 250px;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    justify-content: space-around;
-    align-content: center;
-    align-items: center;
-    background-color: beige;
-    height: 350px;
-    /* margin: 30px; */
-    border-radius: 15px;
 }
 
 .play_card {
@@ -158,13 +142,6 @@ body {
     display: none;
 }
 
-.country_label_text {
-    text-align: center;
-    line-height: 29px;
-    border-radius: 50%;
-    background-color: #ffffff;
-}
-
 .framed_country_wrapper svg {
     display: flex;
     flex-direction: row;
@@ -172,7 +149,8 @@ body {
     justify-content: center;
     align-content: center;
     align-items: center;
-    width: 100%;}
+    width: 100%;
+}
 
 .country_focus {
     display: flex;
@@ -183,10 +161,6 @@ body {
     align-items: center;
 }
 
-.isOption {
-    transition: 1s ease;
-    opacity: 1;
-}
 
 .dialogue_box {
     display: flex;
@@ -200,6 +174,7 @@ body {
     border-radius: 30px;
     border: solid 3px;
     width: 70%;
+    margin: 200px;
 }
 
 .army_selection_column {
@@ -213,3 +188,96 @@ body {
 .caption {
     font-size: 20px;
 }
+
+
+.card {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    align-content: center;
+    align-items: center;
+    background-color: beige;
+    height: 350px;
+    margin: 10px;
+    border-radius: 15px;
+}
+
+
+
+.country_label {
+    font-size: 20px;
+    transition: 0.2s ease;
+}
+
+.country_label circle {
+    opacity: 0.5;
+}
+
+.can_choose circle {
+    transition: 0.2s ease;
+    opacity: 1;
+}
+
+.country_label circle {
+    fill: white;
+}
+
+.europe text {
+    stroke: #3cb4d3;
+}
+.asia text {
+    stroke: #6dc16f;
+}
+.africa text {
+    stroke: #7a5c0a;
+}
+.australia text {
+    stroke: #820087;
+}
+.north_america text {
+    stroke: #b3ba1c;
+}
+
+.south_america text {
+    stroke: #ca2a1c;
+}
+
+.connections path {
+    stroke: black;
+}
+
+.country_style {
+    stroke: black;
+    stroke-idth: 1px;
+}
+
+.card_box {
+    display: block;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: 50px;
+    height: 100%;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.card_triple {
+    display:flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    align-content: center;
+    align-items: center;
+    margin-top: 100px;
+    flex-shrink: 1;
+}
+
+.log {
+    height: 100px;
+}
+

@@ -20,7 +20,7 @@ import java.util.Scanner;
 public class RiskMapGameBuilder {
 
     private static String[] colours = new String[] {
-            "F5A9EE", "A6EDDE", "C5A6ED", "E6F07A", "BEF788"
+            "F5A9EE", "A6EDDE", "C5A6ED", "E6F07A", "BEF788", "FF33CC"
     };
 
 
@@ -262,25 +262,26 @@ public class RiskMapGameBuilder {
 		File cards = new File("cards");
 		Scanner scanner;
 		scanner = new Scanner(cards);
+        int cur = 0;
 		while(scanner.hasNextLine()){
 			String[] values = scanner.nextLine().split(":|,|\"");
 			int territory = Integer.parseInt(values[0]);
 			int cardType = Integer.parseInt(values[1]);
 			CardType type = CardType.SOLDIER;
 			switch (cardType) {
-			case 0:
-				type = CardType.SOLDIER;
-				break;
-			case 1:
-				type = CardType.HORSE;
-				break;
-			case 2:
-				type = CardType.CANNON;
+			    case 0:
+			    	type = CardType.SOLDIER;
+			    	break;
+			    case 1:
+			    	type = CardType.HORSE;
+			    	break;
+			    case 2:
+			    	type = CardType.CANNON;
 			}
-			CardUtils.addCard(state, new Card(TerritoryUtils.getTerritoryByName(state, t.get(territory)), type));
+			CardUtils.addCard(state, new Card(TerritoryUtils.getTerritoryByName(state, t.get(territory)), type, cur++));
 		}
-		CardUtils.addCard(state, new Card(null, CardType.WILD));
-		CardUtils.addCard(state, new Card(null, CardType.WILD));
+		CardUtils.addCard(state, new Card(null, CardType.WILD, cur++));
+		CardUtils.addCard(state, new Card(null, CardType.WILD, cur++));
 	}
 
 	/*

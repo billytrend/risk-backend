@@ -46,10 +46,8 @@ public class GameEngine implements Runnable {
 	
 	public GameEngine(State state) {
 		this.gameState = state;
-		changeRecord = new StateChangeRecord(state.getPlayersIds(), state.getTerritoryIds(),
-				state.getPlayers().get(0).getArmies().size());
+		changeRecord = new StateChangeRecord(state.getPlayersIds(), state.getTerritoryIds(), state.getPlayers().get(0).getArmies().size());
 		winConditions = new WinConditions();
-
     }
 	
 	public State getState(){
@@ -174,6 +172,8 @@ public class GameEngine implements Runnable {
             Arbitration.setFirstPlayer(this.gameState);
             // record this in the state
             this.currentPlayer = gameState.getPlayerQueue().getCurrent();
+            applyAndReportChange(gameState, new PlayerChange(currentPlayer.getId()));
+
         }
 
         // do initial army handout
@@ -576,12 +576,14 @@ public class GameEngine implements Runnable {
 	 */
 	private PlayState endGo() {
 		if (currentPlayerHasTakenCountry) {
-            CardUtils.givePlayerRandomCard(gameState, currentPlayer);
+            CardHandout c = new CardHandout(currentPlayer.getId());
+            applyAndReportChange(gameState, c);
 
 			currentPlayerHasTakenCountry = false;
 		}
 		
 		currentPlayer = gameState.getPlayerQueue().next();
+        applyAndReportChange(gameState, new PlayerChange(currentPlayer.getId()));
 		
 		return PLAYER_BEGINNING_TURN;
 	}

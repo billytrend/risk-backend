@@ -50,7 +50,6 @@ public class BorderControl implements PlayerInterface {
 
 	public Territory getTerritory(Player player, HashSet<Territory> possibles,
 			Territory from, boolean canResign, RequestReason reason) {
-System.out.println(reason);
 		ArrayList<HashSet<Territory>> clusters = TerritoryUtils.getAllClusters(
 				state, player);
 		switch (reason) {

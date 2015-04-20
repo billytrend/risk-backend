@@ -11,6 +11,7 @@ import org.paukov.combinatorics.Generator;
 import org.paukov.combinatorics.ICombinatoricsVector;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 
 public class CardUtils {
@@ -27,6 +28,10 @@ public class CardUtils {
         
         return cardPayout;
         
+    }
+
+    public static Card getCardById(State state, int id) {
+        return state.getCards().get(id);
     }
     
     public static void incrementNumberOfCardSetsUsed(Player player) {
@@ -74,13 +79,14 @@ public class CardUtils {
         return unownedCards;
     }
     
-    public static void givePlayerRandomCard(State s, Player p) {
+    public static Card givePlayerRandomCard(State s, Player p) {
         ArrayList<Card> unownedCards = getUnownedCards(s);
-        if (unownedCards.size() == 0) return;
+        if (unownedCards.size() == 0) return null;
         Random r = new Random();
         int randIndex = r.nextInt(unownedCards.size());
         Card chosen = unownedCards.get(randIndex);
         givePlayerCard(chosen, p);
+        return chosen;
     }
     
     public static ArrayList<Card> getCardsOfType(ArrayList<Card> cards, CardType cardType) {
@@ -153,6 +159,16 @@ public class CardUtils {
             }
         }
         return combinations;
+    }
+
+    public static boolean cardArrayMatchesIdArray(int[] ints, Triplet<Card, Card, Card> cards) {
+        HashSet<Card> found = new HashSet<Card>();
+        for (int i : ints) {
+            if (i == cards.getValue0().getId() && !found.contains(cards.getValue0())) found.add(cards.getValue0());
+            else if (i == cards.getValue1().getId() && !found.contains(cards.getValue1())) found.add(cards.getValue1());
+            else if (i == cards.getValue2().getId() && !found.contains(cards.getValue2())) found.add(cards.getValue2());
+        }
+        return found.size() == 3;
     }
 
 }

@@ -9,7 +9,6 @@ module.exports = React.createClass({
 
         return (
             <div>
-                <div>{ playerState.numberId }</div>
                 <div>{ playerState.id }</div>
             </div>
         );

@@ -4,7 +4,8 @@ var React = require('react'),
 
 var soundEffects = {
     "clash": require('../../Assets/sounds/clash.mp3'),
-    "fiveArmies": require('../../Assets/sounds/five-armies.mp3')
+    "fiveArmies": require('../../Assets/sounds/five-armies.mp3'),
+    "alert": require('../../Assets/sounds/alert.mp3')
 };
 
 module.exports = React.createClass({
@@ -17,10 +18,12 @@ module.exports = React.createClass({
 
     componentDidMount: function() {
         //ServerRequest.addChangeListener("request", this._playEffect.bind(this, 'clash'));
+        //ServerRequest.addChangeListener("request", this._playEffect.bind(this, 'alert'));
         //this._playTheme();
     },
 
     _playEffect: function(effectName) {
+        this.refs[effectName].getDOMNode().currentTime = 0;
         this.refs[effectName].getDOMNode().play();
     },
 

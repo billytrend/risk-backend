@@ -1,6 +1,5 @@
 package GameUtils;
 
-import GameBuilders.DemoGameBuilder;
 import GameBuilders.RiskMapGameBuilder;
 import GameState.*;
 import PlayerInput.DumbBotInterface;
@@ -55,7 +54,7 @@ public class CardUtilsTest {
         Iterator<Territory> it = state.getTerritories().vertexSet().iterator();
         Territory aTerr = it.next();
         Player aPlayer = state.getPlayers().get(0);
-        Card c = new Card(aTerr, CardType.CANNON);
+        Card c = new Card(aTerr, CardType.CANNON, 0);
         CardUtils.addCard(state, c);
 
         assertEquals(CardUtils.getPlayersCards(state, aPlayer).size(), 0);
@@ -69,7 +68,7 @@ public class CardUtilsTest {
         Iterator<Territory> it = state.getTerritories().vertexSet().iterator();
         Territory aTerr = it.next();
         Player aPlayer = state.getPlayers().get(0);
-        Card c = new Card(aTerr, CardType.CANNON);
+        Card c = new Card(aTerr, CardType.CANNON, 0);
         CardUtils.addCard(state, c);
         CardUtils.givePlayerCard(c, aPlayer);
         CardUtils.releaseCard(c);
@@ -82,13 +81,13 @@ public class CardUtilsTest {
         Iterator<Territory> it = state.getTerritories().vertexSet().iterator();
         Territory aTerr = it.next();
         Player aPlayer = state.getPlayers().get(0);
-        Card c = new Card(aTerr, CardType.CANNON);
+        Card c = new Card(aTerr, CardType.CANNON, 0);
         CardUtils.addCard(state, c);
         assertEquals(CardUtils.getUnownedCards(state).get(44), c);
         assertEquals(CardUtils.getUnownedCards(state).size(), 45);
         CardUtils.givePlayerCard(c, aPlayer);
         assertEquals(CardUtils.getUnownedCards(state).size(), 44);
-        Card d = new Card(aTerr, CardType.HORSE);
+        Card d = new Card(aTerr, CardType.HORSE, 0);
         CardUtils.addCard(state, d);
         assertEquals(CardUtils.getUnownedCards(state).size(), 45);
         assertEquals(CardUtils.getUnownedCards(state).get(44), d);
@@ -148,12 +147,12 @@ public class CardUtilsTest {
         Territory aTerr = it.next();
         Territory anotherTerr = it.next();
         Player aPlayer = state.getPlayers().get(0);
-        Card c = new Card(aTerr, CardType.CANNON);
-        Card d = new Card(aTerr, CardType.HORSE);
-        Card e = new Card(aTerr, CardType.SOLDIER);
-        Card f = new Card(anotherTerr, CardType.SOLDIER);
-        Card g = new Card(anotherTerr, CardType.SOLDIER);
-        Card h = new Card(anotherTerr, CardType.SOLDIER);
+        Card c = new Card(aTerr, CardType.CANNON, 0);
+        Card d = new Card(aTerr, CardType.HORSE, 0);
+        Card e = new Card(aTerr, CardType.SOLDIER, 0);
+        Card f = new Card(anotherTerr, CardType.SOLDIER, 0);
+        Card g = new Card(anotherTerr, CardType.SOLDIER, 0);
+        Card h = new Card(anotherTerr, CardType.SOLDIER, 0);
         assertEquals(0, CardUtils.getPossibleCardCombinations(state, aPlayer).size());
         CardUtils.addCard(state, c);
         CardUtils.addCard(state, d);

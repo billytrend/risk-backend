@@ -12,11 +12,13 @@ public class Card {
 	private final CardType type;
 	private final Territory territory;
 	private Player owner;
+    private final int id;
 	
-	public Card(Territory terr, CardType cardType) {
+	public Card(Territory terr, CardType cardType, int id) {
 		this.territory = terr;
 		this.type = cardType;
-		owner = null;
+        this.id = id;
+        owner = null;
 	}
 
 	public void setOwner(Player owner) {
@@ -34,5 +36,8 @@ public class Card {
 	public Territory getTerritory() {
 		return territory;
 	}
-	
+
+    public int getId() {
+        return id;
+    }
 }

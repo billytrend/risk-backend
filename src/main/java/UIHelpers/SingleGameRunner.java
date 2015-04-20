@@ -5,16 +5,16 @@ import GameBuilders.RiskMapGameBuilder;
 import GameState.Player;
 import GameState.State;
 import LobbyServer.SingleGameServer;
-import PlayerInput.*;
-
-import java.util.ArrayList;
-
+import PlayerInput.CommunistAggressive;
+import PlayerInput.DumbBotInterface;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.DefaultHandler;
 import org.mortbay.jetty.handler.HandlerList;
 import org.mortbay.jetty.handler.ResourceHandler;
 import org.mortbay.jetty.nio.SelectChannelConnector;
+
+import java.util.ArrayList;
 
 public class SingleGameRunner {
 
@@ -54,7 +54,6 @@ public class SingleGameRunner {
 
         ResourceHandler resource_handler = new ResourceHandler();
         resource_handler.setWelcomeFiles(new String[]{ "index.html" });
-
         resource_handler.setResourceBase("./ui-build/");
 
         HandlerList handlers = new HandlerList();
@@ -65,7 +64,6 @@ public class SingleGameRunner {
 
         SingleGameServer s = new SingleGameServer(8887, gameState, players);
         server.join();
-
 
     }
 
