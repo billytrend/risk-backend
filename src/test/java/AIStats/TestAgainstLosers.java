@@ -1,4 +1,4 @@
-package AI;
+package AIStats;
 
 import GameBuilders.RiskMapGameBuilder;
 import GameEngine.GameEngine;
@@ -36,12 +36,7 @@ public class TestAgainstLosers {
 	public void setup() throws InterruptedException, IOException {
 		
 		writer = new PrintWriter(new BufferedWriter (new FileWriter(stats, true)));
-		
-		PlayerInterface[] interfaces = new PlayerInterface[] {
-				new DumbBotInterface(), new DumbBotInterface(),
-				new DumbBotInterface(), new DumbBotInterface() };
-
-		gameState = RiskMapGameBuilder.buildGame(interfaces);
+		gameState = RiskMapGameBuilder.buildGame(null);
 
 		
 	}
@@ -65,18 +60,17 @@ public class TestAgainstLosers {
     }
 	@After
 	public void runGameAndWriteStats() throws InterruptedException{
+		ArrayList<Player> players = new ArrayList<Player>();
 		player2 = new Player(new TheLoser(gameState));
 		player3 = new Player(new TheLoser(gameState));
 		player4 = new Player(new TheLoser(gameState));
 		
-		ArrayList<Player> playerList = new ArrayList<Player>();
-		playerList.add(player1);
-		playerList.add(player2);
-		playerList.add(player3);
-		playerList.add(player4);
+		players.add(player1);
+		players.add(player2);
+		players.add(player3);
+		players.add(player4);
 		
-		gameState.setPlayers(playerList);
-		
+		gameState.setPlayers(players);
 		
 		GameEngine gameThr = new GameEngine(gameState);
 	    Thread gameThread = new Thread(gameThr);

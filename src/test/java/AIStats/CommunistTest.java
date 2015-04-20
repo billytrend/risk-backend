@@ -1,3 +1,4 @@
+package AIStats;
 //package AI;
 //
 //import GameBuilders.RiskMapGameBuilder;
