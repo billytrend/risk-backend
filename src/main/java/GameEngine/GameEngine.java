@@ -145,8 +145,6 @@ public class GameEngine implements Runnable {
 			case END_GAME:
 				debug("\nEND GAME!");
 				gameState.setWinner(currentPlayer);
-				System.out.println("GAME ENGINE - Line155 : " + gameState.getWinner().getId());
-				
 				return false;
 			
 			default:
@@ -303,9 +301,26 @@ public class GameEngine implements Runnable {
 
 		if (possibleCombinations.size() == 0) return 0;
 
-		
-
 		Triplet<Card, Card, Card> choice = currentPlayer.getCommunicationMethod().getCardChoice(currentPlayer, possibleCombinations);
+
+        HashSet<Territory> territoriesOwned = CardUtils.getTerritoriesOnCardsThatPlayersOwn(currentPlayer, choice);
+
+        if (territoriesOwned.size() > 0) {
+
+            ArmyHandout handout = new ArmyHandout(currentPlayer.getId(), 2, playState);
+            applyAndReportChange(gameState, handout);
+
+            Territory territoryChoice = currentPlayer.getCommunicationMethod().getTerritory(currentPlayer, territoriesOwned, null, false, RequestReason.PLACING_ARMIES_PHASE);
+            // deploy the armies
+            Change stateChange = new ArmyPlacement(currentPlayer.getId(), territoryChoice.getId(), 1, null);
+            applyAndReportChange(gameState, stateChange);
+
+            territoryChoice = currentPlayer.getCommunicationMethod().getTerritory(currentPlayer, territoriesOwned, null, false, RequestReason.PLACING_ARMIES_PHASE);
+            // deploy the armies
+            stateChange = new ArmyPlacement(currentPlayer.getId(), territoryChoice.getId(), 1, null);
+            applyAndReportChange(gameState, stateChange);
+
+        }
 
         if (choice == null) return 0;
         int cardPayout = CardUtils.getCurrentArmyPayout(currentPlayer, choice);
@@ -338,16 +353,8 @@ public class GameEngine implements Runnable {
 			return PLAYER_INVADING_COUNTRY;
 		}
 
-		HashSet<Territory> playersTerritories;
+        HashSet<Territory> playersTerritories = TerritoryUtils.getPlayersTerritories(currentPlayer);;
 
-		if(playersUndeployedArmies.size() <= 2 && currentPlayer.hasExtraArmies().size() != 0){
-			playersTerritories = currentPlayer.hasExtraArmies();
-		}
-
-		else{
-		    // get players territories
-		    playersTerritories = TerritoryUtils.getPlayersTerritories(currentPlayer);
-		}
 
 		// find out which country the player wants to place in
 		Territory toFill = currentPlayer.getCommunicationMethod()

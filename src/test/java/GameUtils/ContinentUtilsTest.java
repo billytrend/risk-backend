@@ -87,7 +87,9 @@ public class ContinentUtilsTest {
 		ArrayList<Player> players = gameState.getPlayers();
 		Player p = players.get(0);
 		ArmyUtils.givePlayerNArmies(p, 30);
+
 		assertEquals(0, ContinentUtils.getContinentPayout(gameState, p));
+
 		for(Territory t : continents.get(0).getTerritories()){
 			ArmyUtils.deployArmies(p, t, 1);
 		}

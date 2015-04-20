@@ -23,20 +23,21 @@ public class CardUtils {
         //add another 5 for each set after the sixth
         for(int i = 5; i < setsUsed; i++) cardPayout +=5;
         
-        HashSet<Territory> cardTerritories = new HashSet<Territory>();
-        
-        for(Territory t: TerritoryUtils.getPlayersTerritories(player)){
-        	if(t == cards.getValue0().getTerritory()|| t == cards.getValue1().getTerritory() || t ==cards.getValue2().getTerritory()){
-        		ownsATerritory = true;
-        		//TODO: restrict where these can be placed
-        		cardTerritories.add(t);
-        		player.extraArmiesGiven(cardTerritories);
-        	}
-        }
-        if(ownsATerritory) cardPayout +=2;
-        
+
         return cardPayout;
         
+    }
+
+    public static HashSet<Territory> getTerritoriesOnCardsThatPlayersOwn(Player player, Triplet<Card, Card, Card> cards) {
+        HashSet<Territory> cardTerritories = new HashSet<Territory>();
+
+        for(Territory t: TerritoryUtils.getPlayersTerritories(player)){
+            if(t == cards.getValue0().getTerritory()|| t == cards.getValue1().getTerritory() || t ==cards.getValue2().getTerritory()){
+                cardTerritories.add(t);
+            }
+        }
+
+        return cardTerritories;
     }
 
 	public static void incrementNumberOfCardSetsUsed(Player player) {

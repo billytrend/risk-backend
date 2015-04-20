@@ -155,21 +155,7 @@ public class CardUtilsTest {
 		Player newPlayer = state.getPlayers().get(1);
 		assertEquals(0, newPlayer.getNumberOfCardSetsUsed());
 		assertEquals(4, CardUtils.getCurrentArmyPayout(newPlayer, cardSet));
-		
-		ArmyUtils.givePlayerNArmies(newPlayer, 3);
-		ArmyUtils.deployArmies(newPlayer, cardSet.getValue0().getTerritory(), 1);
-		assertEquals(6, CardUtils.getCurrentArmyPayout(newPlayer, cardSet));
-		ArmyUtils.deployArmies(newPlayer, cardSet.getValue1().getTerritory(), 1);
-		assertEquals(6, CardUtils.getCurrentArmyPayout(newPlayer, cardSet));
-		ArmyUtils.deployArmies(newPlayer, cardSet.getValue2().getTerritory(), 1);
-		assertEquals(6, CardUtils.getCurrentArmyPayout(newPlayer, cardSet));
-		ArmyUtils.destroyArmies(newPlayer, cardSet.getValue0().getTerritory(), 1);
-		assertEquals(6, CardUtils.getCurrentArmyPayout(newPlayer, cardSet));
-		ArmyUtils.destroyArmies(newPlayer, cardSet.getValue1().getTerritory(), 1);
-		assertEquals(6, CardUtils.getCurrentArmyPayout(newPlayer, cardSet));
-		ArmyUtils.destroyArmies(newPlayer, cardSet.getValue2().getTerritory(), 1);
-		assertEquals(4, CardUtils.getCurrentArmyPayout(newPlayer, cardSet));
-	}
+    }
 
 	@Test
 	public void testGetPossibleCardCombinations() throws Exception {

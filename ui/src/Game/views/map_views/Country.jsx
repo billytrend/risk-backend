@@ -73,7 +73,7 @@ module.exports = React.createClass({
 
             var newState = {
                 armies: countryState.armies,
-                isOption: countryRequestState.option && (RequestMeta != undefined || RequestMeta.reason != undefined)
+                isOption: countryRequestState.option
             };
 
 

@@ -142,9 +142,9 @@ public class RiskMapGameBuilder {
         //Add continents
         // TODO: AR THESE TEH RIGHT CONTINETN IDS?
         ContinentUtils.addContinent(state, northAmerica, 5, "north_america", 1);
-        ContinentUtils.addContinent(state, southAmerica, 3, "south_america", 2);
+        ContinentUtils.addContinent(state, southAmerica, 2, "south_america", 2);
         ContinentUtils.addContinent(state, europe, 5, "europe", 3);
-        ContinentUtils.addContinent(state, africa, 2, "africa" , 4);
+        ContinentUtils.addContinent(state, africa, 3, "africa" , 4);
         ContinentUtils.addContinent(state, asia, 7, "asia", 5);
         ContinentUtils.addContinent(state, australia, 2, "australia", 6);
 
