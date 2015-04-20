@@ -432,7 +432,7 @@ public class GameEngine implements Runnable {
 		
 		if(defending == null){
 			System.out.println("GE: def null");
-			return PLAYER_MOVING_ARMIES ;
+			return PLAYER_MOVING_ARMIES;
 		}
 
 		

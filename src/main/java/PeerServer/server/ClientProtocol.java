@@ -345,13 +345,20 @@ public class ClientProtocol extends AbstractProtocol{
 // RUNNING THE CLIENT 
 // =====================================================================
 		
-	
+	public ClientProtocol(State state) {
+        this.state = state;
+    }
+	public ClientProtocol() {
+        this.state = new State();
+    }
+
+
 	public void run() {
 		// localhost should be replaced with an argument args[0], port args[1]
 		client = new Client("localhost", 4444);
-		state = new State();
 
-		super.run();
+
+        super.run();
 
 		client.close();
 	}
