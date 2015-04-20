@@ -6,7 +6,7 @@ import GameState.Player;
 import GameState.State;
 import LobbyServer.LobbyState.Lobby;
 import PlayerInput.Berserker;
-import PlayerInput.Billy;
+import PlayerInput.Boss;
 import PlayerInput.BorderControl;
 import PlayerInput.CommunistAggressive;
 import PlayerInput.CommunistDefensive;
@@ -149,34 +149,34 @@ public class TestAgainstLosers {
 	}
 	
 	
-	//Billy
+	//Boss
 	@Test
-    public void testBillywithOneLoser(){
-		player1 = new Player(new Billy(gameState), "Billy");
+    public void testBosswithOneLoser(){
+		player1 = new Player(new Boss(gameState), "Boss");
 		players.add(player1);
 		addLosers(1);
     }
 	@Test
-    public void testBillywithTwoLosers(){
-		player1 = new Player(new Billy(gameState), "Billy");
+    public void testBosswithTwoLosers(){
+		player1 = new Player(new Boss(gameState), "Boss");
 		players.add(player1);
 		addLosers(2);
     }
 	@Test
-    public void testBillywithThreeLosers(){
-		player1 = new Player(new Billy(gameState), "Billy");
+    public void testBosswithThreeLosers(){
+		player1 = new Player(new Boss(gameState), "Boss");
 		players.add(player1);
 		addLosers(3);
     }
 	@Test
-    public void testBillywithFourLosers(){
-		player1 = new Player(new Billy(gameState), "Billy");
+    public void testBosswithFourLosers(){
+		player1 = new Player(new Boss(gameState), "Boss");
 		players.add(player1);
 		addLosers(4);
     }
 	@Test
-    public void testBillywithFiveLosers(){
-		player1 = new Player(new Billy(gameState), "Billy");
+    public void testBosswithFiveLosers(){
+		player1 = new Player(new Boss(gameState), "Boss");
 		players.add(player1);
 		addLosers(5);
     }

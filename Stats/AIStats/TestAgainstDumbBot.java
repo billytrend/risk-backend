@@ -5,7 +5,7 @@ import GameEngine.GameEngine;
 import GameState.Player;
 import GameState.State;
 import PlayerInput.Berserker;
-import PlayerInput.Billy;
+import PlayerInput.Boss;
 import PlayerInput.BorderControl;
 import PlayerInput.CommunistAggressive;
 import PlayerInput.CommunistDefensive;
@@ -144,34 +144,34 @@ public class TestAgainstDumbBot {
 	}
 	
 	
-	//Billy
+	//Boss
 	@Test
-    public void testBillywithOneDumbBot(){
-		player1 = new Player(new Billy(gameState), "Billy");
+    public void testBosswithOneDumbBot(){
+		player1 = new Player(new Boss(gameState), "Boss");
 		players.add(player1);
 		addDumbBots(1);
     }
 	@Test
-    public void testBillywithTwoDumbBots(){
-		player1 = new Player(new Billy(gameState), "Billy");
+    public void testBosswithTwoDumbBots(){
+		player1 = new Player(new Boss(gameState), "Boss");
 		players.add(player1);
 		addDumbBots(2);
     }
 	@Test
-    public void testBillywithThreeDumbBots(){
-		player1 = new Player(new Billy(gameState), "Billy");
+    public void testBosswithThreeDumbBots(){
+		player1 = new Player(new Boss(gameState), "Boss");
 		players.add(player1);
 		addDumbBots(3);
     }
 	@Test
-    public void testBillywithFourDumbBots(){
-		player1 = new Player(new Billy(gameState), "Billy");
+    public void testBosswithFourDumbBots(){
+		player1 = new Player(new Boss(gameState), "Boss");
 		players.add(player1);
 		addDumbBots(4);
     }
 	@Test
-    public void testBillywithFiveDumbBots(){
-		player1 = new Player(new Billy(gameState), "Billy");
+    public void testBosswithFiveDumbBots(){
+		player1 = new Player(new Boss(gameState), "Boss");
 		players.add(player1);
 		addDumbBots(5);
     }
