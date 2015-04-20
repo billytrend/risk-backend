@@ -10,6 +10,7 @@ import PlayerInput.BorderControl;
 import PlayerInput.CommunistAggressive;
 import PlayerInput.CommunistDefensive;
 import PlayerInput.DumbBotInterface;
+import PlayerInput.Nailer;
 
 import org.junit.After;
 import org.junit.Before;
@@ -26,7 +27,7 @@ import java.util.Timer;
 public class TestAgainstDumbBot {
 	private Player player1;
 	private State gameState;
-	final private File stats = new File("Statistics");
+	final private File stats = new File("Statistics.csv");
 	private PrintWriter writer;
 	private ArrayList<Player> players;
 	
@@ -175,6 +176,37 @@ public class TestAgainstDumbBot {
 		players.add(player1);
 		addDumbBots(5);
     }
+//	//Nailer
+//	@Test
+//    public void testNailerwithOneDumbBot(){
+//		player1 = new Player(new Nailer(gameState), "Nailer");
+//		players.add(player1);
+//		addDumbBots(1);
+//    }
+//	@Test
+//    public void testNailerwithTwoDumbBots(){
+//		player1 = new Player(new Nailer(gameState), "Nailer");
+//		players.add(player1);
+//		addDumbBots(2);
+//    }
+//	@Test
+//    public void testNailerwithThreeDumbBots(){
+//		player1 = new Player(new Nailer(gameState), "Nailer");
+//		players.add(player1);
+//		addDumbBots(3);
+//    }
+//	@Test
+//    public void testNailerwithFourDumbBots(){
+//		player1 = new Player(new Nailer(gameState), "Nailer");
+//		players.add(player1);
+//		addDumbBots(4);
+//    }
+//	@Test
+//    public void testNailerwithFiveDumbBots(){
+//		player1 = new Player(new Nailer(gameState), "Nailer");
+//		players.add(player1);
+//		addDumbBots(5);
+//    }
 	
 //	//Berserker
 //		@Test
@@ -213,12 +245,14 @@ public class TestAgainstDumbBot {
 		
 		GameEngine gameThr = new GameEngine(gameState);
 	    Thread gameThread = new Thread(gameThr);
-	    Timer t = new Timer(gameThread.getName());
 	    gameThread.start();
 	    gameThread.join();
 	    gameState.print();
 		String results = "";
-		for(Player p : players) results += p.getId() + ",";
+		for(int i = 0; i<6; i++){
+			if(players.size() > i) results += players.get(i).getId() + ",";
+			else results += ",";
+		}
 		results += player1.getNumberOfTurns() + "," +player1.getNumberOfAttacks() + ",";
 		results += gameState.getEndPosition(player1);
 	    writer.println(results);
