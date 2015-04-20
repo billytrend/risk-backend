@@ -38,7 +38,7 @@ module.exports = React.createClass({
             { StateStore.gameStarted() ? '' : <Lobby /> }
             <SoundTrack />
             <Prompt />
-            <div className="view_layer main_view">
+            <div className="main_view">
                 <PlayerOverview />
                 <WorldMap />
             </div>

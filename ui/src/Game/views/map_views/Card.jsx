@@ -9,6 +9,11 @@ var React = require('react/addons'),
 
 module.exports = React.createClass({
 
+    componentDidMount: function() {
+        pathBBox = this.refs.country.getDOMNode().children[0].getBBox();
+        this.refs.country.getDOMNode().setAttribute("viewBox", "0 0 " + pathBBox.width + " " + pathBBox.height);
+        this.refs.country.getDOMNode().setAttribute("width", pathBBox.width );
+    },
 
     render: function() {
         var number = this.props.value ? this.props.value : 1,
@@ -30,6 +35,9 @@ module.exports = React.createClass({
                     }
                 </div>
                 <div>{ self.props.countryName }</div>
+                <svg ref="country">
+                    <Country countryName={self.props.countryName}/>
+                </svg>
             </div>
         )
     }

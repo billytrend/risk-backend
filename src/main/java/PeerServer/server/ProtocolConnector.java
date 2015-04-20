@@ -1,23 +1,16 @@
 package PeerServer.server;
 
-import java.util.Map.Entry;
-import java.util.ArrayList;
-import java.util.Queue;
-import java.util.Random;
-import java.util.concurrent.BlockingQueue;
-
-import org.hamcrest.internal.ArrayIterator;
-import org.javatuples.Triplet;
-
 import GameEngine.RequestReason;
 import GameState.Card;
 import GameState.Territory;
 import PeerServer.protocol.cards.play_cards;
-import PeerServer.protocol.gameplay.attack;
-import PeerServer.protocol.gameplay.attack_capture;
-import PeerServer.protocol.gameplay.defend;
-import PeerServer.protocol.gameplay.fortify;
-import PeerServer.protocol.gameplay.setup;
+import PeerServer.protocol.gameplay.*;
+import org.javatuples.Triplet;
+
+import java.util.ArrayList;
+import java.util.Map.Entry;
+import java.util.Random;
+import java.util.concurrent.BlockingQueue;
 
 
 // INT
@@ -300,11 +293,9 @@ public class ProtocolConnector {
     		if(object instanceof Triplet){
     			Triplet<Card, Card, Card> set = (Triplet<Card, Card, Card>) object;
     			int[] cardsIds = new int[3];
-    			
-    			//TODO: 
-    		//	cardsIds[0] = set.getValue0(). getId
-    		//	cardsIds[1] = set.getValue1(). getId
-    		//	cardsIds[2] = set.getValue2(). getId
+    		    cardsIds[0] = set.getValue0().getId();
+    		    cardsIds[1] = set.getValue1().getId();
+    		    cardsIds[2] = set.getValue2().getId();
     			cards[i] = cardsIds;
     		}
     		else{

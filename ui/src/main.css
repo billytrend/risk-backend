@@ -5,7 +5,7 @@ body {
     user-select: none;
     background-color: #59A8D9;
     cursor: pointer;
-    font-family: courier, monospace;
+    font-family: "courier new", monospace;
     margin: 0px;
 }
 
@@ -14,7 +14,6 @@ body {
     position: fixed;
     width: 100%;
     height: 100%;
-    background: rgba(34,34,34,0.3);
     display:flex;
     flex-direction: column;
     flex-wrap: nowrap;
@@ -40,12 +39,16 @@ body {
     flex-wrap: nowrap;
     justify-content: space-around;
     align-items: center;
-    height: 100%;
+    height: 90%;
 }
 
-.main_view .world_map {
-    width: 100%;
+.world_map {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
     height: 100%;
+    width: 80%;
 }
 
 .dice_box div svg:hover {
@@ -53,40 +56,20 @@ body {
 }
 
 .prompt {
+    transition: 1s ease;
     position: absolute;
-    top: 0;
     left: 0;
-    right: 0;
+    bottom:0;
     background-color: black;
     padding: 5px;
     color: white;
     font-size: 20px;
 }
 
-.army_box {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    justify-content: center;
+.prompt_hidden {
+    opacity: 0;
 }
 
-.army_box div {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: center;
-    font-size: 90px;
-    text-align: center;
-}
-
-.army_box div div, .army_box div svg {
-    width: 15%;
-}
-
-.army_box div button {
-    height: 5%;
-    width:auto;
-}
 
 .player_overview {
     display: flex;
@@ -94,14 +77,19 @@ body {
     flex-wrap: nowrap;
     align-content: stretch;
     align-items: stretch;
+    align-items: stretch;
     height: 100%;
-    padding: 50px 1% 50px 1%;
+    width: 15%;
+    padding: 20px 5px 20px 5px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
 }
 
 .player_overview * {
 
 }
-
 
 .player_icon {
     width: 100%;
@@ -109,6 +97,7 @@ body {
     border-radius: 5px;
     padding: 5px;
     border: 3px solid transparent;
+    box-sizing: border-box
 }
 
 .in_play {
@@ -131,32 +120,6 @@ body {
     overflow-y: scroll;
 }
 
-.card_box>div {
-    display:flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: space-around;
-    align-content: center;
-    align-items: stretch;
-    width: 100%;
-    margin-top: 100px;
-    margin-bottom: 100px;
-}
-
-.card {
-    width: 250px;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    justify-content: space-around;
-    align-content: center;
-    align-items: center;
-    background-color: beige;
-    height: 350px;
-    /* margin: 30px; */
-    border-radius: 15px;
-}
-
 .play_card {
     display: flex;
     flex-direction: column;
@@ -172,7 +135,7 @@ body {
 }
 
 .attack_die {
-    fill: #FF0000;
+    fill: #ffa054;
 }
 
 .die_pip {
@@ -183,13 +146,6 @@ body {
     display: none;
 }
 
-.country_label_text {
-    text-align: center;
-    line-height: 29px;
-    border-radius: 50%;
-    background-color: #ffffff;
-}
-
 .framed_country_wrapper svg {
     display: flex;
     flex-direction: row;
@@ -197,7 +153,8 @@ body {
     justify-content: center;
     align-content: center;
     align-items: center;
-    width: 100%;}
+    width: 100%;
+}
 
 .country_focus {
     display: flex;
@@ -208,7 +165,127 @@ body {
     align-items: center;
 }
 
-.isOption {
-    transition: 1s ease;
+
+.dialogue_box {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    align-content: center;
+    align-items: center;
+    background: linear-gradient(to bottom,  #f0f9ff 0%, #a1dbff 100%); /* W3C */
+    padding: 50px;
+    border-radius: 30px;
+    border: solid 3px;
+    width: 70%;
+    margin: 200px;
+}
+
+.army_selection_column {
+    width: 100%;
+    text-align: center;
+    font-size: 72px;
+    margin-right: 40px;
+
+}
+
+.caption {
+    font-size: 20px;
+}
+
+
+.card {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    align-content: center;
+    align-items: center;
+    background-color: beige;
+    height: 350px;
+    margin: 10px;
+    border-radius: 15px;
+}
+
+
+
+.country_label {
+    font-size: 20px;
+    transition: 0.2s ease;
+}
+
+.country_label circle {
+    opacity: 0.5;
+}
+
+.can_choose circle {
+    transition: 0.2s ease;
     opacity: 1;
+}
+
+.country_label circle {
+    fill: white;
+    stroke-width: 3px;
+}
+
+.europe circle {
+    stroke: #3cb4d3;
+}
+.asia circle {
+    stroke: #6dc16f;
+}
+.africa circle {
+    stroke: #7a5c0a;
+}
+.australia circle {
+    stroke: #820087;
+}
+.north_america circle {
+    stroke: #b3ba1c;
+}
+
+.south_america circle {
+    stroke: #ca2a1c;
+}
+
+.connections path {
+    stroke: black;
+}
+
+.country_style {
+    stroke: black;
+    stroke-idth: 1px;
+}
+
+.card_box {
+    display: block;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: 50px;
+    height: 100%;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.card_triple {
+    display:flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    align-content: center;
+    align-items: center;
+    margin-top: 100px;
+    flex-shrink: 1;
+}
+
+.log {
+    height: 100px;
+}
+
+.die_hover {
+    opacity: 0.5;
 }

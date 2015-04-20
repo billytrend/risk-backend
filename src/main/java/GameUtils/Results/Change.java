@@ -5,7 +5,7 @@ import GameState.State;
 
 public abstract class Change {
 	
-	private String actingPlayerId;
+	protected String actingPlayerId;
 	private PlayState actionPlayed;
 
     // this is for the ui, when it receives the object as json

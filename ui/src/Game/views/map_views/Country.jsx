@@ -25,15 +25,16 @@ module.exports = React.createClass({
             obj.labelX = 0;
             obj.labelY = 0;
             obj.labelOpacity = 1;
+            obj.fill = "#D3D930";
             return obj;
         },
 
         componentDidMount: function() {
             if (this.props.onMap) {
                 StateStore.addChangeListener("state_change", this._refreshState);
-                StateStore.addChangeListener("add_army:" + this.props.countryName, this._addArmy);
-                StateStore.addChangeListener("remove_army:" + this.props.countryName, this._removeArmy);
-                ServerRequest.addChangeListener("request", this._setOptionality);
+                StateStore.addChangeListener("add_army:" + this.props.countryName, this._refreshState);
+                StateStore.addChangeListener("remove_army:" + this.props.countryName, this._refreshState);
+                ServerRequest.addChangeListener("request", this._refreshState);
                 this.setLabelPos();
             }
             this._refreshState();
@@ -42,8 +43,8 @@ module.exports = React.createClass({
         componentWillUnmount: function() {
             if (this.props.onMap) {
                 StateStore.removeChangeListener("state_change", this._refreshState);
-                StateStore.removeChangeListener("add_army:" + this.props.countryName, this._addArmy);
-                StateStore.removeChangeListener("remove_army:" + this.props.countryName, this._removeArmy);
+                StateStore.removeChangeListener("add_army:" + this.props.countryName, this._refreshState);
+                StateStore.removeChangeListener("remove_army:" + this.props.countryName, this._refreshState);
                 ServerRequest.removeChangeListener("request", this._refreshState);
             }
             //ViewStore.removeChangeListener(this.props.countryName, this._refreshState);
@@ -54,8 +55,8 @@ module.exports = React.createClass({
                 var bBox = this.getDOMNode().getBBox();
 
                 this.setState({
-                    labelX: (bBox.width / 2) - 15,
-                    labelY: (bBox.height/2) - 15
+                    labelX: (bBox.width / 2),
+                    labelY: (bBox.height/2)
                 });
             }
         },
@@ -66,75 +67,22 @@ module.exports = React.createClass({
 
         _refreshState: function() {
 
-            var countryState = StateStore.getCountryState(this.props.countryName),
-                countryRequestState = ServerRequest.getCountryDerivedInformation(this.props.countryName);
+            var countryState = StateStore.getCountryState(this.props.countryName);
+            var countryRequestState = ServerRequest.getCountryDerivedInformation(this.props.countryName);
+            var RequestMeta = ServerRequest.getRequestMeta();
 
             var newState = {
-                armies: countryState.armies
+                armies: countryState.armies,
+                isOption: countryRequestState.option
             };
+
+
+            if (countryState.owner) {
+                newState.fill = '#' + StateStore.getPlayerState(countryState.owner).colour;
+            }
 
             this.setState(newState);
 
-            if (countryState.owner) {
-                this._setFill('#' + StateStore.getPlayerState(countryState.owner).colour);
-            }
-        },
-
-        _setOptionality: function() {
-
-            var countryRequestState = ServerRequest.getCountryDerivedInformation(this.props.countryName);
-
-            this.setState({ isOption: countryRequestState.option });
-        },
-
-        _addArmy: function() {
-            //var self = this;
-            //var newNode = self.refs.armyCount.getDOMNode().children[0].cloneNode(true);
-            //self.refs.armyCount.getDOMNode().appendChild(newNode);
-            //VelocityJS(newNode, {
-            //    translateY: "-50px",
-            //    opacity: 0
-            //}, 500).then(function() {
-            //    self.refs.armyCount.getDOMNode().removeChild(newNode);
-            //});
-            this._refreshState();
-        },
-
-        _removeArmy: function() {
-            this._refreshState();
-        },
-
-        _toggleFilter: function(filter, state) {
-            var newState = {
-                style: {
-                    filter: {
-                        $set: state ? 'url(#' + filter + ')' : ''
-                    }
-                }
-            };
-            this.setState(React.addons.update(this.state, newState));
-        },
-
-        _setFill: function(colour) {
-            var newState = {
-                style: {
-                    fill: {
-                        $set: colour
-                    }
-                }
-            };
-            this.setState(React.addons.update(this.state, newState));
-        },
-
-        _setOpacity: function(value) {
-            var newState = {
-                style: {
-                    opacity: {
-                        $set: value
-                    }
-                }
-            };
-            this.setState(React.addons.update(this.state, newState));
         },
 
         _click: function() {
@@ -158,19 +106,19 @@ module.exports = React.createClass({
 
         render: function() {
             var self = this;
-            var style = this.state.style;
             var cx = React.addons.classSet;
             var transform = this.props.onMap ?  "scale(1,1) translate(" + self.state.offsetX + "," + self.state.offsetY + ")" : "";
+            var labelClasses = { country_label: true, can_choose: self.state.isOption };
+            labelClasses[self.state.continent] = true;
+            var textCentering = 6 + (self.state.armies > 9 ? 6 : 0) + (self.state.armies >= 99 ? 6 : 0);
             return (
                 <g onClick={ self._click } transform={ transform }>
-                    <path style={ style } d={ self.state.path }></path>
+                    <path fill={ self.state.fill } className="country_style" d={ self.state.path }></path>
                     {
-                        this.props.onMap ? <foreignObject ref="armyCount" transform={ "translate(" + self.state.labelX + "," + self.state.labelY + ")" }  width="30" height="30">
-                            <div className={ cx({
-                                country_label_text: true,
-                                can_choose: self.state.isOption
-                            }) }>{ self.state.armies }</div>
-                        </foreignObject> : ''
+                        this.props.onMap ? <g ref="armyCount" className={ cx( labelClasses ) }>
+                            <circle cx={ self.state.labelX } cy={ self.state.labelY } r="15" />
+                            <text x={ self.state.labelX - textCentering } y={ self.state.labelY + 6 } fill="black">{ self.state.armies }</text>
+                        </g> : ''
                     }
                 </g>
             );

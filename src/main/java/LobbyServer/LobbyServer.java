@@ -9,11 +9,9 @@ import LobbyServer.LobbyState.ObjectFromClient.GameComms.Response;
 import LobbyServer.LobbyState.ObjectFromClient.JoinGameReq;
 import LobbyServer.LobbyState.PlayerConnection;
 import org.java_websocket.WebSocket;
-import org.java_websocket.WebSocketImpl;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
@@ -22,21 +20,10 @@ import static com.esotericsoftware.minlog.Log.debug;
 
 public class LobbyServer extends WebSocketServer {
     
-    public static void main( String[] args ) throws InterruptedException , IOException {
-        WebSocketImpl.DEBUG = false;
-        int port = 8887; // 843 flash policy port
-        try {
-            port = Integer.parseInt( args[ 0 ] );
-        } catch ( Exception ex ) {
-        }
-        LobbyServer s = new LobbyServer( port );
-        s.start();
-    }
-
     private Lobby lobby = new Lobby();
 
     public LobbyServer(int port) throws UnknownHostException {
-        super( new InetSocketAddress( port ) );
+        super(new InetSocketAddress(port));
     }
 
     public LobbyServer(InetSocketAddress address) {
@@ -55,7 +42,6 @@ public class LobbyServer extends WebSocketServer {
         // push player into lobby
         LobbyUtils.addConnection(this.lobby, conn);
 
-        LobbyUtils.addGame(lobby, new GameDescription("test", 2));
 
         // send the lobby state to the player
         conn.send(Jsonify.getObjectAsJsonString(lobby));
@@ -92,8 +78,15 @@ public class LobbyServer extends WebSocketServer {
 
         // if game description create, add to lobby
         if (messageObject instanceof GameDescription) {
-            LobbyUtils.addGameDescription(lobby, messageObject);
+            LobbyUtils.addGameDescription(lobby, (GameDescription) messageObject);
+            if (((GameDescription) messageObject).getMaxPlayers() == 0) {
+                LobbyUtils.addGhostToGame(lobby, (GameDescription) messageObject, conn);
+            } else {
+                LobbyUtils.addPlayerToGame(lobby, (GameDescription) messageObject, conn);
+            }
+            LobbyUtils.startGames(lobby);
             LobbyUtils.updateStateForLobbiedPlayers(lobby);
+
         }
 
         // if join game, add to game and send confirmation with game meta
@@ -111,7 +104,7 @@ public class LobbyServer extends WebSocketServer {
 
     @Override
     public void onError( WebSocket conn, Exception ex ) {
-        conn.send("no, sorry");
+        ex.printStackTrace();
     }
     
     public void sendToAll( String text ) {

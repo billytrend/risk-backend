@@ -1,7 +1,8 @@
 var React = require('react'),
     PlayerIcon = require('./PlayerIcon.jsx'),
     StateStore = require('../stores/StateStore'),
-    ViewStore = require('../stores/ViewStore');
+    ViewStore = require('../stores/ViewStore'),
+    GameLog = require('./map_views/GameLog.jsx');
 
 module.exports = React.createClass({
 
