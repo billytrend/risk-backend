@@ -3,6 +3,7 @@ package GameState;
 import PlayerInput.PlayerInterface;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * A class that represents a single player. Each player
@@ -20,28 +21,39 @@ public class Player {
 	private transient ArrayList<Army> armies = new ArrayList<Army>();
     private int cardSetsUsed;
     private String colour = "";
+    private int numberOfTurns;
+    private int numberOfAttacks;
+    private HashSet<Territory> cardTerritories = new HashSet<Territory>();
 
 	public Player(PlayerInterface communicationMethod) {
 		this.communicationMethod = communicationMethod;
 		armies = new ArrayList<Army>();
 		cardSetsUsed = 0;
+		numberOfTurns = 0;
+		numberOfAttacks =0;
 	}
 
 	public Player(PlayerInterface communicationMethod, int index) {
 		this(communicationMethod);
 		id = "Player " + index;
 		numberId = index;
+		numberOfTurns = 0;
+		numberOfAttacks =0;
 	}
 	
 	public Player(PlayerInterface communicationMethod, String id) {
 		this(communicationMethod);
 		this.id = id;
+		numberOfTurns = 0;
+		numberOfAttacks =0;
 	}
 	
 	public Player(PlayerInterface communicationMethod, Integer id, String name) {
 		this(communicationMethod);
 		this.numberId = id;
 		this.id = name;
+		numberOfTurns = 0;
+		numberOfAttacks =0;
 	}
 
 	public String getId() {
@@ -91,5 +103,27 @@ public class Player {
 
 	public void setPublicKey(String publicKey) {
 		this.publicKey = publicKey;
+	}
+	
+	public void logTurn(){
+		numberOfTurns ++;
+	}
+	public void logAttack(){
+		numberOfAttacks++;
+	}
+	public int getNumberOfTurns(){
+		return numberOfTurns;
+	}
+	public int getNumberOfAttacks(){
+		return numberOfAttacks;
+	}
+	public void extraArmiesGiven(HashSet<Territory> cardTerritories){
+		this.cardTerritories = cardTerritories;
+	}
+	public HashSet<Territory> hasExtraArmies(){
+		return cardTerritories;
+	}
+	public void extraArmiesPlaced(){
+		cardTerritories = new HashSet<Territory>();
 	}
 }

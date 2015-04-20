@@ -77,8 +77,6 @@ public class GameDescription extends ClientMessage {
         ais.put(CommunistAggressive.class.getSimpleName(), CommunistAggressive.class);
         ais.put(CommunistDefensive.class.getSimpleName(), CommunistDefensive.class);
         ais.put(DumbBotInterface.class.getSimpleName(), DumbBotInterface.class);
-        ais.put(StartAustralia.class.getSimpleName(), StartAustralia.class);
-        ais.put(theLooser.class.getSimpleName(), theLooser.class);
 
         ArrayList<PlayerInterface> aiObjects = new ArrayList<PlayerInterface>();
         for (String ai : this.AIs) {

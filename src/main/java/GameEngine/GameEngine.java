@@ -1,14 +1,9 @@
 package GameEngine;
 
 import GameState.*;
-import GameUtils.ArmyUtils;
-import GameUtils.CardUtils;
-import GameUtils.ContinentUtils;
-import GameUtils.PlayerUtils;
+import GameUtils.*;
 import GameUtils.Results.*;
-import GameUtils.TerritoryUtils;
 import PlayerInput.PlayerInterface;
-
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -28,7 +23,6 @@ public class GameEngine implements Runnable {
 	protected State gameState;
 	protected Player currentPlayer = null;
 	private PlayState playState = BEGINNING_STATE;
-    private PlayState previousPlayState;
 	private boolean currentPlayerHasTakenCountry = false;
 	private StateChangeRecord changeRecord;
 	private WinConditions winConditions;
@@ -123,6 +117,7 @@ public class GameEngine implements Runnable {
 			case PLAYER_BEGINNING_TURN:
 				debug("\nCARDS");
 				this.playState = giveAdditionalArmies();
+				currentPlayer.logTurn();
 				break;
 
 			case PLAYER_PLACING_ARMIES:
@@ -149,6 +144,9 @@ public class GameEngine implements Runnable {
 				
 			case END_GAME:
 				debug("\nEND GAME!");
+				gameState.setWinner(currentPlayer);
+				System.out.println("GAME ENGINE - Line155 : " + gameState.getWinner().getId());
+				
 				return false;
 			
 			default:
@@ -177,12 +175,7 @@ public class GameEngine implements Runnable {
         }
 
         // do initial army handout
-        int numOfPlayers = PlayerUtils.getPlayersInGame(gameState).size();
-        int numOfArmies = 40;
-
-        if (numOfPlayers > 2) {
-            numOfArmies -= 5 * (numOfPlayers - 3);
-        }
+        int numOfArmies = ArmyUtils.getStartingArmies(gameState);
 
         ArrayList<Player> players = gameState.getPlayers();
 
@@ -310,12 +303,12 @@ public class GameEngine implements Runnable {
 
 		if (possibleCombinations.size() == 0) return 0;
 
-		int cardPayout = CardUtils.getCurrentArmyPayout(currentPlayer);
+		
 
 		Triplet<Card, Card, Card> choice = currentPlayer.getCommunicationMethod().getCardChoice(currentPlayer, possibleCombinations);
 
         if (choice == null) return 0;
-
+        int cardPayout = CardUtils.getCurrentArmyPayout(currentPlayer, choice);
 
         CardUtils.releaseCards(choice);
 
@@ -334,7 +327,9 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	protected PlayState placeArmy() {
-		
+
+        // TODO : fix all this
+
 		// get a list of players undeployed armies
 		ArrayList<Army> playersUndeployedArmies = ArmyUtils.getUndeployedArmies(currentPlayer);
 
@@ -343,18 +338,21 @@ public class GameEngine implements Runnable {
 			return PLAYER_INVADING_COUNTRY;
 		}
 
-		// get players territories
-		HashSet<Territory> playersTerritories = TerritoryUtils.getPlayersTerritories(currentPlayer);
-		
+		HashSet<Territory> playersTerritories;
+
+		if(playersUndeployedArmies.size() <= 2 && currentPlayer.hasExtraArmies().size() != 0){
+			playersTerritories = currentPlayer.hasExtraArmies();
+		}
+
+		else{
+		    // get players territories
+		    playersTerritories = TerritoryUtils.getPlayersTerritories(currentPlayer);
+		}
+
 		// find out which country the player wants to place in
 		Territory toFill = currentPlayer.getCommunicationMethod()
 				.getTerritory(currentPlayer, playersTerritories, null, false, RequestReason.PLACING_ARMIES_PHASE);
-
-		if(toFill == null){
-			System.out.println("BUG - player need to place more armies!");
-			return null;
-		}
-		
+        
 		// find out how many armies the player want to deploy there 
 		int deployedAmount = currentPlayer.getCommunicationMethod()
 				.getNumberOfArmies(currentPlayer, playersUndeployedArmies.size(), RequestReason.PLACING_ARMIES_PHASE, toFill, null);
@@ -435,7 +433,7 @@ public class GameEngine implements Runnable {
 	
 		// decide the results of the fight
 		Arbitration.carryOutFight(result, attackDiceNumber, defendDiceNumber);
-
+		currentPlayer.logAttack();
         applyAndReportChange(gameState, result);
 
 		// if the attacking player won and they still have surplus armies,

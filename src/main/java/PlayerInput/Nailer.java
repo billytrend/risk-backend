@@ -1,13 +1,13 @@
 package PlayerInput;
 
 import GameEngine.RequestReason;
-
 import GameState.Card;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.Results.Change;
 import GameUtils.AIUtils;
+import GameUtils.TerritoryUtils;
 
 import org.javatuples.Triplet;
 
@@ -17,27 +17,18 @@ import java.util.HashSet;
 /**
  * Created by root on 08/04/2015.
  */
-public class Berserker implements PlayerInterface {
-    public int turnNo = 0;
+public class Nailer implements PlayerInterface {
     public State currentState;
-    public Territory currenTerr;
-
-    public Berserker(State a){
+    public String[] contIDs = {"australia", "asia", "north_america", "south_america", "africa", "europe"};
+    public Territory currTer;
+    public Nailer(State a){
         this.currentState = a;
     }
 
 
-    /**
-     * *
-     * @param player
-     * @param max
-     * @return
-     */
-    public int getNumberOfDice(Player player, int max, RequestReason reason, Territory attacking, Territory defending) {
-        return max;
+    public int getNumberOfDice(Player currentPlayer, int maxAttackingDice, RequestReason attackChoiceDice, Territory attacking, Territory defending) {
+        return 1;
     }
-
-
 
     /**
      * The choice can be made only from the set of possible territories.
@@ -51,34 +42,43 @@ public class Berserker implements PlayerInterface {
     public Territory getTerritory(Player player,
                                   HashSet<Territory> possibles,Territory from, boolean canResign, RequestReason reason) {
 
+        ArrayList<Territory> al = new ArrayList<Territory>(possibles);
+        PlayerInterface swapper = new CommunistDefensive(currentState);
+
         switch (reason) {
+
             case PLACING_ARMIES_SET_UP:
+                for(int i = 0; i < contIDs.length; i++){
+                    String noTerritory = AIUtils.noTerritoryInContinent(currentState, player, contIDs);
+                    if(noTerritory == null){
+                        return AIUtils.getRandomTerritory(currentState, possibles);
+                    } else {
+                        return AIUtils.getContinentTerritory(currentState, al, noTerritory);
+                    }
+
+                }
+
+
             case PLACING_REMAINING_ARMIES_PHASE:
-                return AIUtils.getRandomTerritory(currentState, possibles);
+                return swapper.getTerritory(player, possibles, from, canResign, reason);
+
             case PLACING_ARMIES_PHASE:
-                return AIUtils.getWeakestTerritory(currentState,possibles);
+                return swapper.getTerritory(player, possibles, from, canResign, reason);
+
 
             case ATTACK_CHOICE_FROM:
-                if(turnNo < 100){
-                    return null;
-                }
-                currenTerr = AIUtils.getStrongestTerritory(currentState,possibles);
-                return currenTerr;
+                currTer = swapper.getTerritory(player, possibles, from, canResign, reason);
+                return currTer;
 
             case ATTACK_CHOICE_TO:
-                return AIUtils.getStrongestTerritory(currentState,possibles);
+                return swapper.getTerritory(player, possibles, currTer, canResign, reason);
 
             case REINFORCEMENT_PHASE:
-                turnNo++;
-                if(turnNo > 100){
-                    return AIUtils.getWeakestTerritory(currentState,possibles);
-                }
-                return null;
+                swapper = new BorderControl(currentState);
+                return swapper.getTerritory(player, possibles, from, canResign, reason);
             default:
-                break;
+                return null;
         }
-
-        return null;
     }
 
 
@@ -90,6 +90,8 @@ public class Berserker implements PlayerInterface {
      * @return
      */
     public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
+
+        PlayerInterface swapper = new CommunistDefensive(currentState);
         switch (reason) {
             case PLACING_ARMIES_SET_UP:
                 return 1;
@@ -97,20 +99,16 @@ public class Berserker implements PlayerInterface {
             case PLACING_REMAINING_ARMIES_PHASE:
                 return max;
             case PLACING_ARMIES_PHASE:
-                return max;
-            case ATTACK_CHOICE_DICE:
-                return max;
-            case DEFEND_CHOICE_DICE:
-                return max;
+                return swapper.getNumberOfArmies(player,max, reason, to, from);
             case REINFORCEMENT_PHASE:
-                return 0; // TODO: Figure out average and reinforce depending on
-            // links.
+                swapper = new BorderControl(currentState);
+                return swapper.getNumberOfArmies(player,max, reason, to, from);
             case POST_ATTACK_MOVEMENT:
                 return max; // Moves the maximum number of armies post attack.
-		default:
-			return 0;
+            default:
+                return 0;
         }
-       
+
 
     }
 

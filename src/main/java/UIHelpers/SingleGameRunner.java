@@ -7,6 +7,7 @@ import GameState.State;
 import LobbyServer.SingleGameServer;
 import PlayerInput.CommunistAggressive;
 import PlayerInput.DumbBotInterface;
+import PlayerInput.TheLoser;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.DefaultHandler;
@@ -24,19 +25,24 @@ public class SingleGameRunner {
     public static void main(String[] args) throws Exception {
         ArrayList<Player> players = new ArrayList<Player>();
         State gameState = RiskMapGameBuilder.buildGame(null);
+        
         //pink
-        players.add(0, new Player(new CommunistAggressive(gameState)));
+        players.add(0, new Player(new CommunistAggressive(gameState), "The test subject"));
         //blue
-        players.add(1, new Player(new DumbBotInterface()));
+        players.add(1, new Player(new TheLoser(gameState), "Loser1"));
         //purple
-        //players.add(2, new Player(new theLooser(gameState)));
-//        //green
-        //players.add(3, new Player(new theLooser(gameState)));
-//        //yellow
-        //players.add(4, new Player(new theLooser(gameState)));
+        players.add(2, new Player(new TheLoser(gameState), "Loser2"));
+
+        //green
+        players.add(2, new Player(new DumbBotInterface()));
+        //yellow
+        //players.add(3, new Player(new DumbBotInterface()));
 
         SingleGameRunner s = new SingleGameRunner(players, gameState);
         s.start();
+        
+
+        
     }
 
 
@@ -54,6 +60,7 @@ public class SingleGameRunner {
 
         ResourceHandler resource_handler = new ResourceHandler();
         resource_handler.setWelcomeFiles(new String[]{ "index.html" });
+
         resource_handler.setResourceBase("./ui-build/");
 
         HandlerList handlers = new HandlerList();
@@ -64,6 +71,8 @@ public class SingleGameRunner {
 
         SingleGameServer s = new SingleGameServer(8887, gameState, players);
         server.join();
+       
+        
 
     }
 

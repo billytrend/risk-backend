@@ -6,7 +6,9 @@ import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.Results.Change;
+import GameUtils.AIUtils;
 import GameUtils.TerritoryUtils;
+
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -15,21 +17,15 @@ import java.util.HashSet;
 /**
  * Created by root on 08/04/2015.
  */
-public class theLooser implements PlayerInterface {
+public class TheLoser implements PlayerInterface {
     public State currentState;
 
-    public theLooser(State a){
+    public TheLoser(State a){
         this.currentState = a;
     }
 
 
-    /**
-     * *
-     * @param player
-     * @param max
-     * @return
-     */
-    public int getNumberOfDice(Player player, int max, RequestReason reason, Territory attacking, Territory defending) {
+    public int getNumberOfDice(Player currentPlayer, int maxAttackingDice, RequestReason attackChoiceDice, Territory attacking, Territory defending) {
         return 1;
     }
 
@@ -43,37 +39,26 @@ public class theLooser implements PlayerInterface {
 
 
     public Territory getTerritory(Player player,
-                                  HashSet<Territory> possibles, Territory from, boolean canResign, RequestReason reason) {
-
-        ArrayList<Territory> territoryList = new ArrayList<Territory>(possibles);
-
-        int randNo = TerritoryUtils.randInt(0, territoryList.size() - 1);
+                                  HashSet<Territory> possibles,Territory from, boolean canResign, RequestReason reason) {
 
         switch (reason) {
 
             case PLACING_ARMIES_SET_UP:
-
-                return territoryList.get(randNo);
-
             case PLACING_REMAINING_ARMIES_PHASE:
-                return territoryList.get(randNo);
-
             case PLACING_ARMIES_PHASE:
-                return territoryList.get(randNo);
+                return AIUtils.getRandomTerritory(currentState, possibles);
+
 
             case ATTACK_CHOICE_FROM:
-                return TerritoryUtils.getWeakestOwned(player, possibles);
+                return AIUtils.getWeakestTerritory(currentState,possibles);
 
             case ATTACK_CHOICE_TO:
-                return TerritoryUtils.getStrongestOwned(player, territoryList, currentState);
+                return AIUtils.getStrongestTerritory(currentState,possibles);
 
             case REINFORCEMENT_PHASE:
-                return null;
             default:
-                break;
+                return null;
         }
-
-        return null;
     }
 
 
@@ -102,8 +87,10 @@ public class theLooser implements PlayerInterface {
             // links.
             case POST_ATTACK_MOVEMENT:
                 return max; // Moves the maximum number of armies post attack.
+		default:
+			return 0;
         }
-        return 0;
+        
 
     }
 

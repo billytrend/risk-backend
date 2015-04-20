@@ -1,8 +1,7 @@
 package GameUtils;
 
 import GameBuilders.RiskMapGameBuilder;
-import GameBuilders.DemoGameBuilder;
-import GameEngine.GameEngine;
+
 import GameState.Continent;
 import GameState.Player;
 import GameState.State;
@@ -14,7 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -72,6 +70,45 @@ public class ContinentUtilsTest {
 		assertTrue(ContinentUtils.getPlayersContinents(gameState, p).contains(southAmerica));
 		assertTrue(ContinentUtils.getPlayersContinents(gameState, p).contains(northAmerica));
 	}
+	@Test
+	public void getContinentByIdTest(){
+		
+		assertEquals(null, ContinentUtils.getContinentById(gameState,"notacontinent"));
+		assertEquals(continents.get(0), ContinentUtils.getContinentById(gameState,"north_america"));
+		assertEquals(continents.get(1), ContinentUtils.getContinentById(gameState,"south_america"));
+		assertEquals(continents.get(2), ContinentUtils.getContinentById(gameState,"europe"));
+		assertEquals(continents.get(3), ContinentUtils.getContinentById(gameState,"africa"));
+		assertEquals(continents.get(4), ContinentUtils.getContinentById(gameState,"asia"));
+		assertEquals(continents.get(5), ContinentUtils.getContinentById(gameState,"australia"));
+	}
 	
+	@Test
+	public void getContinentPayoutTest(){
+		ArrayList<Player> players = gameState.getPlayers();
+		Player p = players.get(0);
+		ArmyUtils.givePlayerNArmies(p, 30);
+		assertEquals(0, ContinentUtils.getContinentPayout(gameState, p));
+		for(Territory t : continents.get(0).getTerritories()){
+			ArmyUtils.deployArmies(p, t, 1);
+		}
+		assertEquals(5, ContinentUtils.getContinentPayout(gameState, p));
+		
+		
+		for(Territory t : continents.get(1).getTerritories()){
+			ArmyUtils.deployArmies(p, t, 1);
+		}
+		assertEquals(7, ContinentUtils.getContinentPayout(gameState, p));
+		
+		for(Territory t : continents.get(3).getTerritories()){
+			ArmyUtils.deployArmies(p, t, 1);
+		}
+		assertEquals(10, ContinentUtils.getContinentPayout(gameState, p));
+		
+		for(Territory t : continents.get(5).getTerritories()){
+			ArmyUtils.deployArmies(p, t, 1);
+		}
+		assertEquals(12, ContinentUtils.getContinentPayout(gameState, p));
+		
+	}
 
 }

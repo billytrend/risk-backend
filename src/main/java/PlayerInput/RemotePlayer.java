@@ -4,11 +4,9 @@ import GameEngine.RequestReason;
 import GameState.Card;
 import GameState.Player;
 import GameState.Territory;
-import GameUtils.CardUtils;
 import GameUtils.Results.Change;
-import PeerServer.protocol.cards.deploy;
-import PeerServer.protocol.cards.play_cards;
 import PeerServer.protocol.gameplay.*;
+
 import org.hamcrest.internal.ArrayIterator;
 import org.javatuples.Triplet;
 
@@ -17,6 +15,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+
+
+import PeerServer.protocol.cards.*;
 
 /**
  *
@@ -251,14 +252,7 @@ public class RemotePlayer implements PlayerInterface  {
 				return null;
 			
 			List<Triplet<Card, Card, Card>> cardSets = new ArrayList<Triplet<Card,Card,Card>>();
-
-            for (Triplet<Card, Card, Card> cardSet : possibleCombinations) {
-                for (int[] c : cards) {
-                    if (CardUtils.cardArrayMatchesIdArray(c, cardSet)) {
-                        cardSets.add(cardSet);
-                    }
-                }
-            }
+			
 			for(int[] cardSet : cards){
 				// TODO: fill this in:
 				

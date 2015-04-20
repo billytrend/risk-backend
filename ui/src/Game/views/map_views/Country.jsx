@@ -69,10 +69,11 @@ module.exports = React.createClass({
 
             var countryState = StateStore.getCountryState(this.props.countryName);
             var countryRequestState = ServerRequest.getCountryDerivedInformation(this.props.countryName);
+            var RequestMeta = ServerRequest.getRequestMeta();
 
             var newState = {
                 armies: countryState.armies,
-                isOption: countryRequestState.option
+                isOption: countryRequestState.option && (RequestMeta != undefined || RequestMeta.reason != undefined)
             };
 
 
@@ -115,7 +116,7 @@ module.exports = React.createClass({
                     <path fill={ self.state.fill } className="country_style" d={ self.state.path }></path>
                     {
                         this.props.onMap ? <g ref="armyCount" className={ cx( labelClasses ) }>
-                            <circle cx={ self.state.labelX } cy={ self.state.labelY } r="20" />
+                            <circle cx={ self.state.labelX } cy={ self.state.labelY } r="15" />
                             <text x={ self.state.labelX - textCentering } y={ self.state.labelY + 6 } fill="black">{ self.state.armies }</text>
                         </g> : ''
                     }

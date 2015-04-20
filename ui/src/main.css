@@ -56,14 +56,18 @@ body {
 }
 
 .prompt {
+    transition: 1s ease;
     position: absolute;
-    top: 0;
     left: 0;
-    right: 0;
+    bottom:0;
     background-color: black;
     padding: 5px;
     color: white;
     font-size: 20px;
+}
+
+.prompt_hidden {
+    opacity: 0;
 }
 
 
@@ -222,25 +226,26 @@ body {
 
 .country_label circle {
     fill: white;
+    stroke-width: 3px;
 }
 
-.europe text {
+.europe circle {
     stroke: #3cb4d3;
 }
-.asia text {
+.asia circle {
     stroke: #6dc16f;
 }
-.africa text {
+.africa circle {
     stroke: #7a5c0a;
 }
-.australia text {
+.australia circle {
     stroke: #820087;
 }
-.north_america text {
+.north_america circle {
     stroke: #b3ba1c;
 }
 
-.south_america text {
+.south_america circle {
     stroke: #ca2a1c;
 }
 
@@ -281,3 +286,6 @@ body {
     height: 100px;
 }
 
+.die_hover {
+    opacity: 0.5;
+}

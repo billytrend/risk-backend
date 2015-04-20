@@ -21,6 +21,13 @@ public class Card {
         owner = null;
 	}
 
+	public Card(Territory terr, CardType cardType) {
+		this.territory = terr;
+		this.type = cardType;
+        id = 0;
+        owner = null;
+	}
+
 	public void setOwner(Player owner) {
 		this.owner = owner;
 	}

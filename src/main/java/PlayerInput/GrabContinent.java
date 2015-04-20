@@ -1,13 +1,15 @@
 package PlayerInput;
 
 import GameEngine.RequestReason;
+
 import GameState.Card;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
+import GameUtils.AIUtils;
 import GameUtils.ContinentUtils;
 import GameUtils.Results.Change;
-import GameUtils.TerritoryUtils;
+
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -17,13 +19,16 @@ import java.util.Random;
 /**
  * Created by Peter on 02/04/2015.
  */
-public class StartAustralia implements PlayerInterface {
+public class GrabContinent implements PlayerInterface {
     public State currentState;
+    public String continentID = "asia";
 
-    public StartAustralia(State a){
+
+    public GrabContinent(State a, String continentID){
         this.currentState = a;
+        this.continentID = continentID;
     }
-    public StartAustralia() {
+    public GrabContinent() {
 
     }
 
@@ -50,24 +55,22 @@ public class StartAustralia implements PlayerInterface {
                                   HashSet<Territory> possibles,Territory from,boolean canResign, RequestReason reason) {
 
         ArrayList<Territory> territoryList = new ArrayList<Territory>(possibles);
-
         switch (reason) {
 
             case PLACING_ARMIES_SET_UP:
-                return getAustralianContinentTerritory(currentState);
+                return AIUtils.getContinentTerritory(currentState, territoryList, continentID);
 
             case PLACING_REMAINING_ARMIES_PHASE:
-                return getAustralianContinentTerritory(currentState);
+                return AIUtils.getContinentTerritory(currentState, territoryList, continentID);
 
             case PLACING_ARMIES_PHASE:
-                return getAustralianContinentTerritory(currentState);
+                return AIUtils.getContinentTerritory(currentState, territoryList, continentID);
 
             case ATTACK_CHOICE_FROM:
-            	ArrayList<Territory> australia = ContinentUtils.getContinentById(currentState, "australia").getTerritories();
-               return TerritoryUtils.getStrongestOwned(player, territoryList, currentState);
+                return AIUtils.getStrongestTerritory(currentState, possibles);
 
             case ATTACK_CHOICE_TO:
-                return TerritoryUtils.getStrongestEnemy(currentState, territoryList, "siam");
+                return AIUtils.getStrongestTerritory(currentState, possibles);
 
             case REINFORCEMENT_PHASE:
                 return null;
@@ -78,16 +81,6 @@ public class StartAustralia implements PlayerInterface {
         return null;
     }
 
-
-
-
-
-    private Territory getAustralianContinentTerritory(State state){
-        Random rand = new Random();
-        ArrayList<Territory> territoryList = ContinentUtils.getContinentById(state, "australia").getTerritories();
-        int randomNum = rand.nextInt((territoryList.size()) + 1);
-        return territoryList.get(randomNum);
-    }
 
     /**
      * The choice can only be made up to the specified max value.
@@ -124,22 +117,22 @@ public class StartAustralia implements PlayerInterface {
      * @return a triplet of cards which represents choice
      */
     public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
-        return null;
+        return possibleCombinations.get(0);
     }
 
 
-	@Override
-	public void reportStateChange(Change change) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void reportStateChange(Change change) {
+        // TODO Auto-generated method stub
+
+    }
 
 
-	@Override
-	public void createResponse() {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void createResponse() {
+        // TODO Auto-generated method stub
+
+    }
 
 }
 

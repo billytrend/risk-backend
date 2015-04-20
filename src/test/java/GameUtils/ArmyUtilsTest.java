@@ -197,4 +197,16 @@ public class ArmyUtilsTest {
 		assertEquals(ArmyUtils.getNumberOfMoveableArmies(player1, territory1), 1);
 	}
 	
+	@Test
+	public void getStartingArmiesTest(){
+		assertEquals(35, ArmyUtils.getStartingArmies(gameState));
+		
+		PlayerInterface[] interfaces = new PlayerInterface[]{new DumbBotInterface(), new DumbBotInterface(), new DumbBotInterface(), new DumbBotInterface()};
+		gameState = DemoGameBuilder.buildTestGame(4, 2, interfaces);
+		
+		assertEquals(30, ArmyUtils.getStartingArmies(gameState));
+		
+	}
+
+	
 }

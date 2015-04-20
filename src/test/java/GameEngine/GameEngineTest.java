@@ -5,9 +5,13 @@ import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.ArmyUtils;
+import GameUtils.PlayerUtils;
 import GameUtils.TerritoryUtils;
+import GameUtils.Results.ArmyHandout;
 import PlayerInput.PlayerInterface;
+
 import com.esotericsoftware.minlog.Log;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,8 +39,10 @@ public class GameEngineTest{
 		gameState = DemoGameBuilder.buildGame(interfaces);
 		HashSet<Territory> territories = TerritoryUtils.getAllTerritories(gameState);
 	    gameEngine = new TestableGameEngine(gameState);
-        ArmyUtils.giveStartingArmies(gameState);
-
+        ;
+        for(Player p : PlayerUtils.getPlayersInGame(gameState)){
+        	ArmyUtils.givePlayerNArmies(p, ArmyUtils.getStartingArmies(gameState));
+        }
 		sortedTerritories = new ArrayList<Territory>();
 		sortedTerritories.addAll(territories);
 		Collections.sort(sortedTerritories, comparator);
@@ -93,12 +99,12 @@ public class GameEngineTest{
 		HashSet<Territory> player1Territories = TerritoryUtils.getPlayersTerritories(player1);
 		HashSet<Territory> player2Territories = TerritoryUtils.getPlayersTerritories(player2);
 
-		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 38);
+		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 33);
 		
 		PlayState returnValue = gameEngine.testCall(PlayState.USING_REMAINING_ARMIES);
 		
 		assertEquals(returnValue, PlayState.USING_REMAINING_ARMIES);
-		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 37);
+		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 32);
 		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, sortedTerritories.get(0)).size(), 2);
 		
 		assertEquals(gameEngine.getCurrentPlayer(), player2);
@@ -133,7 +139,7 @@ public class GameEngineTest{
 		assertEquals(gameEngine.getCurrentPlayer(), player1);
 		assertEquals(ArmyUtils.getUndeployedArmies(player1).size(), 0);
 		
-		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, sortedTerritories.get(0)).size(), 39);
+		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, sortedTerritories.get(0)).size(), 34);
 		assertEquals(ArmyUtils.getArmiesOnTerritory(player1, sortedTerritories.get(1)).size(), 1);
 		
 		returnValue = gameEngine.testCall(PlayState.PLAYER_PLACING_ARMIES);
@@ -145,7 +151,7 @@ public class GameEngineTest{
 		gameEngine.testCall(PlayState.PLAYER_PLACING_ARMIES);
 
 
-		assertEquals(ArmyUtils.getUndeployedArmies(player2).size(), 37);
+		assertEquals(ArmyUtils.getUndeployedArmies(player2).size(), 32);
 		assertEquals(ArmyUtils.getArmiesOnTerritory(player2, sortedTerritories.get(2)).size(), 2);
 		assertEquals(ArmyUtils.getArmiesOnTerritory(player2, sortedTerritories.get(3)).size(), 1);
 		
@@ -304,6 +310,7 @@ public class GameEngineTest{
 			}
 
 		}	
+		
 
 		// mock that always moves the maximum number of armies
 		int predictedMaxNumOfArmies = 200;
