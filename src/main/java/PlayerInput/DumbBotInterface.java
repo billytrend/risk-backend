@@ -23,7 +23,7 @@ public class DumbBotInterface implements PlayerInterface {
 
     Random ran = new Random();
 	private static Scanner scanner;
-	
+
     protected void emit(Player p, String message) {
 //        debug("[" + p.getId() + "]" + "\t\t");
 //        debug(message);
@@ -49,10 +49,10 @@ public class DumbBotInterface implements PlayerInterface {
 		a = scanner.nextInt();
         return a;
     }
-    
+
 
     /**
-     * 
+     *
      */
     public int getNumberOfDice(Player currentPlayer, int max, RequestReason attackChoiceDice, Territory attacking, Territory defending) {
         emit(currentPlayer, " how many dice do you want to throw? Max " + max);
@@ -61,10 +61,10 @@ public class DumbBotInterface implements PlayerInterface {
     }
 
     /**
-     * 
+     *
      */
     public Territory getTerritory(Player player, HashSet<Territory> possibles, Territory from, boolean canResign, RequestReason reason) {
-    	
+
         ArrayList<Territory> posList = new ArrayList<Territory>(possibles);
 
         String out = "Please choose a territory";
@@ -72,13 +72,13 @@ public class DumbBotInterface implements PlayerInterface {
 //        case ATTACK_CHOICE:
 //        	out += " to attack";
 //        	break;
-//        default: 
+//        default:
 //        	out += " to place an army on";
 //
 //        }
         emit(player, out);
-	
-       
+
+
         // the player can decide not to make a choice
         // in case of starting an attack or moving armies
         if(canResign){
@@ -88,7 +88,7 @@ public class DumbBotInterface implements PlayerInterface {
         for(int i = 0; i < possibles.size(); i++) {
             emit(player,  "\t" + (i + 1) + ". " + posList.get(i).getId());
         }
-        
+
         // random choice
         if (ran.nextInt(10) == 0 && canResign) {
             return null;
@@ -97,9 +97,9 @@ public class DumbBotInterface implements PlayerInterface {
         return posList.get(ran.nextInt(posList.size()));
 
     }
-    
+
     /**
-     * 
+     *
      */
     public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
         emit(player, "How many armies would you like to move? Max " + max);
