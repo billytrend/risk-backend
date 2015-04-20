@@ -49,13 +49,14 @@ module.exports = React.createClass({
                         <svg ref="svgA">
                             <Country countryName={ self.state.meta.attacking.id } />
                         </svg>
-                        <div>Attacking: { self.state.meta.attacking.id }</div>
+                        <div>{ self.state.meta.attacking.id }</div>
                     </div>
+                    <div>attacks</div>
                     <div>
                         <svg ref="svgB">
                             <Country countryName={ self.state.meta.defending.id } />
                         </svg>
-                        <div>Defending: { self.state.meta.defending.id }</div>
+                        <div>{ self.state.meta.defending.id }</div>
                     </div>
                         { this.state.meta.max > 0 ? <Die index={ 1 } className={cx({die_hover:self.state.curHover > 0})} hoverFn={ self._hover } attackDice={ self.state.meta.reason === "ATTACK_CHOICE_DICE" } value={ parseInt(this.props.first) } /> : '' }
                         { this.state.meta.max > 1 ? <Die index={ 2 } className={cx({die_hover:self.state.curHover > 1})} hoverFn={ self._hover } attackDice={ self.state.meta.reason === "ATTACK_CHOICE_DICE" } value={ parseInt(this.props.second) } /> : '' }
