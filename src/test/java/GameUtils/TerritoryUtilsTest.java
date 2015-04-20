@@ -26,11 +26,11 @@ public class TerritoryUtilsTest {
 
 	private State gameState;
 	private Territory[] territories;
-	PlayerInterface[] interfaces;
-	Territory demoland = null;
-	Territory egstate = null;
-	Territory someplace = null;
-	Territory otherplace = null;
+	private PlayerInterface[] interfaces;
+	private Territory demoland = null;
+	private Territory egstate = null;
+	private Territory someplace = null;
+	private Territory otherplace = null;
 
 	@Before
 	public void stateSetUp(){

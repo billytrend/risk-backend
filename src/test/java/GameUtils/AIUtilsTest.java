@@ -20,12 +20,12 @@ import PlayerInput.PlayerInterface;
 public class AIUtilsTest {
 	private State gameState;
 	private Territory[] territories;
-	PlayerInterface[] interfaces;
-	Territory demoland = null;
-	Territory egstate = null;
-	Territory someplace = null;
-	Territory otherplace = null;
-	Player player1, player2, player3;
+	private PlayerInterface[] interfaces;
+	private Territory demoland = null;
+	private Territory egstate = null;
+	private Territory someplace = null;
+	private Territory otherplace = null;
+	private Player player1, player2, player3;
 
 	@Before
 	public void stateSetUp(){
@@ -163,6 +163,60 @@ public class AIUtilsTest {
 		clusters = AIUtils.getAllClusters(gameState, player1);
 		assertEquals(1, clusters.size());
 		assertEquals(4, clusters.get(0).size());
+	}
+	
+	@Test
+	public void orderClusterTest(){
+		ArmyUtils.deployArmies(player1, egstate, 2);
+		ArmyUtils.deployArmies(player1, otherplace, 2);
+		ArrayList<HashSet<Territory>> clusters = AIUtils.getAllClusters(gameState, player1);
+		
+		clusters = AIUtils.orderClusters(clusters);
+		assertEquals(1, clusters.size());
+		assertEquals(2, clusters.get(0).size());
+		
+		ArmyUtils.deployArmies(player2, demoland, 2);
+		ArmyUtils.deployArmies(player2, someplace, 2);
+		
+		clusters = AIUtils.getAllClusters(gameState, player2);
+		clusters = AIUtils.orderClusters(clusters);
+	
+		assertEquals(2, clusters.size());
+		assertEquals(1, clusters.get(0).size());
+		assertEquals(1, clusters.get(1).size());
+		
+		HashSet<Territory> cluster1 = new HashSet<Territory>();
+		HashSet<Territory> cluster2 = new HashSet<Territory>();
+		HashSet<Territory> cluster3 = new HashSet<Territory>();
+		HashSet<Territory> cluster4 = new HashSet<Territory>();
+		
+		cluster1.add(demoland);
+		cluster2.add(egstate);
+		cluster3.add(otherplace);
+		cluster3.add(someplace);
+		cluster4.add(demoland);
+		cluster4.add(egstate);
+		cluster4.add(otherplace);
+		cluster4.add(someplace);
+		ArrayList<HashSet<Territory>> testClusters = new ArrayList<HashSet<Territory>>();
+		testClusters.add(cluster3);
+		testClusters.add(cluster1);
+		testClusters.add(cluster4);
+		testClusters.add(cluster2);
+		
+		assertEquals(4, testClusters.size());
+		
+		testClusters = AIUtils.orderClusters(testClusters);
+		
+		assertEquals(4, testClusters.size());
+		assertEquals(cluster4, testClusters.get(0));
+		assertEquals(cluster3, testClusters.get(1));
+		assertEquals(1, testClusters.get(2).size());
+		assertEquals(1, testClusters.get(3).size());
+		assertFalse(testClusters.get(2) ==testClusters.get(3) );
+		
+		
+		
 	}
 	
 	@Test

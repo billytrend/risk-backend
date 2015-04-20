@@ -75,6 +75,7 @@ public class BorderControl implements PlayerInterface {
 		case PLACING_REMAINING_ARMIES_PHASE:
 			// reinforce outer edges of clusters
 		case PLACING_ARMIES_PHASE:
+		
 			// is this for reinforcing at the start of a go?
 			// will it ever need to be different to above?
 			Territory weakest = null;

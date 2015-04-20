@@ -124,6 +124,7 @@ public class GameEngine implements Runnable {
 			case PLAYER_BEGINNING_TURN:
 				debug("\nCARDS");
 				this.playState = giveAdditionalArmies();
+				currentPlayer.logTurn();
 				break;
 
 			case PLAYER_PLACING_ARMIES:
@@ -150,6 +151,9 @@ public class GameEngine implements Runnable {
 				
 			case END_GAME:
 				debug("\nEND GAME!");
+				gameState.setWinner(currentPlayer);
+				System.out.println("GAME ENGINE - Line155 : " + gameState.getWinner().getId());
+				
 				return false;
 			
 			default:
@@ -304,12 +308,12 @@ public class GameEngine implements Runnable {
 
 		if (possibleCombinations.size() == 0) return 0;
 
-		int cardPayout = CardUtils.getCurrentArmyPayout(currentPlayer);
+		
 
 		Triplet<Card, Card, Card> choice = currentPlayer.getCommunicationMethod().getCardChoice(currentPlayer, possibleCombinations);
 
         if (choice == null) return 0;
-
+        int cardPayout = CardUtils.getCurrentArmyPayout(currentPlayer, choice);
 
         CardUtils.releaseCards(choice);
 
@@ -336,10 +340,14 @@ public class GameEngine implements Runnable {
 		if (playersUndeployedArmies.size() == 0) {
 			return PLAYER_INVADING_COUNTRY;
 		}
-
+		HashSet<Territory> playersTerritories;
+		if(playersUndeployedArmies.size() <= 2 && currentPlayer.hasExtraArmies().size() != 0){
+			playersTerritories = currentPlayer.hasExtraArmies();
+		}
+		else{
 		// get players territories
-		HashSet<Territory> playersTerritories = TerritoryUtils.getPlayersTerritories(currentPlayer);
-		
+		playersTerritories = TerritoryUtils.getPlayersTerritories(currentPlayer);
+		}
 		// find out which country the player wants to place in
 		Territory toFill = currentPlayer.getCommunicationMethod()
 				.getTerritory(currentPlayer, playersTerritories, null, false, RequestReason.PLACING_ARMIES_PHASE);
@@ -429,7 +437,7 @@ public class GameEngine implements Runnable {
 	
 		// decide the results of the fight
 		Arbitration.carryOutFight(result, attackDiceNumber, defendDiceNumber);
-
+		currentPlayer.logAttack();
         applyAndReportChange(gameState, result);
 
 		// if the attacking player won and they still have surplus armies,

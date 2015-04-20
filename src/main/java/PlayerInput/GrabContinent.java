@@ -1,6 +1,7 @@
 package PlayerInput;
 
 import GameEngine.RequestReason;
+
 import GameState.Card;
 import GameState.Player;
 import GameState.State;
@@ -8,13 +9,11 @@ import GameState.Territory;
 import GameUtils.AIUtils;
 import GameUtils.ContinentUtils;
 import GameUtils.Results.Change;
-import GameUtils.TerritoryUtils;
 
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Random;
 
 /**

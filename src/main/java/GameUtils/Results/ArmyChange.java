@@ -1,9 +1,9 @@
 package GameUtils.Results;
 
 import GameEngine.PlayState;
-import GameState.Player;
+
 import GameState.State;
-import GameState.Territory;
+
 
 public abstract class ArmyChange extends Change{
 	protected String armyOwnerId;
