@@ -31,8 +31,9 @@ public class SingleGameRunner {
         players.add(1, new Player(new TheLoser(gameState), "Loser1"));
         //purple
         players.add(2, new Player(new TheLoser(gameState), "Loser2"));
+
         //green
-        //players.add(2, new Player(new DumbBotInterface()));
+        players.add(2, new Player(new DumbBotInterface()));
         //yellow
         //players.add(3, new Player(new DumbBotInterface()));
 
