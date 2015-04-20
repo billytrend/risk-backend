@@ -9,6 +9,10 @@ import org.mortbay.jetty.handler.HandlerList;
 import org.mortbay.jetty.handler.ResourceHandler;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 
+import java.awt.*;
+import java.net.InetAddress;
+import java.net.URI;
+
 /**
  * Created by bt on 20/04/2015.
  */
@@ -16,15 +20,16 @@ public class LobbyRunner {
 
     public static void main( String[] args ) throws Exception {
         WebSocketImpl.DEBUG = false;
-        int port = 8887; // 843 flash policy port
+        int wsport = 8887;
+        int staticport = 8080;
         try {
-            port = Integer.parseInt( args[ 0 ] );
+            wsport = Integer.parseInt( args[ 0 ] );
         } catch ( Exception ex ) {
         }
 
         Server server = new Server();
         SelectChannelConnector connector = new SelectChannelConnector();
-        connector.setPort(8080);
+        connector.setPort(staticport);
         server.addConnector(connector);
 
         ResourceHandler resource_handler = new ResourceHandler();
@@ -39,8 +44,10 @@ public class LobbyRunner {
 
         server.start();
 
-        LobbyServer s = new LobbyServer( port );
+        LobbyServer s = new LobbyServer( wsport );
         s.start();
+
+        Desktop.getDesktop().browse(new URI("http://" + InetAddress.getLocalHost().getHostAddress() + ":" + staticport));
     }
 
 

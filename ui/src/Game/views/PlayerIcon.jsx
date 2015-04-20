@@ -26,7 +26,7 @@ module.exports = React.createClass({
         var cx = React.addons.classSet;
         return <div style={ this.state.style } className={ cx({player_icon: true, in_play: player.isInPlay, is_dead: player.isDead }) } >
             <div>{ player.id }</div>
-            <div>{ player.armies }</div>
+            <div>Armies: { player.armies }</div>
         </div>
     }
 });

@@ -12,6 +12,6 @@ module.exports = React.createClass({
     render: function() {
         var self = this;
 
-        return <button className="end_go" onClick={ self.submit }>End Go</button>
+        return <button className="end_go" onClick={ self.submit }>End Phase</button>
     }
 });
