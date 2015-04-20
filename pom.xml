@@ -87,7 +87,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>LobbyServer.LobbyServer</mainClass>
+                            <mainClass>UIHelpers.LobbyRunner</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
