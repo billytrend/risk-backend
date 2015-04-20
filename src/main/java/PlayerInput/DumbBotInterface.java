@@ -177,7 +177,8 @@ public class DumbBotInterface implements PlayerInterface {
     		else if(reason == RequestReason.REINFORCEMENT_PHASE){
    			 try {
    				 // add only twice if there is one before
-   				 	if(connectorQueue.peek().getValue() == RequestReason.REINFORCEMENT_PHASE){
+   				 if(from != null){
+   					 System.out.println("REINFORCEMENT RESIGN!");
    				 		connectorQueue.put(new MyEntry(null, RequestReason.REINFORCEMENT_PHASE));
    				 		connectorQueue.put(new MyEntry(null, RequestReason.REINFORCEMENT_PHASE));
    				 	}
