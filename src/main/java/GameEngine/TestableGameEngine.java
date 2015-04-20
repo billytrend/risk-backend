@@ -1,21 +1,8 @@
 package GameEngine;
 
-import GameState.Army;
 import GameState.Player;
 import GameState.State;
-import GameState.Territory;
-import GameUtils.ArmyUtils;
-import GameUtils.Results.FightResult;
-import GameUtils.PlayerUtils;
-import GameUtils.RuleUtils;
-import GameUtils.TerritoryUtils;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Random;
-
-import static GameEngine.PlayState.*;
-import static com.esotericsoftware.minlog.Log.debug;
 
 /**
  * An instance of this class represents a game that

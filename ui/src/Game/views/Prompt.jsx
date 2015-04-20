@@ -5,7 +5,8 @@ module.exports = React.createClass({
 
     getInitialState: function() {
         return {
-            message: "Waiting..."
+            message: "Waiting...",
+            show: true
         }
     },
 
@@ -16,14 +17,25 @@ module.exports = React.createClass({
     _updateMessage: function() {
         var req = ServerRequest.getRequestType();
         var meta = ServerRequest.getRequestMeta();
-        this.setState({
-            message: "Request of type " + req + " because " + meta.reason
-        });
+        if (meta.humanRequest) {
+            this.setState({
+                message: meta.humanRequest,
+                show: true
+            });
+        } else {
+            this.setState({
+                show: false
+            });
+        }
     },
 
     render: function() {
-        return <div className="prompt">
-        {this.state.message}
+        var cx = React.addons.classSet;
+
+        return <div className={ cx({prompt:true, prompt_hidden: !this.state.show }) }>
+            {
+                this.state.message
+            }
         </div>
     }
 });

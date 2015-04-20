@@ -1,12 +1,14 @@
 package PlayerInput;
 
 import GameEngine.RequestReason;
+
 import GameState.Card;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.Results.Change;
-import GameUtils.TerritoryUtils;
+import GameUtils.AIUtils;
+
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -47,36 +49,30 @@ public class Berserker implements PlayerInterface {
 
 
     public Territory getTerritory(Player player,
-                                  HashSet<Territory> possibles, Territory from, boolean canResign, RequestReason reason) {
-
-        ArrayList<Territory> territoryList = new ArrayList<Territory>(possibles);
-
-        int randNo = TerritoryUtils.randInt(0, territoryList.size() - 1);
+                                  HashSet<Territory> possibles,Territory from, boolean canResign, RequestReason reason) {
 
         switch (reason) {
-
             case PLACING_ARMIES_SET_UP:
-
-                return territoryList.get(randNo);
-
             case PLACING_REMAINING_ARMIES_PHASE:
-                return territoryList.get(randNo);
-
+                return AIUtils.getRandomTerritory(currentState, possibles);
             case PLACING_ARMIES_PHASE:
-                return TerritoryUtils.getWeakestOwned(player, possibles);
+                return AIUtils.getWeakestTerritory(currentState,possibles);
 
             case ATTACK_CHOICE_FROM:
                 if(turnNo < 100){
                     return null;
                 }
-                currenTerr = TerritoryUtils.getStrongestOwned(player, territoryList, currentState);
+                currenTerr = AIUtils.getStrongestTerritory(currentState,possibles);
                 return currenTerr;
 
             case ATTACK_CHOICE_TO:
-                return TerritoryUtils.getStrongestEnemy(currentState,territoryList,currenTerr.getId());
+                return AIUtils.getStrongestTerritory(currentState,possibles);
 
             case REINFORCEMENT_PHASE:
                 turnNo++;
+                if(turnNo > 100){
+                    return AIUtils.getWeakestTerritory(currentState,possibles);
+                }
                 return null;
             default:
                 break;
@@ -111,8 +107,10 @@ public class Berserker implements PlayerInterface {
             // links.
             case POST_ATTACK_MOVEMENT:
                 return max; // Moves the maximum number of armies post attack.
+		default:
+			return 0;
         }
-        return 0;
+       
 
     }
 

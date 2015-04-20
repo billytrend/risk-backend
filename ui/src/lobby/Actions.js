@@ -7,6 +7,16 @@ var TodoActions = {
             commandType: 'JoinGameReq',
             gameIndex: i
         });
+    },
+
+    createGame: function(name, maxPlayers, ais) {
+        ServerComm.sendMessage({
+            commandType: 'GameDescription',
+            id: name,
+            maxPlayers: maxPlayers,
+            AIs: ais,
+            players: []
+        });
     }
 
 };

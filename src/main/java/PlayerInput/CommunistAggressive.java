@@ -1,17 +1,18 @@
 package PlayerInput;
 
 import GameEngine.RequestReason;
+
 import GameState.Card;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
 import GameUtils.Results.Change;
-import GameUtils.TerritoryUtils;
+import GameUtils.AIUtils;
+
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Random;
 
 /**
  * Created by root on 08/04/2015.
@@ -21,21 +22,47 @@ public class CommunistAggressive implements PlayerInterface{
     public State currentState;
     public Territory currentTer;
 
-
     public CommunistAggressive(State a){
         this.currentState = a;
     }
 
 
-    /**
-     * *
-     * @param player
-     * @param max
-     * @return
-     */
-    public int getNumberOfDice(Player player, int max, RequestReason reason, Territory attacking, Territory defending) {
-        return max;
-    }
+	// Always returns the maximum number of dice.
+	@Override
+    public int getNumberOfDice(Player currentPlayer, int max, RequestReason attackChoiceDice, Territory attacking, Territory defending) {
+		return max;
+	}
+
+	
+	@Override
+	public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
+
+		switch (reason) {
+		case PLACING_ARMIES_SET_UP:
+		case PLACING_REMAINING_ARMIES_PHASE:
+		case PLACING_ARMIES_PHASE:
+			return 1;
+		case ATTACK_CHOICE_DICE:
+		case DEFEND_CHOICE_DICE:
+		case POST_ATTACK_MOVEMENT:
+			return max;
+		case REINFORCEMENT_PHASE:
+			return 0; // TODO: Figure out average and reinforce depending on
+						// links.
+		default:
+			return 0;
+		}
+	}
+
+	public void getCard(Player player, Card card) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public Card getCardOptions() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
     /**
      * The choice can be made only from the set of possible territories.
@@ -49,38 +76,31 @@ public class CommunistAggressive implements PlayerInterface{
     public Territory getTerritory(Player player, HashSet<Territory> possibles,Territory from,
                                   boolean canResign, RequestReason reason) {
 
-        ArrayList<Territory> territoryList = new ArrayList<Territory>(possibles);
-
-        Random rand = new Random();
-        int randNo = TerritoryUtils.randInt(0, territoryList.size()-1);
-
         //System.out.println(TerritoryUtils.getWeakestOwned(player, territoryList).getId());
 
         switch (reason) {
 
             case PLACING_ARMIES_SET_UP:
-                return territoryList.get(randNo);
+                return AIUtils.getRandomTerritory(currentState, possibles);
 
             case PLACING_REMAINING_ARMIES_PHASE:
-                return TerritoryUtils.getWeakestOwned(player, possibles);
-
             case PLACING_ARMIES_PHASE:
-                return TerritoryUtils.getWeakestOwned(player, possibles);
+                return AIUtils.getWeakestTerritory(currentState,possibles);
 
             case ATTACK_CHOICE_FROM:
-                currentTer = TerritoryUtils.getStrongestOwned(player, territoryList, currentState);
+                currentTer = AIUtils.getStrongestTerritory(currentState,possibles);
                 return currentTer;
 
             case ATTACK_CHOICE_TO:
-                Territory weakestTer = TerritoryUtils.getWeakestEnemy(currentState, territoryList, currentTer.getId());
-                if(TerritoryUtils.goodIdeaAgr(currentState, currentTer, weakestTer)){
+                Territory weakestTer = AIUtils.getWeakestTerritory(currentState,possibles);
+                if(AIUtils.goodIdea(currentState, currentTer, weakestTer, 1)){
                     return weakestTer;
                 } else {
                     if(canResign){
                         return null;
                     }
                 }
-                return territoryList.get(randNo);
+                return AIUtils.getRandomTerritory(currentState, possibles);
 
             case REINFORCEMENT_PHASE:
                 if(canResign){
@@ -91,38 +111,6 @@ public class CommunistAggressive implements PlayerInterface{
         }
 
         return null;
-    }
-
-
-    /**
-     * The choice can only be made up to the specified max value.
-     *
-     * @param player
-     * @param max
-     * @return
-     */
-    public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
-        switch (reason) {
-            case PLACING_ARMIES_SET_UP:
-                return 1;
-            case PLACING_REMAINING_ARMIES_PHASE:
-                return 1;
-            case PLACING_ARMIES_PHASE:
-                return 1;
-            case ATTACK_CHOICE_DICE:
-                return 3;
-            case DEFEND_CHOICE_DICE:
-                return 2;
-            case REINFORCEMENT_PHASE:
-                return 0; // TODO: Figure out average and reinforce depending on
-            // links.
-            case POST_ATTACK_MOVEMENT:
-                return max; // Moves the maximum number of armies post attack.
-        }
-
-
-        return 0;
-
     }
 
     /**

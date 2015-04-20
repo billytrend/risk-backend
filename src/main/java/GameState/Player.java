@@ -20,28 +20,38 @@ public class Player {
 	private transient ArrayList<Army> armies = new ArrayList<Army>();
     private int cardSetsUsed;
     private String colour = "";
+    private int numberOfTurns;
+    private int numberOfAttacks;
 
 	public Player(PlayerInterface communicationMethod) {
 		this.communicationMethod = communicationMethod;
 		armies = new ArrayList<Army>();
 		cardSetsUsed = 0;
+		numberOfTurns = 0;
+		numberOfAttacks =0;
 	}
 
 	public Player(PlayerInterface communicationMethod, int index) {
 		this(communicationMethod);
 		id = "Player " + index;
 		numberId = index;
+		numberOfTurns = 0;
+		numberOfAttacks =0;
 	}
 	
 	public Player(PlayerInterface communicationMethod, String id) {
 		this(communicationMethod);
 		this.id = id;
+		numberOfTurns = 0;
+		numberOfAttacks =0;
 	}
 	
 	public Player(PlayerInterface communicationMethod, Integer id, String name) {
 		this(communicationMethod);
 		this.numberId = id;
 		this.id = name;
+		numberOfTurns = 0;
+		numberOfAttacks =0;
 	}
 
 	public String getId() {
@@ -59,7 +69,8 @@ public class Player {
 	public PlayerInterface getCommunicationMethod() {
 		return communicationMethod;
 	}
-	public void setCommunicationMethod(PlayerInterface communicationMethod) {
+
+    public void setCommunicationMethod(PlayerInterface communicationMethod) {
 		this.communicationMethod = communicationMethod;
 	}
 
@@ -92,4 +103,21 @@ public class Player {
 	public void setPublicKey(String publicKey) {
 		this.publicKey = publicKey;
 	}
+	
+	public void logTurn(){
+		numberOfTurns ++;
+	}
+
+    public void logAttack(){
+		numberOfAttacks++;
+	}
+
+    public int getNumberOfTurns(){
+		return numberOfTurns;
+	}
+
+    public int getNumberOfAttacks(){
+		return numberOfAttacks;
+	}
+
 }

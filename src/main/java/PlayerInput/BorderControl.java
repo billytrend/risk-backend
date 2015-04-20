@@ -5,10 +5,12 @@ import GameState.Card;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
+import GameUtils.AIUtils;
 import GameUtils.ArmyUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.Results.Change;
 import GameUtils.TerritoryUtils;
+
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -50,8 +52,7 @@ public class BorderControl implements PlayerInterface {
 
 	public Territory getTerritory(Player player, HashSet<Territory> possibles,
 			Territory from, boolean canResign, RequestReason reason) {
-System.out.println(reason);
-		ArrayList<HashSet<Territory>> clusters = TerritoryUtils.getAllClusters(
+		ArrayList<HashSet<Territory>> clusters = AIUtils.getAllClusters(
 				state, player);
 		switch (reason) {
 		case PLACING_ARMIES_SET_UP:
@@ -70,15 +71,17 @@ System.out.println(reason);
 					}
 				}
 			}
-			return TerritoryUtils.getRandomTerritory(state, possibles);
+			return AIUtils.getRandomTerritory(state, possibles);
 		case PLACING_REMAINING_ARMIES_PHASE:
 			// reinforce outer edges of clusters
 		case PLACING_ARMIES_PHASE:
+		
 			// is this for reinforcing at the start of a go?
 			// will it ever need to be different to above?
 			Territory weakest = null;
 			int lowestDefense = 100;
 			for (HashSet<Territory> cluster : clusters) {
+				
 				for (Territory territory : cluster) {
 					HashSet<Territory> enemies = TerritoryUtils
 							.getEnemyNeighbours(state, territory, player);
@@ -146,12 +149,11 @@ System.out.println(reason);
 
 		case REINFORCEMENT_PHASE:
 			// move armies outwards - look for weakest, unprotected territories
-			return TerritoryUtils.getWeakestOwned(player, possibles);
-
+			return AIUtils.getStrongestTerritory(state,possibles);
+		default:
+			break;
 		}
-
 		return null;
-
 	}
 
 	// need to and from
@@ -169,8 +171,11 @@ System.out.println(reason);
 			return armiesFrom - 1;
 		else
 			return armiesFrom / 2;
+		case PLACING_ARMIES_PHASE:
+			return 1;
+		default:
+			return max;
 		}
-		return max;
 
 	}
 

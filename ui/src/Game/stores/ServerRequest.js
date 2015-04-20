@@ -87,9 +87,6 @@ AppDispatcher.register(function(payload) {
     var action = payload.action;
 
     if (payload.source === "SERVER_ACTION") {
-        if (payload.action.requestType == "card") {
-            console.log(payload.action);
-        }
         ServerRequest.setRequest(payload.action.requestType, payload.action);
     }
 

@@ -2,13 +2,10 @@ package GameUtils;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-
 import org.junit.Before;
 import org.junit.Test;
 
 import GameBuilders.DemoGameBuilder;
-import GameEngine.GameEngine;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
@@ -26,7 +23,6 @@ public class PlayerUtilsTest {
 		gameState = DemoGameBuilder.buildTestGame(2, 2, interfaces);
 		territories = new Territory[TerritoryUtils.getAllTerritories(gameState).size()];
 		TerritoryUtils.getAllTerritories(gameState).toArray(territories);
-		GameEngine engine = new GameEngine(gameState);
 	}
 	
 	@Test
@@ -94,6 +90,11 @@ public class PlayerUtilsTest {
 		// since it holds all players that participate in the game
 		// even the ones that have already lost
 		assertEquals(gameState.getPlayers().size(), 2);
+	}
+	
+	@Test
+	public void playersInGameTest(){
+		assertEquals(2, PlayerUtils.getPlayersInGame(gameState).size());
 	}
 
 }

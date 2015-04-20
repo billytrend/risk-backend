@@ -34,6 +34,8 @@ var StateStore = assign({}, EventEmitter.prototype, {
 
     _gameStarted: false,
 
+    _lastChange: {},
+
     getCountryState: function(country) {
         if (this._gameState.ownerships[country] == undefined) {
             return {
@@ -44,8 +46,11 @@ var StateStore = assign({}, EventEmitter.prototype, {
     },
 
     getPlayerState: function(player) {
-        var pl = this._gameState.players[player];
-        pl.isInPlay = this._gameState.currentGo == player;
+        var pl = {};
+        if  (player in this._gameState.players) {
+            pl = this._gameState.players[player];
+            pl.isInPlay = this._gameState.currentGo == player;
+        }
         return pl;
     },
 
@@ -103,13 +108,13 @@ var StateStore = assign({}, EventEmitter.prototype, {
     },
 
     applyPlayerRemoval: function(change) {
-        // "removedPlayer":{"id":"Player 425918570"}
-        // "state":{"map":{},"players":{"Player 1":{"cards":[],"territories":[]}
-        // "Player 2":{"cards":[],"territories":[]}}}
-        // "actingPlayer":{"id":"Player 110718392"}
-        // "actionPlayed":"PLAYER_INVADING_COUNTRY"
-        // "changeType":"PlayerRemoval"
-        //this._gameState.ownerships[]
+        this._gameState.players[change.actingPlayerId].isDead = true;
+        this.emitChange("go_change")
+    },
+
+    applyCardHandout: function(change) {
+        if (!this._gameState.players[change.actingPlayerId].cards) this._gameState.players[change.actingPlayerId].cards = [];
+        this._gameState.players[change.actingPlayerId].cards.push(change.card);
     },
 
     applyArmyHandout: function(change) {
@@ -120,11 +125,17 @@ var StateStore = assign({}, EventEmitter.prototype, {
         this.emitChange('gained_armies:' + change.actingPlayerId);
     },
 
-    applyPlayStateUpdate: function(change) {
-        if (change.actingPlayerId != this._gameState.currentGo) {
-            this._gameState.currentGo = change.actingPlayerId;
-            this.emitChange("go_change")
-        }
+    applyPlayerChange: function(change) {
+        this._gameState.currentGo = change.actingPlayerId;
+        this.emitChange("go_change")
+    },
+
+    setChange: function(ch) {
+        this._lastChange = ch;
+    },
+
+    getChange: function(ch) {
+        return this._lastChange;
     },
 
     applyGameStart: function(change) {
@@ -161,6 +172,8 @@ AppDispatcher.register(function(payload) {
 
     if (StateStore['apply' + payload.action.changeType]) {
         StateStore['apply' + payload.action.changeType](payload.action);
+        StateStore.setChange(payload.action);
+        StateStore.emitChange("change_happened");
     }
 
     return true; // No errors.  Needed by promise in Dispatcher.
