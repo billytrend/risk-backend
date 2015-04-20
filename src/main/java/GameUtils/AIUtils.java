@@ -70,7 +70,8 @@ public class AIUtils {
 			Collections.sort(clusters, new HashSetSizeComparator());
 			return clusters;
 		}
-	    
+
+
 	    public static ArrayList<HashSet<Territory>> getAllClusters(State state,
 				Player player) {
 			HashSet<Territory> world = TerritoryUtils.getPlayersTerritories(player);

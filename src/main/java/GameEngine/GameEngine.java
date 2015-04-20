@@ -148,7 +148,7 @@ public class GameEngine implements Runnable {
 
 			case PLAYER_INVADING_COUNTRY:
 				debug("\nINVADING");
-				this.playState = invadeCountry(); 
+				this.playState = invadeCountry();
 				gameState.print();
 				break;
 
@@ -162,24 +162,24 @@ public class GameEngine implements Runnable {
 				debug("\nEND GO");
 				this.playState = endGo();
 				break;
-				
+
 			case END_GAME:
 				debug("\nEND GAME!");
-				gameState.setWinner(currentPlayer);
+//				gameState.setWinner(currentPlayer);
 				return false;
-			
+
 			default:
 				break;
 		}
-		
+
 		return true;
 	}
 
-	
+
 	/**
 	 * Function called at the start of a game.
 	 * It sets the first player.
-	 * 
+	 *
 	 * @return
 	 */
 	private PlayState begin() {
@@ -208,21 +208,21 @@ public class GameEngine implements Runnable {
 		return FILLING_EMPTY_COUNTRIES;
 	}
 
-	
+
 	/**
 	 * This method is called at the beginning of the game.
 	 * It allows the current player to place an army on one of
-	 * the unoccupied territories. It also transfers the game 
+	 * the unoccupied territories. It also transfers the game
 	 * to the next state once it recognises that there are no
 	 * empty territories.
-	 *  
+	 *
 	 * @return
 	 */
 	protected PlayState fillAnEmptyCountry() {
 
 		// get a list of empty territories available
 		HashSet<Territory> emptyTerritories = TerritoryUtils.getUnownedTerritories(gameState);
-		
+
 		// player specifies the country
 		debug(currentPlayer.getClass().toString());
 		Territory toFill = currentPlayer.getCommunicationMethod()
@@ -235,7 +235,7 @@ public class GameEngine implements Runnable {
         applyAndReportChange(gameState, stateChange);
 
 		endGo();
-		
+
 		if (!TerritoryUtils.hasEmptyTerritories(gameState)) {
 			debug("ALL COUNTRIES TAKEN");
 			return USING_REMAINING_ARMIES;
@@ -245,26 +245,26 @@ public class GameEngine implements Runnable {
 
 	}
 
-	
+
 	/**
 	 * Method called at the beginning of the game, once all the
-	 * territories have been taken by the players. It allows the 
+	 * territories have been taken by the players. It allows the
 	 * current player to place an army unit on one of their territories.
 	 * If the player has no armies left then the turn is passed to
-	 * the next player. 
+	 * the next player.
 	 * The method can also detect that none of the players has remaining
 	 * armies and cause the game to transfer to the next state.
-	 * 
+	 *
 	 * @return
 	 */
 	protected PlayState useARemainingArmy() {
 
 		// get a list of a players undeployed armies
 		ArrayList<Army> playersUndeployedArmies = ArmyUtils.getUndeployedArmies(currentPlayer);
-		
+
 		// if a  player doesnt have any undeployed armies
 		if (playersUndeployedArmies.size() == 0) {
-			
+
 			// the current player ends their turn
 			//endGo();
 
@@ -273,7 +273,7 @@ public class GameEngine implements Runnable {
 			if (!ArmyUtils.somePlayerHasUndeployedArmies(gameState)) {
 				return PLAYER_BEGINNING_TURN;
 			}
-			
+
 			// keep going for the sake of the player who still has remaining armies
 			endGo();
 			return USING_REMAINING_ARMIES;
@@ -281,7 +281,7 @@ public class GameEngine implements Runnable {
 
 		// get a list of the players territories
 		HashSet<Territory> usersTerritories = TerritoryUtils.getPlayersTerritories(currentPlayer);
-		
+
 		// ask a player what country they want to pick
 		Territory toFill = currentPlayer.getCommunicationMethod()
 				.getTerritory(currentPlayer, usersTerritories, null, false, RequestReason.PLACING_REMAINING_ARMIES_PHASE);
@@ -291,11 +291,11 @@ public class GameEngine implements Runnable {
         applyAndReportChange(gameState, stateChange);
 
 		endGo();
-	
+
 		return USING_REMAINING_ARMIES;
 
 	}
-	
+
 	private PlayState giveAdditionalArmies(){
 
 		int payout = TerritoryUtils.getPlayersTerritories(currentPlayer).size()/3;
@@ -352,19 +352,19 @@ public class GameEngine implements Runnable {
 		return cardPayout;
 
 	}
-	
+
 
 	/**
 	 * Method used within the entire game. It is called any time
 	 * the player receives new armies. It allows the current player
 	 * to choose the amount of armies they want to place and the
 	 * destination (from the payers territories only). After that
-	 * decision is made the specified amount of armies is placed. 
-	 * 
+	 * decision is made the specified amount of armies is placed.
+	 *
 	 * @return
 	 */
 	protected PlayState placeArmy() {
-		
+
 		// get a list of players undeployed armies
 		ArrayList<Army> playersUndeployedArmies = ArmyUtils.getUndeployedArmies(currentPlayer);
 
@@ -379,11 +379,11 @@ public class GameEngine implements Runnable {
 		// find out which country the player wants to place in
 		Territory toFill = currentPlayer.getCommunicationMethod()
 				.getTerritory(currentPlayer, playersTerritories, null, false, RequestReason.PLACING_ARMIES_PHASE);
-        
-		// find out how many armies the player want to deploy there 
+
+		// find out how many armies the player want to deploy there
 		int deployedAmount = currentPlayer.getCommunicationMethod()
 				.getNumberOfArmies(currentPlayer, playersUndeployedArmies.size(), RequestReason.PLACING_ARMIES_PHASE, toFill, null);
-		
+
 		// do the deployment!
 		Change stateChange = new ArmyPlacement(currentPlayer.getId(), toFill.getId(), deployedAmount, PLAYER_PLACING_ARMIES);
         applyAndReportChange(gameState, stateChange);
@@ -391,15 +391,15 @@ public class GameEngine implements Runnable {
 		return PLAYER_PLACING_ARMIES;
 	}
 
-	
+
 	/**
 	 * A function that carries out the whole attack - checks its validity,
 	 * carries out a fight and applies the result of the battle.
-	 * 
+	 *
 	 * @return
 	 */
 	protected PlayState invadeCountry() {
-		
+
 		// get the territories of the current player
 		possibleAttackingTerritories = TerritoryUtils
                 .getPossibleAttackingTerritories(gameState, currentPlayer);
@@ -415,39 +415,39 @@ public class GameEngine implements Runnable {
 		// find out which country the player wants to attack from
 		Territory attacking = currentPlayer.getCommunicationMethod()
 				.getTerritory(currentPlayer, possibleAttackingTerritories, null, true, RequestReason.ATTACK_CHOICE_FROM);
-		
+
 		if(attacking == null){
 			debug("PLAYER DOESNT WANT TO INVADE");
 			return PLAYER_MOVING_ARMIES;
 		}
-		
+
 		// get the enemy neighbours of the country
 		HashSet<Territory> attackable = TerritoryUtils
 				.getEnemyNeighbours(gameState, attacking, currentPlayer);
-		
-			
+
+
 		// ask the player which country he wants to attack
 		Territory defending = currentPlayer
 				.getCommunicationMethod().getTerritory(currentPlayer, attackable, attacking, true, RequestReason.ATTACK_CHOICE_TO);
-		
+
 		if(defending == null){
 			System.out.println("GE: def null");
 			return PLAYER_MOVING_ARMIES;
 		}
 
-		
+
 		// find out who owns this fated land
 		Player defendingPlayer = PlayerUtils.getTerritoryOwner(gameState, defending);
 
-		
+
 		// work out the max number of armies that may attack
 		// and how many may defend as per rules
 		int attackingArmies = ArmyUtils
 				.getNumberOfArmiesOnTerritory(currentPlayer, attacking);
-		
+
 		debug("attacking armies: " + attackingArmies);
 		int maxAttackingDice = (attackingArmies > 3) ? 3 : attackingArmies - 1;
-		
+
 		int defendingArmies = ArmyUtils
 				.getNumberOfArmiesOnTerritory(defendingPlayer, defending);
 		int maxDefendingDice = defendingArmies > 2 ? 2 : defendingArmies;
@@ -459,9 +459,9 @@ public class GameEngine implements Runnable {
 				getCommunicationMethod().getNumberOfDice(defendingPlayer, maxDefendingDice, RequestReason.DEFEND_CHOICE_DICE, attacking, defending);
 
 		// create an object to represent the fight
-		FightResult result = new FightResult(currentPlayer.getId(), defendingPlayer.getId(), 
+		FightResult result = new FightResult(currentPlayer.getId(), defendingPlayer.getId(),
 				attacking.getId(), defending.getId());
-	
+
 		// decide the results of the fight
 		currentPlayer.logAttack();
 		arbitration.carryOutFight(result, attackDiceNumber, defendDiceNumber);
@@ -471,7 +471,7 @@ public class GameEngine implements Runnable {
 		// if the attacking player won and they still have surplus armies,
 		// give the option to move them
 		if(result.getDefendersLoss() == defendingArmies){
-			
+
 			currentPlayerHasTakenCountry = true;
 
 			if((attackingArmies - result.getAttackersLoss() - attackDiceNumber) > 1) {

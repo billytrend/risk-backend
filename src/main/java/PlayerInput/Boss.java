@@ -15,7 +15,7 @@ import java.util.HashSet;
 /**
  * Created by root on 18/04/2015.
  */
-public class Billy implements PlayerInterface{
+public class Boss implements PlayerInterface{
     public int turnCounter = 0;
     public State currentState;
     public  int STARTUPMETRIC = 5;
@@ -23,7 +23,7 @@ public class Billy implements PlayerInterface{
     public Territory currTer;
 
 
-    public Billy(State currentState) {
+    public Boss(State currentState) {
         this.currentState = currentState;
     }
 
