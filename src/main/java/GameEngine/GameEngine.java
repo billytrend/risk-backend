@@ -91,7 +91,8 @@ public class GameEngine implements Runnable {
 	 * current state in the iterateGame function.
 	 */
 	private void play() throws InterruptedException {
-		while (true) {
+        applyAndReportChange(gameState, new GameStart("", BEGINNING_STATE, gameState));
+        while (true) {
 			if(!iterateGame()) return;
 		}
 	}

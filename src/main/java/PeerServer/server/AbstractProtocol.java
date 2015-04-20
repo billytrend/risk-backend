@@ -1,6 +1,5 @@
 package PeerServer.server;
 
-import GameBuilders.DemoGameBuilder;
 import GameEngine.GameEngine;
 import GameEngine.NetworkArbitration;
 import GameEngine.PlayState;
@@ -14,7 +13,7 @@ import PeerServer.protocol.dice.Die;
 import PeerServer.protocol.dice.Die.HashMismatchException;
 import PeerServer.protocol.dice.RandomNumbers;
 import PeerServer.protocol.gameplay.*;
-import PlayerInput.DumbBotInterface;
+import PlayerInput.DumbBotInterfaceProtocol;
 import PlayerInput.MyEntry;
 import PlayerInput.PlayerInterface;
 import PlayerInput.RemotePlayer;
@@ -80,16 +79,20 @@ public abstract class AbstractProtocol implements Runnable {
 	protected abstract void handleLeaveGame(String command);
 	protected abstract void acknowledge(int ack);
 
-	public void run(){
+    public void run() {
+        State state = new State();
+        this.run(state);
+    }
+
+    public void run(State state){
 		try {
 			diceRoller = new Die();
 		} catch (HashMismatchException e) {
 			e.printStackTrace();
 		}
 
-		//RiskMapGameBuilder.addRiskTerritoriesToState(state);
-		DemoGameBuilder.addFourTerritories(state);
-		
+//		RiskMapGameBuilder.addRiskTerritoriesToState(state);
+
 		while(protocolState != null){
 			if(engine == null)
 				takeSetupAction();
@@ -574,7 +577,7 @@ public abstract class AbstractProtocol implements Runnable {
 		PlayerInterface playerInterface;
 		if(localPlayer){
 			BlockingQueue<Object> newSharedQueue = new LinkedBlockingQueue<Object>();
-			playerInterface = new DumbBotInterface(newSharedQueue, id);
+			playerInterface = new DumbBotInterfaceProtocol(newSharedQueue, id);
 			localPlayersQueue = newSharedQueue;
 		}
 		else{	
