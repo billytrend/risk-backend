@@ -18,7 +18,7 @@ module.exports = {
             { test: /\.mp3$/, loader: 'file-loader' },
             { test: /\.css$/, loader: 'style-loader!css-loader!autoprefixer-loader'},
             { test: /\.html/, loader: 'file?name=[name].[ext]' },
-            { test: /\.jsx$/, loaders: ['react-hot', 'jsx?harmony'], exclude: /node_modules/ },
+            { test: /\.jsx$/, loaders: ['jsx?harmony'], exclude: /node_modules/ },
         ]
     }
 };

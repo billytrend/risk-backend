@@ -43,7 +43,7 @@ module.exports = React.createClass({
     },
 
     _startWaiting: function() {
-        if (this.state.humans.length + this.state.ais > 1) {
+        if (this.state.humans.length + this.state.ais.length > 1) {
             Actions.createGame(this.state.name, this.state.humans.length, this.state.ais);
             this._clear();
         }

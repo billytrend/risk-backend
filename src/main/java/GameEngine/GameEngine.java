@@ -449,7 +449,12 @@ public class GameEngine implements Runnable {
 
 		if(defending == null){
 			//System.out.println("GE: def null");
-			return PLAYER_INVADING_COUNTRY;
+            if ((currentPlayer.getCommunicationMethod() instanceof DumbBotInterfaceProtocol) ||
+            (currentPlayer.getCommunicationMethod() instanceof RemotePlayer)) {
+                return PLAYER_INVADING_COUNTRY;
+            }
+            return PLAYER_MOVING_ARMIES;
+
 		}
 
 
@@ -506,9 +511,11 @@ public class GameEngine implements Runnable {
                 applyAndReportChange(gameState, stateChange);
             }
 
-            if(checkTheEndOfGame())
-				return END_GAME;
-	
+            if(checkTheEndOfGame()) {
+                return END_GAME;
+
+            }
+
 		}
 
 		return PLAYER_INVADING_COUNTRY;
