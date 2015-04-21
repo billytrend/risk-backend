@@ -21,5 +21,5 @@ public enum ProtocolState {
 	TRADING_IN_CARDS,
 	DRAWING_CARDS,
 	ROLL, 
-	FORTIFY,
+	FORTIFY, START_GAME,
 }

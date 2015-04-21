@@ -272,7 +272,6 @@ public class ProtocolConnector implements Runnable {
 		System.out.println("IN FORTIFY -- connector");
 
     	int[] payload = parseTwoTerritoriesAndArmy(responseParts);
-    	
     	// if they simply changed their ming, ignore it
     	if((responseParts.get(0) != null) && responseParts.get(1) == null)
     		return;
@@ -286,7 +285,6 @@ public class ProtocolConnector implements Runnable {
 			e.printStackTrace();
 		}
     }
-    
     
     
     /**

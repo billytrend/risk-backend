@@ -41,7 +41,6 @@ public class HostProtocol extends AbstractProtocol  {
 	// maps players IDs with a connection associated with them (null for local)
 	private HashMap<Integer, PeerConnection> connectionMapping = new HashMap<Integer, PeerConnection>();
 
-	private BlockingQueue<String> commandQueue = new LinkedBlockingQueue<String>();
 	private BlockingQueue<String> acknowledgementsQueue = new LinkedBlockingQueue<String>();
 	
 	// connection which is currently served
@@ -103,7 +102,7 @@ public class HostProtocol extends AbstractProtocol  {
 			debug("\n INIT_GAME");
 			sendInitializeGame();
 			//sendLeaveGame(200, "temporary leave");
-			protocolState = ProtocolState.SETUP_GAME;
+			protocolState = ProtocolState.START_GAME;
 			break;
 		default:
 			break;
@@ -594,7 +593,14 @@ public class HostProtocol extends AbstractProtocol  {
 		String command = "";
 		if(commandQueue.size() != 0){
 			System.out.println("queue not empty!");
-			command = commandQueue.poll();
+			
+			try {
+				command = commandQueue.take();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			previouslyHandledId = getPlayerid(command);
 			System.out.println("got id: " + previouslyHandledId);
 			currentConnection = connectionMapping.get(previouslyHandledId);
@@ -619,7 +625,8 @@ public class HostProtocol extends AbstractProtocol  {
 		for(int i = 0; i < parts.length; i++){
 			if(parts[i].contains("player_id")){
 				String parts2[] = parts[i].split(":");
-				return (parts2[1].charAt(0) - 48);
+				char x = (parts2[1].charAt(0));
+				return Character.getNumericValue(x);
 			}
 		}
 		return -1;

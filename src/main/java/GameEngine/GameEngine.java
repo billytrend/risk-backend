@@ -189,10 +189,10 @@ public class GameEngine implements Runnable {
 	 */
 	private PlayState begin() {
 
-
 		// set first player if they havent been set from the protocol side
 		if(currentPlayer == null){
 			arbitration.setFirstPlayer(this.gameState);
+			System.out.println("set first player in GE");
 			// record this in the state
 			this.currentPlayer = gameState.getPlayerQueue().getCurrent();
             applyAndReportChange(gameState, new PlayerChange(currentPlayer.getId()));
@@ -337,7 +337,7 @@ public class GameEngine implements Runnable {
 
 		Triplet<Card, Card, Card> choice = currentPlayer.getCommunicationMethod().getCardChoice(currentPlayer, possibleCombinations);
 
-		if(choice == null)
+		if(choice == null) // TODO: move it lower.
 			return 0;
 		
         HashSet<Territory> territoriesOwned = CardUtils.getTerritoriesOnCardsThatPlayersOwn(currentPlayer, choice);
