@@ -7,7 +7,6 @@ import org.mortbay.jetty.handler.HandlerList;
 import org.mortbay.jetty.handler.ResourceHandler;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 
-import java.io.File;
 import java.net.BindException;
 
 public class StaticServer {
@@ -22,12 +21,7 @@ public class StaticServer {
         ResourceHandler resource_handler = new ResourceHandler();
         resource_handler.setWelcomeFiles(new String[]{ "index.html" });
 
-        ClassLoader loader = this.getClass().getClassLoader();
-        File indexLoc = new File(loader.getResource("index.html").getFile());
-        String htmlLoc = indexLoc.getParentFile().getAbsolutePath();
-
-        System.out.println(htmlLoc);
-        resource_handler.setResourceBase(htmlLoc);
+        resource_handler.setResourceBase("./ui-build/");
 
         HandlerList handlers = new HandlerList();
         handlers.setHandlers(new Handler[]{resource_handler, new DefaultHandler()});

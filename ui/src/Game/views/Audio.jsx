@@ -19,7 +19,7 @@ module.exports = React.createClass({
     componentDidMount: function() {
         //ServerRequest.addChangeListener("request", this._playEffect.bind(this, 'clash'));
         //ServerRequest.addChangeListener("request", this._playEffect.bind(this, 'alert'));
-        //this._playTheme();
+        this._playTheme();
     },
 
     _playEffect: function(effectName) {

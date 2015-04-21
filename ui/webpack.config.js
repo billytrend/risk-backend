@@ -21,6 +21,7 @@ module.exports = {
     },
     module: {
         loaders: [
+            { test: /\.jpg$/, loader: 'file-loader' },
             { test: /\.svg$/, loader: 'file-loader' },
             { test: /\.mp3$/, loader: 'file-loader' },
             { test: /\.css$/, loader: 'style-loader!css-loader!autoprefixer-loader'},
