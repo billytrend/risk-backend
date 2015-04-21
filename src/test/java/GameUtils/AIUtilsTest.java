@@ -77,18 +77,11 @@ public class AIUtilsTest {
 		enemyTerritories.add(otherplace);
 		enemyTerritories.add(someplace);
 		assertEquals(otherplace,AIUtils.getStrongestTerritory(gameState, enemyTerritories));
-		
-		
-		
-		
-		
+			
 	}
 	@Test
 	public void getWeakestTerritoryTest(){
 		HashSet<Territory> territorySet = new HashSet<Territory>();
-		
-		
-		
 		assertEquals(AIUtils.getWeakestTerritory(gameState, territorySet),null);
 		territorySet = TerritoryUtils.getAllTerritories(gameState);
 		ArmyUtils.deployArmies(player1, egstate, 1);
@@ -154,12 +147,6 @@ public class AIUtilsTest {
 		assertEquals(1, clusters.get(0).size());
 		assertEquals(1, clusters.get(1).size());
 
-//		for(Territory t: territories){
-//			ArmyUtils.deployArmies(player1, t, 2);
-//		}
-//		clusters = AIUtils.getAllClusters(gameState, player1);
-//		assertEquals(1, clusters.size());
-//		assertEquals(4, clusters.get(0).size());
 	}
 	
 	@Test
@@ -212,8 +199,6 @@ public class AIUtilsTest {
 		assertEquals(1, testClusters.get(3).size());
 		assertFalse(testClusters.get(2) ==testClusters.get(3) );
 		
-		
-		
 	}
 	
 	@Test
@@ -227,5 +212,48 @@ public class AIUtilsTest {
 		Territory nullTerr = AIUtils.getRandomTerritory(gameState, new HashSet<Territory>());
 	}
 
-	
+	@Test
+	public void getBiggestThreatTest(){
+
+HashSet<Territory> playersTerritories = TerritoryUtils.getPlayersTerritories(player1);
+		assertEquals(null, AIUtils.getBiggestThreatToPlayer(gameState,playersTerritories, player1));
+		assertEquals(null, AIUtils.getBiggestThreatToPlayer(gameState,playersTerritories, player1));
+		
+		ArmyUtils.deployArmies(player1, egstate, 1);
+		ArmyUtils.deployArmies(player1, otherplace, 3);
+		ArmyUtils.deployArmies(player1, demoland, 4);
+		ArmyUtils.deployArmies(player1, someplace, 2);
+		
+		assertEquals(null, AIUtils.getBiggestThreatToPlayer(gameState, playersTerritories, player1));
+		
+		ArmyUtils.destroyArmies(player1, otherplace, 1);
+		ArmyUtils.destroyArmies(player1, someplace, 1);
+		
+		ArmyUtils.deployArmies(player2, otherplace, 3);
+		ArmyUtils.deployArmies(player3, someplace, 3);
+		
+		playersTerritories = TerritoryUtils.getPlayersTerritories(player1);
+		
+		assertEquals(otherplace,AIUtils.getBiggestThreatToPlayer(gameState, playersTerritories, player1));
+	}
+	@Test
+	public void armiesOwnedSurroundingTest(){
+		assertEquals(0, AIUtils.armiesOwnedSurroundingTerritory(gameState, egstate, player1));
+		ArmyUtils.deployArmies(player1, egstate, 2);
+		ArmyUtils.deployArmies(player1, otherplace, 1);
+		assertEquals(1, AIUtils.armiesOwnedSurroundingTerritory(gameState, egstate, player1));
+		assertEquals(3, AIUtils.armiesOwnedSurroundingTerritory(gameState, demoland, player1));
+		
+		ArmyUtils.deployArmies(player2, demoland, 4);
+		ArmyUtils.deployArmies(player2, someplace, 2);
+		
+		assertEquals(1, AIUtils.armiesOwnedSurroundingTerritory(gameState, egstate, player1));
+		assertEquals(6, AIUtils.armiesOwnedSurroundingTerritory(gameState, egstate, player2));
+		assertEquals(3, AIUtils.armiesOwnedSurroundingTerritory(gameState, demoland, player1));
+		assertEquals(0, AIUtils.armiesOwnedSurroundingTerritory(gameState, demoland, player2));
+	}
+	@Test
+	public void getTerritoryWithStrongestTest(){
+		
+	}
 }
