@@ -7,6 +7,7 @@ body {
     cursor: pointer;
     font-family: "courier new", monospace;
     margin: 0px;
+    overflow-y: hidden;
 }
 
 .view_layer {
@@ -58,8 +59,8 @@ body {
 .prompt {
     transition: 1s ease;
     position: absolute;
-    left: 0;
-    bottom:0;
+    right: 0;
+    top:0;
     background-color: black;
     padding: 5px;
     color: white;
@@ -112,8 +113,10 @@ body {
 
 .end_go {
     position: absolute;
-    bottom: 10%;
-    left: 10%;
+    bottom: 10px;
+    left: 10px;
+    height: 50px;
+    width: 100px;
 }
 
 .card_box {
@@ -179,6 +182,7 @@ body {
     border: solid 3px;
     width: 70%;
     margin: 200px;
+    text-align: center;
 }
 
 .army_selection_column {
@@ -288,4 +292,9 @@ body {
 
 .die_hover {
     opacity: 0.5;
+}
+
+.upDown {
+    height:50px;
+    height:50px;
 }

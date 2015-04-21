@@ -126,7 +126,7 @@ public class PlayerConnection implements PlayerInterface  {
     public void reportStateChange(Change change) {
         try {
             connection.send(Jsonify.getObjectAsJsonString(change));
-            Thread.sleep(5);
+            Thread.sleep(20);
         } catch (Exception e) {
             dead = true;
         }
@@ -136,5 +136,6 @@ public class PlayerConnection implements PlayerInterface  {
     public void createResponse() {
 
     }
+
 
 }

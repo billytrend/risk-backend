@@ -30,24 +30,26 @@ public class CommunistDefensive implements PlayerInterface{
 
 
     /**
-     * *
-     * @param player
-     * @param max
-     * @return
+     * Always returns the maximum umber of dice.
+     *
+     * @param player The player
+     * @param max Maximum number of dice to be returned
+     * @return Number of dice to be rolled
      */
     public int getNumberOfDice(Player player, int max, RequestReason reason, Territory attacking, Territory defending) {
         return max;
     }
 
     /**
-     * The choice can be made only from the set of possible territories.
      *
-     * @param player
-     * @param possibles
+     * Returns a territory from a list of possibilities.
+     * @param player The player
+     * @param possibles Possible territories to choose from
+     * @param from Territory attacking from (if required)
+     * @param canResign Whether the user can resign at this point in time
+     * @param reason Why the method is being called, influences the return type.
      * @return
      */
-
-
     public Territory getTerritory(Player player, HashSet<Territory> possibles,Territory from,
                                   boolean canResign, RequestReason reason) {
 
@@ -94,10 +96,13 @@ public class CommunistDefensive implements PlayerInterface{
 
 
     /**
-     * The choice can only be made up to the specified max value.
+     * Returns a number of armies to move/attack etc
      *
-     * @param player
-     * @param max
+     * @param player The player.
+     * @param max Maximum number of dice to be rolled
+     * @param reason The reason the method is being called.
+     * @param to The territory attacking to
+     * @param from The territory attacking from
      * @return
      */
     public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
@@ -135,7 +140,7 @@ public class CommunistDefensive implements PlayerInterface{
 
     }
 
-    @Override
+    
     public void createResponse() {
 
     }

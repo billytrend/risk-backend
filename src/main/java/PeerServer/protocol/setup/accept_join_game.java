@@ -3,6 +3,8 @@
  */
 package PeerServer.protocol.setup;
 
+import PeerServer.protocol.gameplay_command;
+
 /**
  * Sent by a host to a client on receipt of a 
  * “join_game” command, as confirmation of adding 

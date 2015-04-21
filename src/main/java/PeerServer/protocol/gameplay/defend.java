@@ -3,6 +3,8 @@
  */
 package PeerServer.protocol.gameplay;
 
+import PeerServer.protocol.gameplay_command;
+
 /**
  *  Sent by the defending player immediately following an “attack” command. 
  *  Specifies the number of armies being used to defend with. 
@@ -14,11 +16,11 @@ package PeerServer.protocol.gameplay;
  * @author 120011995
  *
  */
-public class defend {
+public class defend  extends gameplay_command{
 	
 	public defend(int armies, int player_id, int ack_id){
+		super(player_id);
 		this.payload = armies;
-		this.player_id = player_id;
 		this.ack_id = ack_id;
 	}
 	
@@ -26,6 +28,5 @@ public class defend {
 
 	//number of armies being used to defend the territory
 	public int payload;
-	public int player_id;
 	public int ack_id;
 }

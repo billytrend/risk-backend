@@ -25,8 +25,9 @@
 
 .lobby_view {
     z-index: 20;
-    background: lightblue;
-    padding: 5% 20% 0 20%;
+    background: url("../Assets/background.jpg") no-repeat center center fixed;
+    background-size: cover;
+    padding: 100px 200px 100px 200px;
     box-sizing: border-box;
     overflow-y: scroll;
     position: absolute;
@@ -35,7 +36,14 @@
     flex-shrink: 1;
 }
 
+.main_lobby {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 50px;
+    border-radius: 20px;
+}
+
 .game_title {
     font-size: 50px;
     margin-bottom: 50px;
+    text-align: center;
 }

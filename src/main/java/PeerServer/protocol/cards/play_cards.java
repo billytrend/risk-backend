@@ -3,6 +3,8 @@
  */
 package PeerServer.protocol.cards;
 
+import PeerServer.protocol.gameplay_command;
+
 /**
  * Sent by each player at the start of their turn, 
  * specifying group(s) of cards to trade in for armies, 
@@ -12,18 +14,25 @@ package PeerServer.protocol.cards;
  * @author 120011995
  *
  */
-public class play_cards {
+public class play_cards extends gameplay_command {
 	
 	public play_cards(int[][] cards, int armies, int id, int ack){
-		this.payload = new payload();
-		this.payload.cards = cards;
-		this.payload.armies = armies;
-		player_id = id;
+		super(id);
+
+		if(cards == null){
+			this.payload = null;
+		}
+		else{
+			this.payload = new payload();
+			this.payload.cards = cards;
+			this.payload.armies = armies;
+		}
+	
 		ack_id = ack;
 	}
 	
+	public String command = "play_cards";
 	public payload payload;
-	public int player_id;
 	public int ack_id;
 	
 	//null (if no cards being traded)

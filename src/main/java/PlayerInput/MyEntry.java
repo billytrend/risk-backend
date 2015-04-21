@@ -2,7 +2,7 @@ package PlayerInput;
 
 import java.util.Map;
 
-final class MyEntry<K, V> implements Map.Entry<K, V> {
+public final class MyEntry<K, V> implements Map.Entry<K, V> {
     private final K key;
     private V value;
 

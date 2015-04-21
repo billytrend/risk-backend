@@ -1,4 +1,4 @@
-var conn = new WebSocket('ws://risk.billytrend.com:8887'),
+var conn = new WebSocket('ws://' + document.domain + ':8887'),
     Dispatcher = require('./dispatcher'),
     ServerRequest = require('../Game/stores/ServerRequest');
 

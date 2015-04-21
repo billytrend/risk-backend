@@ -6,6 +6,7 @@ import GameState.Card;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
+import GameUtils.AIUtils;
 import GameUtils.Results.Change;
 import org.javatuples.Triplet;
 
@@ -15,18 +16,26 @@ import java.util.HashSet;
 /**
  * Created by root on 18/04/2015.
  */
-public class Billy implements PlayerInterface{
+public class SuperSwapper implements PlayerInterface{
     public int turnCounter = 0;
     public State currentState;
-    public  int STARTUPMETRIC = 5;
-    public String contID = "north_america";
+    public int STARTUPMETRIC = 5;
+    public int THREATTIMER = 7;
+    public String contID = "south_america";
     public Territory currTer;
 
 
-    public Billy(State currentState) {
+    public SuperSwapper(State currentState) {
         this.currentState = currentState;
     }
 
+    /**
+     * Always returns the maximum umber of dice.
+     *
+     * @param player The player
+     * @param max Maximum number of dice to be returned
+     * @return Number of dice to be rolled
+     */
     @Override
     public int getNumberOfDice(Player player, int max, RequestReason reason, Territory attacking, Territory defending) {
         return max;
@@ -34,13 +43,14 @@ public class Billy implements PlayerInterface{
 
 
     /**
-     * The choice can be made only from the set of possible territories.
      *
-     * @param player
-     * @param possibles
-     * @param from
-     * @param canResign
-     * @param reason    @return
+     * Returns a territory from a list of possibilities.
+     * @param player The player
+     * @param possibles Possible territories to choose from
+     * @param from Territory attacking from (if required)
+     * @param canResign Whether the user can resign at this point in time
+     * @param reason Why the method is being called, influences the return type.
+     * @return
      */
     @Override
     public Territory getTerritory(Player player, HashSet<Territory> possibles, Territory from, boolean canResign, RequestReason reason) {
@@ -59,14 +69,16 @@ public class Billy implements PlayerInterface{
 
             case PLACING_REMAINING_ARMIES_PHASE:
                 if(turnCounter < STARTUPMETRIC) {
-                    return contGrab.getTerritory(player,possibles,from,canResign,reason);
-                } else {
+                    return contGrab.getTerritory(player, possibles, from, canResign, reason);
+                } else{
                     return commie.getTerritory(player, possibles, from, canResign, reason);
                 }
 
             case PLACING_ARMIES_PHASE:
                 if(turnCounter < STARTUPMETRIC) {
                     return contGrab.getTerritory(player,possibles,from,canResign,reason);
+                } else if(turnCounter < THREATTIMER){
+                    return AIUtils.getTerritoryWithStrongestNeighbour(currentState, possibles, player);
                 } else {
                     return commie.getTerritory(player, possibles, from, canResign, reason);
                 }
@@ -104,13 +116,14 @@ public class Billy implements PlayerInterface{
 
 
     /**
-     * The choice can only be made up to the specified max value.
+     * Returns a number of armies to move/attack etc
      *
-     * @param player
-     * @param max
-     * @param reason
-     * @param to
-     * @param from   @return
+     * @param player The player.
+     * @param max Maximum number of dice to be rolled
+     * @param reason The reason the method is being called.
+     * @param to The territory attacking to
+     * @param from The territory attacking from
+     * @return
      */
     @Override
     public int getNumberOfArmies(Player player, int max, RequestReason reason, Territory to, Territory from) {
@@ -150,10 +163,10 @@ public class Billy implements PlayerInterface{
             // links.
             case POST_ATTACK_MOVEMENT:
                 return max - 2; // Moves the maximum number of armies post attack. - 2
-		default:
-			 return 0;
+            default:
+                return 0;
         }
-       
+
 
     }
 

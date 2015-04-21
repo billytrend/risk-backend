@@ -3,6 +3,8 @@
  */
 package PeerServer.protocol.dice;
 
+import PeerServer.protocol.gameplay_command;
+
 /**
  * Sent by each player in receipt of a “roll” command being received. 
  * The hash should be a string representation of the SHA-256 hash in hexadecimal. 
@@ -24,15 +26,14 @@ package PeerServer.protocol.dice;
  */
 
 
-public class roll_hash {
+public class roll_hash extends gameplay_command{
 	
 	public roll_hash(String payload, int player_id){
+		super(player_id);
 		this.payload = payload;
-		this.player_id = player_id;
 	}
 	
 	//SHA-256 Hash as a hexadecimal string
 	public String command = "roll_hash";
 	public String payload;
-	public int player_id;
 }

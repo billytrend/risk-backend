@@ -18,15 +18,15 @@ module.exports = React.createClass({
         //console.log(Countries)
         return <div className="world_map">
             <svg width="100%" height="100%"  viewBox="0 0 1016 658" >
+                <Connections />
                 <g>
                     <defs/>
                     {
                         Object.keys(MapRep.countries).map(function(name) {
                             return <Country countryName={ name } onMap={ true }/>
                         })
-                    }
+                        }
                 </g>
-                <Connections />
             </svg>
         </div>
     }

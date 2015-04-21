@@ -23,6 +23,7 @@ public class PlayerQueue implements Iterator {
         if (firstPlayer < this.players.size()) {
             this.firstPlayer = firstPlayer;
         }
+        curPlayer = firstPlayer;
     }
     
     public int getFirstPlayer() {

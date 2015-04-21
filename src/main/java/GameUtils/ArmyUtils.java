@@ -141,6 +141,7 @@ public class ArmyUtils {
         if (numOfPlayers > 3) {
             numOfArmies -= 5 * (numOfPlayers - 3);
         }
+
         return numOfArmies;
 	}
 }

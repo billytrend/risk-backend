@@ -4,6 +4,8 @@ import GameState.State;
 import GeneralUtils.Serialisers.GameStateSerialiser;
 import GeneralUtils.Serialisers.LobbySerialiser;
 import LobbyServer.LobbyState.Lobby;
+import PeerServer.protocol.message;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -29,22 +31,19 @@ public class Jsonify {
         return ob;
     }
     
-    public static Object getJsonFromCommand(String command, Class c){
+    public static Object getObjectFromCommand(String command, Class c){
     	message msg = (message) getJsonStringAsObject(command, message.class);
-    	Object ob = getJsonStringAsObject(msg.jsonContent, c);
+    	Object ob = getJsonStringAsObject(msg.message, c);
     	return ob;
     }
     
     public static String getObjectAsCommand(Object ob){
     	String str = getObjectAsJsonString(ob);
-    	message msg = new message();
-    	msg.jsonContent = str;
+    	message msg = new message(str);
+    
     	String result = getObjectAsJsonString(msg);
     	return result;
     }
 
- 
-    public static class message{
-    	public String jsonContent;
-    }
+    
 }

@@ -207,6 +207,8 @@ public class ArmyUtilsTest {
 		assertEquals(30, ArmyUtils.getStartingArmies(gameState));
 		
 	}
+	
+
 
 	
 }

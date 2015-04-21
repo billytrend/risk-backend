@@ -8,6 +8,7 @@ import LobbyServer.SingleGameServer;
 import PlayerInput.CommunistAggressive;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.TheLoser;
+import PlayerInput.*;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.DefaultHandler;
@@ -27,7 +28,7 @@ public class SingleGameRunner {
         State gameState = RiskMapGameBuilder.buildGame(null);
         
         //pink
-        players.add(0, new Player(new CommunistAggressive(gameState), "The test subject"));
+        players.add(0, new Player(new SuperSwapper(gameState), "The test subject"));
         //blue
         players.add(1, new Player(new TheLoser(gameState), "Loser1"));
         //purple
@@ -53,25 +54,8 @@ public class SingleGameRunner {
 
     public void start() throws Exception {
 
-        Server server = new Server();
-        SelectChannelConnector connector = new SelectChannelConnector();
-        connector.setPort(8080);
-        server.addConnector(connector);
-
-        ResourceHandler resource_handler = new ResourceHandler();
-        resource_handler.setWelcomeFiles(new String[]{ "index.html" });
-
-        resource_handler.setResourceBase("./ui-build/");
-
-        HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[] { resource_handler, new DefaultHandler() });
-        server.setHandler(handlers);
-
-        server.start();
-
+        new StaticServer();
         SingleGameServer s = new SingleGameServer(8887, gameState, players);
-        server.join();
-       
         
 
     }

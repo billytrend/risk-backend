@@ -26,17 +26,13 @@ public class Client{
 	private DataInputStream in;
 	private final static int port = 4444;
 
-	public static void main(String[] args) {
-		String clientName = args[0];
-		new Client("localhost", port); 
-	}
-
 	/**
 	 * Constructor
 	 * @param host
 	 * @param port
 	 */
 	public Client(String host, int port){
+		
 		try {
 			socket = new Socket(host, port);
 			System.out.println("connected to " + socket);

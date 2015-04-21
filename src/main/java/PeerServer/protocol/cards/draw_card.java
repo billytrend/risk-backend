@@ -3,6 +3,8 @@
  */
 package PeerServer.protocol.cards;
 
+import PeerServer.protocol.gameplay_command;
+
 /**
  * Sent by a player during a turn after their final “attack” has been completed, 
  * if any territories have been claimed.
@@ -11,7 +13,6 @@ package PeerServer.protocol.cards;
  */
 public class draw_card {
 
-	int card_id; //id of the card being drawn
-	int player_id;
-	int ack_id;
+	public int card_id; //id of the card being drawn
+	public int ack_id;
 }

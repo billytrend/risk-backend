@@ -7,11 +7,8 @@ import GameState.Territory;
 import GameUtils.ArmyUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.TerritoryUtils;
-import GameUtils.Results.ArmyHandout;
 import PlayerInput.PlayerInterface;
-
 import com.esotericsoftware.minlog.Log;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,10 +36,11 @@ public class GameEngineTest{
 		gameState = DemoGameBuilder.buildGame(interfaces);
 		HashSet<Territory> territories = TerritoryUtils.getAllTerritories(gameState);
 	    gameEngine = new TestableGameEngine(gameState);
-        ;
+
         for(Player p : PlayerUtils.getPlayersInGame(gameState)){
         	ArmyUtils.givePlayerNArmies(p, ArmyUtils.getStartingArmies(gameState));
         }
+
 		sortedTerritories = new ArrayList<Territory>();
 		sortedTerritories.addAll(territories);
 		Collections.sort(sortedTerritories, comparator);

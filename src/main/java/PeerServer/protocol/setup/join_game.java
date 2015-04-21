@@ -3,6 +3,8 @@
  */
 package PeerServer.protocol.setup;
 
+import PeerServer.protocol.gameplay_command;
+
 /**
  *  Sent by a client to a host attempting to join a game. 
  *  First command sent upon opening a socket 
@@ -26,7 +28,7 @@ package PeerServer.protocol.setup;
  *
  */
 
-public class join_game {
+public class join_game{
 	public String command = "join_game";
 	public payload payload;
 

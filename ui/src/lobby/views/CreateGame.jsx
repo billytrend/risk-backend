@@ -37,8 +37,24 @@ module.exports = React.createClass({
         this.setState(this.state);
     },
 
+    _popHuman: function() {
+        this.state.humans.pop();
+        this.setState(this.state);
+    },
+
     _startWaiting: function() {
-        Actions.createGame(this.state.name, this.state.humans.length, this.state.ais);
+        if (this.state.humans.length + this.state.ais.length > 1) {
+            Actions.createGame(this.state.name, this.state.humans.length, this.state.ais);
+            this._clear();
+        }
+    },
+
+    _clear() {
+        this.setState({
+            ais: [],
+            humans: [],
+            name: ""
+        });
     },
 
     render: function() {
@@ -51,7 +67,8 @@ module.exports = React.createClass({
                 <input className="gameId" placeholder="Create Game">{ this.state.name }</input>
                 {
                     state.ais.concat(this.state.humans).map(function(ai, i) {
-                        return <div>{ ai }<button onClick={self._pop.bind(null, i)} >-</button></div>;
+                        var pop = ai == "Human" ? self._popHuman : self._pop;
+                        return <div>{ ai }</div>;
                     })
                 }
                 <div>
@@ -66,6 +83,7 @@ module.exports = React.createClass({
                 </div>
                 <div>
                     <button onClick={ self._startWaiting }>Start Waiting</button>
+                    <button onClick={ self._clear }>Clear</button>
                 </div>
             </div>
         );

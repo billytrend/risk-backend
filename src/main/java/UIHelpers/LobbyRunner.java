@@ -2,12 +2,10 @@ package UIHelpers;
 
 import LobbyServer.LobbyServer;
 import org.java_websocket.WebSocketImpl;
-import org.mortbay.jetty.Handler;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.handler.DefaultHandler;
-import org.mortbay.jetty.handler.HandlerList;
-import org.mortbay.jetty.handler.ResourceHandler;
-import org.mortbay.jetty.nio.SelectChannelConnector;
+
+import java.awt.*;
+import java.net.InetAddress;
+import java.net.URI;
 
 /**
  * Created by bt on 20/04/2015.
@@ -16,30 +14,22 @@ public class LobbyRunner {
 
     public static void main( String[] args ) throws Exception {
         WebSocketImpl.DEBUG = false;
-        int port = 8887; // 843 flash policy port
+        int wsport = 8887;
+        int staticport = 8080;
         try {
-            port = Integer.parseInt( args[ 0 ] );
+            wsport = Integer.parseInt( args[ 0 ] );
         } catch ( Exception ex ) {
         }
 
-        Server server = new Server();
-        SelectChannelConnector connector = new SelectChannelConnector();
-        connector.setPort(8080);
-        server.addConnector(connector);
-
-        ResourceHandler resource_handler = new ResourceHandler();
-        resource_handler.setWelcomeFiles(new String[]{ "index.html" });
-
-        resource_handler.setResourceBase("./ui-build/");
-
-        HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[] { resource_handler, new DefaultHandler() });
-        server.setHandler(handlers);
-
-        server.start();
-
-        LobbyServer s = new LobbyServer( port );
+        new StaticServer();
+        LobbyServer s = new LobbyServer( wsport );
         s.start();
+
+        try {
+            Desktop.getDesktop().browse(new URI("http://" + InetAddress.getLocalHost().getHostAddress() + ":" + staticport));
+        } catch (Exception e) {
+            System.out.println("Tried to open up your default browser but failed. Access the game at http://localhost:8080");
+        }
     }
 
 

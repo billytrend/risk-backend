@@ -6,6 +6,7 @@ package PeerServer.protocol.setup;
 import java.util.ArrayList;
 
 import GameState.Player;
+import PeerServer.protocol.gameplay_command;
 
 /**
  * 

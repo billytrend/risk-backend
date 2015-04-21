@@ -1,6 +1,8 @@
 
 package PeerServer.protocol.gameplay;
 
+import PeerServer.protocol.gameplay_command;
+
 /**
  * Sent zero or more times by a player during their turn. 
  * Describes an attack from an owned territory to one owned by another player. 
@@ -28,23 +30,22 @@ package PeerServer.protocol.gameplay;
  *
  */
 
-public class attack {
+public class attack extends gameplay_command {
 	
 	public attack(int sourceId, int destId, int armies, int playerID, int ack_id){
+		super(playerID);
 		payload = new int[]{sourceId, destId, armies};
-		this.player_id = playerID;
 		this.ack_id = ack_id;
 	}
 
 	public attack(int[] payload, int playerID, int ack_id){
+		super(playerID);
 		this.payload = payload;
-		this.player_id = playerID;
 		this.ack_id = ack_id;
 	}
 
 	public String command = "attack";
 	//source territory ID/destination territory ID/army count triple 
 	public int[] payload;
-	public int player_id;
 	public int ack_id;
 }
