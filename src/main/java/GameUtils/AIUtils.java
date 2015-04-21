@@ -162,7 +162,7 @@ public class AIUtils {
 	        
 	        for(Territory t:territories){
 	        	Player enemy = PlayerUtils.getTerritoryOwner(state, t);
-	            double threat = ArmyUtils.getNumberOfArmiesOnTerritory(enemy,t) / armiesOwnedSurroundingTerritory(state, t, player) * TerritoryUtils.getFriendlyNeighbours(state, t, player).size()/2;
+	            double threat = ArmyUtils.getNumberOfArmiesOnTerritory(enemy,t) * armiesOwnedSurroundingTerritory(state, t, player) * TerritoryUtils.getFriendlyNeighbours(state, t, player).size()/2;
 	            if (threat > highestThreat) {
 	            	highestThreat = threat;
 	                strongest = t;
@@ -185,7 +185,12 @@ public class AIUtils {
     public static Territory getTerritoryWithStrongestNeighbour(State state, HashSet<Territory> ownedTerritories, Player player){
     	HashSet<Territory> enemies = TerritoryUtils.getAllEnemyTerritories(state, player);
     	Territory biggestEnemyThreat = getBiggestThreatToPlayer(state, enemies, player);
-    	return biggestEnemyThreat;
+    	for(Territory ownedTerritory:ownedTerritories){
+    		if(TerritoryUtils.areNeighbours(state, ownedTerritory, biggestEnemyThreat)){
+    			return ownedTerritory;
+    		}
+    	}
+    	return getRandomTerritory(state, ownedTerritories);
     }
 
 

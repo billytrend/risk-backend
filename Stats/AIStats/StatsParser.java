@@ -59,7 +59,10 @@ public class StatsParser {
 		//avg attacks per turn
 		s += stats[10]/stats[9] + ",";
 		//avg position
-		s += stats[11]/stats[12];
+		s += stats[11]/stats[12] + ",";
+		//win percentage
+		s += stats[0]/stats[12] + ",";
+		s += stats[12];
 		return s;
 	}
 	
@@ -67,6 +70,7 @@ public class StatsParser {
 		File collectedStatsFile = new File("CollectedStats.csv");
 		try {
 			PrintWriter writer = new PrintWriter(new FileWriter(collectedStatsFile));
+			String titles = "AI,wins,wins V losers,wins V dumbbots,wins V 1, wins V 2,wins V 3,wins V 4,wins V 5, avg turns taken to win,avg attacks per turn, avg position";
 			String bControl = "BorderControl" +",";
 			bControl = statsString(bControlStats, bControl);
 			String comAgg = "CommunistAggressive" +",";
@@ -76,6 +80,7 @@ public class StatsParser {
 			String boss = "Boss" +",";
 			boss = statsString(bossStats, boss);
 			
+			writer.println(titles);
 			writer.println(bControl);
 			writer.println(comAgg);
 			writer.println(comDef);

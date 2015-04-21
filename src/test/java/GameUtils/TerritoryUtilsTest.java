@@ -40,8 +40,6 @@ public class TerritoryUtilsTest {
 		gameState.getTerritories().vertexSet().toArray(territories);
 		GameEngine engine = new GameEngine(gameState);
 		
-		
-		
 		for(Territory t : territories){
 			String id = t.getId();
 			if(id.equals("demoland"))
@@ -54,9 +52,6 @@ public class TerritoryUtilsTest {
 				otherplace = t;
 		}
 	}
-	
-	//@Test
-	//public void getTerritoryWithNameTest()
 	
 	@Test
 	public void getAllTerritoriesTest() {
@@ -225,10 +220,7 @@ public class TerritoryUtilsTest {
 		assertEquals(moreThanOneArmyTerritories.size(), 2);
 		assertTrue(moreThanOneArmyTerritories.contains(territories[0]));
 		assertTrue(moreThanOneArmyTerritories.contains(territories[1]));
-		
 	}
-	
-  
 	
 	@Test
 	public void getPossibleAttackingTerritories(){
