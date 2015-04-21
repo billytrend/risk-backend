@@ -140,7 +140,6 @@ public class AIUtils {
             if(!ownsOneInContinent(state, player, continentIDs[i])){
                 return continentIDs[i];
             }
-
         }
         return null;
     }

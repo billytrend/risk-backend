@@ -6,6 +6,7 @@ import GameState.Card;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
+import GameUtils.AIUtils;
 import GameUtils.Results.Change;
 import org.javatuples.Triplet;
 
@@ -18,8 +19,9 @@ import java.util.HashSet;
 public class SuperSwapper implements PlayerInterface{
     public int turnCounter = 0;
     public State currentState;
-    public  int STARTUPMETRIC = 5;
-    public String contID = "north_america";
+    public int STARTUPMETRIC = 5;
+    public int THREATTIMER = 7;
+    public String contID = "south_america";
     public Territory currTer;
 
 
@@ -59,7 +61,10 @@ public class SuperSwapper implements PlayerInterface{
 
             case PLACING_REMAINING_ARMIES_PHASE:
                 if(turnCounter < STARTUPMETRIC) {
-                    return contGrab.getTerritory(player,possibles,from,canResign,reason);
+                    return contGrab.getTerritory(player, possibles, from, canResign, reason);
+                } else if(turnCounter < THREATTIMER){
+                    Territory threat = AIUtils.getBiggestThreatToPlayer(currentState, possibles, player);
+                    
                 } else {
                     return commie.getTerritory(player, possibles, from, canResign, reason);
                 }
