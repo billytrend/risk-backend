@@ -5,9 +5,11 @@ import GameEngine.GameEngine;
 import GameEngine.NetworkArbitration;
 import GameEngine.PlayState;
 import GameEngine.RequestReason;
+import GameState.Army;
 import GameState.Card;
 import GameState.Player;
 import GameState.State;
+import GameUtils.ArmyUtils;
 import GameUtils.CardUtils;
 import GameUtils.PlayerUtils;
 import GameUtils.Results.Change;
@@ -104,6 +106,8 @@ public abstract class AbstractProtocol implements Runnable {
 	}
 
 
+	private int armiesPlaced = 0;
+	private int armiesToBePlaced;
 	/**
 	 * Manages the different states and associated commands.
 	 * @param
@@ -130,6 +134,7 @@ public abstract class AbstractProtocol implements Runnable {
         switch (protocolState) {
 	        case START_GAME:
 	            debug("\n START GAME");
+	            armiesToBePlaced = ArmyUtils.getStartingArmies(state) * numOfPlayers;
 	            setupRolls();
 	            protocolState = ProtocolState.SETUP_GAME;
 	            break;
@@ -209,8 +214,9 @@ public abstract class AbstractProtocol implements Runnable {
 		String lastPlayer;
 		PlayState changeType;
 		
+		
 		if(currentPlayerId == myID){
-			if(lastChange != null){
+		/*	if(lastChange != null){
 				
 				lastPlayer = lastChange.getActingPlayerId();
 				changeType = lastChange.getActionPlayed();
@@ -230,12 +236,15 @@ public abstract class AbstractProtocol implements Runnable {
 					}
 				}
 			}
-			
+			*/
 			setup setup = (setup) getResponseFromLocalPlayer();
 			setup.ack_id = ack_id;
 			ack_id++;
+			armiesPlaced++;
 			
-	
+			if(armiesPlaced == armiesToBePlaced){
+				nextStateAfterAck = ProtocolState.DEPLOY;
+			}
 			
 			String setupString = Jsonify.getObjectAsJsonString(setup);
 			//Send to all clients
@@ -243,7 +252,7 @@ public abstract class AbstractProtocol implements Runnable {
 		}
 		//someone sent us a command
 		else {
-			
+		/*	
 			if(lastChange != null){
 				lastPlayer = lastChange.getActingPlayerId();
 				changeType = lastChange.getActionPlayed();
@@ -262,13 +271,19 @@ public abstract class AbstractProtocol implements Runnable {
 					}
 				}	
 			}
-			
+			*/
 			String command = receiveCommand();
 			setup setup = (setup) Jsonify.getJsonStringAsObject(command, setup.class);
 
 			if(setup == null){
 				sendLeaveGame(200, "Wrong command. Expected setup.");
 				return;
+			}
+			
+			armiesPlaced++;
+			
+			if(armiesPlaced == armiesToBePlaced){
+				nextStateAfterAck = ProtocolState.DEPLOY;
 			}
 			
 			notifyPlayerInterface(setup, setup.player_id);
@@ -361,6 +376,8 @@ public abstract class AbstractProtocol implements Runnable {
 		//someone sent us the command  player id if parsing
 		else{
 			String command = receiveCommand();
+			if(command == "")
+				return;
 			attack attack = (attack) Jsonify.getJsonStringAsObject(command, attack.class);
 			//check its not null
 			if(attack == null){
@@ -425,7 +442,7 @@ public abstract class AbstractProtocol implements Runnable {
 
 		nextStateAfterAck = ProtocolState.ATTACK;
 		try {
-			Thread.sleep(200);
+			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -509,11 +526,12 @@ public abstract class AbstractProtocol implements Runnable {
 		
 		System.out.println("def and attck: " + defenderDiceNum + "  " + attackerDiceNum);
 		for(int i = 0; i < (defenderDiceNum + attackerDiceNum); i++){
-			result = ((int)diceRoller.nextInt() % 6) + 1;
+			result = ((int)diceRoller.nextInt() % 6);
 			if(result < 0){
 				System.out.println("PROBLEM: result < 0");
-				result *= -1;
+				result += 6;
 			}
+			result += 1;
 			networkArbitration.addDieThrowResult(result);
 			System.out.print(result + "  ");
 		}
@@ -538,7 +556,7 @@ public abstract class AbstractProtocol implements Runnable {
 		firstPlayerId = (((int) playersRoller.nextInt()) % numOfPlayers);
 		if(firstPlayerId < 0){
 			System.out.println("PROBLEM: result < 0");
-			firstPlayerId *= -1;
+			firstPlayerId += numOfPlayers;
 		}
 		networkArbitration.setFirstPlayerId(firstPlayerId);
 		

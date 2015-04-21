@@ -46,6 +46,7 @@ public class GameEngine implements Runnable {
 	private boolean countryTakenInPreviousTurn = false;
 	
 	public boolean isCountryTaken(){
+		System.out.println(countryTakenInPreviousTurn);
 		return countryTakenInPreviousTurn;
 	}
 	
@@ -195,6 +196,7 @@ public class GameEngine implements Runnable {
 			System.out.println("set first player in GE");
 			// record this in the state
 			this.currentPlayer = gameState.getPlayerQueue().getCurrent();
+			System.out.println(currentPlayer.getNumberId());
             applyAndReportChange(gameState, new PlayerChange(currentPlayer.getId()));
         }
 
