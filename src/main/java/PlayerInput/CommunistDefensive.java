@@ -135,7 +135,7 @@ public class CommunistDefensive implements PlayerInterface{
 
     }
 
-    @Override
+    
     public void createResponse() {
 
     }

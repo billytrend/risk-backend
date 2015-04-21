@@ -214,5 +214,13 @@ public class TerritoryUtils {
 		}
 		return pairs;
 	}
+	
+	public static HashSet<Territory> getAllEnemyTerritories(State state, Player player){
+		HashSet<Territory> territories = getAllTerritories(state);
+		HashSet<Territory> friendlies = getPlayersTerritories(player);
+		territories.removeAll(friendlies);
+		return territories;
+		
+	}
 
 }

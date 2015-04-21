@@ -114,32 +114,32 @@ public class TestAgainstDumbBot {
 	//Communist Aggressive
 	@Test
 	public void testCommunistAgressivewithOneDumbBot() {
-		player1 = new Player(new CommunistAggressive(gameState), "CommunistAgressive");
+		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
 		players.add(player1);
 		addDumbBots(1);
 	}
 	@Test
 	public void testCommunistAgressivewithTwoDumbBots() {
-		player1 = new Player(new CommunistAggressive(gameState), "CommunistAgressive");
+		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
 		players.add(player1);
 		addDumbBots(2);
 	}
 	@Test
 	public void testCommunistAgressivewithThreeDumbBots() {
-		player1 = new Player(new CommunistAggressive(gameState), "CommunistAgressive");
+		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
 		players.add(player1);
 		addDumbBots(3);
 		
 	}
 	@Test
 	public void testCommunistAgressivewithFourDumbBots() {
-		player1 = new Player(new CommunistAggressive(gameState), "CommunistAgressive");
+		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
 		players.add(player1);
 		addDumbBots(4);
 	}
 	@Test
 	public void testCommunistAgressivewithFiveDumbBots() {
-		player1 = new Player(new CommunistAggressive(gameState), "CommunistAgressive");
+		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
 		players.add(player1);
 		addDumbBots(5);
 	}

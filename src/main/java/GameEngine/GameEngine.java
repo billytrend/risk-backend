@@ -48,8 +48,6 @@ public class GameEngine implements Runnable {
 		return gameState;
 	}
 
-	
-	@Override
 	public void run() {
 		try {
  			play();

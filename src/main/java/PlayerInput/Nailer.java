@@ -125,7 +125,7 @@ public class Nailer implements PlayerInterface {
 
     }
 
-    @Override
+    
     public void createResponse() {
 
     }

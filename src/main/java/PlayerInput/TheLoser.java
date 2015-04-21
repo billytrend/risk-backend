@@ -107,7 +107,7 @@ public class TheLoser implements PlayerInterface {
 
     }
 
-    @Override
+    
     public void createResponse() {
 
     }
