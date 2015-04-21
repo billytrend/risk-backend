@@ -114,32 +114,32 @@ public class TestAgainstLosers {
 	//Communist Aggressive
 	@Test
 	public void testCommunistAgressivewithOneLoser() {
-		player1 = new Player(new CommunistAggressive(gameState), "CommunistAgressive");
+		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
 		players.add(player1);
 		addLosers(1);
 	}
 	@Test
 	public void testCommunistAgressivewithTwoLosers() {
-		player1 = new Player(new CommunistAggressive(gameState), "CommunistAgressive");
+		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
 		players.add(player1);
 		addLosers(2);
 	}
 	@Test
 	public void testCommunistAgressivewithThreeLosers() {
-		player1 = new Player(new CommunistAggressive(gameState), "CommunistAgressive");
+		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
 		players.add(player1);
 		addLosers(3);
 		
 	}
 	@Test
 	public void testCommunistAgressivewithFourLosers() {
-		player1 = new Player(new CommunistAggressive(gameState), "CommunistAgressive");
+		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
 		players.add(player1);
 		addLosers(4);
 	}
 	@Test
 	public void testCommunistAgressivewithFiveLosers() {
-		player1 = new Player(new CommunistAggressive(gameState), "CommunistAgressive");
+		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
 		players.add(player1);
 		addLosers(5);
 	}
