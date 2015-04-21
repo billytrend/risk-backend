@@ -141,6 +141,10 @@ public class ArmyUtils {
         if (numOfPlayers > 3) {
             numOfArmies -= 5 * (numOfPlayers - 3);
         }
+        
+        if(state.getTerritoryIds().size() == 4)
+        	return 4;
+        
         return numOfArmies;
 	}
 }

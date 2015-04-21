@@ -45,6 +45,8 @@ public class RemotePlayer implements PlayerInterface  {
     	boolean matching = ((responseReason == RequestReason.PLACING_ARMIES_SET_UP) 
     			&& (reason == RequestReason.PLACING_REMAINING_ARMIES_PHASE));
 
+
+    	
 		if(!matching && (responseReason != reason)){
 			System.out.println("Request reason doesn't match ");
 			System.out.println(responseReason + "... " + reason);
@@ -125,8 +127,7 @@ public class RemotePlayer implements PlayerInterface  {
 	
 	@Override
 	public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations){
-	/*
-		Integer cardOneId = getResponse(null);
+	/*	Integer cardOneId = getResponse(null);
 		Integer cardTwoId = getResponse(null);
 		Integer cardThreeId = getResponse(null);
 		

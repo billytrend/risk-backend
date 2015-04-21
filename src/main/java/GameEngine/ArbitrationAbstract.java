@@ -52,7 +52,7 @@ public abstract class ArbitrationAbstract {
 	     * @param defender
 	     * @return
 	     */
-	   private FightResult arbitrateFight(FightResult result, Integer[] attacker, Integer[] defender){
+	   protected FightResult arbitrateFight(FightResult result, Integer[] attacker, Integer[] defender){
 
 	        // sort in descending order - to later compare the highest results
 		   if(attacker.length > 1){

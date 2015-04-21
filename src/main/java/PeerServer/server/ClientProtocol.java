@@ -72,7 +72,7 @@ public class ClientProtocol extends AbstractProtocol{
 			else
 				handleInitializeGame(command);
 			//	protocolState = null;
-				protocolState = ProtocolState.SETUP_GAME;
+				protocolState = ProtocolState.START_GAME;
 			break;
 		default:
 		//	System.out.println("IN DEFAULT not good");
@@ -335,9 +335,23 @@ public class ClientProtocol extends AbstractProtocol{
 	 * Receives a command from the host.
 	 */
 	protected String receiveCommand() {
-		String receive = client.receive();
-		System.out.println("GOT: " + receive + "\n");
-		return receive;
+		String received = "";
+		
+		if(commandQueue.size() != 0){
+			System.out.println("queue not empty!");
+			try {
+				received = commandQueue.take();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else{
+			received = client.receive();
+		}
+		
+		System.out.println("GOT: " + received + "\n");
+		return received;
 	}
 	
 	
