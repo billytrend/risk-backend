@@ -223,4 +223,14 @@ public class TerritoryUtils {
 		
 	}
 
+	public static Territory getTerritoryByNumId(State state, int id) {
+		HashSet<Territory> allTerritories = getAllTerritories(state);
+		for (Territory territory : allTerritories) {
+			if (territory.getNumeralId() == id) {
+				return territory;
+			}
+		}
+		return null;
+	}
+
 }

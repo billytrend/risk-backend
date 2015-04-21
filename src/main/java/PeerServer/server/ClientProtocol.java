@@ -17,12 +17,13 @@ import static com.esotericsoftware.minlog.Log.debug;
 
 public class ClientProtocol extends AbstractProtocol{
 
+	// TCP client used for sending and receiving commands
 	private Client client;
+	
+	// fields used if some extensions are used
 	private int versionPlayed;
 	private String[] featuresUsed;
 
-	// ids of users who sent their pings
-	private Set<Integer> acknowledgements = new HashSet<Integer>();
 
 	@Override
 	protected void takeSetupAction() {
@@ -35,7 +36,7 @@ public class ClientProtocol extends AbstractProtocol{
 			break;			
 		case PLAYERS_JOINED:
 			debug("\nPLAYERS_JOINED");
-			command = receiveCommand();
+			command = receiveCommand(false);
 			
 			// while we still wait for players joined the server
 			// might send us ping command
@@ -48,7 +49,7 @@ public class ClientProtocol extends AbstractProtocol{
 			break;	
 		case PING:
 			debug("\n PING");
-			command = receiveCommand();
+			command = receiveCommand(false);
 			
 			// server might also say that its ready or that there
 			// are not enough players and we have to disconnect
@@ -63,7 +64,7 @@ public class ClientProtocol extends AbstractProtocol{
 			break;
 		case INIT_GAME:
 			debug("\n INIT_GAME");
-			command = receiveCommand();
+			command = receiveCommand(false);
 			
 			if(command.contains("timeout"))
 				handleTimeout(command);
@@ -90,9 +91,9 @@ public class ClientProtocol extends AbstractProtocol{
 		myName = getRandomName();
 		join_game join = new join_game(new Integer[]{1}, new String[]{}, myName, "key");
 		
-		sendCommand(Jsonify.getObjectAsJsonString(join), null, false);
+		sendCommand(Jsonify.getObjectAsCommand(join), null, false);
 		
-		String response = receiveCommand();
+		String response = receiveCommand(false);
 		if(!response.contains("accept")){
 			handleRejectJoin(response);
 		}
@@ -107,7 +108,7 @@ public class ClientProtocol extends AbstractProtocol{
 	 * @param command
 	 */
 	protected void handleAcceptJoin(String command) {
-		accept_join_game join = (accept_join_game) Jsonify.getJsonStringAsObject(command, accept_join_game.class);
+		accept_join_game join = (accept_join_game) Jsonify.getObjectFromCommand(command, accept_join_game.class);
 		if(join == null){
 			sendLeaveGame(200, "Expected accept_join_game command");
 		}
@@ -124,7 +125,7 @@ public class ClientProtocol extends AbstractProtocol{
 	 * @param reason
 	 */
 	protected void handleRejectJoin(String reason) {
-		reject_join_game reject = (reject_join_game) Jsonify.getJsonStringAsObject(reason, reject_join_game.class);
+		reject_join_game reject = (reject_join_game) Jsonify.getObjectFromCommand(reason, reject_join_game.class);
 		if(reject == null){
 			// just leave the game
 			sendLeaveGame(400, "Rejected");
@@ -140,7 +141,7 @@ public class ClientProtocol extends AbstractProtocol{
 	 */
 	protected void handlePlayersJoined(String command){	
 		// got it from host to be informed about players
-		players_joined players = (players_joined) Jsonify.getJsonStringAsObject(command, players_joined.class);	
+		players_joined players = (players_joined) Jsonify.getObjectFromCommand(command, players_joined.class);	
 		if(players == null){
 			sendLeaveGame(200, "Expected players_joined command");
 			return;
@@ -149,6 +150,8 @@ public class ClientProtocol extends AbstractProtocol{
 		// creating all players specified by the protocol
 		Object[][] playersDetails = players.payload;
 
+		System.out.println(playersDetails.length);
+		
 		Player player;
 		for(Object[] details : playersDetails){
 
@@ -184,7 +187,7 @@ public class ClientProtocol extends AbstractProtocol{
 	 * @param command
 	 */
 	protected void handlePing(String command){
-		ping ping = (ping) Jsonify.getJsonStringAsObject(command, ping.class);
+		ping ping = (ping) Jsonify.getObjectFromCommand(command, ping.class);
 		if(ping == null){
 			sendLeaveGame(200, "Expected ping command");
 			return;
@@ -198,8 +201,8 @@ public class ClientProtocol extends AbstractProtocol{
 			state.setPlayers(startingPlayers);
 
 			//	TODO: ask in UI: do you still want to play?
-			ping response = new ping(ping.payload, myID);
-			sendCommand(Jsonify.getObjectAsJsonString(response), null, false);
+			ping response = new ping(null , myID);
+			sendCommand(Jsonify.getObjectAsCommand(response), null, false);
 		}
 	}
 
@@ -212,7 +215,7 @@ public class ClientProtocol extends AbstractProtocol{
 	 * @return
 	 */
 	protected void  handleReady(String command){
-		ready ready = (ready) Jsonify.getJsonStringAsObject(command, ready.class);
+		ready ready = (ready) Jsonify.getObjectFromCommand(command, ready.class);
 		if(ready == null){
 			sendLeaveGame(200, "Expected ready command");
 			return;
@@ -241,7 +244,7 @@ public class ClientProtocol extends AbstractProtocol{
 	 * @param command
 	 */
 	protected void handleInitializeGame(String command){		
-		initialise_game init = (initialise_game) Jsonify.getJsonStringAsObject(command, initialise_game.class);
+		initialise_game init = (initialise_game) Jsonify.getObjectFromCommand(command, initialise_game.class);
 		if(init == null){;
 			sendLeaveGame(200, "Expected init game command");
 			return;
@@ -259,7 +262,7 @@ public class ClientProtocol extends AbstractProtocol{
 	 * @param command
 	 */
 	protected void handleTimeout(String command){
-		timeout timeout = (timeout) Jsonify.getJsonStringAsObject(command, timeout.class);
+		timeout timeout = (timeout) Jsonify.getObjectFromCommand(command, timeout.class);
 		if(timeout == null){
 			sendLeaveGame(200, "Expected timeout command");
 			return;
@@ -279,7 +282,7 @@ public class ClientProtocol extends AbstractProtocol{
 	 */
 	protected void sendLeaveGame(int leaveCode, String leaveReason){
 		leave_game leave = new leave_game(leaveCode, leaveReason, false, myID);
-		sendCommand(Jsonify.getObjectAsJsonString(leave), null, false);
+		sendCommand(Jsonify.getObjectAsCommand(leave), null, false);
 		
 		protocolState = null;
 	}
@@ -288,7 +291,7 @@ public class ClientProtocol extends AbstractProtocol{
 	 * Removes the player who left, unless its a host in which case the game finishes
 	 */
 	protected void handleLeaveGame(String command){
-		leave_game leave = (leave_game) Jsonify.getJsonStringAsObject(command, leave_game.class);
+		leave_game leave = (leave_game) Jsonify.getObjectFromCommand(command, leave_game.class);
 		
 		int id = leave.player_id;
 		int responseCode = leave.payload.response;
@@ -315,7 +318,7 @@ public class ClientProtocol extends AbstractProtocol{
 	 */
 	protected void acknowledge(int acknowledgementId) {
 		acknowledgement ack = new acknowledgement(acknowledgementId, myID);
-		sendCommand(Jsonify.getObjectAsJsonString(ack), null, false);
+		sendCommand(Jsonify.getObjectAsCommand(ack), null, false);
 	}
 	
 	/**
@@ -334,10 +337,10 @@ public class ClientProtocol extends AbstractProtocol{
 	/**
 	 * Receives a command from the host.
 	 */
-	protected String receiveCommand() {
+	protected String receiveCommand(boolean ignoreQueue) {
 		String received = "";
 		
-		if(commandQueue.size() != 0){
+		if(!ignoreQueue && commandQueue.size() != 0){
 			System.out.println("queue not empty!");
 			try {
 				received = commandQueue.take();

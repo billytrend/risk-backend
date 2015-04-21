@@ -26,7 +26,6 @@ public class GameEngine implements Runnable {
 	protected State gameState;
 	protected Player currentPlayer = null;
 	private PlayState playState = BEGINNING_STATE;
-    private PlayState previousPlayState;
 	private boolean currentPlayerHasTakenCountry = false;
 	private StateChangeRecord changeRecord;
 	private WinConditions winConditions;
@@ -333,11 +332,14 @@ public class GameEngine implements Runnable {
 
         ArrayList<Triplet<Card, Card, Card>> possibleCombinations = CardUtils.getPossibleCardCombinations(gameState, currentPlayer);
 
-		if (possibleCombinations.size() == 0) return 0;
+		if (!(currentPlayer.getCommunicationMethod() instanceof DumbBotInterfaceProtocol) &&
+				!(currentPlayer.getCommunicationMethod() instanceof RemotePlayer) &&
+				(possibleCombinations.size() == 0)) 
+			return 0;
 
 		Triplet<Card, Card, Card> choice = currentPlayer.getCommunicationMethod().getCardChoice(currentPlayer, possibleCombinations);
 
-		if(choice == null) // TODO: move it lower.
+		if(choice == null) // TODO: move it lower.?
 			return 0;
 		
         HashSet<Territory> territoriesOwned = CardUtils.getTerritoriesOnCardsThatPlayersOwn(currentPlayer, choice);
@@ -358,7 +360,7 @@ public class GameEngine implements Runnable {
             applyAndReportChange(gameState, stateChange);
 
         }
-
+        
         int cardPayout = CardUtils.getCurrentArmyPayout(currentPlayer, choice);
 
         CardUtils.releaseCards(choice);

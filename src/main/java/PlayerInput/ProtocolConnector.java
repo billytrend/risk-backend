@@ -62,7 +62,11 @@ public class ProtocolConnector implements Runnable {
     		appendNewResponseParts(responseParts, servedReason);
     	
     	createNewProtocolCommand(responseParts, servedReason);
-    	System.out.println("created new protocol command for: " + servedReason.name());
+    	if(servedReason != null)
+    		System.out.println("created new protocol command for: " + servedReason.name());
+    	else
+    		System.out.println("created new protocol command for: CARDS");
+
     	servedReason = null;
     }
     
@@ -353,34 +357,39 @@ public class ProtocolConnector implements Runnable {
 		}
     }
     
-    /**
-     * Creares play card command
-     * @param responses
-     */
+    
     private void createPlayCardsCommand(ArrayList<Integer> responses){
-		System.out.println("IN CARDS -- connector");
-
-    	int[][] cards = new int[responses.size()][3];
-    	int armies = -1; // TODO: no idea?
+    	if(responses.size() % 4 != 0){ 
+    		System.out.println("Wrong size of response parts in cards");
+    	}
     	
-    	for(int i = 0; i < responses.size(); i++){
-    		Object object = responses.get(i);
-    		if(object instanceof Triplet){
-    			Triplet<Card, Card, Card> set = (Triplet<Card, Card, Card>) object;
-    			int[] cardsIds = new int[3];
-    			
-    			//TODO: 
-    		//	cardsIds[0] = set.getValue0(). getId
-    		//	cardsIds[1] = set.getValue1(). getId
-    		//	cardsIds[2] = set.getValue2(). getId
-    			cards[i] = cardsIds;
-    		}
-    		else{
-    			System.out.println("Error in  createPlayCards");
-    		}
+    	int[][] cards = new int[responses.size() / 4][2];
+    	int armies = 0;
+    	
+    	if(responses.get(0) == null)
+    		cards = null;
+    	else{
+			int payloadIndex = 0;
+			for(int i = 0; i < responses.size();){
+				Integer cardId = responses.get(i);
+				Integer cardId2 = responses.get(i + 1);
+				Integer cardId3 = responses.get(i + 2);
+		    	Integer armiesForThisSet = responses.get(i + 3);
+				armies += armiesForThisSet;
+		    	
+				int[] cardsIds = new int[3];
+				cardsIds[0] = cardId;
+				cardsIds[1] = cardId2;
+				cardsIds[2] = cardId3;
+		    	
+				cards[payloadIndex] = cardsIds;
+		    	payloadIndex++;
+		    	i += 4;
+			}	    	
     	}
     	
     	play_cards play_cards = new play_cards(cards, armies, myID, ran.nextInt(50));
+
     	try {
 			protocolQueue.put(play_cards);
 		} catch (InterruptedException e) {
@@ -388,5 +397,6 @@ public class ProtocolConnector implements Runnable {
 			e.printStackTrace();
 		}
     }
+    
     
 }

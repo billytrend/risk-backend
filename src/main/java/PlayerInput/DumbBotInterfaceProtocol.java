@@ -5,8 +5,11 @@ import GameState.Card;
 import GameState.Player;
 import GameState.State;
 import GameState.Territory;
+import GameUtils.CardUtils;
 import GameUtils.Results.Change;
+
 import org.javatuples.Triplet;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map.Entry;
@@ -14,6 +17,7 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
+
 import static com.esotericsoftware.minlog.Log.debug;
 /**
 * Used for a very simple AI acting as a player
@@ -23,6 +27,7 @@ public class DumbBotInterfaceProtocol implements PlayerInterface {
 	Random ran = new Random();
 	private BlockingQueue<Entry<Object, RequestReason>> connectorQueue;
 	private Thread connectorThread;
+	private Player me;
 	
 	// the protocol needs to call this method so that
 	// the locals players responses can be parsed
@@ -38,6 +43,10 @@ public class DumbBotInterfaceProtocol implements PlayerInterface {
 		ProtocolConnector connector = new ProtocolConnector(connectorQueue, sharedQueue, id);
 		connectorThread = new Thread(connector);
 		connectorThread.start();
+	}
+	
+	public void setPlayer(Player player){
+		me = player;
 	}
 	
 	public DumbBotInterfaceProtocol(){
@@ -189,22 +198,40 @@ public class DumbBotInterfaceProtocol implements PlayerInterface {
 		// TODO: you have to play cards if you have more than 5
 		@Override
 		public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
-			/*Triplet<Card, Card , Card> choice;
+			Triplet<Card, Card , Card> choice;
+			
 			if(possibleCombinations.size() == 0)
 				choice = null;
+			
 			else
 				choice = possibleCombinations.get(0);
-				// notify connector which can later respond to the protocol
-			if(connectorQueue != null){
-				try {
-						connectorQueue.put(new MyEntry(choice, null));
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} */
 			
-			return null;
+		
+			try {
+				if(choice == null){
+					for(int i = 0; i < 4; i++){ // four times null;
+						connectorQueue.put(new MyEntry(null, null));
+					}
+				}
+				else{
+					int armies = CardUtils.getCurrentArmyPayout(me, choice);
+					connectorQueue.put(new MyEntry(((Card)choice.getValue(0)).getId(), null));
+					connectorQueue.put(new MyEntry(((Card)choice.getValue(1)).getId(), null));
+					connectorQueue.put(new MyEntry(((Card)choice.getValue(2)).getId(), null));
+					
+					System.out.println("chosen cards");
+					System.out.println(((Card)choice.getValue(0)).getId());
+					System.out.println(((Card)choice.getValue(1)).getId());
+					System.out.println(((Card)choice.getValue(2)).getId());
+					
+					connectorQueue.put(new MyEntry(armies, null));		
+				}
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+			return choice;
 		}
 		
 	@Override
