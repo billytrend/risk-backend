@@ -35,7 +35,7 @@ public class ClientProtocol extends AbstractProtocol{
 			break;			
 		case PLAYERS_JOINED:
 			debug("\nPLAYERS_JOINED");
-			command = receiveCommand();
+			command = receiveCommand(false);
 			
 			// while we still wait for players joined the server
 			// might send us ping command
@@ -48,7 +48,7 @@ public class ClientProtocol extends AbstractProtocol{
 			break;	
 		case PING:
 			debug("\n PING");
-			command = receiveCommand();
+			command = receiveCommand(false);
 			
 			// server might also say that its ready or that there
 			// are not enough players and we have to disconnect
@@ -63,7 +63,7 @@ public class ClientProtocol extends AbstractProtocol{
 			break;
 		case INIT_GAME:
 			debug("\n INIT_GAME");
-			command = receiveCommand();
+			command = receiveCommand(false);
 			
 			if(command.contains("timeout"))
 				handleTimeout(command);
@@ -92,7 +92,7 @@ public class ClientProtocol extends AbstractProtocol{
 		
 		sendCommand(Jsonify.getObjectAsJsonString(join), null, false);
 		
-		String response = receiveCommand();
+		String response = receiveCommand(false);
 		if(!response.contains("accept")){
 			handleRejectJoin(response);
 		}
@@ -198,7 +198,7 @@ public class ClientProtocol extends AbstractProtocol{
 			state.setPlayers(startingPlayers);
 
 			//	TODO: ask in UI: do you still want to play?
-			ping response = new ping(ping.payload, myID);
+			ping response = new ping(null , myID);
 			sendCommand(Jsonify.getObjectAsJsonString(response), null, false);
 		}
 	}
@@ -334,10 +334,10 @@ public class ClientProtocol extends AbstractProtocol{
 	/**
 	 * Receives a command from the host.
 	 */
-	protected String receiveCommand() {
+	protected String receiveCommand(boolean ignoreQueue) {
 		String received = "";
 		
-		if(commandQueue.size() != 0){
+		if(!ignoreQueue && commandQueue.size() != 0){
 			System.out.println("queue not empty!");
 			try {
 				received = commandQueue.take();

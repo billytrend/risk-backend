@@ -23,7 +23,7 @@ public class ping{
 	public Integer payload;		//can be null if sent by client 
 	public int player_id;
 	
-	public ping(int no_of_players, int player_id){
+	public ping(Integer no_of_players, int player_id){
 		this.payload = no_of_players;
 		this.player_id = player_id;
 	}

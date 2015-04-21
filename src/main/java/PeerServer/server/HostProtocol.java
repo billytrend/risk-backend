@@ -41,11 +41,11 @@ public class HostProtocol extends AbstractProtocol  {
 	// maps players IDs with a connection associated with them (null for local)
 	private HashMap<Integer, PeerConnection> connectionMapping = new HashMap<Integer, PeerConnection>();
 
-	private BlockingQueue<String> acknowledgementsQueue = new LinkedBlockingQueue<String>();
+//	private BlockingQueue<String> acknowledgementsQueue = new LinkedBlockingQueue<String>();
 	
 	// connection which is currently served
 	private PeerConnection currentConnection;
-	private Set<PeerConnection> acknowledgements = new HashSet<PeerConnection>(); // IDs
+	private Set<Integer> acknowledgements = new HashSet<Integer>(); // IDs
 	private Socket newSocket;
 	private ServerSocket serverSocket;
 
@@ -74,6 +74,7 @@ public class HostProtocol extends AbstractProtocol  {
 		switch(protocolState){
 		case JOIN_GAME:
 			debug("\nJOIN_GAME");
+			System.out.println("join game");
 			// accept a new client and handle their request
 			try {
 				newSocket = serverSocket.accept();
@@ -89,6 +90,7 @@ public class HostProtocol extends AbstractProtocol  {
 			
 			break;		
 		case PING:
+			System.out.println("ping");
 			debug("\n PING");
 			sendPing();  // the game will be transfered to the next state
 							// after ack timeout has passed
@@ -211,7 +213,7 @@ public class HostProtocol extends AbstractProtocol  {
 		// sending only new player to the rest
 		int id = currentConnection.getId();
 
-		players_joined toRest = new players_joined(new String[]{Integer.toString(id), newName, newKey});
+		players_joined toRest = new players_joined(new Object[]{id, newName, newKey});
 		sendCommand(Jsonify.getObjectAsJsonString(toRest), id, false); // send to almost all and 
 																		// don't acknowledge
 		
@@ -257,8 +259,7 @@ public class HostProtocol extends AbstractProtocol  {
 		ack_id++;
 		
 		// clear all previous acknowledgements
-		acknowledgements.clear();
-		
+	
 		nextStateAfterAck = ProtocolState.INIT_GAME;
 		sendCommand(Jsonify.getObjectAsJsonString(ready), null, true); // send to all
 																		// and expect acknowledgements
@@ -417,12 +418,14 @@ public class HostProtocol extends AbstractProtocol  {
 	 * @return
 	 */
 	protected void acknowledge(String command) {
+		int id = -1;
 		if(command.contains("ping")){
 			ping ping = (ping) Jsonify.getJsonStringAsObject(command, ping.class);
 			if(ping == null){
 				sendLeaveGame(200, "Wrong command: expected ping");
 			}
 			sendCommand(command, ping.player_id, false);
+			id = ping.player_id;
 		}
 		else if(command.contains("leave")){ // TODO: think about this.
 			handleLeaveGame(command); 
@@ -436,6 +439,7 @@ public class HostProtocol extends AbstractProtocol  {
 			if((ack.payload != ack_id - 1) && (ack.payload != their_ack_id)){
 				System.out.println("Wrong acknoledgement - but we ignore it");
 			}
+			id = ack.player_id;
 		}
 		else{
 			// it wasnt an acknowledgement by may be important later
@@ -446,7 +450,9 @@ public class HostProtocol extends AbstractProtocol  {
 			return;
 		}
 		
-		acknowledgements.add(currentConnection);
+		if(id != -1){
+			acknowledgements.add(id);
+		}
 	}
 
 
@@ -477,6 +483,7 @@ public class HostProtocol extends AbstractProtocol  {
 			if(Thread.interrupted()){
 				synchronized(currentTask){
 					try {
+						System.out.println("interrupted!");
 						currentTask.wait();
 					} catch (Exception e) {e.printStackTrace();}
 				}
@@ -486,23 +493,36 @@ public class HostProtocol extends AbstractProtocol  {
 			
 			// it will keep receiving commands by looping
 			// through all connections 
-			String received = receiveCommand();
+			String received = receiveCommand(true);
 			if(received != ""){
 				acknowledge(received); // receive acks until interrupted
 			}
 			if(acknowledgements.size() == numOfPlayers -1){
+				System.out.println("FINISHED WAITING EARLIER numOfPlayers: " + numOfPlayers);
 				protocolState = nextStateAfterAck;
 				timerSet = false;
 				currentTask.cancel();
+				acknowledgements.clear();
 				return;
 			}
+			if((exceptId != null) && (acknowledgements.size() == numOfPlayers - 2)){
+				System.out.println("FINISHED WAITING EARLIER numOfPlayers: " + numOfPlayers);
+				protocolState = nextStateAfterAck;
+				timerSet = false;
+				currentTask.cancel();
+				acknowledgements.clear();
+				return;
+			}
+				
 		}	
 		
 		if(command.contains("ping"))
 			handlePingTimeouts();
 		else
 			handleAckTimeouts(exceptId); 
-			
+		
+		acknowledgements.clear();
+		
 		if(!command.contains("timeout")){ // don't do it for timeouts since it will 
 												// be sent later either way
 			if(numOfPlayers < minNoOfPlayers){ 
@@ -520,14 +540,17 @@ public class HostProtocol extends AbstractProtocol  {
 	 * @param exceptId
 	 */
 	private void handleAckTimeouts(Integer exceptId) {
-		for(PeerConnection c : connectionMapping.values()){
-			if(!acknowledgements.contains(c)){
-				if((exceptId == null) || (connectionMapping.get(exceptId) != c)){
+		for(Integer id : connectionMapping.keySet()){
+			if(!acknowledgements.contains(id)){
+				if((exceptId == null) || (exceptId != id)){
+					System.out.println("remove " + id);
+
 					// removing players that have not sent acknowledgement
 					// message about timeout needs to be sent to all players
-					timeout timeout = new timeout(c.getId(), myID, ack_id);
+					timeout timeout = new timeout(id, myID, ack_id);
 					ack_id++;
-					removePlayer(c);
+					connectionMapping.remove(connectionMapping.get(id));
+					removePlayer(id);
 	
 					sendCommand(Jsonify.getObjectAsJsonString(timeout), null, true); // timeout needs to be acknowledged
 				}
@@ -536,11 +559,14 @@ public class HostProtocol extends AbstractProtocol  {
 	}
 	
 	private void handlePingTimeouts() {
-		for(PeerConnection c : connectionMapping.values()){
-			if(!acknowledgements.contains(c)){
+		for(Integer id : connectionMapping.keySet()){
+			if(!acknowledgements.contains(id)){
+				System.out.println("remove " + id);
+
 				// removing players that have not sent acknowledgement
 				// message about timeout needs to be sent to all players
-				removePlayer(c);
+				connectionMapping.remove(connectionMapping.get(id));
+				removePlayer(id);
 			}
 		}
 	}
@@ -586,12 +612,12 @@ public class HostProtocol extends AbstractProtocol  {
 	
 	int previouslyHandledId = 0;
 	@Override
-	protected String receiveCommand() {
+	protected String receiveCommand(boolean ignoreQueue) {
 		if(connectionMapping.size() == 0)
 			return "";
 	
 		String command = "";
-		if(commandQueue.size() != 0){
+		if(!ignoreQueue && commandQueue.size() != 0){
 			System.out.println("queue not empty!");
 			
 			try {
@@ -605,10 +631,16 @@ public class HostProtocol extends AbstractProtocol  {
 			System.out.println("got id: " + previouslyHandledId);
 			currentConnection = connectionMapping.get(previouslyHandledId);
 		}
+		
 		else{
-			int idToHandle = (((previouslyHandledId + 1) % connectionMapping.size())) + 1;
+			int idToHandle = (((previouslyHandledId + 1) % numOfPlayers));
+			if(idToHandle == 0)
+				idToHandle++;
+			
+			System.out.println("ID " + idToHandle);
 			PeerConnection con = connectionMapping.get(idToHandle);
 			command = con.receiveCommand();
+			System.out.println(".. ");
 			currentConnection = con;
 			previouslyHandledId = idToHandle;
 		}
@@ -645,7 +677,7 @@ public class HostProtocol extends AbstractProtocol  {
 
 		try {
 			serverSocket = new ServerSocket(4444);
-			serverSocket.setSoTimeout(6000); // socket waits for 2 seconds -- needed for checking interrupts
+			serverSocket.setSoTimeout(2000); // socket waits for 2 seconds -- needed for checking interrupts
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
