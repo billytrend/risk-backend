@@ -48,7 +48,7 @@ public abstract class AbstractProtocol implements Runnable {
 	protected int their_ack_id = 0;
 	protected int myID;
 	protected String myName;
-	
+	protected Set<Integer> acknowledgements = new HashSet<Integer>();
 	protected BlockingQueue<String> commandQueue = new LinkedBlockingQueue<String>();
 
  // GAME ENGINE RELATED
@@ -67,6 +67,7 @@ public abstract class AbstractProtocol implements Runnable {
 	// or take response from them (if they are local players)
 	protected HashMap<Integer, BlockingQueue<Entry<Integer, RequestReason>>> queueMapping =
 			new HashMap<Integer, BlockingQueue<Entry<Integer, RequestReason>>>();
+	
 	protected BlockingQueue<Object> localPlayersQueue = new LinkedBlockingQueue<Object>();
 	
 // DIE ROLLS
@@ -232,7 +233,7 @@ public abstract class AbstractProtocol implements Runnable {
 				nextStateAfterAck = ProtocolState.PLAY_CARDS;
 			}
 			
-			String setupString = Jsonify.getObjectAsJsonString(setup);
+			String setupString = Jsonify.getObjectAsCommand(setup);
 			//Send to all clients
 			sendCommand(setupString, null, true);
 		}
@@ -243,7 +244,7 @@ public abstract class AbstractProtocol implements Runnable {
 				command = receiveCommand(false);
 			}
 			
-			setup setup = (setup) Jsonify.getJsonStringAsObject(command, setup.class);
+			setup setup = (setup) Jsonify.getObjectFromCommand(command, setup.class);
 
 			if(setup == null){
 				sendLeaveGame(200, "Wrong command. Expected setup.");
@@ -282,7 +283,7 @@ public abstract class AbstractProtocol implements Runnable {
 		if(currentPlayerId == myID){
 			//create play_cards object 
 			play_cards pc = (PeerServer.protocol.cards.play_cards) getResponseFromLocalPlayer();
-			String playCardsString = Jsonify.getObjectAsJsonString(pc);
+			String playCardsString = Jsonify.getObjectAsCommand(pc);
 			
 			sendCommand(playCardsString, null, true);
 		}
@@ -293,7 +294,7 @@ public abstract class AbstractProtocol implements Runnable {
 				command = receiveCommand(false);
 			}
 			
-			play_cards pc = (PeerServer.protocol.cards.play_cards) Jsonify.getJsonStringAsObject(command, play_cards.class);
+			play_cards pc = (PeerServer.protocol.cards.play_cards) Jsonify.getObjectFromCommand(command, play_cards.class);
 			
 			if(pc == null){
 			}
@@ -318,7 +319,7 @@ public abstract class AbstractProtocol implements Runnable {
 		if(currentPlayerId == myID){
 			//create deploy object based on player choices
 			deploy deploy = (deploy) getResponseFromLocalPlayer();
-			String deployString = Jsonify.getObjectAsJsonString(deploy);
+			String deployString = Jsonify.getObjectAsCommand(deploy);
 			
 			//send to all clients or just host if you are client 
 			sendCommand(deployString, null, true);
@@ -329,7 +330,7 @@ public abstract class AbstractProtocol implements Runnable {
 				command = receiveCommand(false);
 			}
 			
-			deploy deploy = (deploy) Jsonify.getJsonStringAsObject(command, deploy.class);
+			deploy deploy = (deploy) Jsonify.getObjectFromCommand(command, deploy.class);
 			if(deploy == null){
 			}
 			notifyPlayerInterface(deploy, deploy.player_id);
@@ -347,7 +348,7 @@ public abstract class AbstractProtocol implements Runnable {
 		//we are sending command 
 		if(currentPlayerId == myID){		
 			attack attack = (attack) getResponseFromLocalPlayer();
-			String attackString = Jsonify.getObjectAsJsonString(attack);
+			String attackString = Jsonify.getObjectAsCommand(attack);
 			
 			if(attack.payload == null){
 				protocolState = ProtocolState.FORTIFY; // we dont attack, send fortify instead
@@ -376,7 +377,7 @@ public abstract class AbstractProtocol implements Runnable {
 			}
 				
 			
-			attack attack = (attack) Jsonify.getJsonStringAsObject(command, attack.class);
+			attack attack = (attack) Jsonify.getObjectFromCommand(command, attack.class);
 			//check its not null
 			if(attack == null){
 			}
@@ -416,7 +417,7 @@ public abstract class AbstractProtocol implements Runnable {
 		nextStateAfterAck = ProtocolState.ROLL;
 		if(currentPlayerId == myID){
 			defend defend = (defend) getResponseFromLocalPlayer();
-			String defendString = Jsonify.getObjectAsJsonString(defend);
+			String defendString = Jsonify.getObjectAsCommand(defend);
 			
 			defenderDiceNum = defend.payload;
 			sendCommand(defendString, null, true);
@@ -429,7 +430,7 @@ public abstract class AbstractProtocol implements Runnable {
 				command = receiveCommand(false);
 			}
 			
-			defend defend = (defend) Jsonify.getJsonStringAsObject(command, defend.class);
+			defend defend = (defend) Jsonify.getObjectFromCommand(command, defend.class);
 			if(defend == null){
 			}
 
@@ -462,7 +463,7 @@ public abstract class AbstractProtocol implements Runnable {
 			
 			if(currentPlayerId == myID){
 				attack_capture attack_capture = (attack_capture) getResponseFromLocalPlayer();
-				String attack_captureString = Jsonify.getObjectAsJsonString(attack_capture);
+				String attack_captureString = Jsonify.getObjectAsCommand(attack_capture);
 				
 				sendCommand(attack_captureString, null, true);
 			}
@@ -474,7 +475,7 @@ public abstract class AbstractProtocol implements Runnable {
 				}
 				
 				//parse command into deploy object
-				attack_capture attack_capture = (attack_capture) Jsonify.getJsonStringAsObject(command, 
+				attack_capture attack_capture = (attack_capture) Jsonify.getObjectFromCommand(command, 
 						attack_capture.class);
 	
 				//check its not null
@@ -499,14 +500,14 @@ public abstract class AbstractProtocol implements Runnable {
 		nextStateAfterAck = ProtocolState.PLAY_CARDS; // TODO: change this
 		if(currentPlayerId == myID){
 			fortify fortify = (fortify) getResponseFromLocalPlayer();
-			String fortifyString = Jsonify.getObjectAsJsonString(fortify);
+			String fortifyString = Jsonify.getObjectAsCommand(fortify);
 
 			sendCommand(fortifyString, null, true);
 		}
 		//someone sent us the command  player id if parsing
 		else{
 			// we dont need to receive a command since we already got it
-			fortify fortify = (fortify) Jsonify.getJsonStringAsObject(command, 
+			fortify fortify = (fortify) Jsonify.getObjectFromCommand(command, 
 					fortify.class);
 			if(fortify == null){
 			}
@@ -607,7 +608,7 @@ public abstract class AbstractProtocol implements Runnable {
 
 			roll_hash rh = new roll_hash(hashStr, myID);
 			generator.addHash(myID, hashStr);
-			sendCommand(Jsonify.getObjectAsJsonString(rh), null, false);
+			sendCommand(Jsonify.getObjectAsCommand(rh), null, false);
 			
 		} catch (HashMismatchException e) {
 			// TODO Auto-generated catch block
@@ -647,7 +648,7 @@ public abstract class AbstractProtocol implements Runnable {
 				continue;
 			}
 			
-			roll_hash rollHash = (roll_hash) Jsonify.getJsonStringAsObject(command, roll_hash.class);
+			roll_hash rollHash = (roll_hash) Jsonify.getObjectFromCommand(command, roll_hash.class);
 			hashCount++;
 			try {
 				generator.addHash(rollHash.player_id, rollHash.payload);
@@ -681,7 +682,7 @@ public abstract class AbstractProtocol implements Runnable {
 			e.printStackTrace();
 		}
 
-		String rnStr = Jsonify.getObjectAsJsonString(rn);
+		String rnStr = Jsonify.getObjectAsCommand(rn);
 		sendCommand(rnStr, null, false);
 		
 		long startTime = System.currentTimeMillis();
@@ -710,7 +711,7 @@ public abstract class AbstractProtocol implements Runnable {
 			}
 			
 			
-			roll_number rollNum = (roll_number) Jsonify.getJsonStringAsObject(command, roll_number.class);
+			roll_number rollNum = (roll_number) Jsonify.getObjectFromCommand(command, roll_number.class);
 			numberCount++;
 			System.out.println(numberCount + "  " + numOfPlayers  );
 			

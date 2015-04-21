@@ -341,7 +341,7 @@ public class GameEngine implements Runnable {
 
 		Triplet<Card, Card, Card> choice = currentPlayer.getCommunicationMethod().getCardChoice(currentPlayer, possibleCombinations);
 
-		if((possibleCombinations.size() == 0) && (choice == null)) // TODO: move it lower.
+		if(choice == null) // TODO: move it lower.?
 			return 0;
 		
         HashSet<Territory> territoriesOwned = CardUtils.getTerritoriesOnCardsThatPlayersOwn(currentPlayer, choice);

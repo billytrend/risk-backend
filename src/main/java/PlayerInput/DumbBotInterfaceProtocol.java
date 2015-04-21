@@ -218,6 +218,12 @@ public class DumbBotInterfaceProtocol implements PlayerInterface {
 					connectorQueue.put(new MyEntry(((Card)choice.getValue(0)).getId(), null));
 					connectorQueue.put(new MyEntry(((Card)choice.getValue(1)).getId(), null));
 					connectorQueue.put(new MyEntry(((Card)choice.getValue(2)).getId(), null));
+					
+					System.out.println("chosen cards");
+					System.out.println(((Card)choice.getValue(0)).getId());
+					System.out.println(((Card)choice.getValue(1)).getId());
+					System.out.println(((Card)choice.getValue(2)).getId());
+					
 					connectorQueue.put(new MyEntry(armies, null));		
 				}
 			} catch (InterruptedException e) {

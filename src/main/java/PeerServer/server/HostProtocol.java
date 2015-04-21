@@ -135,7 +135,7 @@ public class HostProtocol extends AbstractProtocol  {
 		System.out.println("\nGOT: " + command + "\n");
 
 		//create JSON object of command
-		join_game join_game = (join_game) Jsonify.getJsonStringAsObject(command, join_game.class);
+		join_game join_game = (join_game) Jsonify.getObjectFromCommand(command, join_game.class);
 		if(join_game == null){
 			errorMessage = ("Wrong request");
 			sendRejectJoin(); // reject player
@@ -158,7 +158,7 @@ public class HostProtocol extends AbstractProtocol  {
 	protected void sendRejectJoin() {
 		//create json string 
 		reject_join_game reject_join_game = new reject_join_game(errorMessage);		
-		String rj = Jsonify.getObjectAsJsonString(reject_join_game);
+		String rj = Jsonify.getObjectAsCommand(reject_join_game);
 
 		// dont create peer connection for this client, they are rejected
 		DataOutputStream out;
@@ -197,7 +197,7 @@ public class HostProtocol extends AbstractProtocol  {
 		accept_join_game accept_join_game =
 				new accept_join_game(id, ack_timeout, move_timeout);
 		
-		sendToCurrentConnection(Jsonify.getObjectAsJsonString(accept_join_game));
+		sendToCurrentConnection(Jsonify.getObjectAsCommand(accept_join_game));
 	}
 	
 	
@@ -210,13 +210,13 @@ public class HostProtocol extends AbstractProtocol  {
 	 */
 	protected void sendPlayersJoined(String newName, String newKey){
 		players_joined players_joined = new players_joined(startingPlayers);
-		sendToCurrentConnection(Jsonify.getObjectAsJsonString(players_joined));
+		sendToCurrentConnection(Jsonify.getObjectAsCommand(players_joined));
 
 		// sending only new player to the rest
 		int id = currentConnection.getId();
 
 		players_joined toRest = new players_joined(new Object[]{id, newName, newKey});
-		sendCommand(Jsonify.getObjectAsJsonString(toRest), id, false); // send to almost all and 
+		sendCommand(Jsonify.getObjectAsCommand(toRest), id, false); // send to almost all and 
 																		// don't acknowledge
 		
 		// if we already got enough players start the timer 
@@ -244,7 +244,7 @@ public class HostProtocol extends AbstractProtocol  {
 
 		// create and send a ping to all clients
 		ping ping = new ping(startingPlayers.size(), 0);
-		String p = Jsonify.getObjectAsJsonString(ping);
+		String p = Jsonify.getObjectAsCommand(ping);
 		
 		nextStateAfterAck = ProtocolState.READY;
 		sendCommand(p, null, true); // send the command to all and expect pings (acknowledgements)
@@ -263,7 +263,7 @@ public class HostProtocol extends AbstractProtocol  {
 		// clear all previous acknowledgements
 	
 		nextStateAfterAck = ProtocolState.INIT_GAME;
-		sendCommand(Jsonify.getObjectAsJsonString(ready), null, true); // send to all
+		sendCommand(Jsonify.getObjectAsCommand(ready), null, true); // send to all
 																		// and expect acknowledgements
 	}
 	
@@ -282,7 +282,7 @@ public class HostProtocol extends AbstractProtocol  {
 		engine = new GameEngine(state, networkArbitration);
 		
 		initialise_game init_game = new initialise_game(version, feat);
-		sendCommand(Jsonify.getObjectAsJsonString(init_game), null, false); // send to all, no acks
+		sendCommand(Jsonify.getObjectAsCommand(init_game), null, false); // send to all, no acks
 	}
 
 	
@@ -293,7 +293,7 @@ public class HostProtocol extends AbstractProtocol  {
 	protected void sendLeaveGame(int leaveCode, String leaveReason) {
 		leave_game leave = new leave_game(leaveCode, leaveReason, false, 0);
 
-		sendCommand(Jsonify.getObjectAsJsonString(leave), null, false);
+		sendCommand(Jsonify.getObjectAsCommand(leave), null, false);
 		// wait a bit for everyone to receive hosts leaving message
 		try {
 			Thread.sleep(5000);
@@ -312,7 +312,7 @@ public class HostProtocol extends AbstractProtocol  {
 	 */
 	protected void handleLeaveGame(String command){
 		// if command is not empty sb sent a leave_command
-		leave_game leave = (leave_game) Jsonify.getJsonStringAsObject(command, leave_game.class);
+		leave_game leave = (leave_game) Jsonify.getObjectFromCommand(command, leave_game.class);
 
 		//TODO: print a reason?
 		int responseCode = leave.payload.response;
@@ -422,7 +422,7 @@ public class HostProtocol extends AbstractProtocol  {
 	protected void acknowledge(String command) {
 		int id = -1;
 		if(command.contains("ping")){
-			ping ping = (ping) Jsonify.getJsonStringAsObject(command, ping.class);
+			ping ping = (ping) Jsonify.getObjectFromCommand(command, ping.class);
 			if(ping == null){
 				sendLeaveGame(200, "Wrong command: expected ping");
 			}
@@ -434,7 +434,7 @@ public class HostProtocol extends AbstractProtocol  {
 			return;
 		}
 		else if(command.contains("acknowledgement")){
-			acknowledgement ack = (acknowledgement) Jsonify.getJsonStringAsObject(command, acknowledgement.class);
+			acknowledgement ack = (acknowledgement) Jsonify.getObjectFromCommand(command, acknowledgement.class);
 			if(ack == null){
 				sendLeaveGame(200, "Wrong command: expected acknowledge");
 			}
@@ -554,7 +554,7 @@ public class HostProtocol extends AbstractProtocol  {
 					connectionMapping.remove(connectionMapping.get(id));
 					removePlayer(id);
 	
-					sendCommand(Jsonify.getObjectAsJsonString(timeout), null, true); // timeout needs to be acknowledged
+					sendCommand(Jsonify.getObjectAsCommand(timeout), null, true); // timeout needs to be acknowledged
 				}
 			}
 		}
