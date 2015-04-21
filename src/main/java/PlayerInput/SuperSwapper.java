@@ -62,16 +62,15 @@ public class SuperSwapper implements PlayerInterface{
             case PLACING_REMAINING_ARMIES_PHASE:
                 if(turnCounter < STARTUPMETRIC) {
                     return contGrab.getTerritory(player, possibles, from, canResign, reason);
-                } else if(turnCounter < THREATTIMER){
-                    Territory threat = AIUtils.getBiggestThreatToPlayer(currentState, possibles, player);
-                    
-                } else {
+                } else{
                     return commie.getTerritory(player, possibles, from, canResign, reason);
                 }
 
             case PLACING_ARMIES_PHASE:
                 if(turnCounter < STARTUPMETRIC) {
                     return contGrab.getTerritory(player,possibles,from,canResign,reason);
+                } else if(turnCounter < THREATTIMER){
+                    return AIUtils.getTerritoryWithStrongestNeighbour(currentState, possibles, player);
                 } else {
                     return commie.getTerritory(player, possibles, from, canResign, reason);
                 }
