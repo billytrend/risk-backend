@@ -7,12 +7,12 @@ import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class PeerConnection implements Runnable {
+public class PeerConnection {
 
 	private DataInputStream inFromClient; 
     private DataOutputStream outToClient;
 	private Socket socket;
-	private BlockingQueue<String> commandQueue;
+	
 	private int id;
 	
     
@@ -28,14 +28,6 @@ public class PeerConnection implements Runnable {
 		}
 	}
 		
-	public PeerConnection(Socket newSocket, int id2,
-			BlockingQueue<String> commandQueue) {
-		
-		this(newSocket, id2);
-		this.commandQueue = commandQueue;
-	}
-
-	
 	public void sendCommand(String command){
 		try {
 			outToClient.writeUTF(command);
@@ -51,16 +43,7 @@ public class PeerConnection implements Runnable {
 		try {
 			response = inFromClient.readUTF();
 		} catch (Exception e) {
-		}
 		
-		try {
-			if(response != ""){
-				commandQueue.put(response);
-				System.out.println("GOT: ----- " + response);
-			}
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		
 		return response;
@@ -76,14 +59,6 @@ public class PeerConnection implements Runnable {
 
 	public int getId() {
 		return id;
-	}
-
-	
-	@Override
-	public void run() {
-		while(true){
-			receiveCommand();
-		}
 	}
 
 
