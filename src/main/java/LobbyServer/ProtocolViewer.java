@@ -54,7 +54,7 @@ public class ProtocolViewer extends WebSocketServer {
 
     public ProtocolViewer(int port) throws UnknownHostException {
         super(new InetSocketAddress( port ) );
-        this.gameState = new State();
+        gameState = new State();
         RiskMapGameBuilder.addRiskTerritoriesToState(gameState);
 
     }
@@ -72,11 +72,12 @@ public class ProtocolViewer extends WebSocketServer {
         HostProtocol p = new HostProtocol(gameState);
         Thread th = new Thread(p);
         th.start();
-        State s = new State();
-        RiskMapGameBuilder.addRiskTerritoriesToState(s);
-        ClientProtocol cP = new ClientProtocol(s);
-        Thread thCP = new Thread(cP);
-        thCP.start();
+        
+       // State s = new State();
+     //   RiskMapGameBuilder.addRiskTerritoriesToState(s);
+      //  ClientProtocol cP = new ClientProtocol(s);
+      //  Thread thCP = new Thread(cP);
+      //  thCP.start();
     }
 
     @Override

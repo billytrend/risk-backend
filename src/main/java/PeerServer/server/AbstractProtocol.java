@@ -92,8 +92,10 @@ public abstract class AbstractProtocol implements Runnable {
 			e.printStackTrace();
 		}
 
-		//RiskMapGameBuilder.addRiskTerritoriesToState(state);
-		DemoGameBuilder.addFourTerritories(state);
+		if(state.getTerritoryIds().size() == 0){
+			RiskMapGameBuilder.addRiskTerritoriesToState(state);
+		}
+		//DemoGameBuilder.addFourTerritories(state);
 		
 		while(protocolState != null){
 			if(engine == null)
@@ -202,6 +204,7 @@ public abstract class AbstractProtocol implements Runnable {
 				
 				if(changeType != null){
 					if(!changeType.equals(PlayState.USING_REMAINING_ARMIES)){
+						System.out.println("HERE " + lastPlayer + "   my: " + myName);
 						// we did not do any setup move - we did not have enough armies
 						if(lastPlayer.equals(myName)){
 							protocolState = ProtocolState.DEPLOY;
@@ -373,7 +376,9 @@ public abstract class AbstractProtocol implements Runnable {
 			
 			notifyPlayerInterface(attack, attack.player_id);
 			
-			attackerDiceNum = attack.payload[2];
+			if(attack.payload != null)
+				attackerDiceNum = attack.payload[2];
+			
 			their_ack_id = attack.ack_id;
 
 			if(attack.payload == null)
@@ -425,11 +430,17 @@ public abstract class AbstractProtocol implements Runnable {
 		System.out.println("PROTOCOL: ATTACK_CAPTURE\n");
 
 		nextStateAfterAck = ProtocolState.ATTACK;
-		
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// TODO: check whether we actually captured a territory?
 		if(engine.isCountryTaken()){
 			engine.resetCountryTaken();
-			System.out.println("CAPTUREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEDDDDDDDDDDDDDDDDD");
+			System.out.println("PROTOCOL: NOTICED CAPTURED ================");
+			
 			if(currentPlayerId == myID){
 				attack_capture attack_capture = (attack_capture) getResponseFromLocalPlayer();
 				String attack_captureString = Jsonify.getObjectAsJsonString(attack_capture);
@@ -448,6 +459,7 @@ public abstract class AbstractProtocol implements Runnable {
 				}
 				
 				notifyPlayerInterface(attack_capture, attack_capture.player_id);
+				
 				their_ack_id = attack_capture.ack_id;
 				sendCommand(command, attack_capture.player_id, true);
 				acknowledge(their_ack_id);
@@ -488,13 +500,15 @@ public abstract class AbstractProtocol implements Runnable {
 	//*********************** DICE ROLLS ******************************
 
 	protected ArrayList<Integer> roll(int faces){
-		ArrayList<roll_hash> hashes = getHashes(faces);
+		diceRoller.setFaceValue(faces);
+		getHashes();
+		
 		
 		return null;
 	}
 	
-	private ArrayList<roll_hash> getHashes(int faces) {
-		ArrayList<roll_hash> hashes = new ArrayList<roll_hash>();
+	private void getHashes() {
+		int hashCount;
 		
 	// generate and send our own hash
 		randomNumber = diceRoller.generateNumber();
@@ -523,17 +537,17 @@ public abstract class AbstractProtocol implements Runnable {
 				sendLeaveGame(200, "Wrong command, expected roll hash");
 			
 			roll_hash rollHash = (roll_hash) Jsonify.getJsonFromCommand(command, roll_hash.class);
-			hashes.add(rollHash);
-			if(hashes.size() == numOfPlayers)
+		//	diceRoller.addHash(rollHash.player_id, rollHash.payload);
+			
+		//	if(hashes.size() == numOfPlayers)
 				break;
 			
 			// if there is timeout
-			currentTime = System.currentTimeMillis();
-			if(startTime - currentTime > ack_timeout * 1000)
-				break;
+		//	currentTime = System.currentTimeMillis();
+		//	if(startTime - currentTime > ack_timeout * 1000)
+		//		break;
 		}
 		
-		return hashes;
 	}
 	
 	/**
@@ -773,6 +787,7 @@ public abstract class AbstractProtocol implements Runnable {
 			}
 		}
 		else if(response instanceof attack_capture){
+			System.out.println("notify about attack capture...");
 			attack_capture attack_capture = (attack_capture) response;
 			try {
 				queue.put(new MyEntry(attack_capture.payload[2], RequestReason.POST_ATTACK_MOVEMENT));

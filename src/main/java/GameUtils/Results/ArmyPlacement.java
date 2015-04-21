@@ -30,6 +30,7 @@ public class ArmyPlacement extends ArmyChange {
 	public void applyChange(State state) {
 		Player armyOwner = state.lookUpPlayer(armyOwnerId);
 		Territory target = state.lookUpTerritory(targetId);
+		System.out.println("applied");
 		ArmyUtils.deployArmies(armyOwner, target, amount);
 	}
 

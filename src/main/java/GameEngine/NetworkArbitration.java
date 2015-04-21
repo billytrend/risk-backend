@@ -8,6 +8,8 @@ public class NetworkArbitration extends ArbitrationAbstract{
 
 	private int firstPlayerId = 0;
 	private ArrayList<Integer> diceThrowResult = null;
+	private final int[] rolls = new int[]{4, 2, 2, 5, 3, 6, 6, 1, 2, 3, 5, 6, 2, 4, 4};
+	private int lastIndexUsed = 0;
 	
 	@Override
 	public void setFirstPlayer(State state) {
@@ -23,9 +25,13 @@ public class NetworkArbitration extends ArbitrationAbstract{
 		for(int i = 0; i < numOfDice; i++){
 			result[i] = diceThrowResult.get(i);
 		}*/
+		int index;
 		for(int i = 0; i < numOfDice; i++){
-			result[i] = 1; 
+			index = ((lastIndexUsed + i) % rolls.length);
+			result[i] = rolls[index];
 		}
+		lastIndexUsed += numOfDice;
+		
 		return result;
 	}
 	

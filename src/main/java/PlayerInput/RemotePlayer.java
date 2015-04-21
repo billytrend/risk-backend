@@ -45,6 +45,8 @@ public class RemotePlayer implements PlayerInterface  {
     	boolean matching = ((responseReason == RequestReason.PLACING_ARMIES_SET_UP) 
     			&& (reason == RequestReason.PLACING_REMAINING_ARMIES_PHASE));
 
+
+    	
 		if(!matching && (responseReason != reason)){
 			System.out.println("Request reason doesn't match ");
 			System.out.println(responseReason + "... " + reason);

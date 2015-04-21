@@ -5,6 +5,8 @@ import GameUtils.*;
 import GameUtils.Results.*;
 import PlayerInput.DumbBotInterfaceProtocol;
 import PlayerInput.PlayerInterface;
+import PlayerInput.RemotePlayer;
+
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -40,7 +42,8 @@ public class GameEngine implements Runnable {
 	public PlayState getPlayState(){
 		return playState;
 	}
-	private boolean countryTakenInPreviousTurn;
+	
+	private boolean countryTakenInPreviousTurn = false;
 	
 	public boolean isCountryTaken(){
 		return countryTakenInPreviousTurn;
@@ -100,13 +103,15 @@ public class GameEngine implements Runnable {
     
     public void applyAndReportChange(State state, Change change) {
         change.applyChange(state);
+        changeRecord.addStateChange(change);
+
         for (Player player :  gameState.getPlayers()) {
             player.getCommunicationMethod().reportStateChange(change);
         }
         for (PlayerInterface ghost : gameState.getGhosts()) {
             ghost.reportStateChange(change);
         }
-        changeRecord.addStateChange(change);
+     //   changeRecord.addStateChange(change);
     }
 
 	/**
@@ -222,7 +227,12 @@ public class GameEngine implements Runnable {
 
 		// get a list of empty territories available
 		HashSet<Territory> emptyTerritories = TerritoryUtils.getUnownedTerritories(gameState);
-
+		System.out.println();
+		for(Territory t : emptyTerritories){
+			System.out.print(t.getNumeralId() + "   ");
+		}
+		System.out.println();
+		
 		// player specifies the country
 		debug(currentPlayer.getClass().toString());
 		Territory toFill = currentPlayer.getCommunicationMethod()
@@ -233,7 +243,9 @@ public class GameEngine implements Runnable {
 
         Change stateChange = new ArmyPlacement(currentPlayer.getId(), toFill.getId(), 1, FILLING_EMPTY_COUNTRIES);
         applyAndReportChange(gameState, stateChange);
-
+        
+        System.out.println("CHANGE APPLIED");
+        
 		endGo();
 
 		if (!TerritoryUtils.hasEmptyTerritories(gameState)) {
@@ -325,6 +337,9 @@ public class GameEngine implements Runnable {
 
 		Triplet<Card, Card, Card> choice = currentPlayer.getCommunicationMethod().getCardChoice(currentPlayer, possibleCombinations);
 
+		if(choice == null)
+			return 0;
+		
         HashSet<Territory> territoriesOwned = CardUtils.getTerritoriesOnCardsThatPlayersOwn(currentPlayer, choice);
 
         if (territoriesOwned.size() > 0) {
@@ -344,7 +359,6 @@ public class GameEngine implements Runnable {
 
         }
 
-        if (choice == null) return 0;
         int cardPayout = CardUtils.getCurrentArmyPayout(currentPlayer, choice);
 
         CardUtils.releaseCards(choice);
@@ -406,7 +420,8 @@ public class GameEngine implements Runnable {
 
         // if a player has no options // TODO: still ask them for the protocol
         if (possibleAttackingTerritories.size() == 0) {
-            if (currentPlayer.getCommunicationMethod() instanceof DumbBotInterfaceProtocol) {
+            if ((currentPlayer.getCommunicationMethod() instanceof DumbBotInterfaceProtocol) ||
+            (currentPlayer.getCommunicationMethod() instanceof RemotePlayer)){
                 currentPlayer.getCommunicationMethod().getTerritory(currentPlayer, possibleAttackingTerritories, null, true, RequestReason.ATTACK_CHOICE_FROM);
             }
             return PLAYER_MOVING_ARMIES;
@@ -431,8 +446,8 @@ public class GameEngine implements Runnable {
 				.getCommunicationMethod().getTerritory(currentPlayer, attackable, attacking, true, RequestReason.ATTACK_CHOICE_TO);
 
 		if(defending == null){
-			System.out.println("GE: def null");
-			return PLAYER_MOVING_ARMIES;
+			//System.out.println("GE: def null");
+			return PLAYER_INVADING_COUNTRY;
 		}
 
 
@@ -470,11 +485,17 @@ public class GameEngine implements Runnable {
 
 		// if the attacking player won and they still have surplus armies,
 		// give the option to move them
-		if(result.getDefendersLoss() == defendingArmies){
 
+        if(result.getDefendersLoss() == defendingArmies){
+
+        	System.out.println("CAPTUREEEEEEEEEEEEEEEEEEEEEEEEEEEED");
 			currentPlayerHasTakenCountry = true;
+			
+			countryTakenInPreviousTurn = true;
 
-			if((attackingArmies - result.getAttackersLoss() - attackDiceNumber) > 1) {
+			if(((attackingArmies - result.getAttackersLoss() - attackDiceNumber) > 1) ||
+					(currentPlayer.getCommunicationMethod() instanceof DumbBotInterfaceProtocol) ||
+					(currentPlayer.getCommunicationMethod() instanceof RemotePlayer)){
                 moveMoreArmies(result);
             }
 
@@ -509,6 +530,7 @@ public class GameEngine implements Runnable {
 		Territory defendingTerritory = gameState.lookUpTerritory(result.getDefendingTerritoryId());
 		ArrayList<Army> remainingAttackArmies = ArmyUtils
 				.getArmiesOnTerritory(currentPlayer, attackingTerritory);
+		
 		
 		// let the player decide how many armies they want to move
 		int movedAmount = currentPlayer.getCommunicationMethod()
@@ -560,7 +582,8 @@ public class GameEngine implements Runnable {
 
         // if a player has no options
         if (canBeDeployedFrom.size() == 0) {
-            if (currentPlayer.getCommunicationMethod() instanceof DumbBotInterfaceProtocol) {
+            if ((currentPlayer.getCommunicationMethod() instanceof DumbBotInterfaceProtocol) ||
+            		(currentPlayer.getCommunicationMethod() instanceof RemotePlayer))     {
                 currentPlayer // let know the player interface  -- needed for protocol
                         .getCommunicationMethod().getTerritory(currentPlayer, canBeDeployedFrom, null, true, RequestReason.REINFORCEMENT_PHASE);
 
@@ -615,9 +638,7 @@ public class GameEngine implements Runnable {
 		if (currentPlayerHasTakenCountry) {
             CardHandout c = new CardHandout(currentPlayer.getId());
             applyAndReportChange(gameState, c);
-            System.out.println("CAPTUREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEeeD  " + currentPlayer.getId());
 			currentPlayerHasTakenCountry = false;
-			countryTakenInPreviousTurn = true;
 		}
 		
 		currentPlayer = gameState.getPlayerQueue().next();
