@@ -149,6 +149,8 @@ public class ClientProtocol extends AbstractProtocol{
 		// creating all players specified by the protocol
 		Object[][] playersDetails = players.payload;
 
+		System.out.println(playersDetails.length);
+		
 		Player player;
 		for(Object[] details : playersDetails){
 

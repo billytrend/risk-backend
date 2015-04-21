@@ -48,6 +48,8 @@ public class HostProtocol extends AbstractProtocol  {
 	private Set<Integer> acknowledgements = new HashSet<Integer>(); // IDs
 	private Socket newSocket;
 	private ServerSocket serverSocket;
+	
+	private BlockingQueue<String> secondCommandQueue = new LinkedBlockingQueue<String>();
 
 
     public HostProtocol(State state) {
@@ -615,6 +617,39 @@ public class HostProtocol extends AbstractProtocol  {
 	protected String receiveCommand(boolean ignoreQueue) {
 		if(connectionMapping.size() == 0)
 			return "";
+			
+		//	System.out.println("in receive");
+		//System.out.println("in receive");
+		if(!ack){
+			System.out.println("not ack??");
+			if(!secondCommandQueue.isEmpty()){
+				try {
+					command = secondCommandQueue.take();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+			
+		if(command == ""){
+			if(!commandQueue.isEmpty()){
+				System.out.println("queue not empty");
+					try {
+						command = commandQueue.take();
+						System.out.println("take: " + command);
+
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			}
+		}
+			
+		System.out.println("GOT: " + command);
+		return command;
+	}
+	
 	
 		String command = "";
 		if(!ignoreQueue && commandQueue.size() != 0){
