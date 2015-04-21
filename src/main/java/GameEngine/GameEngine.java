@@ -48,8 +48,6 @@ public class GameEngine implements Runnable {
 		return gameState;
 	}
 
-	
-	@Override
 	public void run() {
 		try {
  			play();
@@ -96,6 +94,7 @@ public class GameEngine implements Runnable {
 //        if (previousPlayState != playState && currentPlayer != null) {
 //            applyAndReportChange(gameState, new PlayStateUpdate(currentPlayer.getId(), playState));
 //        }
+		
 
 		switch (this.playState) {
 			case BEGINNING_STATE:
@@ -143,8 +142,9 @@ public class GameEngine implements Runnable {
 				break;
 				
 			case END_GAME:
+				gameState.setEndPosition(currentPlayer);
 				debug("\nEND GAME!");
-				gameState.setWinner(currentPlayer);
+				
 				return false;
 			
 			default:
@@ -454,6 +454,7 @@ public class GameEngine implements Runnable {
             }
 
             if(PlayerUtils.playerIsOut(defendingPlayer)){
+            	gameState.setEndPosition(defendingPlayer);
                 Change stateChange = new PlayerRemoval(currentPlayer.getId(), defendingPlayer.getId());
                 applyAndReportChange(gameState, stateChange);
             }

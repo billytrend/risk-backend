@@ -7,10 +7,10 @@ import GameState.State;
 import GameState.Territory;
 
 public class AIUtils {
-	  public static Territory getStrongestTerritory(State state, HashSet<Territory> territoryList){
+	  public static Territory getStrongestTerritory(State state, HashSet<Territory> territories){
 	        Territory strongest = null;
 	        int highestNumberOfSoldiers = 0;
-	        for(Territory t:territoryList){
+	        for(Territory t:territories){
 	        	Player player = PlayerUtils.getTerritoryOwner(state, t);
 	            int numberOfArmies = ArmyUtils.getNumberOfArmiesOnTerritory(player,t);
 	            if (numberOfArmies > highestNumberOfSoldiers) {
@@ -21,7 +21,7 @@ public class AIUtils {
 
 	        return strongest;
 	    }
-
+	
 
 	    public static Territory getWeakestTerritory(State state, HashSet<Territory> territoryList){
 
@@ -156,5 +156,38 @@ public class AIUtils {
         }
         return false;
     }
+    
+  	public static Territory getBiggestThreatToPlayer(State state, HashSet<Territory> territories, Player player){
+	  	   Territory strongest = null;
+	        double highestThreat = 0;
+	        
+	        for(Territory t:territories){
+	        	Player enemy = PlayerUtils.getTerritoryOwner(state, t);
+	            double threat = ArmyUtils.getNumberOfArmiesOnTerritory(enemy,t) / armiesOwnedSurroundingTerritory(state, t, player) * TerritoryUtils.getFriendlyNeighbours(state, t, player).size()/2;
+	            if (threat > highestThreat) {
+	            	highestThreat = threat;
+	                strongest = t;
+	            }
+	        }
+	        return strongest;
+	  	}
+	  	
+	  	public static int armiesOwnedSurroundingTerritory(State state, Territory territory, Player player){
+	  		int totalSurroundingArmies = 0;
+	  		HashSet<Territory> neighbours = TerritoryUtils.getFriendlyNeighbours(state, territory, player);
+	  		for(Territory neighbour: neighbours){
+	  			if(PlayerUtils.getTerritoryOwner(state, neighbour) == player){
+	  				totalSurroundingArmies += ArmyUtils.getNumberOfArmiesOnTerritory(player, neighbour);
+	  			}
+	  		}
+	  		return totalSurroundingArmies;
+	  	}
+    
+    public static Territory getTerritoryWithStrongestNeighbour(State state, HashSet<Territory> ownedTerritories, Player player){
+    	HashSet<Territory> enemies = TerritoryUtils.getAllEnemyTerritories(state, player);
+    	Territory biggestEnemyThreat = getBiggestThreatToPlayer(state, enemies, player);
+    	return biggestEnemyThreat;
+    }
+
 
 }

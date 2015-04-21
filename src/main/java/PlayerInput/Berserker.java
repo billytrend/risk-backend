@@ -127,7 +127,7 @@ public class Berserker implements PlayerInterface {
 
     }
 
-    @Override
+
     public void createResponse() {
 
     }
