@@ -9,9 +9,6 @@ import PeerServer.protocol.general.leave_game;
 import PeerServer.protocol.general.timeout;
 import PeerServer.protocol.setup.*;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import static com.esotericsoftware.minlog.Log.debug;
 
 
@@ -372,7 +369,7 @@ public class ClientProtocol extends AbstractProtocol{
 
 	public void run() {
 		// localhost should be replaced with an argument args[0], port args[1]
-		client = new Client("localhost", 4444);
+		client = new Client("138.251.212.103", 4444);
 
 
         super.run();
@@ -380,7 +377,9 @@ public class ClientProtocol extends AbstractProtocol{
 		client.close();
 	}
 
+
 	public static void main(String[] args) {
+
 		ClientProtocol protocol = new ClientProtocol();
 		protocol.run();
 	}

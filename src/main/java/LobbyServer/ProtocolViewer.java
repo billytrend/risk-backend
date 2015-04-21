@@ -6,17 +6,11 @@ import GameState.State;
 import LobbyServer.LobbyState.ObjectFromClient.ClientMessage;
 import LobbyServer.LobbyState.ObjectFromClient.GameComms.Response;
 import LobbyServer.LobbyState.PlayerConnection;
-import PeerServer.server.ClientProtocol;
 import PeerServer.server.HostProtocol;
+import UIHelpers.StaticServer;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
-import org.mortbay.jetty.Handler;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.handler.DefaultHandler;
-import org.mortbay.jetty.handler.HandlerList;
-import org.mortbay.jetty.handler.ResourceHandler;
-import org.mortbay.jetty.nio.SelectChannelConnector;
 
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -32,22 +26,8 @@ public class ProtocolViewer extends WebSocketServer {
     private State gameState;
 
     public static void main(String[] args) throws Exception {
-        Server server = new Server();
-        SelectChannelConnector connector = new SelectChannelConnector();
-        connector.setPort(8080);
-        server.addConnector(connector);
 
-        ResourceHandler resource_handler = new ResourceHandler();
-        resource_handler.setWelcomeFiles(new String[]{ "index.html" });
-
-        resource_handler.setResourceBase("./ui-build");
-
-        HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[]{resource_handler, new DefaultHandler()});
-        server.setHandler(handlers);
-
-        server.start();
-
+        new StaticServer();
         ProtocolViewer p = new ProtocolViewer(8887);
         p.start();
     }
