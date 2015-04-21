@@ -296,7 +296,6 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	private int convertCards() {
-
         ArrayList<Triplet<Card, Card, Card>> possibleCombinations = CardUtils.getPossibleCardCombinations(gameState, currentPlayer);
 
 		if (possibleCombinations.size() == 0) return 0;

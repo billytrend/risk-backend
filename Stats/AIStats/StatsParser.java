@@ -19,10 +19,11 @@ public class StatsParser {
 	public void parseFile(File statsFile) {
 		
 		String[] line;
-		double[] bControlStats = new double[13];
-		double[] comDefStats = new double[13];
-		double[] comAggStats = new double[13];
-		double[] bossStats = new double[13];
+		double[] bControlStats = new double[17];
+		double[] comDefStats = new double[17];
+		double[] comAggStats = new double[17];
+		double[] bossStats = new double[17];
+		double[] swapperStats = new double[17];
 
 		try {
 			Scanner scanner = new Scanner(new FileReader(statsFile));
@@ -41,11 +42,14 @@ public class StatsParser {
 				case "BorderControl":
 					parseLine(line, bControlStats);
 					break;
+				case "Swapper":
+					parseLine(line, swapperStats);
+					break;	
 				default:
 					break;
 				}
 			}
-			writeCollectedStats(bControlStats, comAggStats, comDefStats, bossStats);
+			writeCollectedStats(bControlStats, comAggStats, comDefStats, bossStats, swapperStats);
 			scanner.close();
 		} catch (FileNotFoundException e) {
 			System.out.println("\"Statistics.csv file\" not found.");
@@ -56,21 +60,26 @@ public class StatsParser {
 		for(int i =0; i< 8; i++) s += stats[i] + ",";
 		//avg turns on win
 		s += stats[8]/stats[0] + ",";
-		//avg attacks per turn
-		s += stats[10]/stats[9] + ",";
-		//avg position
-		s += stats[11]/stats[12] + ",";
+		//avg attacks per turn when win
+		s += stats[9]/stats[8] + ",";
+		//avg position with 6 players
+		s += stats[12]/stats[13] + ",";
 		//win percentage
-		s += stats[0]/stats[12] + ",";
-		s += stats[12];
+		s += stats[0]/stats[14] *100 + ",";
+		//count
+		s += stats[14] + ",";
+		//win percentage vs losers
+		s+= stats[1]/stats[15]*100 + ",";
+		//win percentage vs dumb bots
+		s += stats[2]/stats[16]*100;
 		return s;
 	}
 	
-	public void writeCollectedStats(double[] bControlStats, double[] comAggStats, double[] comDefStats, double[] bossStats){
+	public void writeCollectedStats(double[] bControlStats, double[] comAggStats, double[] comDefStats, double[] bossStats, double[] swapperStats){
 		File collectedStatsFile = new File("CollectedStats.csv");
 		try {
 			PrintWriter writer = new PrintWriter(new FileWriter(collectedStatsFile));
-			String titles = "AI,wins,wins V losers,wins V dumbbots,wins V 1, wins V 2,wins V 3,wins V 4,wins V 5, avg turns taken to win,avg attacks per turn, avg position";
+			String titles = "AI,wins,wins V losers,wins V dumbbots,wins V 1, wins V 2,wins V 3,wins V 4,wins V 5, avg turns taken to win,avg attacks per win,avg position -6 players, win percentage,count,losercount,dbcount";
 			String bControl = "BorderControl" +",";
 			bControl = statsString(bControlStats, bControl);
 			String comAgg = "CommunistAggressive" +",";
@@ -79,12 +88,15 @@ public class StatsParser {
 			comDef = statsString(comDefStats, comDef);
 			String boss = "Boss" +",";
 			boss = statsString(bossStats, boss);
+			String swapper = "Swapper" +",";
+			swapper = statsString(swapperStats, swapper);
 			
 			writer.println(titles);
 			writer.println(bControl);
 			writer.println(comAgg);
 			writer.println(comDef);
 			writer.println(boss);
+			writer.println(swapper);
 			writer.close();
 		} catch (IOException e) {
 			System.out.println("\"CollectedStats.csv file\" not found.");
@@ -118,15 +130,27 @@ public class StatsParser {
 				stats[7]++;
 			//turns when won
 			stats[8] += Integer.parseInt(line[6]);
+			//attacks when won
+			stats[9] +=Integer.parseInt(line[7]);
+			
 		}
 		//total turns
-		stats[9] += Integer.parseInt(line[6]);
+		stats[10] += Integer.parseInt(line[6]);
 		//total attacks
-		stats[10] += Integer.parseInt(line[7]);
-		//position
-		stats[11] += Integer.parseInt(line[8]);
+		stats[11] += Integer.parseInt(line[7]);
+		if(line[5] != ""){
+		//position when 6 players
+		stats[12] += Integer.parseInt(line[8]);
+		stats[13] ++;
+		}
 		//games recorded
-		stats[12]++;
+		stats[14]++;
+		//count of loser games
+		if(line[1].equals("l0")){
+			stats[15] ++;
+		}
+		//count of dumbbot games
+		else stats[16] ++;
 		return stats;
 	}
 
