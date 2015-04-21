@@ -181,12 +181,12 @@ public class AIUtils {
         return false;
     }
     
-    public static Territory getTerritoryWithStrongestNeighbour(State state, HashSet<Territory> ownedTerritories){
-    	HashSet<Territory> allNeighbours = new HashSet<Territory>();
-    	for(Territory territory : ownedTerritories){
-    		allNeighbours.addAll(TerritoryUtils.getNeighbours(state, territory));
-    	}
-    	
-    }
+//    public static Territory getTerritoryWithStrongestNeighbour(State state, HashSet<Territory> ownedTerritories){
+//    	HashSet<Territory> allNeighbours = new HashSet<Territory>();
+//    	for(Territory territory : ownedTerritories){
+//    		allNeighbours.addAll(TerritoryUtils.getNeighbours(state, territory));
+//    	}
+//    	
+//    }
 
 }
