@@ -41,7 +41,6 @@ module.exports = React.createClass({
                 </div>
                 <div>
                     <button onClick={ self._selectGame } >Join game</button>
-                    <button>Watch game</button>
                 </div>
             </div>
         );

@@ -12,9 +12,11 @@ var filters = {
 var UpArrow = React.createClass({
     render: function() {
         return (
-            <button className="upDown" opacity={ this.props.activated ? 1 : 0.5 } onClick={ this.props.onClick }>
-                +
-            </button>
+            <svg viewBox="0 0 1872 940" className="army_arrow">
+                <g opacity={ this.props.activated ? 1 : 0.5 } onClick={ this.props.onClick } stroke="none" strokeWidth="1" fill="none"  fill-rule="evenodd" >
+                    <polygon stroke="#979797" fill="#6C6C6C" points="936 1 1870 939 936 676.008356 2 939 "></polygon>
+                </g>
+            </svg>
         )
     }
 });
@@ -22,9 +24,11 @@ var UpArrow = React.createClass({
 var DownArrow = React.createClass({
     render: function() {
         return (
-            <button className="upDown" opacity={ this.props.activated ? 1 : 0.5 } onClick={ this.props.onClick }>
-                -
-            </button>
+            <svg viewBox="0 0 1872 940" className="army_arrow">
+                <g opacity={ this.props.activated ? 1 : 0.5 } onClick={ this.props.onClick } stroke="none" strokeWidth="1" fill="none"  fill-rule="evenodd" >
+                    <path  d="M2,1 L936,263.991644 L1870,1 L936,939 L2,1 Z" id="Triangle-1" stroke="#979797" fill="#6C6C6C" ></path>
+                </g>
+            </svg>
         )
     }
 });

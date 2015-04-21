@@ -7,7 +7,7 @@
     <packaging>jar</packaging>
 
     <artifactId>risk-backend</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <dependencies>
         <dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -90,14 +90,17 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.5.3</version>
                 <configuration>
+                    <outputDirectory>./</outputDirectory>
+                    <finalName>risk-build-${project.version}</finalName>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>UIHelpersrisk</mainClass>
+                            <mainClass>UIHelpers.LobbyRunner</mainClass>
                         </manifest>
                     </archive>
+                    <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
                     <execution>
@@ -106,6 +109,7 @@
                         <goals>
                             <goal>single</goal>
                         </goals>
+
                     </execution>
                 </executions>
             </plugin>

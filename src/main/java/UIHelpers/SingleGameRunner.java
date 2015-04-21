@@ -8,12 +8,6 @@ import LobbyServer.SingleGameServer;
 import PlayerInput.CommunistAggressive;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.TheLoser;
-import org.mortbay.jetty.Handler;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.handler.DefaultHandler;
-import org.mortbay.jetty.handler.HandlerList;
-import org.mortbay.jetty.handler.ResourceHandler;
-import org.mortbay.jetty.nio.SelectChannelConnector;
 
 import java.util.ArrayList;
 
@@ -53,26 +47,8 @@ public class SingleGameRunner {
 
     public void start() throws Exception {
 
-        Server server = new Server();
-        SelectChannelConnector connector = new SelectChannelConnector();
-        connector.setPort(8080);
-        server.addConnector(connector);
-
-        ResourceHandler resource_handler = new ResourceHandler();
-        resource_handler.setWelcomeFiles(new String[]{ "index.html" });
-
-        String webDir = this.getClass().getClassLoader().getResource("./").toExternalForm();
-        resource_handler.setResourceBase(webDir);
-
-        HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[]{resource_handler, new DefaultHandler()});
-        server.setHandler(handlers);
-
-        server.start();
-
+        new StaticServer();
         SingleGameServer s = new SingleGameServer(8887, gameState, players);
-        server.join();
-       
         
 
     }
