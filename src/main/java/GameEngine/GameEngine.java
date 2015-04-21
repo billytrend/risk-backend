@@ -492,7 +492,7 @@ public class GameEngine implements Runnable {
 
         	System.out.println("CAPTUREEEEEEEEEEEEEEEEEEEEEEEEEEEED");
 			currentPlayerHasTakenCountry = true;
-			
+		
 			countryTakenInPreviousTurn = true;
 
 			if(((attackingArmies - result.getAttackersLoss() - attackDiceNumber) > 1) ||
