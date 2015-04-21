@@ -3,9 +3,12 @@ package PlayerInput;
 import GameEngine.RequestReason;
 import GameState.Card;
 import GameState.Player;
+import GameState.State;
 import GameState.Territory;
+import GameUtils.CardUtils;
 import GameUtils.Results.Change;
 import PeerServer.server.AbstractProtocol;
+
 import org.javatuples.Triplet;
 
 import java.util.ArrayList;
@@ -21,16 +24,19 @@ public class RemotePlayer implements PlayerInterface  {
 	
 	//TODO: check for castin errors!
 	
-	public RemotePlayer(BlockingQueue<Entry<Integer, RequestReason>>   sharedQueue, Thread thread, AbstractProtocol protocol){
+	public RemotePlayer(BlockingQueue<Entry<Integer, RequestReason>>   sharedQueue, Thread thread, 
+			AbstractProtocol protocol, State state){
 		responses = sharedQueue;
 		protocolThread = thread;
 		this.protocol = protocol;
+		this.state = state; // for cards...
 	}
 	
     private BlockingQueue<Entry<Integer, RequestReason>> responses;  
     private Entry<Integer, RequestReason> responseEntry;
     private Thread protocolThread;
     private AbstractProtocol protocol;
+    private State state;
     boolean wrongCommand;
 
     
@@ -44,7 +50,6 @@ public class RemotePlayer implements PlayerInterface  {
     	
     	boolean matching = ((responseReason == RequestReason.PLACING_ARMIES_SET_UP) 
     			&& (reason == RequestReason.PLACING_REMAINING_ARMIES_PHASE));
-
 
     	
 		if(!matching && (responseReason != reason)){
@@ -127,23 +132,21 @@ public class RemotePlayer implements PlayerInterface  {
 	
 	@Override
 	public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations){
-	/*	Integer cardOneId = getResponse(null);
+		Integer cardOneId = getResponse(null);
 		Integer cardTwoId = getResponse(null);
 		Integer cardThreeId = getResponse(null);
 		
 		if((cardOneId == null) || (cardTwoId == null) || (cardThreeId == null)){
-			System.out.println("Wrong cards? Or maybe ok...");
 			return null;
 		}
 		
-		// TODO:
-		// get card with id 1
-		// get card with id 2
-		// get card with id 3
+		Card one = CardUtils.getCardWithId(state, cardOneId);
+		Card two = CardUtils.getCardWithId(state, cardTwoId);
+		Card three = CardUtils.getCardWithId(state, cardThreeId);
 		
-		Triplet<Card, Card, Card> cardSet = new Triplet<Card, Card, Card>(null, null, null);
-		return cardSet;*/
-		return null;
+		Triplet<Card, Card, Card> cardSet = new Triplet<Card, Card, Card>(one, two, three);
+		
+		return cardSet;
 	}
 	
 	

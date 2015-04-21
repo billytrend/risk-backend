@@ -18,12 +18,20 @@ public class play_cards extends gameplay_command {
 	
 	public play_cards(int[][] cards, int armies, int id, int ack){
 		super(id);
-		this.payload = new payload();
-		this.payload.cards = cards;
-		this.payload.armies = armies;
+
+		if(cards == null){
+			this.payload = null;
+		}
+		else{
+			this.payload = new payload();
+			this.payload.cards = cards;
+			this.payload.armies = armies;
+		}
+	
 		ack_id = ack;
 	}
 	
+	public String command = "play_cards";
 	public payload payload;
 	public int ack_id;
 	

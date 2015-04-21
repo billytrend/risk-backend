@@ -1,6 +1,7 @@
 package GameUtils;
 
 import GameState.*;
+
 import org.javatuples.Triplet;
 import org.paukov.combinatorics.Factory;
 import org.paukov.combinatorics.Generator;
@@ -8,9 +9,12 @@ import org.paukov.combinatorics.ICombinatoricsVector;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 
 public class CardUtils {
+	
+	private static boolean cardsShuffled = false;
 
 	public static int getCurrentArmyPayout(Player player, Triplet<Card, Card, Card> cards) {
         int cardPayout = 4;
@@ -60,6 +64,17 @@ public class CardUtils {
 		return cards;
 	}
 
+	
+	public static Card getCardWithId(State s, int id){
+		for (Card c : s.getCards()) {
+			if (c.getId() == id) {
+				return c;
+			}
+		}
+		
+		return null;
+	}
+	
 	public static void givePlayerCard(Card c, Player p) {
 		c.setOwner(p);
 	}
@@ -85,12 +100,21 @@ public class CardUtils {
 	}
 
 	public static Card givePlayerRandomCard(State s, Player p) {
-		ArrayList<Card> unownedCards = getUnownedCards(s);
-		if (unownedCards.size() == 0)
-            return null;
-		Random r = new Random();
-		int randIndex = r.nextInt(unownedCards.size());
-		Card chosen = unownedCards.get(randIndex);
+		Card chosen = null;
+		if(cardsShuffled){
+			List<Card> allCards = s.getCards();
+			chosen = allCards.get(0);
+			allCards.remove(chosen);
+		}
+		else{
+			ArrayList<Card> unownedCards = getUnownedCards(s);
+			if (unownedCards.size() == 0)
+	            return null;
+			Random r = new Random();
+			int randIndex = r.nextInt(unownedCards.size());
+			chosen = unownedCards.get(randIndex);
+		}
+		
 		givePlayerCard(chosen, p);
         return chosen;
 	}
@@ -173,6 +197,11 @@ public class CardUtils {
 			}
 		}
 		return combinations;
+	}
+
+	public static void setShuffledToTrue() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

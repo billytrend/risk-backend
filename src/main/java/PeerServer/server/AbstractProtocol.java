@@ -16,6 +16,7 @@ import GameUtils.PlayerUtils;
 import GameUtils.TerritoryUtils;
 import GameUtils.Results.Change;
 import GeneralUtils.Jsonify;
+import PeerServer.protocol.cards.play_cards;
 import PeerServer.protocol.dice.SeededGenerator;
 import PeerServer.protocol.dice.SeededGenerator.HashMismatchException;
 import PeerServer.protocol.dice.roll_hash;
@@ -138,6 +139,7 @@ public abstract class AbstractProtocol implements Runnable {
         switch (protocolState) {
 	        case START_GAME:
 	            debug("\n START GAME");
+	            networkArbitration.setProtocolThread(Thread.currentThread());
 	            armiesToBePlaced = ArmyUtils.getStartingArmies(state) * numOfPlayers;
 	            setupRolls();
 	            protocolState = ProtocolState.SETUP_GAME;
@@ -161,11 +163,10 @@ public abstract class AbstractProtocol implements Runnable {
 	    	   }
 	    	   setupGame();
 			   break;
-        /*    case PLAY_CARDS:
-	             debug("\n PLAY_CARDS");
+            case PLAY_CARDS:
+	            debug("\n PLAY_CARDS");
 	            playCards();
-	            break;
-			*/	
+	            break;	
             case DEPLOY:
 				debug("\n DEPLOY");
 				deploy();
@@ -189,7 +190,8 @@ public abstract class AbstractProtocol implements Runnable {
 	            break;
             case FORTIFY:
 				debug("\n FORTIFY");
-				fortify();	     
+				fortify(""); // we only get here if its our turn
+								// otherwise this is called from attack
 	            break;
             default:
 			//	System.out.println("in default not good");
@@ -206,7 +208,7 @@ public abstract class AbstractProtocol implements Runnable {
 	
 	protected void setupGame(){
 		nextStateAfterAck = ProtocolState.SETUP_GAME;
-		
+		System.out.println("PROTOCOL: SETUP\n");
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e1) {
@@ -220,14 +222,14 @@ public abstract class AbstractProtocol implements Runnable {
 		
 		
 		if(currentPlayerId == myID){
-	
 			setup setup = (setup) getResponseFromLocalPlayer();
 			setup.ack_id = ack_id;
 			ack_id++;
+			
 			armiesPlaced++;
 			
 			if(armiesPlaced == armiesToBePlaced){
-				nextStateAfterAck = ProtocolState.DEPLOY;
+				nextStateAfterAck = ProtocolState.PLAY_CARDS;
 			}
 			
 			String setupString = Jsonify.getObjectAsJsonString(setup);
@@ -236,7 +238,6 @@ public abstract class AbstractProtocol implements Runnable {
 		}
 		//someone sent us a command
 		else {
-		
 			String command = "";
 			while(command == ""){
 				command = receiveCommand(false);
@@ -252,7 +253,7 @@ public abstract class AbstractProtocol implements Runnable {
 			armiesPlaced++;
 			
 			if(armiesPlaced == armiesToBePlaced){
-				nextStateAfterAck = ProtocolState.DEPLOY;
+				nextStateAfterAck = ProtocolState.PLAY_CARDS;
 			}
 			
 			notifyPlayerInterface(setup, setup.player_id);
@@ -275,24 +276,36 @@ public abstract class AbstractProtocol implements Runnable {
 	
 
 	protected void playCards(){
-		/*if(currentPlayerId == myID){
+		nextStateAfterAck = ProtocolState.DEPLOY;
+		System.out.println("PROTOCOL: CARDS\n");
+
+		if(currentPlayerId == myID){
 			//create play_cards object 
 			play_cards pc = (PeerServer.protocol.cards.play_cards) getResponseFromLocalPlayer();
 			String playCardsString = Jsonify.getObjectAsJsonString(pc);
-			sendCommand(playCardsString, null);
+			
+			sendCommand(playCardsString, null, true);
 		}
 		//someone sent us a command 
 		else {
-			//parse comamnd into play_cards object
+			String command = "";
+			while(command == ""){
+				command = receiveCommand(false);
+			}
+			
 			play_cards pc = (PeerServer.protocol.cards.play_cards) Jsonify.getJsonStringAsObject(command, play_cards.class);
 			
 			if(pc == null){
 			}
+			
 			//send command to all players execpt the one who sent it to us
-			sendCommand(command, pc.player_id);
-			//notify player interface to update game state/engine 
 			notifyPlayerInterface(pc, pc.player_id);
-		}*/
+			their_ack_id = pc.ack_id;
+			
+			sendCommand(command, pc.player_id, true);
+			acknowledge(their_ack_id);
+		}
+		protocolState = nextStateAfterAck;
 	}
 
 	
@@ -336,8 +349,10 @@ public abstract class AbstractProtocol implements Runnable {
 			attack attack = (attack) getResponseFromLocalPlayer();
 			String attackString = Jsonify.getObjectAsJsonString(attack);
 			
-			if(attack.payload == null)
-				nextStateAfterAck = ProtocolState.FORTIFY;
+			if(attack.payload == null){
+				protocolState = ProtocolState.FORTIFY; // we dont attack, send fortify instead
+				return;
+			}
 			else{
 				attackingPlayerId = attack.player_id;
 				defendingTerId = attack.payload[1];
@@ -355,6 +370,11 @@ public abstract class AbstractProtocol implements Runnable {
 			while(command == ""){
 				command = receiveCommand(false);
 			}
+			if(command.contains("fortify")){
+				fortify(command);
+				return;
+			}
+				
 			
 			attack attack = (attack) Jsonify.getJsonStringAsObject(command, attack.class);
 			//check its not null
@@ -368,13 +388,15 @@ public abstract class AbstractProtocol implements Runnable {
 			
 			their_ack_id = attack.ack_id;
 
-			if(attack.payload == null)
-				nextStateAfterAck = ProtocolState.FORTIFY;
-			else{
-				attackingPlayerId = attack.player_id;
-				defendingTerId = attack.payload[1];
-				nextStateAfterAck = ProtocolState.DEFEND;
-			}
+		//	if(attack.payload == null)
+		//		nextStateAfterAck = ProtocolState.FORTIFY;
+		//	else{
+			
+			attackingPlayerId = attack.player_id;
+			defendingTerId = attack.payload[1];
+			nextStateAfterAck = ProtocolState.DEFEND;
+			
+		//	}
 			
 			sendCommand(command, attack.player_id, true);
 			acknowledge(their_ack_id);
@@ -428,7 +450,7 @@ public abstract class AbstractProtocol implements Runnable {
 
 		nextStateAfterAck = ProtocolState.ATTACK;
 		try {
-			Thread.sleep(3000);
+			Thread.sleep(4000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -471,10 +493,10 @@ public abstract class AbstractProtocol implements Runnable {
 	}
 
 
-	protected void fortify(){
+	protected void fortify(String command){
 		System.out.println("PROTOCOL: FORTIFY\n");
 		System.out.println(currentPlayerId);
-		nextStateAfterAck = ProtocolState.DEPLOY; // TODO: change this
+		nextStateAfterAck = ProtocolState.PLAY_CARDS; // TODO: change this
 		if(currentPlayerId == myID){
 			fortify fortify = (fortify) getResponseFromLocalPlayer();
 			String fortifyString = Jsonify.getObjectAsJsonString(fortify);
@@ -483,11 +505,7 @@ public abstract class AbstractProtocol implements Runnable {
 		}
 		//someone sent us the command  player id if parsing
 		else{
-			String command = "";
-			while(command == ""){
-				command = receiveCommand(false);
-			}
-			
+			// we dont need to receive a command since we already got it
 			fortify fortify = (fortify) Jsonify.getJsonStringAsObject(command, 
 					fortify.class);
 			if(fortify == null){
@@ -505,30 +523,29 @@ public abstract class AbstractProtocol implements Runnable {
 	//*********************** DICE ROLLS ******************************
 
 	protected void gameRoll(){
+		System.out.println("PROTOCOL: in dice rolling");
 		SeededGenerator diceRoller = new SeededGenerator();
-		getHashes(diceRoller);
-		getNumbers(diceRoller);
 		
-		try {
-			diceRoller.finalise();
-		} catch (HashMismatchException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		int result;
-		
-		System.out.println("def and attck: " + defenderDiceNum + "  " + attackerDiceNum);
-		for(int i = 0; i < (defenderDiceNum + attackerDiceNum); i++){
-			result = ((int)diceRoller.nextInt() % 6);
-			if(result < 0){
-				System.out.println("PROBLEM: result < 0");
-				result += 6;
+
+			getHashes(diceRoller);
+			getNumbers(diceRoller);
+			
+			try {
+				diceRoller.finalise();
+			} catch (HashMismatchException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			result += 1;
-			networkArbitration.addDieThrowResult(result);
-			System.out.print(result + "  ");
-		}
+			
+			int result;
+			
+			System.out.println("def and attck: " + defenderDiceNum + "  " + attackerDiceNum);
+			for(int i = 0; i < (defenderDiceNum + attackerDiceNum); i++){
+				result = (int)(diceRoller.nextInt() % 6) + 1;
+				networkArbitration.addDieThrowResult(result);
+				System.out.print(result + "  ");
+			}
+			
 	}
 	
 	
@@ -547,15 +564,11 @@ public abstract class AbstractProtocol implements Runnable {
 			e.printStackTrace();
 		}
 		
-		firstPlayerId = (((int) playersRoller.nextInt()) % numOfPlayers);
-		if(firstPlayerId < 0){
-			System.out.println("PROBLEM: result < 0");
-			firstPlayerId += numOfPlayers;
-		}
+		firstPlayerId = (int) (playersRoller.nextInt() % numOfPlayers);
 		networkArbitration.setFirstPlayerId(firstPlayerId);
 		
 		System.out.println("GOT FIRST PLAYER: " + firstPlayerId + " ===========================");
-	/*	
+		
 		getHashes(cardShuffler);
 		getNumbers(cardShuffler);
 		
@@ -564,21 +577,24 @@ public abstract class AbstractProtocol implements Runnable {
 		} catch (HashMismatchException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
+		}
 		
-	/*	List<Card> allCards = CardUtils.getUnownedCards(state);
+		List<Card> allCards = CardUtils.getUnownedCards(state);
 		int cardNum = allCards.size();
 		System.out.println("Num of cards: " + cardNum);
 		int randomIndex;
 		for(int i = 0; i < cardNum; i++){
-			int next = (int)(cardShuffler.nextInt());
-			//System.out.println(next);
-			randomIndex = (next % cardNum);
-			Collections.swap(allCards, i, randomIndex);*/
-		//}
+			int next = (int)(cardShuffler.nextInt() % cardNum);
+			Collections.swap(allCards, i, next);
+		}
 		
+		CardUtils.setShuffledToTrue();
 	}
 	
+	
+	
+	
+	private BlockingQueue<String> rollNumberQueue = new LinkedBlockingQueue<String>();
 	private void getHashes(SeededGenerator generator) {
 		int hashCount = 1;
 		
@@ -610,15 +626,24 @@ public abstract class AbstractProtocol implements Runnable {
 			System.out.println(hashCount + "  " + numOfPlayers  );
 
 			
-			command = receiveCommand(true);
+			command = receiveCommand(false);
 			if(!command.contains("roll_hash")){
-				if(command != "")
+				if(command.contains("roll_number"))
+					try {
+						rollNumberQueue.put(command);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				else{
 					try {
 						commandQueue.put(command);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+
+				}
 				continue;
 			}
 			
@@ -661,18 +686,29 @@ public abstract class AbstractProtocol implements Runnable {
 		
 		long startTime = System.currentTimeMillis();
 		long currentTime;
-		String command;
+		String command = "";
 		while(true){
 			
 			if(numberCount == numOfPlayers)
 				break;
 			
-			command = receiveCommand(false);
-			if(!command.contains("roll_number")){
-				if(command != "")
-					commandQueue.add(command);
-				continue;
+			if(rollNumberQueue.isEmpty()){
+				command = receiveCommand(true);
+				if(!command.contains("roll_number")){
+					if(command != "")
+						commandQueue.add(command);
+					continue;
+				}
 			}
+			else{
+				try {
+					command = rollNumberQueue.take();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
 			
 			roll_number rollNum = (roll_number) Jsonify.getJsonStringAsObject(command, roll_number.class);
 			numberCount++;
@@ -734,17 +770,21 @@ public abstract class AbstractProtocol implements Runnable {
 		}
 		else{	
 			BlockingQueue<Entry<Integer, RequestReason>> newSharedQueue = new LinkedBlockingQueue<Entry<Integer, RequestReason>>();
-			playerInterface = new RemotePlayer(newSharedQueue, Thread.currentThread(), this);
+			playerInterface = new RemotePlayer(newSharedQueue, Thread.currentThread(), this, state);
 			queueMapping.put(id, newSharedQueue); // the mappigng stores all interfaces
 		}
 
-	
 		Player newOne;
 		if(name != "")
 			newOne = new Player(playerInterface, id, name);
 		else
 			newOne = new Player(playerInterface, id);
 
+		if(localPlayer){
+			((DumbBotInterfaceProtocol) playerInterface).setPlayer(newOne);
+		}
+		
+		
 		startingPlayers.add(newOne);
 		numOfPlayers++;
 		System.out.println("adding new player " + numOfPlayers);
@@ -814,6 +854,8 @@ public abstract class AbstractProtocol implements Runnable {
 		else if(response instanceof fortify){
 			fortify fortify = (fortify) response;
 			try {
+				queue.put(new MyEntry(null, RequestReason.ATTACK_CHOICE_FROM));
+				
 				if(fortify.payload == null){
 					queue.put(new MyEntry(null, RequestReason.REINFORCEMENT_PHASE));
 				}
@@ -827,10 +869,33 @@ public abstract class AbstractProtocol implements Runnable {
 			}
 		}
 		else if(response instanceof attack_capture){
-			System.out.println("notify about attack capture...");
 			attack_capture attack_capture = (attack_capture) response;
 			try {
 				queue.put(new MyEntry(attack_capture.payload[2], RequestReason.POST_ATTACK_MOVEMENT));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		else if(response instanceof play_cards){
+			play_cards play_cards = (play_cards) response;
+			try {
+				if(play_cards.payload == null){
+					queue.put(new MyEntry(null, null));
+					queue.put(new MyEntry(null, null));
+					queue.put(new MyEntry(null, null));
+				}
+				else{
+					int[][] payload = play_cards.payload.cards;
+					for(int i = 0; i < payload.length; i++){
+						try {
+							queue.put(new MyEntry(payload[i][0], null));
+							queue.put(new MyEntry(payload[i][1], null));
+							queue.put(new MyEntry(payload[i][2], null));
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}	
+				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

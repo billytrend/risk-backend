@@ -11,9 +11,8 @@ import GameUtils.Results.FightResult;
 public class NetworkArbitration extends ArbitrationAbstract{
 
 	private int firstPlayerId = 0;
-	private ArrayList<Integer> diceThrowResult = null;
 	private BlockingQueue<Integer> rolls = new LinkedBlockingDeque<Integer>();
-	
+	private Thread protocolThread;
 	
 	@Override
 	public void setFirstPlayer(State state) {
@@ -21,21 +20,18 @@ public class NetworkArbitration extends ArbitrationAbstract{
         state.getPlayerQueue().setFirstPlayer(firstPlayerId);
 	}
 	
+	public void  setProtocolThread(Thread pt){
+		protocolThread = pt;
+	}
 	
 	@Override
     public FightResult carryOutFight(FightResult result, int dA, int dB) {
-
-		 System.out.println("throwing " + dA + "  def: " + dB);
-	     try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		 Integer[] attackDice = nDiceThrow(dA);
-	     Integer[] defendDice = nDiceThrow(dB);
-
-	     return super.arbitrateFight(result, attackDice, defendDice);
+		System.out.println("throwing " + dA + "  def: " + dB);
+		   
+		Integer[] attackDice = nDiceThrow(dA);
+		Integer[] defendDice = nDiceThrow(dB);
+		return super.arbitrateFight(result, attackDice, defendDice);
+		
 	 }
 
 	@Override
@@ -44,6 +40,8 @@ public class NetworkArbitration extends ArbitrationAbstract{
 		System.out.println("Roll results:");
 		for(int i = 0; i < numOfDice; i++){
 			try {
+				while(rolls.isEmpty()){}
+				
 				result[i] = rolls.take();
 				System.out.print(result[i] + "  ");
 			} catch (InterruptedException e) {
@@ -57,7 +55,12 @@ public class NetworkArbitration extends ArbitrationAbstract{
 	
 	
 	public void addDieThrowResult(Integer result) {
-		rolls.add(result);
+		try {
+			rolls.put(result);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void setFirstPlayerId(int firstPlayerId) {
