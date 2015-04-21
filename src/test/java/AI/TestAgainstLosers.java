@@ -5,7 +5,7 @@ import GameEngine.GameEngine;
 import GameState.Player;
 import GameState.State;
 import LobbyServer.LobbyState.Lobby;
-import PlayerInput.Billy;
+import PlayerInput.Boss;
 import PlayerInput.BorderControl;
 import PlayerInput.CommunistAggressive;
 import PlayerInput.CommunistDefensive;
@@ -61,7 +61,7 @@ public class TestAgainstLosers {
 	}
 	@Test
     public void testBilly(){
-		player1 = new Player(new Billy(gameState), "Billy");
+		player1 = new Player(new Boss(gameState), "Boss");
     }
 	@After
 	public void runGameAndWriteStats() throws InterruptedException{

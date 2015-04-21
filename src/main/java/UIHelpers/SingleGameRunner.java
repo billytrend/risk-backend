@@ -7,6 +7,7 @@ import GameState.State;
 import LobbyServer.SingleGameServer;
 import PlayerInput.CommunistAggressive;
 import PlayerInput.DumbBotInterface;
+import PlayerInput.SuperSwapper;
 import PlayerInput.TheLoser;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
@@ -27,7 +28,7 @@ public class SingleGameRunner {
         State gameState = RiskMapGameBuilder.buildGame(null);
         
         //pink
-        players.add(0, new Player(new CommunistAggressive(gameState), "The test subject"));
+        players.add(0, new Player(new SuperSwapper(gameState), "The test subject"));
         //blue
         players.add(1, new Player(new TheLoser(gameState), "Loser1"));
         //purple
