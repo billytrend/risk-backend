@@ -38,6 +38,7 @@ public class SuperSwapper implements PlayerInterface{
     /**
      * The choice can be made only from the set of possible territories.
      *
+     * 
      * @param player
      * @param possibles
      * @param from
