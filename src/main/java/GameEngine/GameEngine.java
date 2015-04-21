@@ -329,7 +329,6 @@ public class GameEngine implements Runnable {
 	 * @return
 	 */
 	private int convertCards() {
-
         ArrayList<Triplet<Card, Card, Card>> possibleCombinations = CardUtils.getPossibleCardCombinations(gameState, currentPlayer);
 
 		if (!(currentPlayer.getCommunicationMethod() instanceof DumbBotInterfaceProtocol) &&

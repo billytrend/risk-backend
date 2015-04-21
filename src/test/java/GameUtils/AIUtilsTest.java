@@ -212,28 +212,28 @@ public class AIUtilsTest {
 		Territory nullTerr = AIUtils.getRandomTerritory(gameState, new HashSet<Territory>());
 	}
 
-//	@Test
-//	public void getBiggestThreatTest(){
-//		
-//		ArmyUtils.deployArmies(player1, egstate, 1);
-//		ArmyUtils.deployArmies(player1, otherplace, 3);
-//		ArmyUtils.deployArmies(player1, demoland, 4);
-//		ArmyUtils.deployArmies(player1, someplace, 2);
-//		
-//		HashSet<Territory> enemyTerritories = TerritoryUtils.getAllEnemyTerritories(gameState, player1);
-//		
-//		assertEquals(null, AIUtils.getBiggestThreatToPlayer(gameState, enemyTerritories, player1));
-//		
-//		ArmyUtils.destroyArmies(player1, otherplace, 1);
-//		ArmyUtils.destroyArmies(player1, someplace, 1);
-//		
-//		ArmyUtils.deployArmies(player2, otherplace, 3);
-//		ArmyUtils.deployArmies(player3, someplace, 3);
-//		
-//		enemyTerritories = TerritoryUtils.getAllEnemyTerritories(gameState, player1);
-//		System.out.println(enemyTerritories.size());
-//		assertEquals(otherplace,AIUtils.getBiggestThreatToPlayer(gameState, enemyTerritories, player1));
-//	}
+	@Test
+	public void getBiggestThreatTest(){
+		
+		ArmyUtils.deployArmies(player1, egstate, 1);
+		ArmyUtils.deployArmies(player1, otherplace, 3);
+		ArmyUtils.deployArmies(player1, demoland, 4);
+		ArmyUtils.deployArmies(player1, someplace, 2);
+		
+		HashSet<Territory> enemyTerritories = TerritoryUtils.getAllEnemyTerritories(gameState, player1);
+		
+		assertEquals(null, AIUtils.getBiggestThreatToPlayer(gameState, enemyTerritories, player1));
+		
+		ArmyUtils.destroyArmies(player1, otherplace, 1);
+		ArmyUtils.destroyArmies(player1, someplace, 1);
+		
+		ArmyUtils.deployArmies(player2, otherplace, 3);
+		ArmyUtils.deployArmies(player3, someplace, 3);
+		
+		enemyTerritories = TerritoryUtils.getAllEnemyTerritories(gameState, player1);
+		//System.out.println(enemyTerritories.size());
+		//assertEquals(otherplace,AIUtils.getBiggestThreatToPlayer(gameState, enemyTerritories, player1));
+	}
 	@Test
 	public void armiesOwnedSurroundingTest(){
 		assertEquals(0, AIUtils.armiesOwnedSurroundingTerritory(gameState, egstate, player1));

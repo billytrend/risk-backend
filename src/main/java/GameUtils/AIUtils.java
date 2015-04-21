@@ -176,6 +176,7 @@ public class AIUtils {
 				}
 			}
 		}
+		if(strongest == null) return getRandomTerritory(state, enemyTerritories);
 		return strongest;
 	}
 

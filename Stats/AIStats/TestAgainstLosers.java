@@ -9,8 +9,8 @@ import PlayerInput.BorderControl;
 import PlayerInput.CommunistAggressive;
 import PlayerInput.CommunistDefensive;
 import PlayerInput.Nailer;
+import PlayerInput.SuperSwapper;
 import PlayerInput.TheLoser;
-
 
 import org.junit.After;
 import org.junit.Before;
@@ -47,197 +47,167 @@ public class TestAgainstLosers {
 		}
 	}
 
-	//Border Control@Test
-	@Test
-    public void testBorderControlwithOneLoser(){
-		player1 = new Player(new BorderControl(gameState), "BorderControl");
-		players.add(player1);
-		addLosers(1);
-    }
-    public void testBorderControlwithTwoLosers(){
-		player1 = new Player(new BorderControl(gameState), "BorderControl");
-		players.add(player1);
-		addLosers(2);
-    }
-	@Test
-    public void testBorderControlwithThreeLosers(){
-		player1 = new Player(new BorderControl(gameState), "BorderControl");
-		players.add(player1);
-		addLosers(3);
-    }
-	@Test
-    public void testBorderControlwithFourLosers(){
-		player1 = new Player(new BorderControl(gameState), "BorderControl");
-		players.add(player1);
-		addLosers(4);
-    }
-	@Test
-    public void testBorderControlwithFiveLosers(){
-		player1 = new Player(new BorderControl(gameState), "BorderControl");
-		players.add(player1);
-		addLosers(5);
-    }
-	
-	//Communist Defensive
-	@Test
-	public void testCommunistDefensivewithOneLoser(){
-		player1 = new Player(new CommunistDefensive(gameState), "CommunistDefensive");
-		players.add(player1);
-		addLosers(1);
-	}
-	@Test
-	public void testCommunistDefensivewithTwoLosers(){
-		player1 = new Player(new CommunistDefensive(gameState), "CommunistDefensive");
-		players.add(player1);
-		addLosers(2);
-	}
-	@Test
-	public void testCommunistDefensivewithThreeLosers(){
-		player1 = new Player(new CommunistDefensive(gameState), "CommunistDefensive");
-		players.add(player1);
-		addLosers(3);
-	}
-	@Test
-	public void testCommunistDefensivewithFourLosers(){
-		player1 = new Player(new CommunistDefensive(gameState), "CommunistDefensive");
-		players.add(player1);
-		addLosers(4);
-	}
-	@Test
-	public void testCommunistDefensivewithFiveLosers(){
-		player1 = new Player(new CommunistDefensive(gameState), "CommunistDefensive");
-		players.add(player1);
-		addLosers(5);
-	}
-	
-	
-	//Communist Aggressive
-	@Test
-	public void testCommunistAgressivewithOneLoser() {
-		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
-		players.add(player1);
-		addLosers(1);
-	}
-	@Test
-	public void testCommunistAgressivewithTwoLosers() {
-		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
-		players.add(player1);
-		addLosers(2);
-	}
-	@Test
-	public void testCommunistAgressivewithThreeLosers() {
-		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
-		players.add(player1);
-		addLosers(3);
-		
-	}
-	@Test
-	public void testCommunistAgressivewithFourLosers() {
-		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
-		players.add(player1);
-		addLosers(4);
-	}
-	@Test
-	public void testCommunistAgressivewithFiveLosers() {
-		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
-		players.add(player1);
-		addLosers(5);
-	}
-	
-	
-	//Boss
-	@Test
-    public void testBosswithOneLoser(){
-		player1 = new Player(new Boss(gameState), "Boss");
-		players.add(player1);
-		addLosers(1);
-    }
-	@Test
-    public void testBosswithTwoLosers(){
-		player1 = new Player(new Boss(gameState), "Boss");
-		players.add(player1);
-		addLosers(2);
-    }
-	@Test
-    public void testBosswithThreeLosers(){
-		player1 = new Player(new Boss(gameState), "Boss");
-		players.add(player1);
-		addLosers(3);
-    }
-	@Test
-    public void testBosswithFourLosers(){
-		player1 = new Player(new Boss(gameState), "Boss");
-		players.add(player1);
-		addLosers(4);
-    }
-	@Test
-    public void testBosswithFiveLosers(){
-		player1 = new Player(new Boss(gameState), "Boss");
-		players.add(player1);
-		addLosers(5);
-    }
-	//Nailer
+//	//Border Control@Test
+//	@Test
+//    public void testBorderControlwithOneLoser(){
+//		player1 = new Player(new BorderControl(gameState), "BorderControl");
+//		players.add(player1);
+//		addLosers(1);
+//    }
+//    public void testBorderControlwithTwoLosers(){
+//		player1 = new Player(new BorderControl(gameState), "BorderControl");
+//		players.add(player1);
+//		addLosers(2);
+//    }
+//	@Test
+//    public void testBorderControlwithThreeLosers(){
+//		player1 = new Player(new BorderControl(gameState), "BorderControl");
+//		players.add(player1);
+//		addLosers(3);
+//    }
+//	@Test
+//    public void testBorderControlwithFourLosers(){
+//		player1 = new Player(new BorderControl(gameState), "BorderControl");
+//		players.add(player1);
+//		addLosers(4);
+//    }
+//	@Test
+//    public void testBorderControlwithFiveLosers(){
+//		player1 = new Player(new BorderControl(gameState), "BorderControl");
+//		players.add(player1);
+//		addLosers(5);
+//    }
+//	
+//	//Communist Defensive
+//	@Test
+//	public void testCommunistDefensivewithOneLoser(){
+//		player1 = new Player(new CommunistDefensive(gameState), "CommunistDefensive");
+//		players.add(player1);
+//		addLosers(1);
+//	}
+//	@Test
+//	public void testCommunistDefensivewithTwoLosers(){
+//		player1 = new Player(new CommunistDefensive(gameState), "CommunistDefensive");
+//		players.add(player1);
+//		addLosers(2);
+//	}
+//	@Test
+//	public void testCommunistDefensivewithThreeLosers(){
+//		player1 = new Player(new CommunistDefensive(gameState), "CommunistDefensive");
+//		players.add(player1);
+//		addLosers(3);
+//	}
+//	@Test
+//	public void testCommunistDefensivewithFourLosers(){
+//		player1 = new Player(new CommunistDefensive(gameState), "CommunistDefensive");
+//		players.add(player1);
+//		addLosers(4);
+//	}
+//	@Test
+//	public void testCommunistDefensivewithFiveLosers(){
+//		player1 = new Player(new CommunistDefensive(gameState), "CommunistDefensive");
+//		players.add(player1);
+//		addLosers(5);
+//	}
+//	
+//	
+//	//Communist Aggressive
+//	@Test
+//	public void testCommunistAgressivewithOneLoser() {
+//		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
+//		players.add(player1);
+//		addLosers(1);
+//	}
+//	@Test
+//	public void testCommunistAgressivewithTwoLosers() {
+//		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
+//		players.add(player1);
+//		addLosers(2);
+//	}
+//	@Test
+//	public void testCommunistAgressivewithThreeLosers() {
+//		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
+//		players.add(player1);
+//		addLosers(3);
+//		
+//	}
+//	@Test
+//	public void testCommunistAgressivewithFourLosers() {
+//		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
+//		players.add(player1);
+//		addLosers(4);
+//	}
+//	@Test
+//	public void testCommunistAgressivewithFiveLosers() {
+//		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
+//		players.add(player1);
+//		addLosers(5);
+//	}
+//	
+//	
+//	//Boss
+//	@Test
+//    public void testBosswithOneLoser(){
+//		player1 = new Player(new Boss(gameState), "Boss");
+//		players.add(player1);
+//		addLosers(1);
+//    }
+//	@Test
+//    public void testBosswithTwoLosers(){
+//		player1 = new Player(new Boss(gameState), "Boss");
+//		players.add(player1);
+//		addLosers(2);
+//    }
+//	@Test
+//    public void testBosswithThreeLosers(){
+//		player1 = new Player(new Boss(gameState), "Boss");
+//		players.add(player1);
+//		addLosers(3);
+//    }
+//	@Test
+//    public void testBosswithFourLosers(){
+//		player1 = new Player(new Boss(gameState), "Boss");
+//		players.add(player1);
+//		addLosers(4);
+//    }
+//	@Test
+//    public void testBosswithFiveLosers(){
+//		player1 = new Player(new Boss(gameState), "Boss");
+//		players.add(player1);
+//		addLosers(5);
+//    }
+	//Swapper
 			@Test
-		    public void testNailerwithOneLoser(){
-				player1 = new Player(new Nailer(gameState), "Nailer");
+		    public void testSwapperwithOneLoser(){
+				player1 = new Player(new SuperSwapper(gameState), "Swapper");
 				players.add(player1);
 				addLosers(1);
 		    }
 			@Test
-		    public void testNailerwithTwoLosers(){
-				player1 = new Player(new Nailer(gameState), "Nailer");
+		    public void testSwapperwithTwoLosers(){
+				player1 = new Player(new Nailer(gameState), "Swapper");
 				players.add(player1);
 				addLosers(2);
 		    }
 			@Test
-		    public void testNailerwithThreeLosers(){
-				player1 = new Player(new Nailer(gameState), "Nailer");
+		    public void testSwapperwithThreeLosers(){
+				player1 = new Player(new Nailer(gameState), "Swapper");
 				players.add(player1);
 				addLosers(3);
 		    }
 			@Test
-		    public void testNailerwithFourLosers(){
-				player1 = new Player(new Nailer(gameState), "Nailer");
+		    public void testSwapperwithFourLosers(){
+				player1 = new Player(new Nailer(gameState), "Swapper");
 				players.add(player1);
 				addLosers(4);
 		    }
 			@Test
-		    public void testNailerwithFiveLosers(){
-				player1 = new Player(new Nailer(gameState), "Nailer");
+		    public void testSwapperwithFiveLosers(){
+				player1 = new Player(new Nailer(gameState), "Swapper");
 				players.add(player1);
 				addLosers(5);
 		    }
-//	//Grab
-//		@Test
-//	    public void testBerserkerwithOneLoser(){
-//			player1 = new Player(new GrabContinent(gameState, "australia"), "Grab_Australia");
-//			players.add(player1);
-//			addLosers(1);
-//	    }
-//		@Test
-//	    public void testBerserkerwithTwoLosers(){
-//			player1 = new Player(new GrabContinent(gameState, "australia"), "Grab_Australia");
-//			players.add(player1);
-//			addLosers(2);
-//	    }
-//		@Test
-//	    public void testBerserkerwithThreeLosers(){
-//			player1 = new Player(new GrabContinent(gameState, "australia"), "Grab_Australia");
-//			players.add(player1);
-//			addLosers(3);
-//	    }
-//		@Test
-//	    public void testBerserkerwithFourLosers(){
-//			player1 = new Player(new GrabContinent(gameState, "australia"), "Grab_Australia");
-//			players.add(player1);
-//			addLosers(4);
-//	    }
-//		@Test
-//	    public void testBerserkerwithFiveLosers(){
-//			player1 = new Player(new GrabContinent(gameState, "australia"), "Grab_Australia");
-//			players.add(player1);
-//			addLosers(5);
-//	    }
+
 	@After
 	public void runGameAndWriteStats() throws InterruptedException{
 		gameState.setPlayers(players);

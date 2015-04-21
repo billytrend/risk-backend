@@ -11,6 +11,7 @@ import PlayerInput.CommunistAggressive;
 import PlayerInput.CommunistDefensive;
 import PlayerInput.DumbBotInterface;
 import PlayerInput.Nailer;
+import PlayerInput.SuperSwapper;
 
 import org.junit.After;
 import org.junit.Before;
@@ -48,197 +49,167 @@ public class TestAgainstDumbBot {
 	}
 
 	//Border Control@Test
-	@Test
-    public void testBorderControlwithOneDumbBot(){
-		player1 = new Player(new BorderControl(gameState), "BorderControl");
-		players.add(player1);
-		addDumbBots(1);
-    }
-    public void testBorderControlwithTwoDumbBots(){
-		player1 = new Player(new BorderControl(gameState), "BorderControl");
-		players.add(player1);
-		addDumbBots(2);
-    }
-	@Test
-    public void testBorderControlwithThreeDumbBots(){
-		player1 = new Player(new BorderControl(gameState), "BorderControl");
-		players.add(player1);
-		addDumbBots(3);
-    }
-	@Test
-    public void testBorderControlwithFourDumbBots(){
-		player1 = new Player(new BorderControl(gameState), "BorderControl");
-		players.add(player1);
-		addDumbBots(4);
-    }
-	@Test
-    public void testBorderControlwithFiveDumbBots(){
-		player1 = new Player(new BorderControl(gameState), "BorderControl");
-		players.add(player1);
-		addDumbBots(5);
-    }
-	
-	//Communist Defensive
-	@Test
-	public void testCommunistDefensivewithOneDumbBot(){
-		player1 = new Player(new CommunistDefensive(gameState), "CommunistDefensive");
-		players.add(player1);
-		addDumbBots(1);
-	}
-	@Test
-	public void testCommunistDefensivewithTwoDumbBots(){
-		player1 = new Player(new CommunistDefensive(gameState), "CommunistDefensive");
-		players.add(player1);
-		addDumbBots(2);
-	}
-	@Test
-	public void testCommunistDefensivewithThreeDumbBots(){
-		player1 = new Player(new CommunistDefensive(gameState), "CommunistDefensive");
-		players.add(player1);
-		addDumbBots(3);
-	}
-	@Test
-	public void testCommunistDefensivewithFourDumbBots(){
-		player1 = new Player(new CommunistDefensive(gameState), "CommunistDefensive");
-		players.add(player1);
-		addDumbBots(4);
-	}
-	@Test
-	public void testCommunistDefensivewithFiveDumbBots(){
-		player1 = new Player(new CommunistDefensive(gameState), "CommunistDefensive");
-		players.add(player1);
-		addDumbBots(5);
-	}
-	
-	
-	//Communist Aggressive
-	@Test
-	public void testCommunistAgressivewithOneDumbBot() {
-		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
-		players.add(player1);
-		addDumbBots(1);
-	}
-	@Test
-	public void testCommunistAgressivewithTwoDumbBots() {
-		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
-		players.add(player1);
-		addDumbBots(2);
-	}
-	@Test
-	public void testCommunistAgressivewithThreeDumbBots() {
-		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
-		players.add(player1);
-		addDumbBots(3);
-		
-	}
-	@Test
-	public void testCommunistAgressivewithFourDumbBots() {
-		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
-		players.add(player1);
-		addDumbBots(4);
-	}
-	@Test
-	public void testCommunistAgressivewithFiveDumbBots() {
-		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
-		players.add(player1);
-		addDumbBots(5);
-	}
-	
-	
-	//Boss
-	@Test
-    public void testBosswithOneDumbBot(){
-		player1 = new Player(new Boss(gameState), "Boss");
-		players.add(player1);
-		addDumbBots(1);
-    }
-	@Test
-    public void testBosswithTwoDumbBots(){
-		player1 = new Player(new Boss(gameState), "Boss");
-		players.add(player1);
-		addDumbBots(2);
-    }
-	@Test
-    public void testBosswithThreeDumbBots(){
-		player1 = new Player(new Boss(gameState), "Boss");
-		players.add(player1);
-		addDumbBots(3);
-    }
-	@Test
-    public void testBosswithFourDumbBots(){
-		player1 = new Player(new Boss(gameState), "Boss");
-		players.add(player1);
-		addDumbBots(4);
-    }
-	@Test
-    public void testBosswithFiveDumbBots(){
-		player1 = new Player(new Boss(gameState), "Boss");
-		players.add(player1);
-		addDumbBots(5);
-    }
-//	//Nailer
 //	@Test
-//    public void testNailerwithOneDumbBot(){
-//		player1 = new Player(new Nailer(gameState), "Nailer");
+//    public void testBorderControlwithOneDumbBot(){
+//		player1 = new Player(new BorderControl(gameState), "BorderControl");
 //		players.add(player1);
 //		addDumbBots(1);
 //    }
-//	@Test
-//    public void testNailerwithTwoDumbBots(){
-//		player1 = new Player(new Nailer(gameState), "Nailer");
+//    public void testBorderControlwithTwoDumbBots(){
+//		player1 = new Player(new BorderControl(gameState), "BorderControl");
 //		players.add(player1);
 //		addDumbBots(2);
 //    }
 //	@Test
-//    public void testNailerwithThreeDumbBots(){
-//		player1 = new Player(new Nailer(gameState), "Nailer");
+//    public void testBorderControlwithThreeDumbBots(){
+//		player1 = new Player(new BorderControl(gameState), "BorderControl");
 //		players.add(player1);
 //		addDumbBots(3);
 //    }
 //	@Test
-//    public void testNailerwithFourDumbBots(){
-//		player1 = new Player(new Nailer(gameState), "Nailer");
+//    public void testBorderControlwithFourDumbBots(){
+//		player1 = new Player(new BorderControl(gameState), "BorderControl");
 //		players.add(player1);
 //		addDumbBots(4);
 //    }
 //	@Test
-//    public void testNailerwithFiveDumbBots(){
-//		player1 = new Player(new Nailer(gameState), "Nailer");
+//    public void testBorderControlwithFiveDumbBots(){
+//		player1 = new Player(new BorderControl(gameState), "BorderControl");
 //		players.add(player1);
 //		addDumbBots(5);
 //    }
-	
-//	//Berserker
-//		@Test
-//	    public void testBerserkerwithOneDumbBot(){
-//			player1 = new Player(new Berserker(gameState), "Berserker");
-//			players.add(player1);
-//			addDumbBots(1);
-//	    }
-//		@Test
-//	    public void testBerserkerwithTwoDumbBots(){
-//			player1 = new Player(new Berserker(gameState), "Berserker");
-//			players.add(player1);
-//			addDumbBots(2);
-//	    }
-//		@Test
-//	    public void testBerserkerwithThreeDumbBots(){
-//			player1 = new Player(new Berserker(gameState), "Berserker");
-//			players.add(player1);
-//			addDumbBots(3);
-//	    }
-//		@Test
-//	    public void testBerserkerwithFourDumbBots(){
-//			player1 = new Player(new Berserker(gameState), "Berserker");
-//			players.add(player1);
-//			addDumbBots(4);
-//	    }
-//		@Test
-//	    public void testBerserkerwithFiveDumbBots(){
-//			player1 = new Player(new Berserker(gameState), "Berserker");
-//			players.add(player1);
-//			addDumbBots(5);
-//	    }
+//	
+//	//Communist Defensive
+//	@Test
+//	public void testCommunistDefensivewithOneDumbBot(){
+//		player1 = new Player(new CommunistDefensive(gameState), "CommunistDefensive");
+//		players.add(player1);
+//		addDumbBots(1);
+//	}
+//	@Test
+//	public void testCommunistDefensivewithTwoDumbBots(){
+//		player1 = new Player(new CommunistDefensive(gameState), "CommunistDefensive");
+//		players.add(player1);
+//		addDumbBots(2);
+//	}
+//	@Test
+//	public void testCommunistDefensivewithThreeDumbBots(){
+//		player1 = new Player(new CommunistDefensive(gameState), "CommunistDefensive");
+//		players.add(player1);
+//		addDumbBots(3);
+//	}
+//	@Test
+//	public void testCommunistDefensivewithFourDumbBots(){
+//		player1 = new Player(new CommunistDefensive(gameState), "CommunistDefensive");
+//		players.add(player1);
+//		addDumbBots(4);
+//	}
+//	@Test
+//	public void testCommunistDefensivewithFiveDumbBots(){
+//		player1 = new Player(new CommunistDefensive(gameState), "CommunistDefensive");
+//		players.add(player1);
+//		addDumbBots(5);
+//	}
+//	
+//	
+//	//Communist Aggressive
+//	@Test
+//	public void testCommunistAgressivewithOneDumbBot() {
+//		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
+//		players.add(player1);
+//		addDumbBots(1);
+//	}
+//	@Test
+//	public void testCommunistAgressivewithTwoDumbBots() {
+//		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
+//		players.add(player1);
+//		addDumbBots(2);
+//	}
+//	@Test
+//	public void testCommunistAgressivewithThreeDumbBots() {
+//		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
+//		players.add(player1);
+//		addDumbBots(3);
+//		
+//	}
+//	@Test
+//	public void testCommunistAgressivewithFourDumbBots() {
+//		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
+//		players.add(player1);
+//		addDumbBots(4);
+//	}
+//	@Test
+//	public void testCommunistAgressivewithFiveDumbBots() {
+//		player1 = new Player(new CommunistAggressive(gameState), "CommunistAggressive");
+//		players.add(player1);
+//		addDumbBots(5);
+//	}
+//	
+//	
+//	//Boss
+//	@Test
+//    public void testBosswithOneDumbBot(){
+//		player1 = new Player(new Boss(gameState), "Boss");
+//		players.add(player1);
+//		addDumbBots(1);
+//    }
+//	@Test
+//    public void testBosswithTwoDumbBots(){
+//		player1 = new Player(new Boss(gameState), "Boss");
+//		players.add(player1);
+//		addDumbBots(2);
+//    }
+//	@Test
+//    public void testBosswithThreeDumbBots(){
+//		player1 = new Player(new Boss(gameState), "Boss");
+//		players.add(player1);
+//		addDumbBots(3);
+//    }
+//	@Test
+//    public void testBosswithFourDumbBots(){
+//		player1 = new Player(new Boss(gameState), "Boss");
+//		players.add(player1);
+//		addDumbBots(4);
+//    }
+//	@Test
+//    public void testBosswithFiveDumbBots(){
+//		player1 = new Player(new Boss(gameState), "Boss");
+//		players.add(player1);
+//		addDumbBots(5);
+//    }
+	//SuperSwapper
+	@Test
+    public void testSwapperwithOneDumbBot(){
+		player1 = new Player(new SuperSwapper(gameState), "Swapper");
+		players.add(player1);
+		addDumbBots(1);
+    }
+	@Test
+    public void testSwapperwithTwoDumbBots(){
+		player1 = new Player(new SuperSwapper(gameState), "Swapper");
+		players.add(player1);
+		addDumbBots(2);
+    }
+	@Test
+    public void testSwapperwithThreeDumbBots(){
+		player1 = new Player(new SuperSwapper(gameState), "Swapper");
+		players.add(player1);
+		addDumbBots(3);
+    }
+	@Test
+    public void testSwapperwithFourDumbBots(){
+		player1 = new Player(new SuperSwapper(gameState), "Swapper");
+		players.add(player1);
+		addDumbBots(4);
+    }
+	@Test
+    public void testSwapperwithFiveDumbBots(){
+		player1 = new Player(new Nailer(gameState), "Swapper");
+		players.add(player1);
+		addDumbBots(5);
+    }
+
+
 	@After
 	public void runGameAndWriteStats() throws InterruptedException{
 		gameState.setPlayers(players);
