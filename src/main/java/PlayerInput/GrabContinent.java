@@ -21,7 +21,7 @@ import java.util.Random;
  */
 public class GrabContinent implements PlayerInterface {
     public State currentState;
-    public String continentID = "asia";
+    public String continentID = "australia";
 
 
     public GrabContinent(State a, String continentID){
