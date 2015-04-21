@@ -95,12 +95,13 @@ public abstract class AbstractProtocol implements Runnable {
 	protected abstract void acknowledge(int ack);
 	protected abstract void handleTimeout(String command);
 
+	/**
+	 * Runs the protocol
+	 */
 	public void run(){
 		if(state.getTerritoryIds().size() == 0){
 			RiskMapGameBuilder.addRiskTerritoriesToState(state);
-		}
-		//DemoGameBuilder.addFourTerritories(state);
-		
+		}		
 		while(protocolState != null){
 			if(engine == null)
 				takeSetupAction();
@@ -112,14 +113,20 @@ public abstract class AbstractProtocol implements Runnable {
 	}
 
 
+	// used to recognise when we should leave the setup stage
 	private int armiesPlaced = 0;
 	private int armiesToBePlaced;
+	
 	/**
 	 * Manages the different states and associated commands.
+	 * Plays the whole game and handles the interaction between peers
 	 * @param
 	 * @return
 	 */
 	protected void takeGameAction() {
+		
+		// the protocol can be interrupted by the timer
+		// and by the remote protocol - if it detects an invalid command
 		if(Thread.interrupted()){
 			if(timerSet){
 				synchronized(currentTask){
@@ -142,43 +149,47 @@ public abstract class AbstractProtocol implements Runnable {
 	            debug("\n START GAME");
 	            networkArbitration.setProtocolThread(Thread.currentThread());
 	            armiesToBePlaced = ArmyUtils.getStartingArmies(state) * numOfPlayers;
-	            setupRolls();
+	           
+	            /// roll setup dice - to get the first player
+	            // and to shuffle cards
+	            setupRolls(); 
+	            
 	            protocolState = ProtocolState.SETUP_GAME;
 	            break;
 	       case SETUP_GAME:
 	    	   debug("\n SETUP_GAME");
-//	    	   networkArbitration.setFirstPlayerId(firstPlayerId); // this should be got by now
+	    	   
+	    	   // start the game engine
 	    	   if(gameEngineThread == null){
-	    		   System.out.println("here");
-		    	   gameEngineThread = new Thread(engine);
-		    	   
-		    	   try {
-					Thread.sleep(200);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-		    	   
+		    	   gameEngineThread = new Thread(engine);		    	   
 		    	   gameEngineThread.start();
 		    	   currentPlayerId = firstPlayerId;
 	    	   }
 	    	   setupGame();
+	    	   
 			   break;
             case PLAY_CARDS:
 	            debug("\n PLAY_CARDS");
+	            
+	            // send / receive play cards
+	            // it transfers us to the next state
 	            playCards();
 	            break;	
             case DEPLOY:
 				debug("\n DEPLOY");
+				
+				// send / receive deploy command
 				deploy();
 				break;
             case ATTACK:
             	debug("\n ATTACK");
+            	
+            	// send / receive attack command
 				attack();
 	            break;
             case DEFEND:
 				debug("\n DEFEND");
-				defend();
+				defend(); 
 				break;
             case ROLL:
 	            debug("\n ROLL");
@@ -195,7 +206,6 @@ public abstract class AbstractProtocol implements Runnable {
 								// otherwise this is called from attack
 	            break;
             default:
-			//	System.out.println("in default not good");
 				break;
 
 		}
@@ -207,46 +217,40 @@ public abstract class AbstractProtocol implements Runnable {
 //  MAIN GAME COMMANDS
 // ===============================================================
 	
+	/**
+	 * Used at the stage when the players are placing their armies. 
+	 * At the very beginnign of the game.
+	 */
 	protected void setupGame(){
 		nextStateAfterAck = ProtocolState.SETUP_GAME;
-		System.out.println("PROTOCOL: SETUP\n");
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-		Change lastChange = engine.getStateChangeRecord().getLastChange();
-		String lastPlayer;
-		PlayState changeType;
-		
-		
+	
 		if(currentPlayerId == myID){
+			// retrieve a move from the local player
 			setup setup = (setup) getResponseFromLocalPlayer();
+			
 			setup.ack_id = ack_id;
 			ack_id++;
-			
 			armiesPlaced++;
 			
 			if(armiesPlaced == armiesToBePlaced){
+				// transfer to the next state if necessary
 				nextStateAfterAck = ProtocolState.PLAY_CARDS;
 			}
 			
 			String setupString = Jsonify.getObjectAsCommand(setup);
-			//Send to all clients
+			// send to all clients / send to server
 			sendCommand(setupString, null, true);
 		}
-		//someone sent us a command
 		else {
 			String command = "";
 			while(command == ""){
 				command = receiveCommand(false);
 			}
 			
-			setup setup = (setup) Jsonify.getObjectFromCommand(command, setup.class);
-
-			if(setup == null){
+			setup setup = null;
+			try{
+				setup = (setup) Jsonify.getObjectFromCommand(command, setup.class);
+			} catch (ClassCastException e){
 				sendLeaveGame(200, "Wrong command. Expected setup.");
 				return;
 			}

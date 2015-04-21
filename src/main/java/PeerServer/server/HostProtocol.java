@@ -30,37 +30,37 @@ import static com.esotericsoftware.minlog.Log.debug;
  */
 public class HostProtocol extends AbstractProtocol  {
 
-	private int maxNoOfPlayers = 6;		//min is 3	
+	private int maxNoOfPlayers = 6;
 	private int minNoOfPlayers = 2;
-	private int waitTimeInSeconds = 3; // host waits 180 seconds for remaining players to connect
+	private int waitTimeInSeconds = 3; // host waits 3 seconds for the rest of the players
 
 	// mappings of features / versions to the count of how many clients support these
 	private HashMap<String, Integer> supportedFeatures = new HashMap<String, Integer>();
 	private HashMap<Integer, Integer> supportedVersions = new HashMap<Integer, Integer>();
 	
-	// maps players IDs with a connection associated with them (null for local)
+	// maps players IDs with a connection associated with them
 	private HashMap<Integer, PeerConnection> connectionMapping = new HashMap<Integer, PeerConnection>();
 
-//	private BlockingQueue<String> acknowledgementsQueue = new LinkedBlockingQueue<String>();
-	
 	// connection which is currently served
 	private PeerConnection currentConnection;
-	private Set<Integer> acknowledgements = new HashSet<Integer>(); // IDs
-	private Socket newSocket;
+	private Set<Integer> acknowledgements = new HashSet<Integer>(); 
+	private Socket newSocket; 
 	private ServerSocket serverSocket;
+
 	
-	private BlockingQueue<String> secondCommandQueue = new LinkedBlockingQueue<String>();
-
-
     public HostProtocol(State state) {
         this.state = state;
     }
 
 	@Override
+	/**
+	 * Starts the handshake. Accepts all players and prepared to play the game.
+	 */
 	protected void takeSetupAction() {
-		//Log.DEBUG = true;
 		ArrayList<String> allCommands;
-		// check if timer didn't interrupt
+		
+		// timer can interrupt the game to change the  state
+		// after acknowledgement timeout
 		if(Thread.interrupted()){
 			synchronized(currentTask){
 				try {
@@ -134,11 +134,19 @@ public class HostProtocol extends AbstractProtocol  {
 	protected void handleJoinGameCommand(String command) {	
 		System.out.println("\nGOT: " + command + "\n");
 
+		join_game join_game = null;
+		try{
 		//create JSON object of command
-		join_game join_game = (join_game) Jsonify.getObjectFromCommand(command, join_game.class);
-		if(join_game == null){
-			errorMessage = ("Wrong request");
+			join_game = (join_game) Jsonify.getObjectFromCommand(command, join_game.class);
+		} catch (ClassCastException e){
+			errorMessage = ("Wrong join game request");
 			sendRejectJoin(); // reject player
+		}
+
+		
+		// the game is full, reject a player
+		if(numOfPlayers == maxNoOfPlayers){
+			sendRejectJoin();
 		}
 		
 		// game will be accepted so update versions and features counts
@@ -412,39 +420,57 @@ public class HostProtocol extends AbstractProtocol  {
 // SENDING AND RECEIVING COMMANDS AND ACKNOWLEDGEMENTS
 // =====================================================================
 	
+	
+	
 	/**
 	 * Receives acknowledgements (either ping or acknowledgement)
-	 * it keeps receiving these until the timeout passes.
+	 * it keeps receiving these until the timeout passes. If the host
+	 * receives a message that is neither an acknowledgement nor a ping
+	 * it puts it to the queue of commands and these will be retrieved later
 	 * 
 	 * @param command
 	 * @return
 	 */
 	protected void acknowledge(String command) {
 		int id = -1;
+		
 		if(command.contains("ping")){
-			ping ping = (ping) Jsonify.getObjectFromCommand(command, ping.class);
-			if(ping == null){
+			ping ping = null;
+			try{
+				ping = (ping) Jsonify.getObjectFromCommand(command, ping.class);
+			} catch (ClassCastException e){
 				sendLeaveGame(200, "Wrong command: expected ping");
+				return;
 			}
+
 			sendCommand(command, ping.player_id, false);
 			id = ping.player_id;
 		}
+		
+		
 		else if(command.contains("leave")){ // TODO: think about this.
 			handleLeaveGame(command); 
 			return;
 		}
+		
+		
 		else if(command.contains("acknowledgement")){
-			acknowledgement ack = (acknowledgement) Jsonify.getObjectFromCommand(command, acknowledgement.class);
-			if(ack == null){
+			acknowledgement ack = null;
+			try{
+				ack = (acknowledgement) Jsonify.getObjectFromCommand(command, acknowledgement.class);
+			} catch (ClassCastException e){
 				sendLeaveGame(200, "Wrong command: expected acknowledge");
+				return;
 			}
+			
 			if((ack.payload != ack_id - 1) && (ack.payload != their_ack_id)){
-				System.out.println("Wrong acknoledgement - but we ignore it");
+				//System.out.println("Wrong acknoledgement - but we ignore it");
 			}
 			id = ack.player_id;
 		}
 		else{
-			// it wasnt an acknowledgement by may be important later
+			
+			// it wasnt an acknowledgement but may be important later
 			// add this to the command queue
 			System.out.println("got something while acknowledging: " + command + "\n");
 			if(command != "")
@@ -452,6 +478,7 @@ public class HostProtocol extends AbstractProtocol  {
 			return;
 		}
 		
+		// add the acknowledging player id to the array of acknowledgements
 		if(id != -1){
 			acknowledgements.add(id);
 		}
@@ -479,13 +506,19 @@ public class HostProtocol extends AbstractProtocol  {
 		if(!acknowledge)
 			return;
 		
+		// set the timer to interrupt the host receiving acknowledgements 
+		// after the specified time and transfer to the next
+		// state after the acknowledgement receiving process
+		
 		currentTask = new ChangeState(nextStateAfterAck);
 		timer.schedule(currentTask, ack_timeout * 1000);
+		
+		// start receiving acknowledgements
 		while(true){
 			if(Thread.interrupted()){
 				synchronized(currentTask){
 					try {
-						System.out.println("interrupted!");
+						// interrupt means that we are transfering to the next state
 						currentTask.wait();
 					} catch (Exception e) {e.printStackTrace();}
 				}
@@ -518,6 +551,7 @@ public class HostProtocol extends AbstractProtocol  {
 				
 		}	
 		
+		// handle all timeouts
 		if(command.contains("ping"))
 			handlePingTimeouts();
 		else
@@ -560,6 +594,10 @@ public class HostProtocol extends AbstractProtocol  {
 		}
 	}
 	
+	/**
+	 * Checks whether all users responded with a ping. If someone has not responded
+	 * they are removed from the game.
+	 */
 	private void handlePingTimeouts() {
 		for(Integer id : connectionMapping.keySet()){
 			if(!acknowledgements.contains(id)){
@@ -612,16 +650,27 @@ public class HostProtocol extends AbstractProtocol  {
 	}
 	
 	
+	// used to keep track which client to serve (receive command from)
 	int previouslyHandledId = 0;
+	
+	
+	
 	@Override
+	/**
+	 * Receives a command from the next client (it serves peer connections one by one)
+	 * If the ignoreQueue boolean is set to true, if there was something
+	 * that we put into the command queue while receiving acknowledgements we simply ignore
+	 * it (don't take it from the queue). This boolean should be set to true for acknowledgements
+	 * receiving or roll_numbers receiving.
+	 * @param ignoreQueue
+	 * @return
+	 */
 	protected String receiveCommand(boolean ignoreQueue) {
 		if(connectionMapping.size() == 0)
 			return "";
 	
 		String command = "";
-		if(!ignoreQueue && commandQueue.size() != 0){
-			System.out.println("queue not empty!");
-			
+		if(!ignoreQueue && commandQueue.size() != 0){			
 			try {
 				command = commandQueue.take();
 			} catch (InterruptedException e) {
@@ -654,6 +703,11 @@ public class HostProtocol extends AbstractProtocol  {
 	}
 	
 
+	/**
+	 * 
+	 * @param command
+	 * @return
+	 */
 	private int getPlayerid(String command) {
 		String[] parts = command.split(",");
 		for(int i = 0; i < parts.length; i++){
@@ -673,7 +727,6 @@ public class HostProtocol extends AbstractProtocol  {
 
 
 	public void run(){
-
 		myName = getRandomName();
 		createNewPlayer(myName, 0, true);		// creating our local player
 
@@ -702,22 +755,16 @@ public class HostProtocol extends AbstractProtocol  {
 
 	public static void main(String[] args) {
 		HostProtocol protocol = new HostProtocol(new State());
-
 		protocol.run();
 	}
 
 	@Override
 	protected void acknowledge(int ack) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	protected void handleTimeout(String command) {
-		// TODO Auto-generated method stub
-		
-	}
-	
+	}	
 
 }
 
