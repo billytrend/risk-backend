@@ -185,13 +185,13 @@ public class BorderControl implements PlayerInterface {
 
 	}
 
-	@Override
+	
 	public void reportStateChange(Change change) {
 		// TODO Auto-generated method stub
 
 	}
 
-    @Override
+    
     public void createResponse() {
 
     }

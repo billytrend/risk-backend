@@ -30,14 +30,15 @@ public class TheLoser implements PlayerInterface {
     }
 
     /**
-     * The choice can be made only from the set of possible territories.
      *
-     * @param player
-     * @param possibles
+     * Returns a territory from a list of possibilities.
+     * @param player The player
+     * @param possibles Possible territories to choose from
+     * @param from Territory attacking from (if required)
+     * @param canResign Whether the user can resign at this point in time
+     * @param reason Why the method is being called, influences the return type.
      * @return
      */
-
-
     public Territory getTerritory(Player player,
                                   HashSet<Territory> possibles,Territory from, boolean canResign, RequestReason reason) {
 
@@ -94,10 +95,6 @@ public class TheLoser implements PlayerInterface {
 
     }
 
-    /**
-     *
-     * @return a triplet of cards which represents choice
-     */
     public Triplet<Card, Card, Card> getCardChoice(Player player, ArrayList<Triplet<Card, Card, Card>> possibleCombinations) {
         return possibleCombinations.get(0);
     }
@@ -107,7 +104,7 @@ public class TheLoser implements PlayerInterface {
 
     }
 
-    @Override
+    
     public void createResponse() {
 
     }
